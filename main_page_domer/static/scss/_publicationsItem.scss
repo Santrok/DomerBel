@@ -41,9 +41,13 @@
   @include fonts($defaultColor, 14px, 400);
 }
 
+:has(.article__status) .article__date {
+  align-self: flex-start;
+}
+
 .article__date {
+  align-self: center;
   display: block;
-  align-self: start;
   text-align: inherit;
   @include fonts($defaultColor, 14px, 400);
 }

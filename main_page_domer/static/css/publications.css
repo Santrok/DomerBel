@@ -49,9 +49,13 @@
   font-size: 14px;
 }
 
+:has(.article__status) .article__date {
+  align-self: flex-start;
+}
+
 .article__date {
+  align-self: center;
   display: block;
-  align-self: start;
   text-align: inherit;
   font-family: "Trebuchet MS", sans-serif;
   font-weight: 400;
