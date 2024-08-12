@@ -445,7 +445,7 @@
                                 Наименование:
                             </p>
                             <p>
-                                ООО «Маркшейдерские и геодезические услуги»
+                                {{ organization.name_organization }}
                             </p>
                         </li>
                         <li>
@@ -453,19 +453,19 @@
                                 Юридический адрес:
                             </p>
                             <p>
-                                г. Минск, ул. Ленина, д. 1
+                                {{ organization.legal_address }}
                             </p> 
                         </li>
                         <li>
-                            <a href="tel:+375290000000">+375 (29) 000-00-00,</a>
-                            <a href="mailto:example@example.com">example@example.com</a>
+                            <a href="tel:+375290000000">{{ organization.phone_num }},</a>
+                            <a href="mailto:example@example.com"> {{ organization.email }}</a>
                         </li>
                         <li>
                             <p>
-                                УНП: 000000000
+                                УНП: {{ organization.unp }}
                             </p>
                             <p>
-                                Lorem ipsum dolor sit amet consectetur adipisicing elit. Assumenda laudantium nam quibusdam excepturi sed, placeat fuga modi accusamus deserunt illum quas voluptatem id inventore neque at odio voluptate quo possimus!
+                                {{ organization.additional_info }}
                             </p>
                         </li>
                     </ul>

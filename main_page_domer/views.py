@@ -14,10 +14,11 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.utils.timezone import make_aware
 
 from users.models import User
-from advertisement.models import Advertisement, Region, Category, Store, ElementTwo, PhotoAdvertisement, Field
+from advertisement.models import Advertisement, Region, Category, Store, ElementTwo, PhotoAdvertisement, Field, \
+    AboutOrganization
 from advertisement.utils import (get_region_variables, sorted_by, sorted_by_number, sorted_by_date_or_price,
-                                 variables_for_paginator, where_to_look, search_additional_information,
-                                 annotating_field)
+                                                      variables_for_paginator, where_to_look, search_additional_information,
+                                                      annotating_field)
 from config import settings
 from main_page_domer.forms import FeedbackForm, ComplaintForm
 from main_page_domer.models import Help, ReasonOfComplaint, Complaint, Publication
@@ -658,12 +659,21 @@ def dowload_photo(request):
                 with codecs.open(f"./media/{paths}", 'r') as file:
                     pass
             except FileNotFoundError:
-                print("файл не неайден", paths)
+                print("файл не найден", paths)
             except PIL.UnidentifiedImageError:
-                print("файл не неайден",paths)
+                print("файл не найден",paths)
             else:
                 advertis = Advertisement.objects.get(id=advertis_id.get(i.get("id")))
                 photo = PhotoAdvertisement(photo=paths, advertisement_id=advertis.id)
                 photo.save()
 
     return render(request, 'download_adver.html')
+
+
+def get_base_page(request):
+    '''Отдает базовую страничку'''
+    organization = AboutOrganization.objects.last()
+    context = {
+        "organization": organization
+    }
+    return render(request,'base.html', context)

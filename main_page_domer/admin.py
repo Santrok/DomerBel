@@ -8,3 +8,4 @@ admin.site.register(PhotoPublication)
 admin.site.register(Publication, PublicationAdmin)
 admin.site.register(Comment)
 admin.site.register(Help)
+

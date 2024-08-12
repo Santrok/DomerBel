@@ -145,3 +145,6 @@ class Help(models.Model):
 
     def __str__(self):
         return f'Текст страницы помощь'
+
+
+
