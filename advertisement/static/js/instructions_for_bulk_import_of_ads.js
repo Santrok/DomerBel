@@ -18,7 +18,7 @@ function getCity(event) {
     const cities = region.nextElementSibling;
     if (cities.childNodes.length == 0){
         const regionId = region.id;
-        fetch('http://127.0.0.1:8000/api/v1/add_store/city/'+`${regionId}`)
+        fetch(`${localStorage.getItem("url")}/api/v1/add_store/city/${regionId}`)
         .then((response) => response.json())
         .then((data) => {
             for (let city of data){
@@ -60,7 +60,7 @@ function getCategory(event) {
         subcategoriesList.className = 'subcategories_list'
         category.after(subcategoriesList)
         const categoryId = category.id;
-        fetch(`http://127.0.0.1:8000/api/v1/get_subcategory_list/?id=${categoryId}`)
+        fetch(`${localStorage.getItem("url")}/api/v1/get_subcategory_list/?id=${categoryId}`)
         .then((response) => response.json())
         .then((data) => {
             for (let subcategory of data){
@@ -99,7 +99,7 @@ function getField(event) {
         fieldsList.className = 'fields_list'
         subcategory.after(fieldsList)
         const subcategoryId = subcategory.id
-        fetch(`http://127.0.0.1:8000/api/v1/get_field_list/?id=${subcategoryId}`)
+        fetch(`${localStorage.getItem("url")}/api/v1/get_field_list/?id=${subcategoryId}`)
             .then((response) => response.json())
             .then((data) => {
                 for (let field of data){
@@ -140,7 +140,7 @@ function getElement(event){
             let elementsList = document.createElement('ol');
             elementsList.className = 'elements_list'
             field.after(elementsList)
-            fetch(`http://127.0.0.1:8000/api/v1/get_element_list/?id=${fieldId}`)
+            fetch(`${localStorage.getItem("url")}/api/v1/get_element_list/?id=${fieldId}`)
             .then((response) => response.json())
             .then((data) => {
                 for (let element of data){
@@ -180,7 +180,7 @@ function getElementTwo(event){
         let elementsTwoList = document.createElement('ol');
         elementsTwoList.className = 'elementstwo_list'
         element.after(elementsTwoList)
-        fetch(`http://127.0.0.1:8000/api/v1/get_elementtwo_list/?slug=${elementId}`)
+        fetch(`${localStorage.getItem("url")}/api/v1/get_elementtwo_list/?slug=${elementId}`)
             .then((response) => response.json())
             .then((data) => {
                 for(let elementtwo of data){

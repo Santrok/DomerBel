@@ -33,7 +33,7 @@
             <p>{{ card.date_of_create|date:"H:i" }}</p>
           </div>
           <a href="{% url 'advertisement_details' card.slug %}" class="recent-announcements__list-item-article-img">
-            <img src="{% if card.preview_image %} {{ card.preview_image.url }} {% else %}{% static 'img/no_image.jpg' %}{% endif %}" alt="{% if card.preview_image %} {{ card.preview_image.url }} {% else %}{% static 'img/no_image.jpg' %}{% endif %}" />
+            <img src="{% if card.preview_image %} {{ card.preview_image.url }} {% else %}{% static 'img/no_image.jpg' %}{% endif %}" alt="{{ card.category }}" />
           </a>
           <div class="recent-announcements__list-item-article-info">
             <a href="{% url 'advertisement_details' card.slug %}" class="recent-announcements__list-item-article-info-link">
