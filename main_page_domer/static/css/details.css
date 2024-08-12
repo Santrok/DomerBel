@@ -460,16 +460,13 @@
 }
 
 .details__advertisement-add-favorites-img {
-  max-width: 19px;
-  max-height: 19px;
+  width: 19px;
+  height: 19px;
+  background: url(../img/favorite.png) no-repeat center/cover;
 }
-.details__advertisement-add-favorites-img img {
-  width: 100%;
-  height: 100%;
-  -o-object-fit: cover;
-     object-fit: cover;
-  -o-object-position: center;
-     object-position: center;
+
+.advertisement__favorites-active {
+  background: url(../img/favorite_yes.png) no-repeat center/cover;
 }
 
 .details__advertisement-add-favorites p {

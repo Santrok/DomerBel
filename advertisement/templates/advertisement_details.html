@@ -229,9 +229,8 @@
           {{ advertisement.description }}
         </p>
         <div class="detials__advertisement-about-action">
-          <div class="details__advertisement-add-favorites">
-            <div class="details__advertisement-add-favorites-img">
-              <img src="{% static "img/icons/Edit_Yes.png" %}" alt="star">
+          <div class="details__advertisement-add-favorites" data-id="{{ advertisement.id }}">
+            <div class="details__advertisement-add-favorites-img {% if advertisement.id in user.userfavorites.favorites %} advertisement__favorites-active{% endif %}">
             </div>
             <p>
               Добавить в избранное
