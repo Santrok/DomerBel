@@ -49,29 +49,12 @@ document.getElementById("select_category_2")?.addEventListener("change", () => {
   statusCategory3 = ""
 })
 
-// function showOblast() {
-//     fetch(`http://127.0.0.1:8000/api/v1/get_region_list/`)
-//         .then((response) => response.json())
-//         .then(data => {
-//             let array = data.filter(function (i) {
-//                 return i.level === 0
-//             })
-//             array.map((elem) => {
-//                 let optionElem = document.createElement('option')
-//                 optionElem.setAttribute('value', `${elem.id}`)
-//                 optionElem.innerText = `${elem.area}`
-//                 getElementSelectOblast.append(optionElem)
-//             })
-//         })
-// }
-//
-// showOblast()
 
 function showCity(event) {
   if (event.target.value !== regionStatus) {
     regionStatus = event.target.value
     if (event.target.value !== "0") {
-      fetch(`http://127.0.0.1:8000/api/v1/get_city_list/${event.target.value}`)
+      fetch(`${localStorage.getItem("url")}/api/v1/get_city_list/${event.target.value}`)
         .then((response) => response.json())
         .then((data) => {
           if (document.querySelector(".city")) {
@@ -105,16 +88,6 @@ function showCity(event) {
   }
 }
 
-// fetch("http://127.0.0.1:8000/api/v1/add_store/categories/")
-//     .then((response) => response.json())
-//     .then((data) => {
-//         let array = data.filter(function (i) {
-//             return i.level === 0
-//         })
-//         getElementSelectCategory0.innerHTML += array.map((elem) => `<option value=${elem.id}>${elem.title}</option>`)
-//
-//     })
-
 function showCategory(event) {
   if (
     event.target === getElementSelectCategory0 &&
@@ -123,7 +96,7 @@ function showCategory(event) {
     statusCategory0 = event.target.value
     if (event.target.value !== "") {
       fetch(
-        `http://127.0.0.1:8000/api/v1/get_category_list/?id=${event.target.value}`
+        `${localStorage.getItem("url")}/api/v1/get_category_list/?id=${event.target.value}`
       )
         .then((response) => response.json())
         .then((data) => {
@@ -166,7 +139,7 @@ function showCategory(event) {
     informationList.innerHTML = ""
     if (event.target.value !== "") {
       fetch(
-        `http://127.0.0.1:8000/api/v1/get_category_list/?id=${event.target.value}`
+        `${localStorage.getItem("url")}/api/v1/get_category_list/?id=${event.target.value}`
       )
         .then((response) => response.json())
         .then((data) => {
@@ -204,7 +177,7 @@ function showCategory(event) {
     informationList.innerHTML = ""
     if (event.target.value !== "") {
       fetch(
-        `http://127.0.0.1:8000/api/v1/get_category_list/?id=${event.target.value}`
+        `${localStorage.getItem("url")}/api/v1/get_category_list/?id=${event.target.value}`
       )
         .then((response) => response.json())
 
@@ -246,7 +219,7 @@ function showCategory(event) {
 }
 
 function show_additional_information(event) {
-  fetch(`http://127.0.0.1:8000/api/v1/get_field_list/?id=${event.target.value}`)
+  fetch(`${localStorage.getItem("url")}/api/v1/get_field_list/?id=${event.target.value}`)
     .then((response) => response.json())
     .then((data) => {
       informationList.innerHTML = ""
@@ -412,7 +385,7 @@ function showAdditionalInformationTwo(event) {
     }
     if (elementTwo && statusElementTwo !== event.target.value) {
       fetch(
-        `http://127.0.0.1:8000/api/v1/get_elementtwo_list/?slug=${elementTwo}`
+        `${localStorage.getItem("url")}/api/v1/get_elementtwo_list/?slug=${elementTwo}`
       )
         .then((response) => response.json())
         .then((data) => {
@@ -456,7 +429,7 @@ bearerCompany.addEventListener("change", bearerCompanyInfo)
 function bearerCompanyInfo(event) {
   if (event.target.id === "bearer_company") {
     if (!document.querySelector(".bearer_company_store")) {
-      fetch(`http://127.0.0.1:8000/api/v1/get_store_for_advertisement/`)
+      fetch(`${localStorage.getItem("url")}/api/v1/get_store_for_advertisement/`)
         .then((response) => response.json())
         .then((data) => {
           const bearerCompanyStore = document.createElement("div")
@@ -577,7 +550,7 @@ function removeImg(event) {
     }
     if (
       window.location.href ===
-      `http://127.0.0.1:8000/advertisement/editing_an_ad/${
+      `${localStorage.getItem("url")}/advertisement/editing_an_ad/${
         document.getElementById("add_adver").dataset.advertisement
       }/`
     ) {
@@ -638,15 +611,15 @@ function saveAdvertisement() {
   }
   fetch(
     window.location.href ===
-      `http://127.0.0.1:8000/advertisement/editing_an_ad/${
+      `${localStorage.getItem("url")}/advertisement/editing_an_ad/${
         document.getElementById("add_adver").dataset.advertisement
       }/`
-      ? `http://127.0.0.1:8000/api/v1/update_advertisement/`
-      : `http://127.0.0.1:8000/api/v1/save_advertisement/`,
+      ? `${localStorage.getItem("url")}/api/v1/update_advertisement/`
+      : `${localStorage.getItem("url")}/api/v1/save_advertisement/`,
     {
       method:
         window.location.href ===
-        `http://127.0.0.1:8000/advertisement/editing_an_ad/${
+        `${localStorage.getItem("url")}/advertisement/editing_an_ad/${
           document.getElementById("add_adver").dataset.advertisement
         }/`
           ? "PATCH"
