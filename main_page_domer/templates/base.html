@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="ru">
+  <head>
+    {% block description %}
+    
+    {% endblock %}
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="{% static 'css/null.css' %}">
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    {% block css %}
+    {% endblock %}
+    <title>{{ title }}</title>
+  </head>
+  <body>
+    <div class="wrapper" data-url="{{ url }}">
+        <div class="modals">
+            <form class="modals__login" id="login_form" enctype="multipart/form-data">
+                <div class="cross">
+                    <svg width="20.000000" height="20.000000" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                        <desc>
+                                Created with Pixso.
+                        </desc>
+                        <defs>
+                            <clipPath id="clip946_10111">
+                                <rect id="Dismiss" width="20.000000" height="20.000000" fill="white" fill-opacity="0"/>
+                            </clipPath>
+                        </defs>
+                        <g clip-path="url(#clip946_10111)">
+                            <path id="Shape" d="M3.89 4.05L3.96 3.96C4.23 3.7 4.65 3.67 4.94 3.89L5.03 3.96L10 8.93L14.96 3.96C15.23 3.7 15.65 3.67 15.94 3.89L16.03 3.96C16.29 4.23 16.32 4.65 16.1 4.94L16.03 5.03L11.06 10L16.03 14.96C16.29 15.23 16.32 15.65 16.1 15.94L16.03 16.03C15.76 16.29 15.34 16.32 15.05 16.1L14.96 16.03L10 11.06L5.03 16.03C4.76 16.29 4.34 16.32 4.05 16.1L3.96 16.03C3.7 15.76 3.67 15.34 3.89 15.05L3.96 14.96L8.93 10L3.96 5.03C3.7 4.76 3.67 4.34 3.89 4.05L3.96 3.96L3.89 4.05Z" fill="#212121" fill-opacity="1.000000" fill-rule="nonzero"/>
+                        </g>
+                    </svg>
+                    
+                </div>
+                <div class="modals__login-logo-wrap">
+                    <div class="modals__login-logo">
+                        <img src="{% static 'img/logo.png' %}" alt="">
+                    </div>
+                    <h2>
+                        Авторизация
+                    </h2>
+                </div>
+                <fieldset class="modals__login-field">
+                    <div class="modals__signIn-field">
+                        <input type="text" name="email" id="login_email" placeholder="Введите вашу почту">
+                    </div>
+                    <div class="modals__signIn-field">
+                        <div class="views">
+                            <div class="views__show views__show-active">
+                                <svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 9C10.3431 9 9 10.3431 9 12C9 13.6569 10.3431 15 12 15C13.6569 15 15 13.6569 15 12C15 10.3431 13.6569 9 12 9ZM12 17C9.23858 17 7 14.7614 7 12C7 9.23858 9.23858 7 12 7C14.7614 7 17 9.23858 17 12C17 14.7614 14.7614 17 12 17ZM12 4.5C7 4.5 2.73 7.61 1 12C2.73 16.39 7 19.5 12 19.5C17 19.5 21.27 16.39 23 12C21.27 7.61 17 4.5 12 4.5Z" fill="gray"></path></svg>
+                            </div>
+                            <div class="views__hide">
+                                <svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style=""><path fill-rule="evenodd" clip-rule="evenodd" d="M19.6172 21.4344L17.3849 19.2021C15.7703 20.0317 13.9401 20.5 12 20.5C7 20.5 2.73 17.39 1 13C1.91081 10.6887 3.52566 8.73227 5.58042 7.39765L3.00018 4.81741L4.41439 3.4032L21.0314 20.0202L19.6172 21.4344ZM12 18C13.1725 18 14.2507 17.5964 15.1034 16.9206L13.6732 15.4904C13.1952 15.8122 12.6195 16 12 16C10.3431 16 9 14.6568 9 13C9 12.3804 9.18779 11.8048 9.50956 11.3268L8.07939 9.89662C7.40357 10.7493 7 11.8275 7 13C7 15.7614 9.23858 18 12 18ZM16.9972 13.1797L20.5991 16.7817C21.6226 15.6946 22.4431 14.4137 23.0002 13C21.2702 8.61 17.0002 5.5 12.0002 5.5C11.1665 5.5 10.3531 5.58646 9.56836 5.75091L11.8206 8.00314C11.8803 8.00103 11.9402 7.99997 12.0003 7.99997C14.7618 7.99997 17.0003 10.2385 17.0003 13C17.0003 13.0601 16.9993 13.1201 16.9972 13.1797Z" fill="gray"></path></svg>
+                            </div>
+                        </div>
+                        <input type="password" name="password" id="login_password" placeholder="Введите пароль">
+                    </div>
+                    <button type="button" class="submit__btn" id="login_button">
+                        Отправить
+                    </button>
+                </fieldset>
+                <fieldset class="modals__login-action">
+                    <a href="#">
+                        Забыли пароль?
+                    </a>
+                    <a href="#">
+                        Регистрация
+                    </a>
+                </fieldset>
+            </form>
+            <form class="modals__signIn" enctype="multipart/form-data"  id="registration_form">
+                <div class="cross">
+                    <svg width="20.000000" height="20.000000" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                        <desc>
+                                Created with Pixso.
+                        </desc>
+                        <defs>
+                            <clipPath id="clip946_10111">
+                                <rect id="Dismiss" width="20.000000" height="20.000000" fill="white" fill-opacity="0"/>
+                            </clipPath>
+                        </defs>
+                        <g clip-path="url(#clip946_10111)">
+                            <path id="Shape" d="M3.89 4.05L3.96 3.96C4.23 3.7 4.65 3.67 4.94 3.89L5.03 3.96L10 8.93L14.96 3.96C15.23 3.7 15.65 3.67 15.94 3.89L16.03 3.96C16.29 4.23 16.32 4.65 16.1 4.94L16.03 5.03L11.06 10L16.03 14.96C16.29 15.23 16.32 15.65 16.1 15.94L16.03 16.03C15.76 16.29 15.34 16.32 15.05 16.1L14.96 16.03L10 11.06L5.03 16.03C4.76 16.29 4.34 16.32 4.05 16.1L3.96 16.03C3.7 15.76 3.67 15.34 3.89 15.05L3.96 14.96L8.93 10L3.96 5.03C3.7 4.76 3.67 4.34 3.89 4.05L3.96 3.96L3.89 4.05Z" fill="#212121" fill-opacity="1.000000" fill-rule="nonzero"/>
+                        </g>
+                    </svg>
+                    
+                </div>
+                <div class="modals__signIn-logo-wrap">
+                    <div class="modals__signIn-logo">
+                        <img src="{% static 'img/logo.png' %}" alt="logo">
+                    </div>
+                    <div class="modals__signIn-logo-title-wrap">
+                        <p>
+                            Регистрация профиля 
+                        </p>
+                        <p>
+                            Физическое лицо
+                        </p>
+                    </div>
+                </div>
+                <div class="modals__signIn-choice-wrap">
+                    <button type="button" class="modals__signIn-entity legal">
+                        Юр. лицо
+                    </button>
+                    <button type="button" class="modals__signIn-entity physical">
+                        Физ. лицо
+                    </button>
+                </div>
+                <fieldset class="modals__signIn-fields">
+                    <div class="modals__signIn-field">
+                        <input type="text" name="first_name" placeholder="Контактное лицо">
+                    </div>
+                    <div class="modals__signIn-field">
+                        <input type="email" name="email" placeholder="Введите вашу почту">
+                    </div>
+                    <div class="modals__signIn-field">
+                    <input type="tel" name="phone_number" placeholder="Номер телефона">
+                    </div>
+                    <div class="modals__signIn-field">
+                        <div class="views">
+                            <div class="views__show views__show-active">
+                                <svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 9C10.3431 9 9 10.3431 9 12C9 13.6569 10.3431 15 12 15C13.6569 15 15 13.6569 15 12C15 10.3431 13.6569 9 12 9ZM12 17C9.23858 17 7 14.7614 7 12C7 9.23858 9.23858 7 12 7C14.7614 7 17 9.23858 17 12C17 14.7614 14.7614 17 12 17ZM12 4.5C7 4.5 2.73 7.61 1 12C2.73 16.39 7 19.5 12 19.5C17 19.5 21.27 16.39 23 12C21.27 7.61 17 4.5 12 4.5Z" fill="gray"></path></svg>
+                            </div>
+                            <div class="views__hide">
+                                <svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style=""><path fill-rule="evenodd" clip-rule="evenodd" d="M19.6172 21.4344L17.3849 19.2021C15.7703 20.0317 13.9401 20.5 12 20.5C7 20.5 2.73 17.39 1 13C1.91081 10.6887 3.52566 8.73227 5.58042 7.39765L3.00018 4.81741L4.41439 3.4032L21.0314 20.0202L19.6172 21.4344ZM12 18C13.1725 18 14.2507 17.5964 15.1034 16.9206L13.6732 15.4904C13.1952 15.8122 12.6195 16 12 16C10.3431 16 9 14.6568 9 13C9 12.3804 9.18779 11.8048 9.50956 11.3268L8.07939 9.89662C7.40357 10.7493 7 11.8275 7 13C7 15.7614 9.23858 18 12 18ZM16.9972 13.1797L20.5991 16.7817C21.6226 15.6946 22.4431 14.4137 23.0002 13C21.2702 8.61 17.0002 5.5 12.0002 5.5C11.1665 5.5 10.3531 5.58646 9.56836 5.75091L11.8206 8.00314C11.8803 8.00103 11.9402 7.99997 12.0003 7.99997C14.7618 7.99997 17.0003 10.2385 17.0003 13C17.0003 13.0601 16.9993 13.1201 16.9972 13.1797Z" fill="gray"></path></svg>
+                            </div>
+                        </div>
+                        <input type="password" name="password" placeholder="Введите пароль">
+                    </div>
+                    <div class="modals__signIn-field">
+                        <div class="views">
+                            <div class="views__show views__show-active">
+                                <svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 9C10.3431 9 9 10.3431 9 12C9 13.6569 10.3431 15 12 15C13.6569 15 15 13.6569 15 12C15 10.3431 13.6569 9 12 9ZM12 17C9.23858 17 7 14.7614 7 12C7 9.23858 9.23858 7 12 7C14.7614 7 17 9.23858 17 12C17 14.7614 14.7614 17 12 17ZM12 4.5C7 4.5 2.73 7.61 1 12C2.73 16.39 7 19.5 12 19.5C17 19.5 21.27 16.39 23 12C21.27 7.61 17 4.5 12 4.5Z" fill="gray"></path></svg>
+                            </div>
+                            <div class="views__hide">
+                                <svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style=""><path fill-rule="evenodd" clip-rule="evenodd" d="M19.6172 21.4344L17.3849 19.2021C15.7703 20.0317 13.9401 20.5 12 20.5C7 20.5 2.73 17.39 1 13C1.91081 10.6887 3.52566 8.73227 5.58042 7.39765L3.00018 4.81741L4.41439 3.4032L21.0314 20.0202L19.6172 21.4344ZM12 18C13.1725 18 14.2507 17.5964 15.1034 16.9206L13.6732 15.4904C13.1952 15.8122 12.6195 16 12 16C10.3431 16 9 14.6568 9 13C9 12.3804 9.18779 11.8048 9.50956 11.3268L8.07939 9.89662C7.40357 10.7493 7 11.8275 7 13C7 15.7614 9.23858 18 12 18ZM16.9972 13.1797L20.5991 16.7817C21.6226 15.6946 22.4431 14.4137 23.0002 13C21.2702 8.61 17.0002 5.5 12.0002 5.5C11.1665 5.5 10.3531 5.58646 9.56836 5.75091L11.8206 8.00314C11.8803 8.00103 11.9402 7.99997 12.0003 7.99997C14.7618 7.99997 17.0003 10.2385 17.0003 13C17.0003 13.0601 16.9993 13.1201 16.9972 13.1797Z" fill="gray"></path></svg>
+                            </div>
+                        </div>
+                        <input type="password" name="password2" placeholder="Повторите пароль">
+                    </div>
+                </fieldset>
+                <div class="g-recaptcha" data-sitekey="{{ public_key }}" data-expired-callback="expiredCallbackRecaptcha" data-callback="callbackRecaptcha"></div>
+                <button data-action='submit' type="button" class="submit__btn" id="registration_button">
+                    Зарегистрироваться
+                </button>
+                <p class="modals__signUp">
+                    Вход
+                </p>
+            </form>
+            <form class="modals__reset-password">
+                <div class="cross">
+                    <svg width="20.000000" height="20.000000" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                        <desc>
+                                Created with Pixso.
+                        </desc>
+                        <defs>
+                            <clipPath id="clip946_10111">
+                                <rect id="Dismiss" width="20.000000" height="20.000000" fill="white" fill-opacity="0"/>
+                            </clipPath>
+                        </defs>
+                        <g clip-path="url(#clip946_10111)">
+                            <path id="Shape" d="M3.89 4.05L3.96 3.96C4.23 3.7 4.65 3.67 4.94 3.89L5.03 3.96L10 8.93L14.96 3.96C15.23 3.7 15.65 3.67 15.94 3.89L16.03 3.96C16.29 4.23 16.32 4.65 16.1 4.94L16.03 5.03L11.06 10L16.03 14.96C16.29 15.23 16.32 15.65 16.1 15.94L16.03 16.03C15.76 16.29 15.34 16.32 15.05 16.1L14.96 16.03L10 11.06L5.03 16.03C4.76 16.29 4.34 16.32 4.05 16.1L3.96 16.03C3.7 15.76 3.67 15.34 3.89 15.05L3.96 14.96L8.93 10L3.96 5.03C3.7 4.76 3.67 4.34 3.89 4.05L3.96 3.96L3.89 4.05Z" fill="#212121" fill-opacity="1.000000" fill-rule="nonzero"/>
+                        </g>
+                    </svg>
+                    
+                </div>
+                <div class="modals__login-logo-wrap">
+                    <div class="modals__login-logo">
+                        <img src="{% static 'img/logo.png' %}" alt="">
+                    </div>
+                    <h2>
+                        Сбросить пароль
+                    </h2>
+                </div>
+                <fieldset class="modals__reset-password-field">
+                    <input type="email" name="email" placeholder="Введите вашу почту">
+                </fieldset>
+                <div class="g-recaptcha" 
+                data-sitekey="{{ public_key }}"
+                data-expired-callback="expiredCallbackResetRecaptcha"
+                data-callback="callbackResetRecaptcha"
+                ></div>
+                <button type='button' class="submit__btn" id="resetSubmitBtn">
+                    Отправить
+                </button>
+                <a href="#">
+                    Назад
+                </a>
+            </form>
+            <div class="modals__notification">
+                <div class="cross">
+                    <svg width="20.000000" height="20.000000" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                        <desc>
+                                Created with Pixso.
+                        </desc>
+                        <defs>
+                            <clipPath id="clip946_10111">
+                                <rect id="Dismiss" width="20.000000" height="20.000000" fill="white" fill-opacity="0"/>
+                            </clipPath>
+                        </defs>
+                        <g clip-path="url(#clip946_10111)">
+                            <path id="Shape" d="M3.89 4.05L3.96 3.96C4.23 3.7 4.65 3.67 4.94 3.89L5.03 3.96L10 8.93L14.96 3.96C15.23 3.7 15.65 3.67 15.94 3.89L16.03 3.96C16.29 4.23 16.32 4.65 16.1 4.94L16.03 5.03L11.06 10L16.03 14.96C16.29 15.23 16.32 15.65 16.1 15.94L16.03 16.03C15.76 16.29 15.34 16.32 15.05 16.1L14.96 16.03L10 11.06L5.03 16.03C4.76 16.29 4.34 16.32 4.05 16.1L3.96 16.03C3.7 15.76 3.67 15.34 3.89 15.05L3.96 14.96L8.93 10L3.96 5.03C3.7 4.76 3.67 4.34 3.89 4.05L3.96 3.96L3.89 4.05Z" fill="#212121" fill-opacity="1.000000" fill-rule="nonzero"/>
+                        </g>
+                    </svg>
+                    
+                </div>
+                <div class="modals__notification-success">
+                    <svg width="48.000000" height="48.000000" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                        <desc>
+                                Created with Pixso.
+                        </desc>
+                        <defs>
+                            <clipPath id="clip946_10107">
+                                <rect id="Checkmark Circle" width="48.000000" height="48.000000" fill="white" fill-opacity="0"/>
+                            </clipPath>
+                        </defs>
+                        <g clip-path="url(#clip946_10107)">
+                            <path id="Shape" d="M24 4C35.04 4 44 12.95 44 24C44 35.04 35.04 44 24 44C12.95 44 4 35.04 4 24C4 12.95 12.95 4 24 4ZM32.63 17.61C32.17 17.16 31.45 17.13 30.96 17.52L30.86 17.61L20.75 27.73L17.13 24.11C16.64 23.62 15.85 23.62 15.36 24.11C14.91 24.57 14.87 25.29 15.27 25.78L15.36 25.88L19.86 30.38C20.32 30.83 21.04 30.86 21.53 30.47L21.63 30.38L32.63 19.38C33.12 18.89 33.12 18.1 32.63 17.61Z" fill="#008060" fill-opacity="1.000000" fill-rule="nonzero"/>
+                        </g>
+                    </svg>
+                </div>
+                <p class="modals__notification-text">
+                    Выполнено успешно
+                </p>
+                <div class="modals__notification-action-wrap">
+                    <button type="button" class="modals__notification-close">
+                        OK
+                    </button>
+                    <button type="button" class="modals__notification-signIn">
+                        Войти
+                    </button>
+                </div>
+            </div>
+            <div class="modals__more">
+                <div class="modals__more-close"></div>
+                {% for category in category_list%}
+                    {% if category.level == 0 %}
+                    <div class="modals__more-item">
+                        <h3>
+                            <a href="{% url 'advertisement_by_category' category.slug %}">
+                                {{category}}
+                            </a>
+                        </h3>
+                        <ul>
+                            {% for category_child in category_list%}
+                                {% if category_child.parent_id == category.id %}
+                                    <li>
+                                        <a href="{% url 'advertisement_by_category' category.slug %}">
+                                            {{category_child}}
+                                        </a>
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+            {% block modals %}
+            {% endblock modals %}
+        </div>
+        <div class="form__notifications-access">
+            Выполнено успешно
+        </div>
+        <div class="container">
+            <header>
+                <div class="header__up">
+                    <nav class="header__up-nav">
+                        <ul class="header__up-nav-list">
+                            <li class="header__up-nav-list-item">
+                                <a href="{% url 'advertisement' %}">
+                                    Объявления
+                                </a>
+                            </li>
+                            <li class="header__up-nav-list-item">
+                                <a href="{% url 'stores' %}">
+                                    Магазины
+                                </a>
+                            </li>
+                            <li class="header__up-nav-list-item">
+                                <a href="{% url 'publications' %}">
+                                    Публикации
+                                </a>
+                            </li>
+                            <li class="header__up-nav-list-item">
+                                <a href="{% url 'help' %}">
+                                    Помощь
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                    {% if user.is_authenticated %}
+                    {% if user.is_superuser %}
+                        <a href="{% url 'admin:index' %}" class="header__up-admin">Админка</a>
+                    {% endif %}
+                        <div class="header__up-user-wrap">
+                            <div class="header__up-user-action">
+                                <a href="{% url 'users:personal_account' %}" class="">{% if user.first_name %}{{ user.first_name }}{% else %}{{ user.email }}{% endif %}</a>
+                                <p class="">|</p>
+                                <p class="" id="logout_button">Выйти</p>
+                            </div>
+                        </div>
+                    {% else %}
+                        <p class="header__up-user">
+                        Вход и регистрация
+                        </p>
+                    {% endif %}
+                </div>
+                <div class="header__bottom">
+                    <a href="{% url 'home' %}" class="header__logo">
+                        <img src="{% static 'img/logo.png' %}" alt="">
+                    </a>
+                    <nav class="header__bottom-nav">
+                        <h2 class="header__bottom-nav-title">
+                            {{ adaptive_navigation }}
+                        </h2>
+                        <ul class="header__bottom-nav-list">
+                            <li class="header__bottom-nav-list-item">
+                                <a href="{% url 'advertisement_by_category' 'avtomobili_s_probegom' %}">
+                                    Авто
+                                </a>
+                            </li>
+                            <li class="header__bottom-nav-list-item">
+                                <a href="{% url 'advertisement_by_category' 'rabota' %}">
+                                    Работа
+                                </a>
+                            </li>
+                            <li class="header__bottom-nav-list-item">
+                                <a href="{% url 'advertisement_by_category' 'nedvizhimost' %}">
+                                    Недвижимость
+                                </a>
+                            </li>
+                            <li class="header__bottom-nav-list-item modal__more">
+                                <a href="#">
+                                    Еще...
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                    <div class="header__bottom-send-wrap">
+                        <a href="{% url 'place_an_ad' %}" class="header__bottom-send">
+                            Подать объявление
+                        </a>
+                    </div>
+                </div>
+            </header>
+            <main>
+                {% block search %}
+                    <search class="main__search">
+                        <form class="main__search-form" action="{% url 'search_result' %}" method="GET">
+                        <fieldset class="main__search-form-item region">
+                            <select name="category" class="main__search-form-item-category">
+                                <option value="">
+                                    Все разделы
+                                </option>
+                            {% for category in category_list %}
+                                {% if category.level == 0 %}
+                                    <option value="{{ category.id }}" data-fetchid="{{ category.id }}">
+                                        {{ category }}
+                                    </option>
+                                {% endif %}
+                            {% endfor %}
+                            </select>
+                            <input type="text" name="text_search" placeholder="Поиск по тексту" />
+                            <select name="region" class="main__search-form-item-region">
+                                <option value="">
+                                    Любое расположение
+                                </option>
+                            {% for region in region_list %}
+                                {% if region.level == 0 %}
+                                <option value="{{ region.id }}" data-fetchid="{{ region.id }}">
+                                    {{ region.area }}
+                                </option>
+                                {% endif %}
+                            {% endfor %}
+                            </select>
+                        </fieldset>
+                        <fieldset class="main__search-form-item labels">
+                            <div class="main__search-form-item-label-wrap">
+                            <label for="heading">
+                                <input type="checkbox" name="only_title" id="heading" />
+                                <p>Только в заголовках</p>
+                            </label>
+                            <label for="photos">
+                                <input type="checkbox" name="only_photo" id="photos" />
+                                <p>С фото</p>
+                            </label>
+                            <label for="videos">
+                                <input type="checkbox" name="only_video" id="videos" />
+                                <p>С видео</p>
+                            </label>
+                            </div>
+                            <button>Искать</button>
+                        </fieldset>
+                        <fieldset class="main__search-form-item fields">
+                        </fieldset>
+                        </form>
+                    </search>
+                {% endblock search %}
+                {% block crumbs %}
+                {% endblock crumbs %}
+                {% block content %}
+                {% endblock %}
+            </main>
+            <footer>
+                <nav class="footer__nav">
+                    <ul class="footer__nav-list">
+                        <li class="footer__nav-list-item">
+                            <a href="{% url 'place_an_ad' %}">
+                                Подать объявление
+                            </a>
+                        </li>
+                        <li class="footer__nav-list-item">
+                            <a href="{% url 'advertisement' %}">
+                                Объявления
+                            </a>
+                        </li>
+                        <li class="footer__nav-list-item">
+                            <a href="{% url 'stores' %}">
+                                Магазины
+                            </a>
+                        </li>
+                        <li class="footer__nav-list-item">
+                            <a href="{% url 'help' %}">
+                                Помощь
+                            </a>
+                        </li>
+                        <li class="footer__nav-list-item">
+                            <a href="{% url "site_map" %}">
+                                Карта
+                            </a>
+                        </li>
+                        <li class="footer__nav-list-item">
+                            <a href="#">
+                                Обратная связь
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+                <div class="footer__info">
+                    <ul class="footer__info-organization-list">
+                        <li>
+                            <p>
+                                Наименование:
+                            </p>
+                            <p>
+                                ООО «Маркшейдерские и геодезические услуги»
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                Юридический адрес:
+                            </p>
+                            <p>
+                                г. Минск, ул. Ленина, д. 1
+                            </p> 
+                        </li>
+                        <li>
+                            <a href="tel:+375290000000">+375 (29) 000-00-00,</a>
+                            <a href="mailto:example@example.com">example@example.com</a>
+                        </li>
+                        <li>
+                            <p>
+                                УНП: 000000000
+                            </p>
+                            <p>
+                                Lorem ipsum dolor sit amet consectetur adipisicing elit. Assumenda laudantium nam quibusdam excepturi sed, placeat fuga modi accusamus deserunt illum quas voluptatem id inventore neque at odio voluptate quo possimus!
+                            </p>
+                        </li>
+                    </ul>
+                    <div class="footer__payment-info">
+                        <img src="{% static "img/payment.png" %}" alt="">
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </div>
+    {% block js %}
+    {% endblock %}
+    <script src="{% static 'js/main/search.js' %}"></script>
+    <script src="{% static 'js/main/moreList.js' %}"></script>
+    <script src="{% static 'js/autorization.js' %}"></script>
+    <script src="{% static 'js/main/login.js' %}"></script>
+    <script src="{% static 'js/signIn.js' %}"></script>
+    <script src="{% static 'js/main/resetPassword.js' %}"></script>
+    <script src="{% static 'js/main/setUrl.js' %}"></script>
+    <script src="{% static 'js/main/notification.js' %}"></script>
+    <script src="{% static "js/main/showPassword.js" %}"></script>
+    <script src="{% static "js/main/favorites.js" %}"></script>
+    <script src="https://www.google.com/recaptcha/api.js" async></script>
+  </body>
+</html>

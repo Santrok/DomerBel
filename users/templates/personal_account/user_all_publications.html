@@ -1,0 +1,88 @@
+{% extends 'personal_account/base_for_personal_account.html' %}
+
+{% load static %}
+
+{% block stylesheet %}
+    <link rel="stylesheet" href="{% static 'css/user_publications/style.css' %}">
+{% endblock stylesheet %}
+
+{% block nav_title %}
+    <div class="nav_category_title">
+        <p>
+            Все публикации
+        </p>
+    </div>
+{% endblock nav_title %}
+{% block line %}
+{% endblock line %}
+{% block content %}
+<title>Все разделы. Все регионы</title>
+<div class="personal_account_body">
+    <div class="body">
+        <div class="ads_list">
+            <div class=ads_status>
+                <a href="{% url 'users:user_add_publication' %}" class="status_active">Добавить</a>
+            </div>
+            {% for message in messages %}
+                {% if message.tags == 'success' %}
+                    <div class="success-message">{{ message }}</div>
+                        <script>
+                            setTimeout(function() {
+                                let successMessage = document.querySelector('.success-message');
+                                successMessage.style.display = 'none';
+                            }, 5000);
+                        </script>
+                {% endif %}
+            {% endfor %}
+            <div class="select_all_ads">
+                <input type="checkbox" id="select_all"/>
+                <label for="select_all">Выделить все публикации</label>
+            </div>
+            <form action="{% url 'users:delete_publication' %}" method='POST'>
+                <div class="ads_marked">
+                    <p>Отмеченные:</p>
+                    <button name="delete_publication">Удалить</button>
+                </div>
+                {% csrf_token %}
+                {% if user_publications %}
+                    {% for user_publication in user_publications %}
+                        <li class="publication_list_item">
+                            <a href="{% url 'users:edit_publication_by_slug' user_publication.slug %}" class="publication_link">
+                                <div class="publication_link_wrap">
+                                    <div class="publication_data">
+                                        <p> {{ user_publication.date_of_create }} </p>
+                                    </div>
+                                    <div class="publication_img">
+                                        <img src="{{ user_publication.preview_image.url }}" alt="Publication Photo">
+                                    </div>
+                                    <div class="publication_text">
+                                        <p class="publication_text_title"> {{ user_publication.title }} </p>
+                                        <p> {{ user_publication.announcement }} </p>
+                                        <p class="moderation_checkbox">
+                                            <input type="checkbox" name="publicatinon_checkbox" value="" {% if user_publication.moderated %} checked {% endif %} disabled>
+                                            <label>Прошел модерацию</label>
+                                        </p>
+                                        <p class="ads_checkbox">
+                                            <input type="checkbox" id="ads_checkbox{{ user_publication.id }}" name="ads_checkbox" value="{{ user_publication.id }}">
+                                            <label for="ads_checkbox{{ user_publication.id }}">Выделить для удаления</label>
+                                        </p>
+                                    </div>
+                                </div>
+                            </a>
+                        </li>
+                    {% endfor %}
+                {% else %}
+                    <div class="no_ads">У Вас нет публикаций</div>
+                {% endif %}
+                <div class="ads_marked">
+                    <p>Отмеченные:</p>
+                    <button name="delete_publication">Удалить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block javascript %}
+    <script src="{% static 'js/personal_account.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,85 @@
+{% extends "profile_user.html" %}
+{% load static %}
+{% block css2 %}
+<link rel="stylesheet" href="{% static 'css/publications.css' %}">
+{% endblock css2 %}
+{% block title %}
+{% endblock title %}
+{% block search %}
+{% endblock search %}
+{% block mainInfo %}
+<form class="main__info" method="POST" action="{% url 'users:delete_publication' %}">
+    {% csrf_token %}
+    <nav class="main__info-nav">
+        <ul class="main__info-list">
+            <li>
+                <a href="{% url 'users:add_publication' %}" class="advertisement__active">
+                    Добавить
+                </a>
+            </li>
+        </ul>
+        {% if user_publications %}
+        <label class="main__info-advertisement-nav-select-all" for="selectAll">
+            <input type="checkbox" name="" id="selectAll">
+            <p>
+                Выделить все публикации
+            </p>
+        </label>
+    </nav>
+    <ul class="publications__list">
+        {% for publication in user_publications %}
+        <li>
+            <article class="publications__list-item">
+                <div class="publications__list-item-date-edit">
+                    <p class="article__status {% if publication.moderated %}moderated{% endif %}">
+                        {% if publication.moderated %}Прошло модерацию{% else %}На модерации{% endif %}
+                    </p>
+                    <p class="article__date">
+                        {{ publication.date_of_create|date:"d b. Y" }}
+                        {{ publication.date_of_create|date:"H:i" }}
+                    </p>
+                    <a href="{% url 'users:edit_publication' publication.slug %}"
+                       class="article__edit">Редактировать
+                    </a>
+                    <label class="publications__list-item-check">
+                        <input type="checkbox" name="publication_checkbox" value="{{ publication.id }}">
+                        <p>
+                            Отметить
+                        </p>
+                    </label>
+                </div>
+                <a href="{% url 'publication_by_slug' publication.slug %}" class="article__img">
+                    <img src="{{publication.preview_image.url}}" alt="">
+                </a>
+                <div class="article__about">
+                    <h3>
+                        <a href="{% url 'publication_by_slug' publication.slug %}">
+                            {{ publication.title }}
+                        </a>
+                    </h3>
+                    <div>
+                        {{ publication.announcement|safe }}
+                    </div>
+                    </div>
+            </article>
+        </li>
+        {% endfor %}
+    </ul>
+    <div class="main__info-action">
+        <p>
+            Отмеченные:
+        </p>
+        <button name="delete_publication" class="submit__btn">
+            Удалить
+        </button>
+    </div>
+    {% else %}
+    <p>На данный момент у Вас нет ни одной публикации.</p>
+    {% endif %}
+</form>
+{% endblock mainInfo %}
+{% block js %}
+<script src="{% static 'js/profile/storeLogo.js' %}"></script>
+<script src="{% static 'js/profile/region.js' %}"></script>
+<script src="{% static "js/profile/selectAdvertisement.js" %}"></script>
+{% endblock js %}

@@ -1,0 +1,46 @@
+.profile__aside{
+  padding: 10px;
+  border-radius: 7px;
+  background: $userSearchBg;
+  flex: 0 0 192px;
+  border: 1px solid $gray;
+}
+
+.profile__aside-nav-list {
+  display: flex;
+  flex-direction: column;
+  & a {
+    @include fonts($asideLinksColor, 13px, 400);
+    &:hover {
+      color: $colorHover;
+    }
+  }
+}
+
+.exit {
+  & a {
+    color: $asideExitColor;
+    &:hover {
+      color: $asideExitColor;
+    }
+  }
+}
+
+.priority {
+  & a {
+    color: $colorHover;
+  }
+}
+
+@media (max-width:992px) {
+  .profile__aside{
+    flex: initial;
+    width: 100%;
+  }
+
+  .profile__aside-nav-list {
+    flex-direction: initial;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+}

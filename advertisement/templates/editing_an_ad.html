@@ -1,0 +1,289 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load advertisement_tags %}
+{% block css %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/place_an_ad.css' %}">
+{% endblock %}
+{% block content %}
+{% block search %}{% endblock search %}
+    <div class="create_advertisement">
+        <form enctype="multipart/form-data" id="add_adver" data-advertisement="{{ advertisement.id }}">
+            {% csrf_token %}
+            <div class="title_adver">
+                <div class="title_adver_input item_input">
+                    <p class="title_label label_fields">Заголовок</p>
+                    <input type="text" name="title" value="{{ advertisement.title }}" class="information_item-input"
+                           id="title_input">
+                </div>
+            </div>
+            <div class="region">
+                <div class="region_input item_input">
+                    <div class="region_label label_fields">Регион, город</div>
+                    <div class="region_select">
+                        <p class="region_opened">
+                            <select class="input_field" id="select_oblast">
+                                <option value="0">---------</option>
+                                {% for obl in oblast %}
+                                    <option value="{{ obl.id }}" {% if obl.id == selected_oblast.id %}
+                                            selected {% endif %}>{{ obl.area }}</option>
+                                {% endfor %}
+                            </select>
+                        </p>
+                        <p class="city">
+                            <select class="input_field" id="select_city" name="region">
+                                <option value="0">---------</option>
+                                {% for city in cities %}
+                                    <option value="{{ city.id }}" {% if city.id == advertisement.region.id %}
+                                            selected {% endif %}>{{ city.area }}</option>
+                                {% endfor %}
+                            </select>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="category">
+                <div class="category_input item_input">
+                    <div class="category_label label_fields">Категория</div>
+                    <div class="category_select">
+                        {% for selected_category, list_categories in categories.items %}
+                            <p class="category_level_{{ forloop.counter0 }}">
+                                <select class="input_field {% if forloop.counter0 != 0 %} select_class_category {% endif %}"
+                                        id="select_category_{{ forloop.counter0 }}" name="category">
+                                    <option value="">---------</option>
+                                    {% for category in list_categories %}
+                                        <option value="{{ category.id }}"  {% if category.id == selected_category.id %}
+                                                selected {% endif %}>{{ category.title }}</option>
+                                    {% endfor %}
+                                </select>
+                            </p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            <div class="additional_information">
+                {% for information in additional_information %}
+                    {% if not information.spisok and information.min_val_interval_date == 0 and information.title != 'Цена' and information.title != 'Арендная плата' %}
+                        <div class="additional_information_item-{{ information.id }}">
+                            <div class="additional_information_item item_input">
+                                <div class="information_label label_fields">
+                                    {{ information.title }}
+                                </div>
+                                <div class="information_select">
+                                    <p class="information_item">
+                                        <input class="information_item-input" id="information_{{ information.id }}" type="text"
+                                               name="{{ information.id }}" value="{% if information.title in advertisement.additional_information %}{{ advertisement.additional_information|get_item:information.title }}{% endif %}">
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    {% elif information.min_val_interval_date != 0 %}
+                        {% if information.title == 'Этаж' %}
+                            <div class="additional_information_item-{{ information.id }}">
+                                <div class="additional_information_item item_input">
+                                    <div class="information_label label_fields">
+                                        Этаж
+                                    </div>
+                                    <div class="information_select">
+                                        <p class="information_item">
+                                            <select class="input_field select_class" id="information_{{ information.id }}" name="{{ information.id }}">
+                                                <option value="">---------</option>
+                                                {% for etag in additional_values_two|get_item:information.title %}
+                                                    <option value="{{ etag }}" {% if etag == additional_values|get_item:information.title|first %} selected {% endif %}>{{ etag }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="additional_information_item item_input">
+                                    <div class="information_label label_fields">
+                                        Этажей в доме
+                                    </div>
+                                    <div class="information_select">
+                                        <p class="information_item">
+                                            <select class="input_field select_class" id="element_two-{{ information.id }}" name="{{ information.id }}">
+                                                <option value="">---------</option>
+                                                {% for etag in additional_values_two|get_item:information.title %}
+                                                    <option value="{{ etag }}" {% if etag == additional_values|get_item:information.title|last %} selected {% endif %}>{{ etag }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        {% else %}
+                            <div class="additional_information_item-{{ information.id }}">
+                                <div class="additional_information_item item_input">
+                                    <div class="information_label label_fields">
+                                        {{ information.title }}
+                                    </div>
+                                    <div class="information_select">
+                                        <p class="information_item">
+                                            <select class="input_field select_class" id="information_{{ information.id }}" name="{{ information.id }}">
+                                                <option value="">---------</option>
+                                                {% for date in additional_values_two|get_item:information.title %}
+                                                    <option value="{{ date }}" {% if date == advertisement.additional_information|get_item:information.title %} selected {% endif %}>{{ date }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% elif information.title == 'Цена' or information.title == 'Арендная плата' %}
+                        <div class="additional_information_item-price">
+                            <div class="additional_information_item item_input">
+                                <div class="information_label label_fields">
+                                    {{ information.title }} руб
+                                </div>
+                                <div class="information_select">
+                                    <p class="information_item">
+                                        <input class="information_item-input price" id="information_{{ information.id }}" type="text"
+                                               name="{{ information.id }}" value="{% if information.title in advertisement.additional_information %}{{ advertisement.additional_information|get_item:information.title }}{% endif %}">
+                                        <input class="information_item-input price-hidden" id="information_{{ information.title }}"
+                                               type="hidden" name="{{ information.title }}">
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="additional_information_item-{{ information.id }}">
+                            <div class="additional_information_item item_input">
+                                <div class="information_label label_fields">
+                                    {{ information.title }}
+                                </div>
+                                <div class="information_select">
+                                    <p class="information_item">
+                                        <select class="input_field select_class select_info" id="information_{{ information.id }}"
+                                                name="{{ information.id }}">
+                                            <option value="">---------</option>
+                                            {% for element in information.spisok.element_set.all %}
+                                                <option value="{{ element.title }}" data-elementtwo="{{element.id}}" {% if element.title == additional_values|get_item:information.title|first or element.title == advertisement.additional_information|get_item:information.title %} selected {% endif %}>{{element.title}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </p>
+                                    {% if information.title in additional_values_two %}
+                                        <p class="information_item information_item_two" data-element="{{ additional_values_two|get_item:information.title|first }}">
+                                            <select class="input_field select_class select_info_two" id='element_two-{{ information.id }}' name="{{ information.id }}">
+                                                <option value="">---------</option>
+                                                {% for m in additional_values_two|get_item:information.title|last %}
+                                                    <option value="{{ m.title }}" {% if m.title == additional_values|get_item:information.title|last %} selected {% endif %}>{{m.title}}</option>`)}
+                                                {% endfor %}
+                                            </select>
+                                        </p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    {% endif  %}
+                {% endfor %}
+            </div>
+            <div class="description">
+                <div class="description_input item_input">
+                    <p class="description_label label_fields">Описание</p>
+                    <textarea class="information_item-input description_textarea" name="description" id="description"
+                              cols="30"
+                              rows="10">{{ advertisement.description }}</textarea>
+                </div>
+            </div>
+            <div class="bearer">
+                <div class="bearer_input item_input">
+                    <p class="bearer_label label_fields">Податель</p>
+                    <div class="description_radio">
+                        <input type="radio" class="custom_radio" {% if advertisement.bearer == "Частное лицо" %} checked {% endif %} name="bearer" value="Частное лицо"
+                               id="bearer_private_person">
+                        <label for="bearer_private_person">
+                            Частное лицо
+                        </label>
+
+                        <input type="radio" class="custom_radio" {% if advertisement.bearer == "Компания" %} checked {% endif %}  name="bearer" value="Компания" id="bearer_company">
+                        <label for="bearer_company">
+                            Компания
+                        </label>
+
+                    </div>
+                </div>
+            </div>
+            <div class="bearer_company_additional_info">
+                {% if advertisement.bearer == "Компания" %}
+<div class="bearer_company_store">
+                    <div class="store_input item_input">
+                        <p class="store_label label_fields">
+                        Магазин
+                        </p>
+                    <div class="store_select">
+                        <p class="bearer_store">
+                            <select class="input_field" name="store" id="select_store">
+                                <option value="">---------</option>
+                                {% for store in user.store_set.all %}
+                                <option value="{{ store.id }}" {% if advertisement.store == store %} selected {% endif %}>{{ store }}</option>
+                                {% endfor %}
+                            </select>
+                        </p>
+                    </div>
+                </div>
+</div>
+                    <div class="bearer_company_vendor_code">
+        <div class="vendor_code_input item_input">
+                        <p class="vendor_code_label label_fields">Артикул</p>
+                        <input type="text" name="article" value="{% if advertisement.article %} {{ advertisement.article }} {% endif %}" id="article" class="information_item-input">
+                    </div>
+        </div>
+                {% endif %}
+            </div>
+            <div class="contact">
+                <div class="contact_information">
+                    <div class="contact_input item_input">
+                        <p class="contact_label label_fields">Контактное лицо</p>
+                        <input type="text" name="contact_name" value="{{ advertisement.contact_name }}" id="contact"
+                               class="information_item-input">
+                    </div>
+                </div>
+                <div class="email_information">
+                    <div class="email_input item_input">
+                        <p class="email_label label_fields">E-mail</p>
+                        <input type="text" name="email" value="{{ advertisement.email }}" id="email"
+                               class="information_item-input">
+                    </div>
+                </div>
+                <div class="phone_information">
+                    <div class="phone_input item_input">
+                        <p class="contact_label label_fields">Телефон</p>
+                        <input type="text" name="phone_num" value="{{ advertisement.phone_num }}" id="phone"
+                               class="information_item-input">
+                    </div>
+                </div>
+            </div>
+            <div class="link_youtube">
+                <div class="youtube_input item_input">
+                    <p class="link_youtube_label label_fields">Ссылка на видеоролик YOUTUBE</p>
+                    <input type="text" name="video_link" value="{% if advertisement.video_link %}{{ advertisement.video_link }}{% endif %}" class="information_item-input">
+                </div>
+            </div>
+            <div class="photo">
+                <p class="photo_label label_fields">Фотографии (не более 30 штук)</p>
+                <div class="photo_file">
+                    <input type="file" class="file_input" name="photo_files" id="photo_list" multiple>
+                    <div class="photo_preview">
+                    {% if advertisement.preview_image %}
+                        <div class="photo_img">
+                            <div class="delete_img" data-name="{{ advertisement.preview_image.name }}"></div>
+                            <img class="img_preview main_img" name="{{ advertisement.preview_image.name }}" src="{{ advertisement.preview_image.url }}" alt="{{ advertisement.preview_image.url }}">
+                        </div>
+                    {% endif %}
+                        {% for img in advertisement.photoadvertisement_set.all %}
+                            <div class="photo_img">
+                                <div class="delete_img" data-name="{{ img.photo.name }}"></div>
+                                <img class="img_preview" name="{{ img.photo.name }}" src="{{ img.photo.url }}" alt="{{ img.photo.url }}">
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </form>
+    <button class="add_adv submit__btn">Редактировать объявление</button>
+    </div>
+{% endblock %}
+{% block js %}
+    <script src="{% static 'js/place_an_ad.js' %}"></script>
+    <script src="{% static 'js/editing_an_ad.js' %}"></script>
+{% endblock %}

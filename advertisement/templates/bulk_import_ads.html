@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+    <p style="color:black;">{{request.user.email}}</p><br>
+    <form method="POST" action="" enctype="multipart/form-data" style="color:black;">
+        {% csrf_token %}
+        {{ form.as_p }}<br>
+        <input type="submit" value="Отправить" id="send"><br>
+    </form>
+    <div class="answer" id="answer" style="color:black;">
+        <p>{{ answer }}</p><br>
+        {% if error == True %}
+        <p>{{ answer_error }}</p><br>
+        <a href="{{ file }}" class="download_file"> Скачать </a>
+        {% endif %}
+    </div>
+{% endblock content %}
+
+{% block js %}
+<script src="{% static "js/bulk_import_ads.js" %}"></script>
+{% endblock %}

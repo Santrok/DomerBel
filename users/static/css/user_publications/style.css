@@ -1,0 +1,43 @@
+.publication_text {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.publication_linck {
+    display: block;
+    &:hover {
+        color: black;
+        background: #E6E6E6;
+    }
+}
+
+.publication_link_wrap {
+    display: flex;
+    border: black solid 1px;
+}
+
+.publication_img {
+    min-width: 100px;
+    & img {
+        max-width: 100%;
+    }
+}
+
+.publication_text_title {
+    &:hover {
+        color: red;
+    }
+}
+
+.select_all_ads {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    gap: 10px;
+    max-width: 755px;
+    & label {
+        font-family: "Trebuchet MS";
+        font-size: 13px;
+    }
+}

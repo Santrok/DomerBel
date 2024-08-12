@@ -1,0 +1,69 @@
+{% extends "profile_user.html" %}
+{% load static %}
+{% block css2 %}
+<link rel="stylesheet" href="{% static 'css/profile_store.css' %}">
+{% endblock css2 %}
+{% block title %}
+{% endblock title %}
+{% block search %}
+{% endblock search %}
+{% block mainInfo %}
+<div class="form__wrapper">
+    <form method="POST" class="main__info" enctype="multipart/form-data">
+        {% csrf_token %}
+        {% if store_form.non_field_errors %}
+            <div class="form-error">{{ store_form.non_field_errors }}</div>
+        {% endif %}
+        {% for f in store_form %}
+        <label for="{{ f.id_for_label }}" class="{% if f.errors %}label__error{% endif %}">
+            <p class="form-label">
+                {% if f.field.required %}
+                <span>*</span>
+                {% endif %}
+                {{f.label}}:
+            </p>
+            {% if f.name == "region" %}
+            <select class="input_field" name="region">
+                <option value="">
+                    ---------
+                </option>
+                {% for obl in region_list %}
+                    {% if obl.level == 0 %}
+                        <option value="{{ obl.id }}" {% if obl.id == store_form.cleaned_data.region.parent_id %} selected {% endif %}>
+                            {{ obl.area }}
+                        </option>
+                    {% endif %}
+                {% endfor %}
+            </select>
+                {% if store_form.cleaned_data.region %}
+                    <select class="input_field" name="region" id="id_region">
+                        <option value="">
+                            Любое расположение
+                        </option>
+                        {% for region in region_list %}
+                            {% if region.parent_id == store_form.cleaned_data.region.parent_id %}
+                                <option value="{{ region.id }}" {% if region.id == store_form.cleaned_data.region.id %} selected {% endif %}>
+                                    {{ region }}
+                                </option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                {% endif %}
+            {% else %}
+                {{ f }}
+            {% endif %}
+            {% if f.errors %}
+                <div class="form-error">{{ f.errors }}</div>
+            {% endif %}
+        </label>
+        {% endfor %}
+        <button class="submit__btn">Добавить</button>
+    </form>
+    <div class="main__advertisement">
+    </div>
+</div>
+{% endblock mainInfo %}
+{% block js2 %}
+<script src="{% static 'js/profile/storeLogo.js' %}"></script>
+<script src="{% static 'js/profile/region.js' %}"></script>
+{% endblock js2 %}

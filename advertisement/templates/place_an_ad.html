@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block css %}
+    <link rel="stylesheet" type="text/css" media="all" href="{% static 'css/place_an_ad.css' %}">
+{% endblock css %}
+{% block find %}
+{% endblock %}
+{% block content %}
+{% block search %}{% endblock search %}
+    <div class="create_advertisement">
+        <form action="" method="POST" enctype="multipart/form-data" id="add_adver">
+            {% csrf_token %}
+            <div class="title_adver">
+                <div class="title_adver_input item_input">
+                    <p class="title_label label_fields">Заголовок</p>
+                    <input type="text" name="title" class="information_item-input" id="title_input">
+                </div>
+            </div>
+            <div class="region">
+                <div class="region_input item_input">
+                    <div class="region_label label_fields">Регион, город</div>
+                    <div class="region_select">
+                        <div class="region_opened">
+                            <select class="input_field" id="select_oblast">
+                                <option value="0">---------</option>
+                                {% for obl in oblast %}
+                                        <option value="{{ obl.id }}">{{ obl.area }}</option>
+                                    {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="category">
+                <div class="category_input item_input">
+                    <div class="category_label label_fields">Категория</div>
+                    <div class="category_select">
+                        <div class="category_level_0">
+                            <select class="input_field" id="select_category_0" name="category">
+                                <option value="">---------</option>
+                                {% for category in categories %}
+                                        <option value="{{ category.id }}">{{ category.title }}</option>
+                                    {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="additional_information"></div>
+            <div class="description">
+                <div class="description_input item_input">
+                    <p class="description_label label_fields">Описание</p>
+                    <textarea class="information_item-input description_textarea" name="description" id="description" cols="30"
+                              rows="10"></textarea>
+                </div>
+            </div>
+            <div class="bearer">
+                <div class="bearer_input item_input">
+                    <p class="bearer_label label_fields">Податель</p>
+                    <div class="description_radio">
+                        <input type="radio" class="custom_radio" name="bearer" value="Частное лицо"
+                               id="bearer_private_person">
+                        <label for="bearer_private_person">
+                            Частное лицо
+                        </label>
+                        <input type="radio" class="custom_radio" name="bearer" value="Компания" id="bearer_company">
+                        <label for="bearer_company">
+                            Компания
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="bearer_company_additional_info"></div>
+            <div class="contact">
+                <div class="contact_information">
+                    <div class="contact_input item_input">
+                        <p class="contact_label label_fields">Контактное лицо</p>
+                        <input type="text" name="contact_name" value="{{ user.last_name }}" id="contact" class="information_item-input">
+                    </div>
+                </div>
+                <div class="email_information">
+                    <div class="email_input item_input">
+                        <p class="email_label label_fields">E-mail</p>
+                        <input type="text" name="email" value="{{ user.email }}" id="email" class="information_item-input">
+                    </div>
+                </div>
+                <div class="phone_information">
+                    <div class="phone_input item_input">
+                        <p class="contact_label label_fields">Телефон</p>
+                        <input type="text" name="phone_num" value="{{ user.phone_number }}" id="phone" class="information_item-input">
+                    </div>
+                </div>
+            </div>
+            <div class="link_youtube">
+                <div class="youtube_input item_input">
+                    <p class="link_youtube_label label_fields">Ссылка на видеоролик YOUTUBE</p>
+                    <input type="text" name="video_link" class="information_item-input">
+                </div>
+            </div>
+            <div class="photo">
+                <p class="photo_label label_fields">Фотографии (не более 30 штук)</p>
+                <div class="photo_file">
+                    <input type="file" class="file_input" name="photo_files" id="photo_list" multiple>
+                    <div class="photo_preview">
+                    </div>
+                </div>
+            </div>
+        </form>
+        <button type="button" class="add_adv submit__btn">Разместить объявление</button>
+    </div>
+{% endblock %}
+{% block js %}
+    <script src="{% static 'js/place_an_ad.js' %}"></script>
+{% endblock %}

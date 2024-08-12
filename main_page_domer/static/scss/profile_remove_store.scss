@@ -1,0 +1,34 @@
+@import "./variables";
+@import "./mixins";
+
+.main__info {
+  & h1 {
+    padding-top: 40px;
+    @include fonts($defaultColor, 24px, 600);
+    text-align: center;
+    margin-bottom: 20px;
+  }
+}
+
+.buttons_for_delete {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: center;
+
+  & a {
+    max-width: 320px;
+    text-align: center;
+  }
+  
+  & button {
+    padding: 10px;
+    @include fonts($defaultColor, 14px, 400);
+    text-align: center;
+    border: 1px solid $gray;
+    border-radius: 8px;
+    width: 100%;
+    max-width: 320px;
+  }
+
+}

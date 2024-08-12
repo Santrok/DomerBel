@@ -1,0 +1,237 @@
+{% extends 'store_details.html' %}
+{% load static %}
+
+
+{% block search %}
+<section class="store">
+  <div class="store__about">
+    <h2>
+      {{ store.title }}
+    </h2>
+    <p>
+      {{ store.description }}
+    </p>
+  </div>
+  <div class="store__info">
+    <div class="store__info-img">
+      <img src="{% if store.logo_image %}{{ store.logo_image.url }}{% else %}{% static 'img/no_image.jpg' %}{% endif %}" alt="">
+    </div>
+    {% if store.region %}
+      <p class="store__info-district">
+        {{ store.region }}
+      </p>
+    {% endif %}
+    {% if store.address %}
+      <div class="store__info-text">
+        {{ store.address }}
+      </div>
+    {% endif %}
+    {% if store.phone_num %}
+      <a href="tel:{{ store.phone_num }}" class="store__info-phone">
+        {{ store.phone_num }}
+      </a>
+    {% endif %}
+    <p class="store__send-email">
+      Отправить письмо
+    </p>
+    <a href="{{ store.url }}" class="store__info-site">
+      Сайт магазина
+    </a>
+  </div>
+</section>
+<search class="main__search">
+  <form class="main__search-form" action="{% url 'search_for_advertisements_in_the_store' store.slug %}" method="GET">
+  <fieldset class="main__search-form-item region">
+      <select name="category" class="main__search-form-item-category">
+          <option value="">
+              Все разделы
+          </option>
+      {% for category in category_list %}
+          {% if category.level == 0 %}
+              <option value="{{ category.id }}" data-fetchid="{{ category.id }}">
+                  {{ category }}
+              </option>
+          {% endif %}
+      {% endfor %}
+      </select>
+      <input type="text" name="text_search" placeholder="Поиск по тексту" />
+      <select name="region" class="main__search-form-item-region">
+          <option value="">
+              Любое расположение
+          </option>
+      {% for region in region_list %}
+          {% if region.level == 0 %}
+          <option value="{{ region.id }}" data-fetchid="{{ region.id }}">
+              {{ region.area }}
+          </option>
+          {% endif %}
+      {% endfor %}
+      </select>
+  </fieldset>
+  <fieldset class="main__search-form-item labels">
+      <div class="main__search-form-item-label-wrap">
+      <label for="heading">
+          <input type="checkbox" name="only_title" id="heading" />
+          <p>Только в заголовках</p>
+      </label>
+      <label for="photos">
+          <input type="checkbox" name="only_photo" id="photos" />
+          <p>С фото</p>
+      </label>
+      <label for="videos">
+          <input type="checkbox" name="only_video" id="videos" />
+          <p>С видео</p>
+      </label>
+      </div>
+      <button>Искать</button>
+  </fieldset>
+  <fieldset class="main__search-form-item fields">
+  </fieldset>
+  </form>
+</search>
+{% endblock search %}
+{% block crumbs %}
+    {% if category_bread_crumbs or region_bread_crumbs %}
+        <section class="crumbs">
+            <div class="crumbs__wrapper">
+                <ul class="crumbs__list">
+                    <li class="crumbs__list-item">
+                        <a href="{% url 'store_by_title' store.slug %}">Все объявления</a>
+                    </li>
+                    <li class="crumbs__list-item-dots">...</li>
+                    {% if region_bread_crumbs %}
+                        {% for bread_crumbs in region_bread_crumbs %}
+                            <li class="crumbs__list-item">
+                                <a href="?region={{ bread_crumbs.id }}">{{ bread_crumbs.area }}</a>
+                            </li>
+                            {% if not forloop.last %}
+                            <li class="crumbs__list-item-dots">...</li>
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                    {% if category_bread_crumbs %}
+                        {% for bread_crumbs in category_bread_crumbs %}
+                            {% if region_bread_crumbs %}
+                            <li class="crumbs__list-item-dots">...</li>
+                            {% endif %}
+                            <li class="crumbs__list-item">
+                                <a href="?category={{ bread_crumbs.id }}{% if region_bread_crumbs %}{% for region in region_bread_crumbs %}&region={{ region.id }}{% endfor %}{% endif %}">{{ bread_crumbs.title }}</a>
+                            </li>
+                            {% if not forloop.last %}
+                            <li class="crumbs__list-item-dots">...</li>
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                </ul>
+            </div>
+        </section>
+    {% endif %}
+{% endblock %}
+
+{% block category_filter %}
+<section class="filter">
+  <ul class="filter__list">
+      {% for category in category %}
+      {% if category.advertisement_counts != 0 %}
+          <li class="filter__list-item">
+              <a href="{% url 'store_by_title_and_category' store_slug=store.slug category_slug=category.slug %}{% if region_param.id %}?region={{ region_param.id }}{% endif %}" class="category">
+                  {{ category.title }}, <span>{{ category.advertisement_counts }}</span>
+              </a>
+          </li>
+      {% endif %}
+      {% endfor %}
+  </ul>
+</section>
+{% endblock category_filter %}
+{% block sort %}
+<section class="sort">
+  <div class="sort__ads">
+      Найдено: <span>{{ ads_found }}</span>
+  </div>
+  <ul class="sort__type-list">
+      <li class="sort__type-list-item">
+          <img src="{% static 'img/sort1.png' %}" alt="{% static 'img/sort1.png' %}">
+      </li>
+      <li class="sort__type-list-item">
+          <img src="{% static 'img/sort2.png' %}" alt="{% static 'img/sort2.png' %}">
+      </li>
+  </ul>
+  <div class="sorted__output">
+      <p>
+          Выводить по:
+      </p>
+      <ul class="sorted__output-list">
+          <li class="sorted__output-list-item">
+              <a href="?sort=30{% if query %}&{{ query }}{% endif %}">
+                  30
+              </a>
+          </li>
+          <li class="sorted__output-list-item">
+              <a href="?sort=60{% if query %}&{{ query }}{% endif %}">
+                  60
+              </a>
+          </li>
+          <li class="sorted__output-list-item">
+              <a href="?sort=90{% if query %}&{{ query }}{% endif %}">
+                  90
+              </a>
+          </li>
+      </ul>
+  </div>
+  <div class="sorted__by">
+      <p>
+          Сортировать:
+      </p>
+      <ul class="sorted__by-list">
+          <li class="sorted__by-list-item">
+              <a href="?date={{ date }}{% if query %}&{{ query }}{% endif %}">
+                  Дата
+              </a>
+              <div class="sorted__by-list-item-img">
+                  <img src="{% static 'img/icons/arrowDown.svg' %}" alt="">
+              </div>
+          </li>
+          <li class="sorted__by-list-item">
+              <a href="?price={{ date }}{% if query %}&{{ query }}{% endif %}">
+                  Цена
+              </a>
+              <div class="sorted__by-list-item-img">
+                  <img src="{% static 'img/icons/arrowDown.svg' %}" alt="">
+              </div>
+          </li>
+      </ul>
+  </div>
+</section>
+{% endblock sort %}
+
+{% block paginator %}
+<div class="paginator">
+  <div class="paginator_wrapper">
+      <nav class="list_pages">
+          <ul>
+              {% if page_obj.has_previous %}
+                  <li class="">
+                      <a href="?page={{ page_obj.previous_page_number }}{% if query %}&{{ query }}{% endif %}"><</a>
+                  </li>
+              {% endif %}
+              {% if page_obj.has_other_pages %}
+                  {% for page in page_obj.paginator.page_range %}
+                      {% if page_obj.number == page %}
+                          <li class="page_num page_num_selected">{{ page }}</li>
+                      {% elif page >= page_obj.number|add:-2 and page <= page_obj.number|add:2 %}
+                          <li class="page_num">
+                              <a href="?page={{ page }}{% if query %}&{{ query }}{% endif %}">{{ page }}</a>
+                          </li>
+                      {% endif %}
+                  {% endfor %}
+              {% endif %}
+              {% if page_obj.has_next %}
+                  <li class="">
+                      <a href="?page={{ page_obj.next_page_number }}{% if query %}&{{ query }}{% endif %}">></a>
+                  </li>
+              {% endif %}
+          </ul>
+      </nav>
+  </div>
+</div>
+{% endblock paginator %}

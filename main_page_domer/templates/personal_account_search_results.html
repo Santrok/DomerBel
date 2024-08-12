@@ -1,0 +1,80 @@
+{% extends 'profile_user.html' %}
+{% load static %}
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/profile.css' %}">
+  {% block css2 %}
+  {% endblock css2 %}
+{% endblock css %}
+{% block title %}
+{% endblock title %}
+
+{% block navigation %}
+        <nav class="main__info-nav">
+            <ul class="main__info-list">
+                <li>
+                    <a href="?{% if query %}&{{ query }}{% endif %}" class="advertisement__active">
+                        Активные ({{ active_ads_quantity }})
+                    </a>
+                </li>
+                <li>
+                    <a href="?active=1{% if query %}&{{ query }}{% endif %}" class="advertisement__archive">
+                        Архивные ({{ inactive_ads_quantity }})
+                    </a>
+                </li>
+            </ul>
+            {% if page_obj.object_list %}
+            <label class="main__info-advertisement-nav-select-all" for="selectAll">
+                <input type="checkbox" name="" id="selectAll">
+                <p>
+                    Выделить все объявления
+                </p>
+            </label>
+            {% endif %}
+        </nav>
+{% endblock navigation %}
+{% block action %}
+        <div class="main__info-action">
+            <p>Отмеченные:</p>
+            {% if not active %}
+            <button name="delete_ads">Удалить</button>
+            <button name="archive_ads">Поместить в архив</button>
+            {% else %}
+            <button name="restore_ads">Восстановить</button>
+            {% endif %}
+        </div>
+{% endblock action %}
+
+{% block paginator %}
+    <div class="paginator">
+        <div class="paginator_wrapper">
+            <nav class="list_pages">
+                <ul>
+                    {% if page_obj.has_previous %}
+                        <li class="">
+                            <a href="?page={{ page_obj.previous_page_number }}{% if query %}&{{ query }}{% endif %}{% if active %}&active=1{% endif %}"><</a>
+                        </li>
+                    {% endif %}
+                    {% if page_obj.has_other_pages %}
+                        {% for page in page_obj.paginator.page_range %}
+                            {% if page_obj.number == page %}
+                                <li class="page_num page_num_selected">{{ page }}</li>
+                            {% elif page >= page_obj.number|add:-5 and page <= page_obj.number|add:5 %}
+                                <li class="page_num">
+                                    <a href="?page={{ page }}{% if query %}&{{ query }}{% endif %}{% if active %}&active=1{% endif %}">{{ page }}</a>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                    {% if page_obj.has_next %}
+                        <li class="">
+                            <a href="?page={{ page_obj.next_page_number }}{% if query %}&{{ query }}{% endif %}">></a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    </div>
+    {% endblock paginator %}
+{% block js %}
+<script src="{% static 'js/profile/selectAdvertisement.js' %}"></script>
+{% endblock js %}

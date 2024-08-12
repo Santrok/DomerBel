@@ -1,0 +1,53 @@
+{% extends 'personal_account/base_for_personal_account.html' %}
+
+{% load static %}
+
+{% block stylesheet %}
+    <link rel="stylesheet" href="{% static 'css/user_add_publication/style.css' %}">
+{% endblock stylesheet %}
+
+{% block nav_title %}
+    <div class="nav_category_title">
+        <p>
+            Редактирование публикации
+        </p>
+    </div>
+{% endblock nav_title %}
+{% block line %}
+{% endblock line %}
+{% block content %}
+<title>Все разделы. Все регионы</title>
+<div class="personal_account_body">
+    <div class="body">
+        <div class="wrapper__form">
+            <form action="" method="POST" enctype="multipart/form-data" id="add_adver" class="form_add_publication" data-slug="{{ publication_by_id.slug }}">
+                {% csrf_token %}
+                {{ form_publication.as_p }}
+                <div class="photo">
+                    <p class="photo_label label_fields">Загрузите фотографии</p>
+                    <div class="photo_file">
+                        <input type="file" class="file_input" name="preview_image" id="photo_list" volues="" multiple>
+                        <div class="photo_preview">
+                            <div class="photo_img">
+                                <div class="delete_img" data-name="{{ publication_by_id.preview_image }}"></div>
+                                <img class="img_preview main_img" name="{{ publication_by_id.preview_image }}" src="{{ publication_by_id.preview_image.url }}" alt="">
+                            </div>
+                            {% for photo_publication in photo_publications_by_id %}
+                                <div class="photo_img">
+                                    <div class="delete_img" data-name="{{ photo_publication.photo }}"></div>
+                                    <img class="img_preview" name="{{ photo_publication.photo }}" src="{{ photo_publication.photo.url }}" alt="">
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <button class="button_add_publication">Разместить публикацию</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block javascript %}
+    <script src="{% static 'js/personal_account.js' %}"></script>
+    <script src="{% static 'js/edit_publication.js' %}"></script>
+{% endblock %}
