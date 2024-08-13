@@ -31,6 +31,9 @@
   font-size: 14px;
   width: 100%;
 }
+.modals .modals__fields-error {
+  border-color: red;
+}
 .modals a {
   font-family: "Trebuchet MS", sans-serif;
   font-weight: 400;
@@ -172,6 +175,9 @@
 
 .modals__signIn-field {
   position: relative;
+}
+.modals__signIn-field:has(.modals__signIn-error ~ input[type=password]) .views {
+  top: 33px;
 }
 
 .modals__login-field {

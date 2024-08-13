@@ -15,7 +15,12 @@
 
 .modals__signIn-field {
     position: relative;
+    &:has(.modals__signIn-error ~input[type=password]) .views {
+        top: 33px;
+      }
 }
+
+
 
 .modals__login-field {
     flex-direction: column;

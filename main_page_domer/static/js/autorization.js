@@ -55,7 +55,6 @@ function registration() {
         notificationModal.classList.add("modal__active");
         const notificationText = document.querySelector(".modals__notification-text");
         notificationText.innerText = data.success;
-        
       }
     })
     .catch((err) => {
@@ -76,16 +75,18 @@ function registration() {
  */
 
 function generatingErrorSField(data, fieldForm) {
+  console.log(111);
+  
   for (let i in data) {
     const field = document.querySelector(`${fieldForm} input[name="${i}"]`);
-    if (field.parentElement.children.length > 1) field.parentElement.children[0].remove();
+    if (field.parentElement.children.length > 1 && field.parentElement.children[0].classList.contains("modals__signIn-error")) field.parentElement.children[0].remove();
     const p = document.createElement("p");
     if (data[i] !== "") {
       p.classList.add("modals__signIn-error");
       p.innerText = data[i];
       field.parentElement.prepend(p);
     }
-    field.style.borderColor = "red";
+    field.classList.add("modals__fields-error")
     /**
      * Removes the first child element of the parent element of the field if it exists,
      * and sets the border color of the field to black.
@@ -93,8 +94,8 @@ function generatingErrorSField(data, fieldForm) {
      * @return {void} This function does not return anything.
      */
     field.oninput = () => {
-      if (field.parentElement.children.length > 1) field.parentElement.children[0].remove();
-      field.style.borderColor = "black";
+      if (field.parentElement.children.length > 1 && field.parentElement.children[0].classList.contains("modals__signIn-error")) field.parentElement.children[0].remove();
+      field.classList.remove("modals__fields-error")
     };
   }
 }
@@ -110,7 +111,6 @@ function login() {
     method: "POST",
     headers: {
       "X-CSRFToken": getCookie("csrftoken"),
-      //   "Content-Type": "multipart/form-data",
     },
     body: data,
   })
