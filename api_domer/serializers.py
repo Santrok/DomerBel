@@ -135,11 +135,11 @@ class ReasonOfComplaintSerializer(serializers.Serializer):
 
 class ComplaintSerializer(serializers.ModelSerializer):
     user = serializers.EmailField(required=True, error_messages={'blank': 'Не указан email'})
-    # recaptcha = ReCaptchaV2Field(write_only=True)
+    recaptcha = ReCaptchaV2Field(write_only=True)
 
     class Meta:
         model = Complaint
-        fields = ['reason', 'text', 'user', 'advertisement']
+        fields = ['reason', 'text', 'user', 'advertisement', 'recaptcha']
 
     def create(self, validated_data):
         validated_data.pop('recaptcha')
