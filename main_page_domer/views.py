@@ -14,14 +14,13 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.utils.timezone import make_aware
 
 from users.models import User
-from advertisement.models import Advertisement, Region, Category, Store, ElementTwo, PhotoAdvertisement, Field, \
-    AboutOrganization
+from advertisement.models import Advertisement, Region, Category, Store, ElementTwo, PhotoAdvertisement, Field
 from advertisement.utils import (get_region_variables, sorted_by, sorted_by_number, sorted_by_date_or_price,
                                                       variables_for_paginator, where_to_look, search_additional_information,
                                                       annotating_field)
 from config import settings
 from main_page_domer.forms import FeedbackForm, ComplaintForm
-from main_page_domer.models import Help, ReasonOfComplaint, Complaint, Publication
+from main_page_domer.models import Help, ReasonOfComplaint, Complaint, Publication, AboutOrganization
 
 
 def get_main_page(request):
