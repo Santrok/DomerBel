@@ -445,23 +445,19 @@ def get_feedback_page(request):
                 return render(request, 'feedback.html',
                               {'feedback_form': new_feedback_form, 'error_message': str(error)})
 
-            messages.success(request, f"Ваше письмо администрации сайта отправлено")
+            messages.success(request, f"Ваше письмо отправлено администрации сайта ")
             return redirect("feedback")
 
         feedback_form = FeedbackForm(request.POST)
         feedback_form.errors.update(new_feedback_form.errors)
-        category_list = Category.objects.filter(level__lte=1)
         context = {
             "feedback_form": feedback_form,
-            "category_list": category_list
         }
         return render(request, 'feedback.html', context)
 
     feedback_form = FeedbackForm()
-    category_list = Category.objects.filter(level__lte=1)
     context = {
         "feedback_form": feedback_form,
-        "category_list": category_list
     }
     return render(request, 'feedback.html', context)
 
@@ -493,27 +489,26 @@ def get_complaint_page(request, adv_id):
         complaint_form = ComplaintForm(request.POST)
         complaint_form.errors.update(new_complaint_form.errors)
         advertisement = Advertisement.objects.get(id=adv_id)
-        category_list = Category.objects.filter(level__lte=1)
+
         context = {
             "complaint_form": complaint_form,
             "advertisement": advertisement,
-            "category_list": category_list
+
         }
         return render(request, 'complaint.html', context)
 
     complaint_form = ComplaintForm()
     advertisement = Advertisement.objects.get(id=adv_id)
-    category_list = Category.objects.filter(level__lte=1)
+
     context = {
         "complaint_form": complaint_form,
         "advertisement": advertisement,
-        "category_list": category_list
+
     }
     return render(request, 'complaint.html', context)
 
 
-def register_done(request):
-    return render(request, "message_after_register.html")
+
 
 
 def get_help_page(request):
@@ -528,7 +523,6 @@ def get_help_page(request):
 #======================================================================================================================
 def desc_and_opis(objavl):
     o = objavl.get("opis").split('<hr>')
-
     ad_info = {}
     for i in o[0].split('\n'):
         if i != objavl.get('zag') and i != '':
