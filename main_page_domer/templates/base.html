@@ -61,10 +61,10 @@
                     </button>
                 </fieldset>
                 <fieldset class="modals__login-action">
-                    <a href="#">
+                    <a role="link" aria-disabled="true">
                         Забыли пароль?
                     </a>
-                    <a href="#">
+                    <a role="link" aria-disabled="true">
                         Регистрация
                     </a>
                 </fieldset>
@@ -144,9 +144,9 @@
                 <button data-action='submit' type="button" class="submit__btn" id="registration_button">
                     Зарегистрироваться
                 </button>
-                <p class="modals__signUp">
+                <a role="link" aria-disabled="true" class="modals__signUp">
                     Вход
-                </p>
+                </a>
             </form>
             <form class="modals__reset-password">
                 <div class="cross">
@@ -184,9 +184,57 @@
                 <button type='button' class="submit__btn" id="resetSubmitBtn">
                     Отправить
                 </button>
-                <a href="#">
+                <a role="link" aria-disabled="true">
                     Назад
                 </a>
+            </form>
+            <form class="modals__report-advertisement">
+                <div class="cross">
+                    <svg width="20.000000" height="20.000000" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                        <desc>
+                                Created with Pixso.
+                        </desc>
+                        <defs>
+                            <clipPath id="clip946_10111">
+                                <rect id="Dismiss" width="20.000000" height="20.000000" fill="white" fill-opacity="0"/>
+                            </clipPath>
+                        </defs>
+                        <g clip-path="url(#clip946_10111)">
+                            <path id="Shape" d="M3.89 4.05L3.96 3.96C4.23 3.7 4.65 3.67 4.94 3.89L5.03 3.96L10 8.93L14.96 3.96C15.23 3.7 15.65 3.67 15.94 3.89L16.03 3.96C16.29 4.23 16.32 4.65 16.1 4.94L16.03 5.03L11.06 10L16.03 14.96C16.29 15.23 16.32 15.65 16.1 15.94L16.03 16.03C15.76 16.29 15.34 16.32 15.05 16.1L14.96 16.03L10 11.06L5.03 16.03C4.76 16.29 4.34 16.32 4.05 16.1L3.96 16.03C3.7 15.76 3.67 15.34 3.89 15.05L3.96 14.96L8.93 10L3.96 5.03C3.7 4.76 3.67 4.34 3.89 4.05L3.96 3.96L3.89 4.05Z" fill="#212121" fill-opacity="1.000000" fill-rule="nonzero"/>
+                        </g>
+                    </svg>
+                </div>
+                <div class="modals__login-logo-wrap">
+                    <div class="modals__login-logo">
+                        <img src="{% static 'img/logo.png' %}" alt="">
+                    </div>
+                    <h2>
+                        Жалоба на объявление
+                    </h2>
+                </div>
+                <fieldset class="modals__report-advertisement-field">
+                    {% for f in form %}
+                        <label for="{{ f.id_for_label }}" class="feedback__label {% if f.errors %}label__error{% endif %}">
+                            {% if not f.name == "captcha" %}
+                            <p class="form__text">
+                                {% if f.field.required %}
+                                    <span>*</span>
+                                {% endif %}
+                                {{ f.label }}:
+                            </p>
+                            {% endif %}
+                                {{ f }}
+                        </label>
+                    {% endfor %}
+                </fieldset>
+                <div class="g-recaptcha" 
+                data-sitekey="{{ public_key }}"
+                data-expired-callback="expiredCallbackResetRecaptcha"
+                data-callback="callbackResetRecaptcha"
+                ></div>
+                <button type='button' class="submit__btn" id="reportAdvertisement">
+                    Отправить
+                </button>
             </form>
             <div class="modals__notification">
                 <div class="cross">
@@ -226,9 +274,6 @@
                 <div class="modals__notification-action-wrap">
                     <button type="button" class="modals__notification-close">
                         OK
-                    </button>
-                    <button type="button" class="modals__notification-signIn">
-                        Войти
                     </button>
                 </div>
             </div>
@@ -432,7 +477,7 @@
                             </a>
                         </li>
                         <li class="footer__nav-list-item">
-                            <a href="#">
+                            <a href="{% url 'feedback' %}">
                                 Обратная связь
                             </a>
                         </li>
@@ -453,19 +498,19 @@
                                 Юридический адрес:
                             </p>
                             <p>
-                                г. Минск, ул. Ленина, д. 1
+                                г. Минск, ул. Макаенка, 12Е, к.298, индекс: 220014
                             </p> 
                         </li>
                         <li>
-                            <a href="tel:+375290000000">+375 (29) 000-00-00,</a>
-                            <a href="mailto:example@example.com">example@example.com</a>
+                            <a href="tel:+375293018156">+375293018156</a>
+                            <a href="mailto:ivan-buguk1@rambler.ru">ivan-buguk1@rambler.ru</a>
                         </li>
                         <li>
                             <p>
-                                УНП: 000000000
+                                УНП: 193710778
                             </p>
                             <p>
-                                Lorem ipsum dolor sit amet consectetur adipisicing elit. Assumenda laudantium nam quibusdam excepturi sed, placeat fuga modi accusamus deserunt illum quas voluptatem id inventore neque at odio voluptate quo possimus!
+                                Номер свидетельства о государственной регистрации №193710778 от 19.09.2023 г.                           
                             </p>
                         </li>
                     </ul>

@@ -112,10 +112,8 @@ form,
   max-height: 85px;
   width: 100%;
   height: 100%;
-  -o-object-fit: cover;
-     object-fit: cover;
-  -o-object-position: center;
-     object-position: center;
+  object-fit: cover;
+  object-position: center;
   border-radius: 3px;
 }
 .photo_img:hover .delete_img {
@@ -178,6 +176,31 @@ form,
   transition: 0.3s ease;
 }
 
+.advertisement_notification-success {
+  display: flex;
+  margin: 200px auto;
+  flex-direction: column;
+  gap: 15px;
+  align-items: center;
+  justify-content: center;
+  font-family: "Trebuchet MS", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  color: black;
+  font-size: 20px;
+}
+
+.continue__link {
+  text-align: center;
+  font-family: "Trebuchet MS", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  color: black;
+  font-size: 14px;
+  max-width: 200px;
+  background: #F5F5F5;
+}
+
 .error {
   font-family: "Trebuchet MS", sans-serif;
   font-weight: 400;
@@ -214,4 +237,9 @@ form,
   .add_adv {
     max-width: none;
   }
-}/*# sourceMappingURL=place_an_ad.css.map */
+  .advertisement_notification-success {
+    margin: 100px auto;
+  }
+}
+
+/*# sourceMappingURL=place_an_ad.css.map */

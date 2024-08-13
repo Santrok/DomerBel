@@ -1,3 +1,5 @@
+import smtplib
+
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
@@ -7,16 +9,20 @@ from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 from rest_framework.decorators import api_view
 from rest_framework import status, serializers
+from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
 
 from advertisement.models import Region, Category, Field, ElementTwo, PhotoAdvertisement, Advertisement, Store, Element
 from api_domer.serializers import GetListOfCitiesSerializer, GetListOfCategoriesSerializer, FieldSerialier, \
     ElementTwoSerializer, AdvertisementSerializer, StoreSerializer, \
     UserRegisterSerializer, UserLoginSerializer, PasswordResetSerializer, \
-    FavoriteSerializer, ElementSerializer, GetListOfCategoriesFieldsSerializer
+    FavoriteSerializer, ElementSerializer, GetListOfCategoriesFieldsSerializer, ReasonOfComplaintSerializer, \
+    ComplaintSerializer
 
 from api_domer.utils import validate_additional_information
+from config import settings
 from config.settings import env_keys
+from main_page_domer.models import ReasonOfComplaint
 from users.models import User, UserFavorites
 
 
@@ -108,7 +114,8 @@ def save_advertisement(request):
                 else:
                     additional_photo = PhotoAdvertisement(photo=photo, advertisement=new_advertisement)
                     additional_photo.save()
-        return Response({"created": "объявление успешно создано"}, status=status.HTTP_201_CREATED)
+        return Response({"success": "<p>Ваше объявление отправлено на модерацию.</p><p>После модерации оно появится в списке объявлений.</p>",
+                         "link": f"{env_keys.get('URL')}", "link_text": "Вернуться на главную"}, status=status.HTTP_201_CREATED)
     else:
         raise serializers.ValidationError(
             {"error_additional": serializer_additional_error.data, "error": serializer.errors})
@@ -163,7 +170,8 @@ def update_advertisement(request):
         if request.data.getlist('deleted_images'):
             PhotoAdvertisement.objects.filter(photo__in=deleted_images).delete()
 
-        return Response({"update": "объявление успешно изменено"}, status=status.HTTP_200_OK)
+        return Response({"success": "<p>Ваше объявление отправлено на модерацию.</p><p>После модерации оно появится в списке объявлений.</p>",
+                         "link": f"{env_keys.get('URL')}/users/personal_account/", "link_text": "В мой кабинет"}, status=status.HTTP_201_CREATED)
     else:
         raise serializers.ValidationError(
             {"error_additional": serializer_additional_error.data, "error": serializer.errors})
@@ -262,7 +270,6 @@ def delete_from_favorite(request):
         return Response({'success': 'Объявление успешно удалено из избранного'}, status=status.HTTP_201_CREATED)
 
 
-
 @api_view(['GET'])
 def get_element_list(request):
     '''Отадет элементы связанные с полем по id'''
@@ -279,3 +286,31 @@ def get_subcategory_list(request):
     return Response(serializer.data)
 
 
+class ReasonOfComplaintView(ListAPIView):
+    queryset = ReasonOfComplaint
+    serializer_class = ReasonOfComplaintSerializer
+
+
+@api_view(['POST'])
+def save_complaint(request):
+    serializer = ComplaintSerializer(data=request.data, context={"request": request})
+    if serializer.is_valid():
+        serializer.save()
+
+        reason = serializer.validated_data.get("reason")
+        text = serializer.validated_data.get('text')
+        user = serializer.validated_data.get("user")
+        advertisement = serializer.validated_data.get("advertisement")
+
+        subject = f'Жалоба от пользователя {user} на объявление  id={advertisement.id}. Причина: {reason} '
+        message = text
+
+        # try:
+        #     send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [settings.EMAIL_HOST_USER])
+        # except smtplib.SMTPException as error:
+        #     return Response({'errors': str(error)}, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response({'success': 'Ваша жалоба на объявление отправлена администрации сайта'},
+                        status=status.HTTP_201_CREATED)
+    else:
+        return Response({"errors": serializer.errors})

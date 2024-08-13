@@ -182,6 +182,24 @@
     }
 }
 
+.advertisement_notification-success {
+  display: flex;
+  margin: 200px auto;
+  flex-direction: column;
+  gap: 15px;
+  align-items: center;
+  justify-content: center;
+  @include fonts($defaultColor, 20px, 400);
+}
+
+.continue__link {
+  text-align: center;
+  @include fonts($defaultColor, 14px, 400);
+  max-width: 200px;
+  background: #F5F5F5;
+
+}
+
 .error {
   @include fonts($colorHover, 14px, 400);
 }
@@ -217,4 +235,9 @@
   .add_adv {
     max-width: none;
   }
+
+  .advertisement_notification-success {
+    margin: 100px auto;
+  }
+
 }

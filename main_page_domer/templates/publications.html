@@ -32,10 +32,10 @@
       {% for publication in publications %}
       <li>
         <article class="publications__list-item">
-          <a href="{% url 'publication_by_slug' publication.slug %}" class="article__date">
+          <p class="article__date">
             18 июля 2021 г.
             20:42	
-          </a>
+          </p>
           <a href="{% url 'publication_by_slug' publication.slug %}" class="article__img">
             <img src="{{ publication.preview_image.url }}" alt="">
           </a>

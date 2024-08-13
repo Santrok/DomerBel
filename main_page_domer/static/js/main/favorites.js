@@ -1,8 +1,8 @@
 const favoritesList = document.querySelectorAll(".advertisement__list-item-about-favorites")
+const detailsFavoritesBtn = document.querySelector(".details__advertisement-add-favorites")
 
 favoritesList.forEach(item => {
   item.addEventListener("click", (event) => {
-
     if(window.location.pathname.includes("favorites")) {
       event?.currentTarget?.parentElement?.parentElement?.parentElement?.remove()
     }
@@ -19,6 +19,22 @@ favoritesList.forEach(item => {
       requestFavorites(`${localStorage.getItem("url")}/api/v1/delete_from_favorite/`, event?.currentTarget?.parentElement?.parentElement?.dataset?.id)
     }
   })
+})
+
+detailsFavoritesBtn?.addEventListener("click", (event) => {
+  if(!event?.currentTarget?.dataset?.id){
+    modal.classList.add("modal__active")
+    modalLogin.classList.add("modal__active")
+    return
+  }
+  if(!event?.currentTarget?.children[0]?.classList.contains("advertisement__favorites-active")) {
+    event?.currentTarget?.children[0]?.classList.add("advertisement__favorites-active")
+    requestFavorites(`${localStorage.getItem("url")}/api/v1/add_to_favorite/`, event?.currentTarget?.dataset?.id)
+    
+  }else {
+    event?.currentTarget?.children[0]?.classList.remove("advertisement__favorites-active")
+    requestFavorites(`${localStorage.getItem("url")}/api/v1/delete_from_favorite/`, event?.currentTarget?.dataset?.id)
+  }
 })
 
 

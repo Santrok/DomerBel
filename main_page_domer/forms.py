@@ -1,10 +1,8 @@
 from django import forms
-from django.core.exceptions import ValidationError
 from django_recaptcha.fields import ReCaptchaField
 
 from main_page_domer.models import ReasonOfComplaint
 from users.validators import validate_email
-
 
 
 class FeedbackForm(forms.Form):
@@ -17,16 +15,14 @@ class FeedbackForm(forms.Form):
     captcha = ReCaptchaField(label='')
 
 
-
 class ComplaintForm(forms.Form):
-    email = forms.EmailField(required=True, error_messages={'required': 'Не указан email'}, label='Ваш e-mail:',
+    user = forms.EmailField(required=True, error_messages={'required': 'Не указан email'}, label='Ваш e-mail:',
                              validators=[validate_email], widget=forms.EmailInput(attrs={'class': 'input_field'}))
-
-    reason_choices = [(reason.id, reason.reason) for reason in ReasonOfComplaint.objects.all()]
-    reason_choices.insert(0, (0, 'Выберите причину'))
-
-    reason = forms.ChoiceField(choices=reason_choices, required=True,
-                            label="Причина жалобы:", widget=forms.Select(attrs={'class': 'input_field'}))
+    reason = forms.ModelChoiceField(queryset=ReasonOfComplaint.objects.all(), required=True,
+                                    empty_label="Выберите причину", label="Причина жалобы:",
+                                    widget=forms.Select(attrs={'class': 'input_field'}))
+    text = forms.CharField(widget=forms.Textarea(attrs={'class': 'input_field'}), required=True,
+                              error_messages={'required': 'Отсутствует текст обоснования'}, label='Обоснование жалобы:')
 
     def clean_reason(self):
         reason = self.cleaned_data['reason']
@@ -34,6 +30,3 @@ class ComplaintForm(forms.Form):
             self.add_error('reason', 'Не выбрана причина жалобы')
         return reason
 
-    text = forms.CharField(widget=forms.Textarea(attrs={'class': 'input_field'}), required=True,
-                              error_messages={'required': 'Отсутствует текст обоснования'}, label='Обоснование жалобы:')
-    captcha = ReCaptchaField(label='')
