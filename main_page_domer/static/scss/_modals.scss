@@ -29,6 +29,7 @@
 
   & a {
     @include fonts($mainColor, 14px, 400);
+    cursor: pointer;
 
     &:hover {
       color: $colorHover;
