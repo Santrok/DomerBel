@@ -43,10 +43,12 @@
 
 :has(.article__status) .article__date {
   align-self: flex-start;
+  flex: initial;
 }
 
 .article__date {
   align-self: center;
+  flex: 0 0 150px;
   display: block;
   text-align: inherit;
   @include fonts($defaultColor, 14px, 400);

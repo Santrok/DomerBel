@@ -51,10 +51,12 @@
 
 :has(.article__status) .article__date {
   align-self: flex-start;
+  flex: initial;
 }
 
 .article__date {
   align-self: center;
+  flex: 0 0 150px;
   display: block;
   text-align: inherit;
   font-family: "Trebuchet MS", sans-serif;

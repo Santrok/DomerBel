@@ -1,1 +1,12 @@
-/*# sourceMappingURL=feedback.css.map */
+.feedback {
+  display: flex;
+  flex-direction: column;
+  margin-top: 20px;
+}
+
+.feedback__label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}/*# sourceMappingURL=feedback.css.map */
