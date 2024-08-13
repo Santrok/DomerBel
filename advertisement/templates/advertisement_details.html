@@ -84,7 +84,7 @@
         {% if advertisement.price %}
         <p>Цена <span>{{ advertisement.price|floatformat }}</span> руб.</p>
         {% endif %}
-        <p>ID:{{ advertisement.id }}</p>
+        <p class="details__advertisement-id">ID:{{ advertisement.id }}</p>
         <p>
             {% if advertisement.date_of_create.date == date_today %}
             Сегодня 
@@ -229,15 +229,14 @@
           {{ advertisement.description }}
         </p>
         <div class="detials__advertisement-about-action">
-          <div class="details__advertisement-add-favorites">
-            <div class="details__advertisement-add-favorites-img">
-              <img src="{% static "img/icons/Edit_Yes.png" %}" alt="star">
+          <div class="details__advertisement-add-favorites" data-id="{% if user.is_authenticated %}{{ advertisement.id }}{% endif %}">
+            <div class="details__advertisement-add-favorites-img {% if advertisement.id in user.userfavorites.favorites %}advertisement__favorites-active{% endif %}">
             </div>
             <p>
               Добавить в избранное
             </p>
           </div>
-          <a href="{% url 'complaint' advertisement.id %}" class="details__advertisement-add-report">
+          <a role="link" aria-disabled="true" class="details__advertisement-add-report">
             Пожаловаться
           </a>
           <div class="ya-share2" data-url="{{ url }}{{ advertisement.get_absolute_url }}" data-curtain data-shape="round" data-limit="3" data-services="messenger,vkontakte,odnoklassniki,telegram,twitter,viber,whatsapp,moimir,pinterest,skype,tumblr,evernote,linkedin,lj,blogger,delicious,digg,reddit,pocket,qzone,renren,sinaWeibo,surfingbird,tencentWeibo"></div>
@@ -276,7 +275,8 @@
   <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
   <script src="{% static 'js/details/slick.min.js' %}"></script>
   <script src="{% static 'js/details/slider.js' %}"></script>
-  <script src="https://yastatic.net/share2/share.js"></script>
+  <script src="{% static "js/details/reportAdvertisement.js" %}"></script>
   <script src="{% static 'js/details/magnifier.js' %}"></script>
   <script src="{% static "js/details/showPhone.js" %}"></script>
+  <script src="https://yastatic.net/share2/share.js"></script>
 {% endblock js %}

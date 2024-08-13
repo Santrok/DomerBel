@@ -17,7 +17,7 @@ SECRET_KEY = env_keys.get('DJANGO_TOKEN')
 DEBUG = True
 # DEBUG = False
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '217.197.116.151']
 
 # Application definition
 
@@ -103,8 +103,8 @@ DATABASES = {
         'NAME': env_keys.get('POSTGRES_DB_NAME'),
         'USER': env_keys.get('DB_USERNAME'),
         'PASSWORD': env_keys.get('DB_PASSWORD'),
-        'HOST': 'localhost',
-        'PORT': '',
+        'HOST': env_keys.get('DB_HOST'),
+        'PORT': env_keys.get('DB_PORT'),
     }
 }
 
@@ -178,12 +178,12 @@ LOGOUT_REDIRECT_URL = '/'
 
 
 # EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"  # Для отображения писем в консоли
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_BACKEND = env_keys.get("EMAIL_BACKEND")
 EMAIL_HOST_PASSWORD = env_keys.get("EMAIL_HOST_PASSWORD")
-EMAIL_HOST = "smtp.yandex.ru"
-EMAIL_PORT = "465"
-EMAIL_HOST_USER = "domer.bel@yandex.by"
-EMAIL_USE_SSL = True
+EMAIL_HOST = env_keys.get("EMAIL_HOST")
+EMAIL_PORT = env_keys.get("EMAIL_PORT")
+EMAIL_HOST_USER = env_keys.get("EMAIL_HOST_USER")
+EMAIL_USE_SSL = env_keys.get("EMAIL_USE_SSL")
 
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 SERVER_EMAIL = EMAIL_HOST_USER
@@ -195,10 +195,10 @@ CAPTCHA_FONT_PATH = 'main_page_domer/static/fonts/arial/arial.ttf'
 CAPTCHA_CHALLENGE_FUNCT = 'users.captcha.random_digit_challenge'  # Функция для генерации CAPTCHA на русском языке
 
 
-
 RECAPTCHA_PUBLIC_KEY = env_keys.get('RECAPTCHA_PUBLIC_KEY')
 RECAPTCHA_PRIVATE_KEY = env_keys.get('RECAPTCHA_PRIVATE_KEY')
 DRF_RECAPTCHA_SECRET_KEY = env_keys.get('RECAPTCHA_PRIVATE_KEY')
+
 
 #настройки CELERY
 CELERY_BROKER_URL = "redis://localhost:6379"

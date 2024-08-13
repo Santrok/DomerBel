@@ -1,0 +1,102 @@
+.thin_line {
+    margin-bottom: 5px;
+    height: 1px;
+    background: #D4D4D4;
+}
+
+.my_store {
+    display: flex;
+    flex-direction: column;
+    margin: 5px 10px 0 10px;
+}
+
+.store_block {
+    display: flex;
+    gap: 10px;
+}
+
+.my_store_info {
+    width: 540px;
+    & p {
+        margin-bottom: 5px;
+    }
+}
+
+.store_title {
+    display: flex;
+    font-family: "Trebuchet MS";
+    font-size: 18px;
+    font-weight: bold;
+    color: #333333;
+}
+
+.change_store {
+    display: flex;
+    justify-content: space-between;
+}
+
+.store_inactive {
+    font-family: "Trebuchet MS";
+    font-size: 18px;
+    color: #FF0000;
+}
+
+.pay_store {
+    font-family: "Trebuchet MS";
+    font-size: 18px;
+    color: #008000;
+}
+
+.store_date {
+    font-family: "Trebuchet MS";
+    font-size: 13px;
+    color: #333333;
+    & span {
+        color: #0000FF
+    }
+}
+
+.my_store_table {
+    display: flex;
+    padding: 5px;
+}
+
+.my_store_img {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 185px;
+    height: 130px;
+    & img {
+        margin: auto;
+        width: 100%;
+        object-fit: cover;
+    }
+}
+
+.table_name {
+    width: 120px;
+    font-family: "Trebuchet MS";
+    font-size: 13px;
+    font-weight: bold;
+    color: #333333;
+}
+
+.table_description {
+    width: 420px;
+    text-align: justify;
+    font-family: "Trebuchet MS";
+    font-size: 13px;
+    color: #333333;
+}
+
+.success-message {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px 0;
+    font-family: "Trebuchet MS";
+    font-size: 13px;
+    background: rgba(0, 128, 0, 0.322);
+    color: green;
+}

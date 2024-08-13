@@ -17,10 +17,7 @@ urlpatterns = [
     path("publication/<str:slug>", get_publication_by_slug, name="publication_by_slug"),
     path("publication/search/", publication_search_result, name="publication_search_result"),
     path('feedback/', get_feedback_page, name='feedback'),
-    path('complaint_about_adv_id_<int:adv_id>/', get_complaint_page, name='complaint'),
-    path('register_done', register_done, name='register_done'),
     path('download/', download_advertis),
     path('download_user/', dowload_user),
     path('download_photo/', dowload_photo),
-    path('base_page/', get_base_page),
 ]

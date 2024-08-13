@@ -45,7 +45,7 @@ class Advertisement(DirtyFieldsMixin, models.Model):
     price = models.DecimalField(max_digits=12, decimal_places=2, blank=True, null=True, default=0, verbose_name='Цена')
     category = models.ForeignKey('Category', on_delete=models.CASCADE, verbose_name='Раздел')
     bearer = models.CharField(max_length=50, choices=[('Частное лицо', 'Частное лицо'), ('Компания', 'Компания')],
-                              verbose_name='Податель')
+                              verbose_name='Податель', default='Частное лицо')
     region = models.ForeignKey('Region', on_delete=models.CASCADE, verbose_name='Регион, город, район')
     preview_image = models.ImageField(upload_to=upload_to, verbose_name='Главная фотография',
                                       blank=True, null=True)
