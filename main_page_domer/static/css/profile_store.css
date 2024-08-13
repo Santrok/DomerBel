@@ -42,6 +42,9 @@
   font-size: 14px;
   flex: 0 1 200px;
 }
+.main__info p span {
+  color: red;
+}
 
 .photo_img {
   position: relative;

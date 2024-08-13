@@ -1,28 +1,30 @@
 {% extends 'base.html' %} 
 {% load static %}
 {% block css %} 
-<link rel="stylesheet" href="{% static 'css/main.css' %}">
+<link rel="stylesheet" href="{% static 'css/feedback.css' %}">
 {% endblock css %} 
 {% block content %}
 <form method="POST" class="feedback">
   {% csrf_token %}
  {% if feedback_form.non_field_errors %}
-            <div class="form-error">{{ feedback_form.non_field_errors }}</div>
-        {% endif %}
-        {% for f in feedback_form %}
-        <label for="{{ f.id_for_label }}" class="{% if f.errors %}label__error{% endif %}">
-            <p class="form-label">
+    <div class="form-error">{{ feedback_form.non_field_errors }}</div>
+    {% endif %}
+    {% for f in feedback_form %}
+        <label for="{{ f.id_for_label }}" class="feedback__label {% if f.errors %}label__error{% endif %}">
+            {% if not f.name == "captcha" %}
+            <p class="form__text">
                 {% if f.field.required %}
-                <span>*</span>
+                    <span>*</span>
                 {% endif %}
-                {{f.label}}:
+                {{ f.label }}:
             </p>
+            {% endif %}
                 {{ f }}
             {% if f.errors %}
                 <div class="form-error">{{ f.errors }}</div>
             {% endif %}
         </label>
-        {% endfor %}
+    {% endfor %}
 <button class="submit__btn">Отправить</button>
 </form>
 {% endblock %} 

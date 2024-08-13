@@ -22,6 +22,11 @@ favoritesList.forEach(item => {
 })
 
 detailsFavoritesBtn?.addEventListener("click", (event) => {
+  if(!event?.currentTarget?.dataset?.id){
+    modal.classList.add("modal__active")
+    modalLogin.classList.add("modal__active")
+    return
+  }
   if(!event?.currentTarget?.children[0]?.classList.contains("advertisement__favorites-active")) {
     event?.currentTarget?.children[0]?.classList.add("advertisement__favorites-active")
     requestFavorites(`${localStorage.getItem("url")}/api/v1/add_to_favorite/`, event?.currentTarget?.dataset?.id)

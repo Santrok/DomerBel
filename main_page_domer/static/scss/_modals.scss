@@ -23,8 +23,13 @@
     width: 100%;
   }
 
+  & .modals__fields-error {
+    border-color: red;
+  }
+
   & a {
     @include fonts($mainColor, 14px, 400);
+    cursor: pointer;
 
     &:hover {
       color: $colorHover;
@@ -63,6 +68,7 @@
 @import "./modalsReset";
 @import './modalsNotification';
 @import "./modalsMore";
+@import "./modalsReportAdvertisement";
 
 .modals__active-grid {
   display: grid;
