@@ -17,18 +17,12 @@ backBtn.addEventListener("click", () => {
   signUp.classList.add("modal__active");
 });
 
-function expiredCallbackResetRecaptcha() {
-  resetSubmitPasswordBtn.removeEventListener("click", requestResetPassword);
-}
-
-function callbackResetRecaptcha() {
-  resetSubmitPasswordBtn.addEventListener("click", requestResetPassword);
-}
+resetSubmitPasswordBtn.addEventListener("click", requestResetPassword);
 
 function requestResetPassword() {
   const data = new FormData(modalResetPassowrd);
   data.append("recaptcha", data.get("g-recaptcha-response"));
-  fetch(`${localStorage.getItem("url")}api/v1/password_reset/`, {
+  fetch(`${localStorage.getItem("url")}/api/v1/password_reset/`, {
     method: "POST",
     headers: {
       "X-CSRFToken": getCookie("csrftoken"),

@@ -39,6 +39,10 @@
   & p {
     @include fonts($defaultColor, 14px, 400);
     flex: 0 1 200px;
+
+    & span {
+      color: red;
+    }
   }
 }
 
