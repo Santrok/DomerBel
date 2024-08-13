@@ -19,8 +19,8 @@ from advertisement.utils import (get_region_variables, sorted_by, sorted_by_numb
                                  variables_for_paginator, where_to_look, search_additional_information,
                                  annotating_field)
 from config import settings
-from main_page_domer.forms import FeedbackForm, ComplaintForm
-from main_page_domer.models import Help, ReasonOfComplaint, Complaint, Publication
+from main_page_domer.forms import FeedbackForm
+from main_page_domer.models import Help, Publication
 
 
 def get_main_page(request):
@@ -460,55 +460,6 @@ def get_feedback_page(request):
         "feedback_form": feedback_form,
     }
     return render(request, 'feedback.html', context)
-
-
-def get_complaint_page(request, adv_id):
-    """ Страница отправки жалобы на объявление """
-    if request.method == "POST":
-        new_complaint_form = ComplaintForm(request.POST)
-
-        if new_complaint_form.is_valid():
-            reason = ReasonOfComplaint.objects.get(id=new_complaint_form.cleaned_data.get("reason"))
-            text = new_complaint_form.cleaned_data.get("text")
-            user = new_complaint_form.cleaned_data.get("email")
-            advertisement = Advertisement.objects.get(id=adv_id)
-            Complaint.objects.create(reason=reason, text=text, user=user, advertisement=advertisement)
-
-            subject = f'Жалоба на объявление id={adv_id}: "{reason.reason}" от пользователя {user}'
-            message = text
-
-            try:
-                send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [settings.EMAIL_HOST_USER])
-            except smtplib.SMTPException as error:
-                return render(request, 'complaint.html',
-                              {'complaint_form': new_complaint_form, 'error_message': str(error)})
-
-            messages.success(request, f"Ваша жалоба на объявление отправлена администрации сайта")
-            return redirect("complaint", adv_id=adv_id)
-
-        complaint_form = ComplaintForm(request.POST)
-        complaint_form.errors.update(new_complaint_form.errors)
-        advertisement = Advertisement.objects.get(id=adv_id)
-
-        context = {
-            "complaint_form": complaint_form,
-            "advertisement": advertisement,
-
-        }
-        return render(request, 'complaint.html', context)
-
-    complaint_form = ComplaintForm()
-    advertisement = Advertisement.objects.get(id=adv_id)
-
-    context = {
-        "complaint_form": complaint_form,
-        "advertisement": advertisement,
-
-    }
-    return render(request, 'complaint.html', context)
-
-
-
 
 
 def get_help_page(request):

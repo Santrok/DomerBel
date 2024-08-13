@@ -424,7 +424,7 @@ function showAdditionalInformationTwo(event) {
 }
 
 const bearerCompany = document.querySelector(".description_radio")
-bearerCompany.addEventListener("change", bearerCompanyInfo)
+bearerCompany?.addEventListener("change", bearerCompanyInfo)
 
 function bearerCompanyInfo(event) {
   if (event.target.id === "bearer_company") {
@@ -637,10 +637,25 @@ function saveAdvertisement() {
         error.data = data
         throw error
       }
-      document.querySelector(".modals")?.classList?.add("modal__active")
-      document.querySelector(".modals__notification")?.classList?.add("modal__active")
-      document.querySelector(".modals__notification-text").innerText = data?.created
-      
+        document.querySelector(".create_advertisement").innerHTML = `
+        <div class="advertisement_notification-success">
+                    <svg width="48.000000" height="48.000000" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                        <desc>
+                                Created with Pixso.
+                        </desc>
+                        <defs>
+                            <clipPath id="clip946_10107">
+                                <rect id="Checkmark Circle" width="48.000000" height="48.000000" fill="white" fill-opacity="0"/>
+                            </clipPath>
+                        </defs>
+                        <g clip-path="url(#clip946_10107)">
+                            <path id="Shape" d="M24 4C35.04 4 44 12.95 44 24C44 35.04 35.04 44 24 44C12.95 44 4 35.04 4 24C4 12.95 12.95 4 24 4ZM32.63 17.61C32.17 17.16 31.45 17.13 30.96 17.52L30.86 17.61L20.75 27.73L17.13 24.11C16.64 23.62 15.85 23.62 15.36 24.11C14.91 24.57 14.87 25.29 15.27 25.78L15.36 25.88L19.86 30.38C20.32 30.83 21.04 30.86 21.53 30.47L21.63 30.38L32.63 19.38C33.12 18.89 33.12 18.1 32.63 17.61Z" fill="#008060" fill-opacity="1.000000" fill-rule="nonzero"/>
+                        </g>
+                    </svg>
+        ${data?.success}
+        <a href=${data?.link} class="continue__link submit__btn">${data?.link_text}</a>
+    </div>
+`
     })
     .catch((msg) => {
       if (msg.data.error.title) {

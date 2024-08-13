@@ -3,10 +3,9 @@
 {% block css %}
     <link rel="stylesheet" type="text/css" media="all" href="{% static 'css/place_an_ad.css' %}">
 {% endblock css %}
-{% block find %}
-{% endblock %}
-{% block content %}
+
 {% block search %}{% endblock search %}
+{% block content %}
     <div class="create_advertisement">
         <form action="" method="POST" enctype="multipart/form-data" id="add_adver">
             {% csrf_token %}
@@ -54,6 +53,7 @@
                               rows="10"></textarea>
                 </div>
             </div>
+            {% if user.entity %}
             <div class="bearer">
                 <div class="bearer_input item_input">
                     <p class="bearer_label label_fields">Податель</p>
@@ -71,6 +71,7 @@
                 </div>
             </div>
             <div class="bearer_company_additional_info"></div>
+            {% endif %}
             <div class="contact">
                 <div class="contact_information">
                     <div class="contact_input item_input">

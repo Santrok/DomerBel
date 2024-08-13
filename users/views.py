@@ -461,7 +461,9 @@ def edit_publication(request, publication_slug):
     if request.method == 'POST':
         form_publication = PublicationForm(request.POST, request.FILES, instance=publication)
         if form_publication.is_valid():
-            form_publication.save()
+            publication = form_publication.save(commit=False)
+            publication.moderated = False
+            publication.save()
             messages.success(request, f"Публикация {publication} успешно изменена!")
             return redirect('users:user_all_publications')
     else:

@@ -114,7 +114,8 @@ def save_advertisement(request):
                 else:
                     additional_photo = PhotoAdvertisement(photo=photo, advertisement=new_advertisement)
                     additional_photo.save()
-        return Response({"created": "объявление успешно создано"}, status=status.HTTP_201_CREATED)
+        return Response({"success": "<p>Ваше объявление отправлено на модерацию.</p><p>После модерации оно появится в списке объявлений.</p>",
+                         "link": f"{env_keys.get('URL')}", "link_text": "Вернуться на главную"}, status=status.HTTP_201_CREATED)
     else:
         raise serializers.ValidationError(
             {"error_additional": serializer_additional_error.data, "error": serializer.errors})
@@ -169,7 +170,8 @@ def update_advertisement(request):
         if request.data.getlist('deleted_images'):
             PhotoAdvertisement.objects.filter(photo__in=deleted_images).delete()
 
-        return Response({"update": "объявление успешно изменено"}, status=status.HTTP_200_OK)
+        return Response({"success": "<p>Ваше объявление отправлено на модерацию.</p><p>После модерации оно появится в списке объявлений.</p>",
+                         "link": f"{env_keys.get('URL')}/users/personal_account/", "link_text": "В мой кабинет"}, status=status.HTTP_201_CREATED)
     else:
         raise serializers.ValidationError(
             {"error_additional": serializer_additional_error.data, "error": serializer.errors})
