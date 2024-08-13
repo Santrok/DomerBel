@@ -424,6 +424,58 @@
   transform: rotate(-45deg);
 }
 
+.modals__report-advertisement {
+  width: 100%;
+  max-width: 450px;
+  display: none;
+  flex-direction: column;
+  gap: 20px;
+  background: white;
+  padding: 40px;
+  border-radius: 8px;
+}
+.modals__report-advertisement label {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.modals__report-advertisement p {
+  font-family: "Trebuchet MS", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  color: black;
+  font-size: 14px;
+}
+.modals__report-advertisement p span {
+  color: red;
+}
+.modals__report-advertisement input, .modals__report-advertisement select, .modals__report-advertisement textarea {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid black;
+  width: 100%;
+}
+.modals__report-advertisement input::-moz-placeholder, .modals__report-advertisement select::-moz-placeholder, .modals__report-advertisement textarea::-moz-placeholder {
+  font-family: "Trebuchet MS", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  color: rgb(110, 109, 109);
+  font-size: 14px;
+}
+.modals__report-advertisement input::placeholder, .modals__report-advertisement select::placeholder, .modals__report-advertisement textarea::placeholder {
+  font-family: "Trebuchet MS", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  color: rgb(110, 109, 109);
+  font-size: 14px;
+}
+
+.modals__report-advertisement-field {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
 .modals__active-grid {
   display: grid;
   transition: 0.5s ease;

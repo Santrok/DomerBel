@@ -75,8 +75,6 @@ function registration() {
  */
 
 function generatingErrorSField(data, fieldForm) {
-  console.log(111);
-  
   for (let i in data) {
     const field = document.querySelector(`${fieldForm} input[name="${i}"]`);
     if (field.parentElement.children.length > 1 && field.parentElement.children[0].classList.contains("modals__signIn-error")) field.parentElement.children[0].remove();
@@ -115,7 +113,7 @@ function login() {
     body: data,
   })
     .then((resp) => {
-      if (resp.status === 205) window.location.reload();
+      if (resp.ok) window.location.reload();
       return resp.json();
     })
     .then((data) => {
