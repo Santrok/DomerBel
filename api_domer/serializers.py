@@ -134,7 +134,7 @@ class ReasonOfComplaintSerializer(serializers.Serializer):
 
 
 class ComplaintSerializer(serializers.ModelSerializer):
-    user = serializers.EmailField(required=True, error_messages={'blank': 'Не указан email'})
+    user = serializers.EmailField(required=True)
     recaptcha = ReCaptchaV2Field(write_only=True)
 
     class Meta:
