@@ -263,7 +263,7 @@ def search_for_advertisements_in_the_store(request, store_slug):
     search_parameters = {}
     search_parameters_only = {}
     category_queryset_an = []
-    key_delete = ['page', 'sort', 'date', 'price', 'text_search']
+    key_delete = ['page', 'sort', 'date', 'price', 'text_search', 'only_video']
     cop = dict.copy(request.GET)
 
     sort_for_paginator = sorted_by_number(request.COOKIES.get('sort'))
@@ -286,7 +286,6 @@ def search_for_advertisements_in_the_store(request, store_slug):
         cop.pop('only_photo')
     if request.GET.get('only_video'):
         search_parameters_only['video_link__exact'] = ''
-        cop.pop('only_video')
     if request.GET.get('only_title') and request.GET.get('text_search'):
         search_parameters['search_title_vector'] = request.GET.get('text_search')
         cop.pop('only_title')
