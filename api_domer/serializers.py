@@ -4,8 +4,8 @@ from rest_framework import serializers
 
 from advertisement.models import Region, Category, Field, Spisok, ElementTwo, Element, Advertisement, Store
 from api_domer.validators import validate_password, validate_phone
+from main_page_domer.models import ReasonOfComplaint, Complaint
 from users.models import User
-
 
 
 class GetListOfCitiesSerializer(serializers.ModelSerializer):
@@ -121,6 +121,26 @@ class FavoriteSerializer(serializers.Serializer):
 
 class GetListOfCategoriesFieldsSerializer(serializers.ModelSerializer):
     field_set = FieldSerialier(many=True)
+
     class Meta:
         model = Category
-        fields = ['id','title','field_set']
+        fields = ['id', 'title', 'field_set']
+
+
+class ReasonOfComplaintSerializer(serializers.Serializer):
+    class Meta:
+        model = ReasonOfComplaint
+        fields = '__all__'
+
+
+class ComplaintSerializer(serializers.ModelSerializer):
+    user = serializers.EmailField(required=True, error_messages={'blank': 'Не указан email'})
+    # recaptcha = ReCaptchaV2Field(write_only=True)
+
+    class Meta:
+        model = Complaint
+        fields = ['reason', 'text', 'user', 'advertisement']
+
+    def create(self, validated_data):
+        validated_data.pop('recaptcha')
+        return Complaint.objects.create(**validated_data)
