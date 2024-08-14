@@ -1,0 +1,70 @@
+.modals__signIn {
+  width: 100%;
+  max-width: 420px;
+  padding: 20px;
+  background: #fff;
+  border-radius: 8px;
+  display: none;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.modals__signIn-logo-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.modals__signIn-logo-title-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  align-items: center;
+  @include fonts($defaultColor, 14px, 400);
+}
+
+.modals__signIn-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.modals__signIn-choice-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  & button {
+      width: 100%;
+      border: 1px solid black;
+      border-radius: 8px;
+      transition: 0.3s ease;
+      padding: 10px;
+
+      &:hover {
+        transition: 0.3s ease;
+        background: $mainColor;
+        color: white;
+      }
+    
+      &:active {
+        transition: 0.3s ease;
+        top: 1px;
+      }
+    }
+}
+
+.modals__signIn-entity {
+    background: none;
+    position: relative;
+    @include fonts($defaultColor, 14px, 400);
+}
+
+
+.modals__signIn-choice-active {
+    background: $mainColor;
+    color: white;
+  }
+
+

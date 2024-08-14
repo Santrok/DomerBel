@@ -1,0 +1,94 @@
+.store {
+    display: flex;
+    max-width: 948px;
+    width: 100%;
+    min-height: 250px;
+    height: auto;
+    margin-top: 20px;
+    margin-bottom: 30px;
+}
+
+.store_details {
+    max-width: 630px;
+    width: 100%;
+}
+
+.store_details_title {
+    min-height: 55px;
+    height: auto;
+    padding: 15px 0 15px 10px;
+    font-family: "Trebuchet MS";
+    font-size: 19px;
+    font-weight: bold;
+    color: #333333;
+    background: #F1F1D8;
+    border-left: solid 1px #D4D4D4;
+    border-top: solid 1px #D4D4D4;
+    border-right: solid 1px #D4D4D4;
+}
+
+.store_details_description {
+    padding: 15px 10px 15px 10px;
+    text-align: justify;
+    min-height: 195px;
+    height: auto;
+    font-family: "Trebuchet MS";
+    font-size: 13px;
+    color: #333333;
+    border: solid 1px #D4D4D4;
+}
+
+.store_contacts {
+    max-width: 338px;
+    width: 100%;
+    min-height: 250px;
+    height: auto;
+    border-top: solid 1px #D4D4D4;
+    border-right: solid 1px #D4D4D4;
+    border-bottom: solid 1px #D4D4D4;
+}
+
+.store_contacts_img {
+    padding: 15px 0 15px 10px;
+    & img {
+        max-width: 150px;
+        max-height: 90px;
+    }
+}
+
+.store_contacts_items {
+    display: flex;
+    flex-direction: column;
+    padding: 0 10px 15px 10px ;
+    gap: 5px;
+    font-family: "Trebuchet MS";
+    font-size: 13px;
+    color: #333333;
+}
+
+.store_region_title {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    font-family: "Trebuchet MS";
+    font-size: 13px;
+    color: #333333;
+}
+
+.store_telephone {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.store_email {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.store_site {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
