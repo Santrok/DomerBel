@@ -613,14 +613,6 @@ def dowload_photo(request):
     return render(request, 'download_adver.html')
 
 
-def get_base_page(request):
-    '''Отдает базовую страничку'''
-    organization = AboutOrganization.objects.last()
-    context = {
-        "organization": organization
-    }
-    return render(request,'base.html', context)
-
 # def page_not_found(request, exception):
 def page_not_found(request):
     '''отдает страничку с ошибкой 404'''
