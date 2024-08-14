@@ -305,3 +305,4 @@ class BadWords(models.Model):
     class Meta:
         verbose_name = 'Нецензурное слово'
         verbose_name_plural = 'Нецензурные слова'
+

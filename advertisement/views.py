@@ -258,7 +258,7 @@ def search_result(request):
     search_parameters = {}
     search_parameters_only = {}
     category_queryset_an = []
-    key_delete = ['page', 'sort', 'date', 'price', 'text_search']
+    key_delete = ['page', 'sort', 'date', 'price', 'text_search','only_title']
     cop = dict.copy(request.GET)
 
     sort_for_paginator = sorted_by_number(request.COOKIES.get('sort'))
@@ -284,7 +284,6 @@ def search_result(request):
         cop.pop('only_video')
     if request.GET.get('only_title') and request.GET.get('text_search'):
         search_parameters['search_title_vector'] = request.GET.get('text_search')
-        cop.pop('only_title')
     elif request.GET.get('text_search'):
         search_parameters['search_vector'] = request.GET.get('text_search')
 

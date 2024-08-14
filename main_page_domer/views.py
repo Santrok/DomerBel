@@ -20,7 +20,7 @@ from advertisement.utils import (get_region_variables, sorted_by, sorted_by_numb
                                  annotating_field)
 from config import settings
 from main_page_domer.forms import FeedbackForm
-from main_page_domer.models import Help, Publication
+from main_page_domer.models import Help, Publication, AboutOrganization
 
 
 def get_main_page(request):
@@ -263,7 +263,7 @@ def search_for_advertisements_in_the_store(request, store_slug):
     search_parameters = {}
     search_parameters_only = {}
     category_queryset_an = []
-    key_delete = ['page', 'sort', 'date', 'price', 'text_search']
+    key_delete = ['page', 'sort', 'date', 'price', 'text_search', 'only_video']
     cop = dict.copy(request.GET)
 
     sort_for_paginator = sorted_by_number(request.COOKIES.get('sort'))
@@ -286,7 +286,6 @@ def search_for_advertisements_in_the_store(request, store_slug):
         cop.pop('only_photo')
     if request.GET.get('only_video'):
         search_parameters_only['video_link__exact'] = ''
-        cop.pop('only_video')
     if request.GET.get('only_title') and request.GET.get('text_search'):
         search_parameters['search_title_vector'] = request.GET.get('text_search')
         cop.pop('only_title')
@@ -612,3 +611,9 @@ def dowload_photo(request):
                 photo.save()
 
     return render(request, 'download_adver.html')
+
+
+# def page_not_found(request, exception):
+def page_not_found(request):
+    '''отдает страничку с ошибкой 404'''
+    return render(request, '404.html', status=404)

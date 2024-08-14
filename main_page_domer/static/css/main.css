@@ -154,10 +154,8 @@
 .sorted__by-list-item-img img {
   width: 100%;
   height: 100%;
-  -o-object-fit: cover;
-     object-fit: cover;
-  -o-object-position: center;
-     object-position: center;
+  object-fit: cover;
+  object-position: center;
 }
 
 @media (max-width: 992px) {
@@ -186,10 +184,8 @@
 .default__item .advertisement__list-item-img img {
   width: 100%;
   height: 100%;
-  -o-object-fit: cover;
-     object-fit: cover;
-  -o-object-position: center;
-     object-position: center;
+  object-fit: cover;
+  object-position: center;
 }
 .default__item .advertisement__list-item-about {
   flex: 1 1 auto;
@@ -249,10 +245,8 @@
 .default__item .advertisement__list-item-action li img {
   width: 100%;
   height: 100%;
-  -o-object-fit: cover;
-     object-fit: cover;
-  -o-object-position: center;
-     object-position: center;
+  object-fit: cover;
+  object-position: center;
 }
 .default__item .advertisement__favorites-active {
   background: url(../img/favorite_yes.png) no-repeat center/cover;
@@ -285,10 +279,8 @@
   max-height: 140px;
   width: 100%;
   height: 100%;
-  -o-object-fit: cover;
-     object-fit: cover;
-  -o-object-position: center;
-     object-position: center;
+  object-fit: cover;
+  object-position: center;
 }
 .second__item .advertisement__list-item-title a {
   display: block;
@@ -431,10 +423,8 @@
   max-height: 187px;
   width: 100%;
   height: 100%;
-  -o-object-fit: cover;
-     object-fit: cover;
-  -o-object-position: center;
-     object-position: center;
+  object-fit: cover;
+  object-position: center;
 }
 
 .vip__list-item-title {
@@ -551,10 +541,8 @@
 .recent-announcements__list-item-article-img img {
   width: 100%;
   height: 100%;
-  -o-object-fit: cover;
-     object-fit: cover;
-  -o-object-position: center;
-     object-position: center;
+  object-fit: cover;
+  object-position: center;
   border-radius: 5px;
 }
 
@@ -652,10 +640,8 @@
   max-height: 187px;
   width: 100%;
   height: 100%;
-  -o-object-fit: cover;
-     object-fit: cover;
-  -o-object-position: center;
-     object-position: center;
+  object-fit: cover;
+  object-position: center;
 }
 
 .vip__list-item-title {
@@ -696,4 +682,6 @@
   display: flex;
   gap: 10px;
   flex-wrap: wrap-reverse;
-}/*# sourceMappingURL=main.css.map */
+}
+
+/*# sourceMappingURL=main.css.map */

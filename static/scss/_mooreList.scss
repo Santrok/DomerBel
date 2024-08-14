@@ -1,0 +1,25 @@
+.more{
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.more__item {
+  & h2 {
+    margin-bottom: 5px;
+     & a {
+      @include fonts($defaultColor, 16px, 600);
+
+      &:hover {
+        color: $colorHover;
+      }
+     }
+  }
+
+  & ul {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+}
