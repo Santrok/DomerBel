@@ -20,7 +20,7 @@ from advertisement.utils import (get_region_variables, sorted_by, sorted_by_numb
                                  annotating_field)
 from config import settings
 from main_page_domer.forms import FeedbackForm
-from main_page_domer.models import Help, Publication
+from main_page_domer.models import Help, Publication, AboutOrganization
 
 
 def get_main_page(request):
@@ -611,3 +611,17 @@ def dowload_photo(request):
                 photo.save()
 
     return render(request, 'download_adver.html')
+
+
+def get_base_page(request):
+    '''Отдает базовую страничку'''
+    organization = AboutOrganization.objects.last()
+    context = {
+        "organization": organization
+    }
+    return render(request,'base.html', context)
+
+# def page_not_found(request, exception):
+def page_not_found(request):
+    '''отдает страничку с ошибкой 404'''
+    return render(request, '404.html', status=404)

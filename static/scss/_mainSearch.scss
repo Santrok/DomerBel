@@ -1,0 +1,105 @@
+.main__search {
+    background: #3cb371;
+    padding: 5px;
+    border-radius: 5px;
+}
+
+.main__search-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.main__search-form-item {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 5px;
+
+    & input {
+        flex: 1 1 350px;
+        padding: 6px;
+        border: 1px solid $gray;
+        border-radius: 5px;
+        @include fonts($defaultColor,14px, 400);
+        &::placeholder {
+            @include fonts(gray,14px, 400);
+        }
+    }
+
+    & select {
+        border: 1px solid $gray;
+        flex: 1 1 200px;
+        padding: 5px;
+        border-radius: 5px;
+        @include fonts($defaultColor,14px, 400);
+    }
+
+    & button {
+        flex: 0 1 200px;
+        padding: 5px;
+        background: $buttonBg;
+        @include fonts(white,20px, 600);
+        border-radius: 5px;
+    }
+}
+
+.labels {
+    gap: 15px;
+}
+
+.fields {
+    display: none;
+    &:has(select) {
+        display: flex;
+    }
+    & select {
+        flex: 1 1 320px;
+    }
+}
+
+.main__search-form-item-area{
+    display: none;
+}
+
+
+.main__search-form-item-label-wrap {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    flex: 1 1 auto;
+
+    & label {
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+
+        & input  {
+            flex: initial
+        }
+
+        & p {
+            @include fonts($defaultColor,14px, 400);
+        }
+    }
+}
+
+.search__profile {
+    background: $userSearchBg;
+
+    & .main__search-form-item-label-wrap {
+        & input[type="text"] {
+            flex: 0 1 270px;
+        }
+    }
+}
+
+@media (max-width:992px) {
+    .main__search-form-item {
+        & button {
+            flex: 1 1 200px;
+        }
+    }
+}
