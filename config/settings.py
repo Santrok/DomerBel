@@ -79,6 +79,7 @@ TEMPLATES = [
                 'advertisement.context_processors.get_date_today',
                 'advertisement.context_processors.get_data_category_and_region',
                 'config.context_processor.get_context_data',
+                'main_page_domer.context_processor.get_data_about_organization',
             ],
         },
     },

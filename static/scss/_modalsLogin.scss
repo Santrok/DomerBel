@@ -1,0 +1,62 @@
+.modals__login {
+    width: 100%;
+    max-width: 450px;
+    display: none;
+    flex-direction: column;
+    gap: 20px;
+    background: #ffff;
+    padding: 40px;
+    border-radius: 8px;
+
+    & fieldset {
+        display: flex;
+    }
+}
+
+.modals__signIn-field {
+    position: relative;
+    &:has(.modals__signIn-error ~input[type=password]) .views {
+        top: 33px;
+      }
+}
+
+
+
+.modals__login-field {
+    flex-direction: column;
+    gap: 15px;
+    align-items: stretch;
+
+    & input {
+        padding: 10px;
+        border-radius: 8px;
+        border: 1px solid black;
+
+        &::placeholder {
+            @include fonts(rgb(110, 109, 109), 14px, 400);
+        }
+    }
+
+    & button {
+        padding: 10px;
+        border: 1px solid black;
+        @include fonts($defaultColor, 14px, 400);
+        border-radius: 8px;
+    }
+}
+
+.modals__login-action {
+    justify-content: space-between;
+    padding: 0 10px;
+}
+
+.modals__login-logo-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+
+    & h2 {
+        @include fonts($defaultColor, 14px, 400);
+    }
+}

@@ -304,7 +304,10 @@ def search_result(request):
         search_parameters['additional_information__contains'] = search
 
     try:
-        category_queryset_an = Category.objects.add_related_count(category.get_descendants(),
+        print(search_parameters)
+        category_queryset_an = Category.objects.add_related_count(category.get_descendants() if
+                                                                  category else
+                                                                  Category.objects.root_nodes(),
                                                                   Advertisement,
                                                                   'category',
                                                                   'advertisement_counts',

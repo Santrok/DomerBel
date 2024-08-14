@@ -20,7 +20,7 @@ from advertisement.utils import (get_region_variables, sorted_by, sorted_by_numb
                                  annotating_field)
 from config import settings
 from main_page_domer.forms import FeedbackForm
-from main_page_domer.models import Help, Publication
+from main_page_domer.models import Help, Publication, AboutOrganization
 
 
 def get_main_page(request):
@@ -361,11 +361,12 @@ def search_for_advertisements_in_the_store(request, store_slug):
 
 
 def get_site_map_page(request):
-    category_list = Category.objects.all()
+    category_list = Category.objects.prefetch_related('field_set__spisok__element_set', 'field_set')
 
 
-    context = {}
-    context['nodes'] = category_list
+    context = {
+        'nodes': category_list
+    }
 
     return render(request, 'map.html', context)
 
@@ -611,3 +612,9 @@ def dowload_photo(request):
                 photo.save()
 
     return render(request, 'download_adver.html')
+
+
+# def page_not_found(request, exception):
+def page_not_found(request):
+    '''отдает страничку с ошибкой 404'''
+    return render(request, '404.html', status=404)

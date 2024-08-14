@@ -4,6 +4,7 @@ from functools import cached_property
 from django.core.cache import cache
 
 from advertisement.models import Category, Region
+from main_page_domer.models import AboutOrganization
 
 
 def get_date_today(request):

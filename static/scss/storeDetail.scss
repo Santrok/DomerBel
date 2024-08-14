@@ -1,0 +1,115 @@
+@import "./variables";
+@import "./mixins";
+@import "./advertisementItem";
+
+.store {
+  margin: 20px 0;
+  display: flex;
+  border: 1px solid $gray;
+  border-radius: 0 0 5px 5px;
+}
+
+.store__about {
+  flex: 1 1 auto;
+  border-right: 1px solid $gray;
+  & h2 {
+    padding: 15px 15px 50px;
+    @include fonts($defaultColor, 18px, 600);
+    border-bottom: 1px solid $gray;
+    background: #f1f1d8;
+  }
+
+  & p {
+    padding: 15px;
+    @include fonts($defaultColor, 14px, 400);
+    word-break: break-word;
+  }
+}
+
+.store__info {
+  padding: 8px;
+  flex: 0 0 340px;
+}
+
+.store__info-img {
+  max-width: 140px;
+  margin-bottom: 15px;
+  & img {
+    max-height: 93px;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: center;
+  }
+}
+
+.store__info-district {
+  @include fonts($defaultColor, 16px, 400);
+  margin-bottom: 10px;
+}
+
+.store__info-text {
+  @include fonts($defaultColor, 14px, 400);
+  word-break: break-word;
+  margin-bottom: 10px;
+}
+
+.store__send-email {
+  margin: 10px 0;
+  @include fonts($mainColor, 14px, 400);  
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  &::before {
+    content: "";
+    display: block;
+    width: 15px;
+    height: 15px;
+    background: url(../img/icons/email.gif) no-repeat center/cover;
+  }
+  &:hover {
+    color: $colorHover;
+  }
+}
+
+.store__info-phone {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  &::before {
+    content: "";
+    display: block;
+    width: 15px;
+    height: 15px;
+    background: url(../img/icons/telefon.gif) no-repeat center/cover;
+  }
+}
+
+.store__info-site {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  &::before {
+    content: "";
+    display: block;
+    width: 15px;
+    height: 15px;
+    background: url(../img/icons/site.png) no-repeat center/cover;
+  }
+}
+
+@media (max-width:992px) {
+  .store {
+    flex-direction: column;
+  }
+
+  .store__info {
+    flex: initial;
+  }
+
+  .store__about {
+    border-right: none;
+    border-bottom: 1px solid $gray;
+  }
+}

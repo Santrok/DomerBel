@@ -1,0 +1,28 @@
+
+.filter {
+    padding-top: 30px;
+}
+
+.filter__list {
+    border-top: 1px solid $gray;
+    padding-top: 5px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    align-items: center;
+    justify-items: center;
+    gap: 5px;
+}
+
+.filter__list-item {
+    & a {
+        @include fonts($mainColor, 16px, 400);
+
+        &:hover{
+            color: $colorHover;
+        }
+
+        & span {
+            color:gray;
+        }
+    }
+}
