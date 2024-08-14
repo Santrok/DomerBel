@@ -101,7 +101,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 class UserFavorites(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    favorites = ArrayField(models.IntegerField(), default=list())
+    favorites = ArrayField(models.IntegerField(), default=list)
 
     def __str__(self):
         return f'{self.user}'
