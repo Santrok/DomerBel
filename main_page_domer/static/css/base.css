@@ -102,8 +102,10 @@
   max-height: 800px;
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  object-position: center;
+  -o-object-fit: cover;
+     object-fit: cover;
+  -o-object-position: center;
+     object-position: center;
   border: 1px solid #D4D4D4;
   border-radius: 8px;
 }
@@ -139,8 +141,10 @@
 .magnifier__zoom-second img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  object-position: center;
+  -o-object-fit: cover;
+     object-fit: cover;
+  -o-object-position: center;
+     object-position: center;
   border-radius: 8px;
 }
 
@@ -186,6 +190,13 @@
   padding: 10px;
   border-radius: 8px;
   border: 1px solid black;
+}
+.modals__login-field input::-moz-placeholder {
+  font-family: "Trebuchet MS", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  color: rgb(110, 109, 109);
+  font-size: 14px;
 }
 .modals__login-field input::placeholder {
   font-family: "Trebuchet MS", sans-serif;
@@ -444,6 +455,13 @@
   border: 1px solid black;
   width: 100%;
 }
+.modals__report-advertisement input::-moz-placeholder, .modals__report-advertisement select::-moz-placeholder, .modals__report-advertisement textarea::-moz-placeholder {
+  font-family: "Trebuchet MS", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  color: rgb(110, 109, 109);
+  font-size: 14px;
+}
 .modals__report-advertisement input::placeholder, .modals__report-advertisement select::placeholder, .modals__report-advertisement textarea::placeholder {
   font-family: "Trebuchet MS", sans-serif;
   font-weight: 400;
@@ -672,7 +690,7 @@ header {
   gap: 5px;
 }
 .main__search-form-item input {
-  flex: 1 1 350px;
+  flex: 1 1 400px;
   padding: 6px;
   border: 1px solid #D4D4D4;
   border-radius: 5px;
@@ -680,6 +698,13 @@ header {
   font-weight: 400;
   font-style: normal;
   color: black;
+  font-size: 14px;
+}
+.main__search-form-item input::-moz-placeholder {
+  font-family: "Trebuchet MS", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  color: gray;
   font-size: 14px;
 }
 .main__search-form-item input::placeholder {
@@ -765,6 +790,15 @@ header {
   .main__search-form-item button {
     flex: 1 1 200px;
   }
+  .region {
+    order: 1;
+  }
+  .labels {
+    order: 3;
+  }
+  .fields {
+    order: 2;
+  }
 }
 .paginator {
   width: 100%;
@@ -807,7 +841,9 @@ header {
   color: #fff;
   font-size: 16px;
   opacity: 0;
-  user-select: none;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
 }
 
 .access__active {
@@ -917,8 +953,10 @@ footer {
 .footer__payment-info img {
   width: 100%;
   height: 100%;
-  object-fit: contain;
-  object-position: center;
+  -o-object-fit: contain;
+     object-fit: contain;
+  -o-object-position: center;
+     object-position: center;
 }
 
 a {
@@ -962,11 +1000,49 @@ a:hover {
   color: white;
 }
 .submit__btn:hover::before {
-  z-index: -12;
+  z-index: -1;
   height: 100%;
   transition: 0.3s ease;
 }
 .submit__btn:active {
+  top: 1px;
+}
+
+.remove__btn {
+  padding: 10px;
+  border: 1px solid black;
+  border-radius: 8px;
+  font-family: "Trebuchet MS", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  color: black;
+  font-size: 14px;
+  transition: 0.3s ease;
+  position: relative;
+  z-index: 1;
+  width: 100%;
+}
+.remove__btn::before {
+  content: "";
+  display: block;
+  width: 100%;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 0;
+  background: red;
+  border-radius: 8px;
+}
+.remove__btn:hover {
+  transition: 0.3s ease;
+  color: white;
+}
+.remove__btn:hover::before {
+  z-index: -1;
+  height: 100%;
+  transition: 0.3s ease;
+}
+.remove__btn:active {
   top: 1px;
 }
 
@@ -987,6 +1063,4 @@ input:focus, select:focus, textarea:focus {
 
 img {
   border-radius: 7px;
-}
-
-/*# sourceMappingURL=base.css.map */
+}/*# sourceMappingURL=base.css.map */
