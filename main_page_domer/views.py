@@ -361,11 +361,12 @@ def search_for_advertisements_in_the_store(request, store_slug):
 
 
 def get_site_map_page(request):
-    category_list = Category.objects.all()
+    category_list = Category.objects.prefetch_related('field_set__spisok__element_set', 'field_set')
 
 
-    context = {}
-    context['nodes'] = category_list
+    context = {
+        'nodes': category_list
+    }
 
     return render(request, 'map.html', context)
 

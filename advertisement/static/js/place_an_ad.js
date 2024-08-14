@@ -328,7 +328,7 @@ ${i.title ? i.title : i.title_ad}
 <div class="additional_information_item-price">
 <div class="additional_information_item item_input">
 <div class="information_label label_fields">
-${i.title ? i.title : i.title_ad} руб
+${i.title ? i.title : i.title_ad}, руб
 </div>
 <div class="information_select">
 <div class="information_item">
