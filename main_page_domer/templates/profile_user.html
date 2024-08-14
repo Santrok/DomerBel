@@ -73,7 +73,7 @@
                     Добавить магазин
                     </a>
                 </li>
-                {% if user.store_set %}
+                {% if user.store_set.all %}
                 <li class="profile__aside-nav-list-item priority">
                     <a href="{% url 'users:my_store' %}">
                     Мои магазины

@@ -690,7 +690,7 @@ header {
   gap: 5px;
 }
 .main__search-form-item input {
-  flex: 1 1 350px;
+  flex: 1 1 400px;
   padding: 6px;
   border: 1px solid #D4D4D4;
   border-radius: 5px;
@@ -789,6 +789,15 @@ header {
 @media (max-width: 992px) {
   .main__search-form-item button {
     flex: 1 1 200px;
+  }
+  .region {
+    order: 1;
+  }
+  .labels {
+    order: 3;
+  }
+  .fields {
+    order: 2;
   }
 }
 .paginator {
@@ -991,11 +1000,49 @@ a:hover {
   color: white;
 }
 .submit__btn:hover::before {
-  z-index: -12;
+  z-index: -1;
   height: 100%;
   transition: 0.3s ease;
 }
 .submit__btn:active {
+  top: 1px;
+}
+
+.remove__btn {
+  padding: 10px;
+  border: 1px solid black;
+  border-radius: 8px;
+  font-family: "Trebuchet MS", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  color: black;
+  font-size: 14px;
+  transition: 0.3s ease;
+  position: relative;
+  z-index: 1;
+  width: 100%;
+}
+.remove__btn::before {
+  content: "";
+  display: block;
+  width: 100%;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 0;
+  background: red;
+  border-radius: 8px;
+}
+.remove__btn:hover {
+  transition: 0.3s ease;
+  color: white;
+}
+.remove__btn:hover::before {
+  z-index: -1;
+  height: 100%;
+  transition: 0.3s ease;
+}
+.remove__btn:active {
   top: 1px;
 }
 
