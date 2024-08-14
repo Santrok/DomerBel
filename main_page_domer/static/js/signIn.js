@@ -10,9 +10,13 @@ const cross = document.querySelectorAll('.cross');
 
 cross.forEach(item => {
     item.addEventListener('click', () => {
-        item.parentElement.classList.remove('modal__active')
-        item.parentElement.parentElement.classList.remove('modal__active')
-        item.parentElement.classList.remove('modals__active-resetPassword')
+        const activeList = [...document.querySelectorAll('.modal__active'), ...document.querySelectorAll('.modals__active-grid')];
+        for(let i of activeList) {
+            i.classList.remove('modal__active') || i.classList.remove("modals__active-grid");
+            if (i.tagName === 'FORM') {
+                i.reset()
+            }
+        }
     })
 })
 

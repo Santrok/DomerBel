@@ -17,7 +17,7 @@
     gap: 5px;
 
     & input {
-        flex: 1 1 350px;
+        flex: 1 1 400px;
         padding: 6px;
         border: 1px solid $gray;
         border-radius: 5px;
@@ -101,5 +101,16 @@
         & button {
             flex: 1 1 200px;
         }
+    }
+    .region {
+        order: 1;
+    }
+
+    .labels{
+        order: 3;
+    }
+
+    .fields {
+        order: 2;
     }
 }
