@@ -15,8 +15,8 @@
   </head>
   <body>
     <div class="wrapper" data-url="{{ url }}">
-        <div class="modals">
-            <form class="modals__login" id="login_form" enctype="multipart/form-data">
+        <div aria-modal="true" class="modals">
+            <form aria-modal="true" class="modals__login" id="login_form" enctype="multipart/form-data">
                 <div class="cross">
                     <svg width="20.000000" height="20.000000" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
                         <desc>
@@ -69,7 +69,7 @@
                     </a>
                 </fieldset>
             </form>
-            <form class="modals__signIn" enctype="multipart/form-data"  id="registration_form">
+            <form aria-modal="true" class="modals__signIn" enctype="multipart/form-data"  id="registration_form">
                 <div class="cross">
                     <svg width="20.000000" height="20.000000" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
                         <desc>
@@ -148,7 +148,7 @@
                     Вход
                 </a>
             </form>
-            <form class="modals__reset-password">
+            <form aria-modal="true" class="modals__reset-password">
                 <div class="cross">
                     <svg width="20.000000" height="20.000000" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
                         <desc>
@@ -188,7 +188,7 @@
                     Назад
                 </a>
             </form>
-            <form class="modals__report-advertisement">
+            <form aria-modal="true" class="modals__report-advertisement">
                 <div class="cross">
                     <svg width="20.000000" height="20.000000" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
                         <desc>
@@ -236,7 +236,7 @@
                     Отправить
                 </button>
             </form>
-            <div class="modals__notification">
+            <div aria-modal="true" class="modals__notification">
                 <div class="cross">
                     <svg width="20.000000" height="20.000000" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
                         <desc>
@@ -305,7 +305,7 @@
             {% block modals %}
             {% endblock modals %}
         </div>
-        <div class="form__notifications-access">
+        <div aria-modal="true" class="form__notifications-access">
             Выполнено успешно
         </div>
         <div class="container">
