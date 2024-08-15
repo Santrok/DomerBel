@@ -11,10 +11,10 @@
     {% recursetree nodes %}
         <li>
             <a href="#">{{ node.title }}</a>
-        <div class="" style="display: flex; width: 100%;"></div>
-        {% for element in node.field_set.first.spisok.element_set.all%}
-            <a href="#">{{ element.title }}</a>
-        {% endfor %}
+{#        <div class="" style="display: flex; width: 100%;"></div>#}
+{#        {% for element in node.field_set.first.spisok.element_set.all%}#}
+{#            <a href="#">{{ element.title }}</a>#}
+{#        {% endfor %}#}
 
             {% if not node.is_leaf_node %}
                 <ul class="map__list-children">

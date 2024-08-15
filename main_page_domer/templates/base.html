@@ -7,16 +7,21 @@
     {% endblock %}
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="{% if meta_category %}{{meta_category.keywords_description}}{% else %}{{adaptive_navigation}}{% endif %}" />
+    <meta name="keywords" content="DomerBel, Domer, ДомерБел, Домер, Объявления Беларусь, Объявления, advertisement, advertisement Belarus" />
+    <meta name="author" content="ITEC Technology Oliver1ck, Santrok, Kos100fei" />
+    <meta property="og:title" content="{% if meta_category %}{{ meta_category.fav_title }}{% else %}{{ adaptive_navigation }}{% endif %}" />
+    <meta name="darkreader-lock" />
     <link rel="stylesheet" href="{% static 'css/null.css' %}">
-    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'css/base-min.css' %}">
     {% block css %}
     {% endblock %}
-    <title>{{ title }}</title>
+    <title>{{ adaptive_navigation }}</title>
   </head>
   <body>
     <div class="wrapper" data-url="{{ url }}">
-        <div class="modals">
-            <form class="modals__login" id="login_form" enctype="multipart/form-data">
+        <div aria-modal="true" class="modals">
+            <form aria-modal="true" class="modals__login" id="login_form" enctype="multipart/form-data">
                 <div class="cross">
                     <svg width="20.000000" height="20.000000" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
                         <desc>
@@ -69,7 +74,7 @@
                     </a>
                 </fieldset>
             </form>
-            <form class="modals__signIn" enctype="multipart/form-data"  id="registration_form">
+            <form aria-modal="true" class="modals__signIn" enctype="multipart/form-data"  id="registration_form">
                 <div class="cross">
                     <svg width="20.000000" height="20.000000" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
                         <desc>
@@ -148,7 +153,7 @@
                     Вход
                 </a>
             </form>
-            <form class="modals__reset-password">
+            <form aria-modal="true" class="modals__reset-password">
                 <div class="cross">
                     <svg width="20.000000" height="20.000000" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
                         <desc>
@@ -188,7 +193,7 @@
                     Назад
                 </a>
             </form>
-            <form class="modals__report-advertisement">
+            <form aria-modal="true" class="modals__report-advertisement">
                 <div class="cross">
                     <svg width="20.000000" height="20.000000" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
                         <desc>
@@ -236,7 +241,7 @@
                     Отправить
                 </button>
             </form>
-            <div class="modals__notification">
+            <div aria-modal="true" class="modals__notification">
                 <div class="cross">
                     <svg width="20.000000" height="20.000000" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
                         <desc>
@@ -305,7 +310,7 @@
             {% block modals %}
             {% endblock modals %}
         </div>
-        <div class="form__notifications-access">
+        <div aria-hidden="true" class="form__notifications-access">
             Выполнено успешно
         </div>
         <div class="container">
@@ -353,8 +358,8 @@
                     {% endif %}
                 </div>
                 <div class="header__bottom">
-                    <a href="{% url 'home' %}" class="header__logo">
-                        <img src="{% static 'img/logo.png' %}" alt="">
+                    <a href="{% url 'home' %}" class="header__logo" aria-label="Go to the main page">
+                        <img src="{% static 'img/logo.png' %}" alt="logo company">
                     </a>
                     <nav class="header__bottom-nav">
                         <h2 class="header__bottom-nav-title">
@@ -395,7 +400,7 @@
                     <search class="main__search">
                         <form class="main__search-form" action="{% url 'search_result' %}" method="GET">
                         <fieldset class="main__search-form-item region">
-                            <select name="category" class="main__search-form-item-category">
+                            <select name="category" class="main__search-form-item-category" aria-label="All sections">
                                 <option value="">
                                     Все разделы
                                 </option>
@@ -408,7 +413,7 @@
                             {% endfor %}
                             </select>
                             <input type="text" name="text_search" placeholder="Поиск по тексту" />
-                            <select name="region" class="main__search-form-item-region">
+                            <select name="region" class="main__search-form-item-region" aria-label="Any location">
                                 <option value="">
                                     Любое расположение
                                 </option>
@@ -526,10 +531,9 @@
     <script src="{% static 'js/main/search.js' %}"></script>
     <script src="{% static 'js/main/moreList.js' %}"></script>
     <script src="{% static 'js/autorization.js' %}"></script>
-    <script src="{% static 'js/main/login.js' %}"></script>
+    <script src="{% static 'js/compress/login-compress.js' %}"></script>
     <script src="{% static 'js/signIn.js' %}"></script>
     <script src="{% static 'js/main/resetPassword.js' %}"></script>
-    <script src="{% static 'js/main/setUrl.js' %}"></script>
     <script src="{% static 'js/main/notification.js' %}"></script>
     <script src="{% static "js/main/showPassword.js" %}"></script>
     <script src="{% static "js/main/favorites.js" %}"></script>
