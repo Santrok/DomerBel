@@ -59,3 +59,4 @@ admin.site.register(Store, StoreAdmin)
 admin.site.register(UploadFile)
 admin.site.register(ErrorFile)
 
+

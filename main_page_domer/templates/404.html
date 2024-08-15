@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block css %}
+    <link rel="stylesheet" href="{% static 'css/404.css' %}">
+{% endblock css %}
+{% block content %}
+<section class="error_404">
+    <div class="error_404_image">
+        <img src="{% static 'img/404.png' %}" alt="{% static 'img/404.png' %}">
+    </div>
+    <div class="error_404_text">
+        <h1 class="error__title">Страница не найдена</h1>
+        <p class="error__text">По данному адресу ничего не найдено.
+        Попробуйте начать с главной страницы
+            <a href="http://127.0.0.1:8000/">Домер.бел</a>
+        </p>
+    </div>
+</section>
+{% endblock content %}

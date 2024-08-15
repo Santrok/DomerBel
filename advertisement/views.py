@@ -10,6 +10,9 @@ from django.http import Http404
 from django.shortcuts import render, get_object_or_404
 from django.utils.timezone import get_current_timezone
 
+from main_page_domer.forms import ComplaintForm
+from main_page_domer.models import ReasonOfComplaint
+
 from .models import Advertisement, Category, Region, Spisok, Element, ElementTwo, Field,  BadWords, ErrorFile
 from .tasks import save_many_ads_from_zip_task, save_many_ads_from_excel_task
 from .utils import sorted_by_number, variables_for_paginator, sorted_by_date_or_price, sorted_by, \
@@ -197,10 +200,14 @@ def get_advertisement_details_page(request, slug):
     similar_advertisement = random.sample(similar_advertisement,
                                           4 if len(similar_advertisement) >= 4 else len(similar_advertisement))
     similar_advertisement = Advertisement.objects.filter(id__in=similar_advertisement)
+    reason_of_complaint = ReasonOfComplaint.objects.all()
+    form = ComplaintForm()
     context = {
         "advertisement": advertisement_main,
         "category_crumbs": category_crumbs,
-        "similar_advertisement": similar_advertisement
+        "similar_advertisement": similar_advertisement,
+        "reason_list": reason_of_complaint,
+        "form": form
     }
     return render(request=request,
                   template_name='advertisement_details.html',
@@ -251,7 +258,7 @@ def search_result(request):
     search_parameters = {}
     search_parameters_only = {}
     category_queryset_an = []
-    key_delete = ['page', 'sort', 'date', 'price', 'text_search']
+    key_delete = ['page', 'sort', 'date', 'price', 'text_search','only_title']
     cop = dict.copy(request.GET)
 
     sort_for_paginator = sorted_by_number(request.COOKIES.get('sort'))
@@ -277,7 +284,6 @@ def search_result(request):
         cop.pop('only_video')
     if request.GET.get('only_title') and request.GET.get('text_search'):
         search_parameters['search_title_vector'] = request.GET.get('text_search')
-        cop.pop('only_title')
     elif request.GET.get('text_search'):
         search_parameters['search_vector'] = request.GET.get('text_search')
 
@@ -298,7 +304,10 @@ def search_result(request):
         search_parameters['additional_information__contains'] = search
 
     try:
-        category_queryset_an = Category.objects.add_related_count(category.get_descendants(),
+        print(search_parameters)
+        category_queryset_an = Category.objects.add_related_count(category.get_descendants() if
+                                                                  category else
+                                                                  Category.objects.root_nodes(),
                                                                   Advertisement,
                                                                   'category',
                                                                   'advertisement_counts',

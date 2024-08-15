@@ -62,7 +62,7 @@
             </div>
             <div class="additional_information">
                 {% for information in additional_information %}
-                    {% if not information.spisok and information.min_val_interval_date == 0 and information.title != 'Цена' and information.title != 'Арендная плата' %}
+                    {% if not information.spisok and information.min_val_interval_date == 0 and information.title != 'Цена' and information.title != 'Арендная плата' and information.title != 'Зарплата' and information.title != 'Минимальная зарплата' %}
                         <div class="additional_information_item-{{ information.id }}">
                             <div class="additional_information_item item_input">
                                 <div class="information_label label_fields">
@@ -129,11 +129,11 @@
                                 </div>
                             </div>
                         {% endif %}
-                    {% elif information.title == 'Цена' or information.title == 'Арендная плата' %}
+                    {% elif information.title == 'Цена' or information.title == 'Арендная плата' or information.title == 'Зарплата' or information.title == 'Минимальная зарплата' %}
                         <div class="additional_information_item-price">
                             <div class="additional_information_item item_input">
                                 <div class="information_label label_fields">
-                                    {{ information.title }} руб
+                                    {{ information.title }}, руб
                                 </div>
                                 <div class="information_select">
                                     <p class="information_item">
@@ -199,7 +199,6 @@
                         <label for="bearer_company">
                             Компания
                         </label>
-
                     </div>
                 </div>
             </div>
@@ -285,5 +284,4 @@
 {% endblock %}
 {% block js %}
     <script src="{% static 'js/place_an_ad.js' %}"></script>
-    <script src="{% static 'js/editing_an_ad.js' %}"></script>
 {% endblock %}

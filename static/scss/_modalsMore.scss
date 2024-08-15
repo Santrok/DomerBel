@@ -1,0 +1,50 @@
+.modals__more {
+  width: 100%;
+  max-width: 920px;
+  padding: 15px;
+  background: #fff;
+  border-radius: 5px;
+  display: none;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 10px;
+  position: relative;
+  transition: .5s ease;
+  opacity: 0;
+  & h3 {
+    margin-bottom: 10px;
+    & a {
+      @include fonts($defaultColor, 21px, 400);
+
+      &:hover {
+        color: $colorHover;
+      }
+    }
+  }
+}
+
+.modals__more-close {
+  position: absolute;
+  right: 5px;
+  top: 5px;
+  width: 15px;
+  height: 15px;
+  background: rgb(0, 0, 0, 0.5);
+  cursor: pointer;
+
+  &::before, &::after {
+    content: "";
+    display: block;
+    width: 100%;
+    height: 2px;
+    background: #fff;
+    position: absolute;
+    top: 45%;
+    right: 0;
+    z-index: 1;
+    transform: rotate(45deg);
+  }
+
+  &::after {
+    transform: rotate(-45deg);
+  }
+}

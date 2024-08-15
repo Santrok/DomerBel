@@ -135,3 +135,21 @@ class Help(models.Model):
 
     def __str__(self):
         return f'Текст страницы помощь'
+
+
+class AboutOrganization(models.Model):
+    '''Модель для отдает информацию об организации в footer страницы'''
+    name_organization = models.CharField(max_length=255,verbose_name='Название организации')
+    unp = models.CharField(max_length=9, verbose_name='УНП')
+    legal_address = models.CharField(max_length=255, verbose_name='Юридический адрес')
+    phone_num = models.CharField(max_length=255, verbose_name='Номер телефона')
+    email = models.EmailField(verbose_name='E-Mail')
+    additional_info = models.TextField(verbose_name='Дополнительная информация', null=True, blank=True)
+
+    def __str__(self):
+        return self.name_organization
+
+    class Meta:
+        verbose_name = 'Об организации'
+        verbose_name_plural = 'Об организации'
+

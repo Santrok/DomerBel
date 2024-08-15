@@ -19,8 +19,8 @@ from advertisement.utils import (get_region_variables, sorted_by, sorted_by_numb
                                  variables_for_paginator, where_to_look, search_additional_information,
                                  annotating_field)
 from config import settings
-from main_page_domer.forms import FeedbackForm, ComplaintForm
-from main_page_domer.models import Help, ReasonOfComplaint, Complaint, Publication
+from main_page_domer.forms import FeedbackForm
+from main_page_domer.models import Help, Publication, AboutOrganization
 
 
 def get_main_page(request):
@@ -263,7 +263,7 @@ def search_for_advertisements_in_the_store(request, store_slug):
     search_parameters = {}
     search_parameters_only = {}
     category_queryset_an = []
-    key_delete = ['page', 'sort', 'date', 'price', 'text_search']
+    key_delete = ['page', 'sort', 'date', 'price', 'text_search', 'only_video']
     cop = dict.copy(request.GET)
 
     sort_for_paginator = sorted_by_number(request.COOKIES.get('sort'))
@@ -286,7 +286,6 @@ def search_for_advertisements_in_the_store(request, store_slug):
         cop.pop('only_photo')
     if request.GET.get('only_video'):
         search_parameters_only['video_link__exact'] = ''
-        cop.pop('only_video')
     if request.GET.get('only_title') and request.GET.get('text_search'):
         search_parameters['search_title_vector'] = request.GET.get('text_search')
         cop.pop('only_title')
@@ -362,11 +361,12 @@ def search_for_advertisements_in_the_store(request, store_slug):
 
 
 def get_site_map_page(request):
-    category_list = Category.objects.all()
+    category_list = Category.objects.prefetch_related('field_set__spisok__element_set', 'field_set')
 
 
-    context = {}
-    context['nodes'] = category_list
+    context = {
+        'nodes': category_list
+    }
 
     return render(request, 'map.html', context)
 
@@ -445,75 +445,21 @@ def get_feedback_page(request):
                 return render(request, 'feedback.html',
                               {'feedback_form': new_feedback_form, 'error_message': str(error)})
 
-            messages.success(request, f"Ваше письмо администрации сайта отправлено")
+            messages.success(request, f"Ваше письмо отправлено администрации сайта ")
             return redirect("feedback")
 
         feedback_form = FeedbackForm(request.POST)
         feedback_form.errors.update(new_feedback_form.errors)
-        category_list = Category.objects.filter(level__lte=1)
         context = {
             "feedback_form": feedback_form,
-            "category_list": category_list
         }
         return render(request, 'feedback.html', context)
 
     feedback_form = FeedbackForm()
-    category_list = Category.objects.filter(level__lte=1)
     context = {
         "feedback_form": feedback_form,
-        "category_list": category_list
     }
     return render(request, 'feedback.html', context)
-
-
-def get_complaint_page(request, adv_id):
-    """ Страница отправки жалобы на объявление """
-    if request.method == "POST":
-        new_complaint_form = ComplaintForm(request.POST)
-
-        if new_complaint_form.is_valid():
-            reason = ReasonOfComplaint.objects.get(id=new_complaint_form.cleaned_data.get("reason"))
-            text = new_complaint_form.cleaned_data.get("text")
-            user = new_complaint_form.cleaned_data.get("email")
-            advertisement = Advertisement.objects.get(id=adv_id)
-            Complaint.objects.create(reason=reason, text=text, user=user, advertisement=advertisement)
-
-            subject = f'Жалоба на объявление id={adv_id}: "{reason.reason}" от пользователя {user}'
-            message = text
-
-            try:
-                send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [settings.EMAIL_HOST_USER])
-            except smtplib.SMTPException as error:
-                return render(request, 'complaint.html',
-                              {'complaint_form': new_complaint_form, 'error_message': str(error)})
-
-            messages.success(request, f"Ваша жалоба на объявление отправлена администрации сайта")
-            return redirect("complaint", adv_id=adv_id)
-
-        complaint_form = ComplaintForm(request.POST)
-        complaint_form.errors.update(new_complaint_form.errors)
-        advertisement = Advertisement.objects.get(id=adv_id)
-        category_list = Category.objects.filter(level__lte=1)
-        context = {
-            "complaint_form": complaint_form,
-            "advertisement": advertisement,
-            "category_list": category_list
-        }
-        return render(request, 'complaint.html', context)
-
-    complaint_form = ComplaintForm()
-    advertisement = Advertisement.objects.get(id=adv_id)
-    category_list = Category.objects.filter(level__lte=1)
-    context = {
-        "complaint_form": complaint_form,
-        "advertisement": advertisement,
-        "category_list": category_list
-    }
-    return render(request, 'complaint.html', context)
-
-
-def register_done(request):
-    return render(request, "message_after_register.html")
 
 
 def get_help_page(request):
@@ -528,7 +474,6 @@ def get_help_page(request):
 #======================================================================================================================
 def desc_and_opis(objavl):
     o = objavl.get("opis").split('<hr>')
-
     ad_info = {}
     for i in o[0].split('\n'):
         if i != objavl.get('zag') and i != '':
@@ -667,3 +612,9 @@ def dowload_photo(request):
                 photo.save()
 
     return render(request, 'download_adver.html')
+
+
+# def page_not_found(request, exception):
+def page_not_found(request):
+    '''отдает страничку с ошибкой 404'''
+    return render(request, '404.html', status=404)

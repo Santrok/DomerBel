@@ -11,7 +11,6 @@ from drf_yasg import openapi
 from main_page_domer.sitemap import CategorySitemap
 
 
-
 schema_view = get_schema_view(
     openapi.Info(
         title="Snippets API",
@@ -27,7 +26,9 @@ schema_view = get_schema_view(
 
 sitemaps = {  
     'categories': CategorySitemap,  
-}  
+}
+
+# handler404 = 'main_page_domer.views.page_not_found'
 
 urlpatterns = [
     path('swagger<format>/', schema_view.without_ui(cache_timeout=0), name='schema-json'),
