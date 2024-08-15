@@ -28,7 +28,7 @@
     @include fonts($defaultColor, 14px, 400);
 
     &::placeholder {
-      @include fonts(gray, 14px, 400);
+      @include fonts(#545454, 14px, 400);
     }
   }
 

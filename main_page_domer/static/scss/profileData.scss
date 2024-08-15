@@ -42,7 +42,7 @@
     padding: 10px;
     border-radius: 7px;
     &::placeholder {
-      @include fonts($gray, 14px, 400);
+      @include fonts(#545454, 14px, 400);
     }
   }
 }

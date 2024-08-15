@@ -65,6 +65,7 @@ function createSelectElement(
   search = true
 ) {
   const select = document.createElement("select")
+  select.setAttribute("aria-label", title || titleObj.title)
   if (Array.isArray(data) && data?.some(item => item.level) && !data.some(item => item.area)) {
     select.setAttribute("name", "category")
     select.dataset.level = data[0]?.level

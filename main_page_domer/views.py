@@ -7,14 +7,15 @@ import PIL
 from django.contrib import messages
 from django.core.mail import send_mail
 from django.core.paginator import Paginator
-from django.db.models import Q, F
+from django.db.models import Q, F, Count, Func, Value
 from django.db.models.fields.json import KT
+from django.db.models.functions import Concat
 from django.http import Http404
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils.timezone import make_aware
 
 from users.models import User
-from advertisement.models import Advertisement, Region, Category, Store, ElementTwo, PhotoAdvertisement, Field
+from advertisement.models import Advertisement, Region, Category, Store, ElementTwo, PhotoAdvertisement, Field, Element
 from advertisement.utils import (get_region_variables, sorted_by, sorted_by_number, sorted_by_date_or_price,
                                  variables_for_paginator, where_to_look, search_additional_information,
                                  annotating_field)
@@ -363,6 +364,28 @@ def search_for_advertisements_in_the_store(request, store_slug):
 def get_site_map_page(request):
     category_list = Category.objects.prefetch_related('field_set__spisok__element_set', 'field_set')
 
+    # elements = Element.objects.alias(spisok__field_set__category__advertisement_set__additional_information
+
+    # element = Element.objects.annotate(field=F('spisok__field__title')).annotate(adver=Count(F(f'spisok__field__category__advertisement__additional_information__{field}__contains'))).filter(adver__gt=1)
+    #
+    # print(element)
+    #
+    # for e in element:
+    #
+    #     print(e.adver)
+
+    # elements = Element.objects.annotate(two=Concat('title', Value(", "), 'elementtwo__title')).annotate(adver=Count(F('spisok__field__category__advertisement__additional_information_view2__values__contains')))
+    # print(elements)
+
+    advertisement = Advertisement.objects.filter(category_id=4, additional_information_view2__values__contains=['Audi, 80'])
+    # advertisement = Advertisement.objects.filter(category_id=4, additional_information_view__contains=['Марка, модель', 'Audi, 80'])
+    # print(advertisement[0].additional_information_view)
+    print(advertisement)
+    # field = Field.objects.alias(f'category__advertisement_set__additional_information_')
+    # advertisement = Advertisement.objects.all()
+    # for a in advertisement:
+    #     a.additional_information_view2 = {key: value for key, value in a.additional_information_view}
+    #     a.save()
 
     context = {
         'nodes': category_list

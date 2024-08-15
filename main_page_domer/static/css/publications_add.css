@@ -34,7 +34,7 @@
   font-family: "Trebuchet MS", sans-serif;
   font-weight: 400;
   font-style: normal;
-  color: gray;
+  color: #545454;
   font-size: 14px;
 }
 .main__info input::placeholder,
@@ -42,7 +42,7 @@
   font-family: "Trebuchet MS", sans-serif;
   font-weight: 400;
   font-style: normal;
-  color: gray;
+  color: #545454;
   font-size: 14px;
 }
 .main__info button {

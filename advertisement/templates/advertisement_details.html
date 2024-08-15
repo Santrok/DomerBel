@@ -1,9 +1,17 @@
 {% extends "base.html" %} 
 {% load static %}
 {% load advertisement_tags %}
+
+{% block description %}
+<meta property="og:url" content="{{ url }}{{ advertisement.get_absolute_url }}" />
+<meta property="og:description" content="{{ advertisement.description|truncatechars:150 }}" />
+<meta property="og:image" content="{% if advertisement.preview_image %}{{url}}{{ advertisement.preview_image.url }}{% else %}{% static 'img/no_image.jpg' %}{% endif %}" />
+{% endblock description %}
+
+
 {% block css %}
- <link rel="stylesheet" href="{% static 'css/details.css'%}">
-{% endblock css %} 
+ <link rel="stylesheet" href="{% static 'css/details-min.css'%}">
+{% endblock css %}
 {% block crumbs %}
 <section class="crumbs">
     <div class="crumbs__wrapper">
@@ -27,7 +35,7 @@
       </ul>
     </div>
 </section>
-{% endblock crumbs %} 
+{% endblock crumbs %}
 
 {% block modals %}
 <div class="magnifier__zoom">
@@ -37,8 +45,8 @@
       <iframe width="100%" height="100%" src="https://www.youtube.com/embed/{{ advertisement.video_link|cut:'https://www.youtube.com/watch?v=' }}"
           title="YouTube video player"
           frameborder="0"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-          referrerpolicy="strict-origin-when-cross-origin" 
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          referrerpolicy="strict-origin-when-cross-origin"
           allowfullscreen>
       </iframe>
     </div>
@@ -76,6 +84,7 @@
 </div>
 {% endblock modals %}
 
+
 {% block content %}
 <section class="details">
     <div class="details__wrapper">
@@ -87,10 +96,10 @@
         <p class="details__advertisement-id">ID:{{ advertisement.id }}</p>
         <p>
             {% if advertisement.date_of_create.date == date_today %}
-            Сегодня 
+            Сегодня
             {% elif advertisement.date_of_create.date == date_yesterday %}
-            Вчера 
-            {% else %} 
+            Вчера
+            {% else %}
             {{ advertisement.date_of_create|date:"d b. Y" }}
             {% endif %}
             {{ advertisement.date_of_create|date:"H:i" }}
@@ -105,8 +114,8 @@
                 <iframe width="100%" height="100%" src="https://www.youtube.com/embed/{{ advertisement.video_link|cut:'https://www.youtube.com/watch?v=' }}"
                 title="YouTube video player"
                   frameborder="0"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-                  referrerpolicy="strict-origin-when-cross-origin" 
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  referrerpolicy="strict-origin-when-cross-origin"
                   allowfullscreen></iframe>
               </div>
               {% endif %}
@@ -126,24 +135,24 @@
               <img src="{% static 'img/icons/lupa.png' %}" alt="zoom">
             </div>
           </div>
-          <ul class="details__advertisement-view-list-img">
+          <div class="details__advertisement-view-list-img">
             {% if advertisement.video_link %}
-            <li class="details__advertisement-view-list-img-item video">
+            <div class="details__advertisement-view-list-img-item video">
               <img data-lazy="https://i.ytimg.com/vi/{{ advertisement.video_link|cut:'https://www.youtube.com/watch?v=' }}/hqdefault.jpg" alt="">
-            </li>
+            </div>
             {% endif %}
-              <li class="details__advertisement-view-list-img-item">
+              <div class="details__advertisement-view-list-img-item">
                     <img src="{% if advertisement.preview_image %} {{ advertisement.preview_image.url }} {% else %}{% static 'img/no_image.jpg' %}{% endif %}"
                                  alt="{% if advertisement.preview_image %} {{ advertisement.preview_image.url }} {% else %}{% static 'img/no_image.jpg' %}{% endif %}">
-              </li>
+              </div>
             {% for photo in advertisement.photoadvertisement_set.all %}
               {% if photo.photo.url != advertisement.preview_image.url %}
-            <li class="details__advertisement-view-list-img-item">
+            <div class="details__advertisement-view-list-img-item">
               <img data-lazy="{{ photo.photo.url }}" alt="{{ photo.photo.url }}">
-            </li>
+            </div>
               {% endif %}
             {% endfor %}
-          </ul>
+          </div>
         </div>
         <div class="details__advertisement-options">
           <p class="details__advertisement-options-view">
@@ -155,6 +164,7 @@
                 Сделать VIP-объявлением
               </a>
             </li>
+
             <li class="details__advertisement-options-list-item">
               <a href="#">
                 Выделить объявление
@@ -220,7 +230,7 @@
                 {{ title }}:
                   {% endif %}
             </p>
-            <p class="details__advertisement-additional-description-list-item-value 
+            <p class="details__advertisement-additional-description-list-item-value
             {% if title == 'Цена' or title == 'Арендная плата' or title == 'Зарплата' or title == 'Минимальная зарплата' %}details__advertisement-additional-description-list-item-value-price{% endif %}"
             >
               {% if title == "Этаж" %}
@@ -247,6 +257,7 @@
           <a role="link" aria-disabled="true" class="details__advertisement-add-report">
             Пожаловаться
           </a>
+
           <div class="ya-share2" data-url="{{ url }}{{ advertisement.get_absolute_url }}" data-curtain data-shape="round" data-limit="3" data-services="messenger,vkontakte,odnoklassniki,telegram,twitter,viber,whatsapp,moimir,pinterest,skype,tumblr,evernote,linkedin,lj,blogger,delicious,digg,reddit,pocket,qzone,renren,sinaWeibo,surfingbird,tencentWeibo"></div>
       </div>
     </div>
@@ -261,7 +272,7 @@
       <article class="similar__list-item">
         <a href="{% url 'advertisement_details' advertisement.slug %}">
           <div class="similar__list-item-img">
-            <img src="{% if advertisement.preview_image %} {{ advertisement.preview_image.url }} {% else %}{% static 'img/no_image.jpg' %}{% endif %}">
+            <img src="{% if advertisement.preview_image %} {{ advertisement.preview_image.url }} {% else %}{% static 'img/no_image.jpg' %}{% endif %}" alt="{{ advertisement.description|truncatechars:150 }}">
           </div>
           <h3 class="similar__list-title">
               {{ advertisement.title }}
