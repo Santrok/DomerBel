@@ -214,12 +214,20 @@
           {% if title and item %}
           <li class="details__advertisement-additional-description-list-item">
             <p class="details__advertisement-additional-description-list-item-title">
-              {{ title }}:
+              {% if title == 'Цена' or title == 'Арендная плата' or title == 'Зарплата' or title == 'Минимальная зарплата' %}
+                  {{ title }}, руб
+                  {% else %}
+                {{ title }}:
+                  {% endif %}
             </p>
             <p class="details__advertisement-additional-description-list-item-value 
-            {% if title == 'Цена' %}details__advertisement-additional-description-list-item-value-price{% endif %}"
+            {% if title == 'Цена' or title == 'Арендная плата' or title == 'Зарплата' or title == 'Минимальная зарплата' %}details__advertisement-additional-description-list-item-value-price{% endif %}"
             >
-              {% if title == "Этаж" %} {{item|split_item:", "|first}}/{{item|split_item:", "|last}} {% else %} {{ item }} {% endif %}
+              {% if title == "Этаж" %}
+                  {{item|split_item:", "|first}}/{{item|split_item:", "|last}}
+              {% else %}
+                  {{ item }}
+              {% endif %}
             </p>
           </li>
             {% endif %}
