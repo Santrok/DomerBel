@@ -1,8 +1,16 @@
 {% extends "base.html" %} 
 {% load static %}
 {% load advertisement_tags %}
+
+{% block description %}
+<meta property="og:url" content="{{ url }}{{ advertisement.get_absolute_url }}" />
+<meta property="og:description" content="{{ advertisement.description|truncatechars:150 }}" />
+<meta property="og:image" content="{% if advertisement.preview_image %}{{url}}{{ advertisement.preview_image.url }}{% else %}{% static 'img/no_image.jpg' %}{% endif %}" />
+{% endblock description %}
+
+
 {% block css %}
- <link rel="stylesheet" href="{% static 'css/details.css'%}">
+ <link rel="stylesheet" href="{% static 'css/details-min.css'%}">
 {% endblock css %} 
 {% block crumbs %}
 <section class="crumbs">

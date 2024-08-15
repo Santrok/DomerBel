@@ -207,7 +207,8 @@ def get_advertisement_details_page(request, slug):
         "category_crumbs": category_crumbs,
         "similar_advertisement": similar_advertisement,
         "reason_list": reason_of_complaint,
-        "form": form
+        "form": form,
+        "adaptive_navigation": f"{advertisement_main.title}.",
     }
     return render(request=request,
                   template_name='advertisement_details.html',

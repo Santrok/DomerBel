@@ -38,9 +38,9 @@
 }
 
 .stores__list-item-district {
-  color: gray !important;
+  color: #545454 !important;
 }
 
 .stores__list-item-category {
-  @include fonts(gray, 14px, 400);
+  @include fonts(#545454, 14px, 400);
 }
