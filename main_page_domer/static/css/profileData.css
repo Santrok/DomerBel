@@ -46,13 +46,6 @@
   padding: 10px;
   border-radius: 7px;
 }
-.form__wrapper input::-moz-placeholder {
-  font-family: "Trebuchet MS", sans-serif;
-  font-weight: 400;
-  font-style: normal;
-  color: #545454;
-  font-size: 14px;
-}
 .form__wrapper input::placeholder {
   font-family: "Trebuchet MS", sans-serif;
   font-weight: 400;
@@ -71,4 +64,6 @@
   .form__wrapper input {
     flex: 1 1 800px;
   }
-}/*# sourceMappingURL=profileData.css.map */
+}
+
+/*# sourceMappingURL=profileData.css.map */
