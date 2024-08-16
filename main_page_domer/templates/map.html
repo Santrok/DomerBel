@@ -8,12 +8,17 @@
 {% block content %}
 <section class="map">
   <ul class="map__list">
+{#      {% for element in elements %}#}
+{#            <a href="#">{{ element.spisok.field_set.first }}</a>#}
+{#        {% endfor %}#}
     {% recursetree nodes %}
         <li>
             <a href="#">{{ node.title }}</a>
-{#        <div class="" style="display: flex; width: 100%;"></div>#}
-{#        {% for element in node.field_set.first.spisok.element_set.all%}#}
+        <div class="" style="display: flex; width: 100%;"></div>
+{#        {% for element in elements %}#}
+{#            {% if element.spisok.field_set.first.category == node.id %}#}
 {#            <a href="#">{{ element.title }}</a>#}
+{#            {% endif %}#}
 {#        {% endfor %}#}
 
             {% if not node.is_leaf_node %}

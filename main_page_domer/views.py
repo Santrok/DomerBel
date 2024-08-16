@@ -5,6 +5,7 @@ from datetime import datetime
 
 import PIL
 from django.contrib import messages
+from django.contrib.postgres.aggregates import ArrayAgg
 from django.core.mail import send_mail
 from django.core.paginator import Paginator
 from django.db.models import Q, F, Count, Func, Value
@@ -374,8 +375,12 @@ def get_site_map_page(request):
     #
     #     print(e.adver)
 
-    # elements = Element.objects.annotate(two=Concat('title', Value(", "), 'elementtwo__title')).annotate(adver=Count(F('spisok__field__category__advertisement__additional_information_view2__values__contains')))
-    # print(elements)
+    elements = Element.objects.exclude(elementtwo__title__exact=None
+                                       ).annotate(two2=Concat('title', Value(", "), 'elementtwo__title')
+                                                  ).annotate(two=ArrayAgg(F('two2'))
+                                                              ).filter(spisok__field__category__advertisement__additional_information_view2__values__contains=F('two')).values('id','title')
+    for e in elements:
+        print(e.two)
 
     advertisement = Advertisement.objects.filter(category_id=4, additional_information_view2__values__contains=['Audi, 80'])
     # advertisement = Advertisement.objects.filter(category_id=4, additional_information_view__contains=['Марка, модель', 'Audi, 80'])
@@ -388,7 +393,8 @@ def get_site_map_page(request):
     #     a.save()
 
     context = {
-        'nodes': category_list
+        'nodes': category_list,
+        'elements': elements
     }
 
     return render(request, 'map.html', context)
