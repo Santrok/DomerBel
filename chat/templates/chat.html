@@ -2,7 +2,8 @@
 
 
 {% block content %}
-    <center><h1>Hello , Welcome to my chat site ! {{request.user}}</h1></center>
+    <div class="" style="color: black;">
+    <h1>Hello , Welcome to my chat site ! {{request.user}}</h1>
     <br>
     <div
       class="chat__item__container"
@@ -14,6 +15,7 @@
       <button type="submit" id="id_message_send_button">Send Message</button>
       <br />
       <br />
+        </div>
     </div>
     <script>
       const chatSocket = new WebSocket("ws://" + window.location.host + "/");
@@ -33,12 +35,12 @@
         var messageInput = document.querySelector(
           "#id_message_send_input"
         ).value;
-        chatSocket.send(JSON.stringify({ message: messageInput, username : "{{request.user.username}}"}));
+        chatSocket.send(JSON.stringify({ message: messageInput, username : "{{request.user.first_name}}"}));
       };
       chatSocket.onmessage = function (e) {
         const data = JSON.parse(e.data);
         var div = document.createElement("div");
-        div.innerHTML = data.firstname + " : " + data.message;
+        div.innerHTML = data.username + " : " + data.message;
         document.querySelector("#id_message_send_input").value = "";
         document.querySelector("#id_chat_item_container").appendChild(div);
       };
