@@ -17,13 +17,13 @@ from api_domer.serializers import GetListOfCitiesSerializer, GetListOfCategories
     ElementTwoSerializer, AdvertisementSerializer, StoreSerializer, \
     UserRegisterSerializer, UserLoginSerializer, PasswordResetSerializer, \
     FavoriteSerializer, ElementSerializer, GetListOfCategoriesFieldsSerializer, ReasonOfComplaintSerializer, \
-    ComplaintSerializer
+    ComplaintSerializer, MessageSerializer
 
 from api_domer.utils import validate_additional_information
 from config import settings
 from config.settings import env_keys
 from main_page_domer.models import ReasonOfComplaint
-from users.models import User, UserFavorites
+from users.models import User, UserFavorites, Chat, Message
 
 
 # Отдаёт список городов type='Город' по id выбранной области type='Область' из модели Region
@@ -312,5 +312,29 @@ def save_complaint(request):
 
         return Response({'success': 'Ваша жалоба на объявление отправлена администрации сайта'},
                         status=status.HTTP_201_CREATED)
+    else:
+        return Response({"errors": serializer.errors})
+
+
+@api_view(['POST'])
+def create_chat(request):
+    print(1)
+    serializer = MessageSerializer(data=request.data, context={"request": request})
+    if serializer.is_valid():
+        print(serializer.validated_data)
+        print(2)
+        advertisement = get_object_or_404(Advertisement, id=serializer.validated_data.get('advertisement'))
+        print(3)
+        chat = Chat.objects.filter(advertisement=advertisement, members__in=[request.user, advertisement.author_id])
+        print(4)
+        if not chat:
+            chat = Chat.objects.create(advertisement=advertisement)
+            chat.members.set([request.user.id, advertisement.author_id])
+            Message.objects.create(chat=chat, author=request.user, message=serializer.validated_data.get('text_message'))
+        else:
+            Message.objects.create(chat=chat[0], author=request.user,
+                                   message=serializer.validated_data.get('text_message'))
+
+        return Response({'success': 'Ваше сообщение отправлено'}, status=status.HTTP_201_CREATED)
     else:
         return Response({"errors": serializer.errors})

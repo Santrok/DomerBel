@@ -7,7 +7,7 @@ from api_domer.views import get_list_of_cities, get_list_of_categories, get_regi
     get_categories_for_search, get_field_list, get_elementtwo_list, save_advertisement, get_store_for_advertisement, \
     update_advertisement, registration_user, login_user, logout_user, password_reset, add_to_favorite, \
     get_subcategory_list, \
-    get_element_list, delete_from_favorite, ReasonOfComplaintView, save_complaint
+    get_element_list, delete_from_favorite, ReasonOfComplaintView, save_complaint, create_chat
 
 urlpatterns = [
     path('get_city_list/<int:id>', get_list_of_cities, name='list_of_cities'),
@@ -30,5 +30,6 @@ urlpatterns = [
     path('get_subcategory_list/', get_subcategory_list),
     path('get_complaint_reason_list/', ReasonOfComplaintView.as_view()),
     path('save_complaint/', save_complaint),
+    path('create_chat/', create_chat),
 
 ]

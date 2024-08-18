@@ -27,4 +27,11 @@ function sendMessage() {
     },
     body: data
   })
+      .then(resp=> resp.json())
+      .then(data => {
+        document.querySelector('.modals__notification').classList.add('modal__active')
+        modal.classList.add('modal__active')
+        document.querySelector('.modals__notification-text').innerText = data.success
+          sendMessageModal.classList.remove('modal__active')
+      })
 }

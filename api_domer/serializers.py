@@ -144,3 +144,8 @@ class ComplaintSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         validated_data.pop('recaptcha')
         return Complaint.objects.create(**validated_data)
+
+
+class MessageSerializer(serializers.Serializer):
+    advertisement = serializers.IntegerField()
+    text_message = serializers.CharField()
