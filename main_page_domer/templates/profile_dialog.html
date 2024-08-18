@@ -26,6 +26,7 @@
     <div class="message__list">
         {% if chat %}
             {% with chats=chat|first %}
+                {{ chats.chat_name|json_script:"room-name" }}
             {% for messages in chats.message_set.all %}
                 <p style="color: black">
                     {{ messages.message }}
@@ -47,7 +48,8 @@
 
 {% block js2 %}
     <script>
-      const chatSocket = new WebSocket("ws://" + window.location.host + "/");
+    const roomName = JSON.parse(document.getElementById('room-name').textContent)
+      const chatSocket = new WebSocket( 'ws://' + window.location.host + '/ws/chat/' + roomName + '/');
       chatSocket.onopen = function (e) {
         console.log("The connection was setup successfully !");
       };

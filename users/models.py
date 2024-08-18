@@ -1,3 +1,5 @@
+import uuid
+
 from django.contrib import admin
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.contrib.auth.base_user import BaseUserManager
@@ -109,6 +111,7 @@ class UserFavorites(models.Model):
 
 class Chat(models.Model):
 
+    chat_name = models.UUIDField(default=uuid.uuid4, editable=False)
     members = models.ManyToManyField(User, verbose_name='Участник')
     advertisement = models.ForeignKey(Advertisement, on_delete=models.DO_NOTHING)
 
