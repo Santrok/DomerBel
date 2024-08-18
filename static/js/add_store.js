@@ -6,7 +6,7 @@ let region_hidden = document.querySelector(".region_hidden")
 
 function show_city(event){
     if (event.target.value !== "0"){
-        fetch(`${localStorage.getItem("url")}/api/v1/add_store/city/${event.target.value}`)
+        fetch(`${window.location.protocol}//${window.location.host}/api/v1/add_store/city/${event.target.value}`)
             .then((response) => response.json())
             .then(data => {
                 region_hidden.style.display = "flex";
@@ -21,7 +21,7 @@ function show_city(event){
 }
 
 let get_category = document.querySelector("#select_category");
-fetch(`${localStorage.getItem("url")}/api/v1/add_store/categories/`)
+fetch(`${window.location.protocol}//${window.location.host}/api/v1/add_store/categories/`)
     .then((response) => response.json())
     .then((data) => {
         get_category.innerHTML += data.map((category) => {

@@ -89,7 +89,7 @@
 }
 
 .main__info-advertisement-list-item-about-time {
-  @include fonts(gray, 14px, 400);
+  @include fonts(#545454, 14px, 400);
 }
 
 .main__info-advertisement-list-item-about-remained {
@@ -121,7 +121,7 @@
   }
 
   & p {
-    @include fonts(gray, 14px, 400);
+    @include fonts(#545454, 14px, 400);
   }
 }
 

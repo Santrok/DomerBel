@@ -3,7 +3,8 @@ from datetime import datetime, timedelta, timezone
 
 import PIL
 from dirtyfields import DirtyFieldsMixin
-from django.contrib.postgres.fields import ArrayField
+from django.contrib.postgres.fields import ArrayField, HStoreField
+
 from django.contrib.postgres.indexes import GinIndex, OpClass, BrinIndex
 from django.contrib.postgres.search import SearchVectorField, SearchVector
 
@@ -12,6 +13,7 @@ from django.db.models.functions import Upper
 
 from django.urls import reverse
 from django.utils.timezone import make_aware
+
 from mptt.models import MPTTModel, TreeForeignKey
 
 from django.conf import settings
@@ -65,6 +67,7 @@ class Advertisement(DirtyFieldsMixin, models.Model):
     special_accommodation = models.BooleanField(default=False, verbose_name="Спецразмещение")
     raise_in_search = models.BooleanField(default=False, verbose_name="Поднять в поиске")
     additional_information = models.JSONField()
+    additional_information_view2 = HStoreField(default=dict)
     additional_information_view = ArrayField(ArrayField(models.CharField(max_length=500)), blank=True, null=True, editable=False)
     description = models.TextField(verbose_name='Описание',validators=[validate_words])
     video_link = models.URLField(blank=True, null=True, verbose_name='Ссылка на видео')  # хранит строку, которая представляет валидный URL-адрес

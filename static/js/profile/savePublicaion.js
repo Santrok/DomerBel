@@ -79,7 +79,7 @@ function savePublication() {
     let data = new FormData(form);
     data.append("main_img", mainImg.name)
 
-    fetch(`${localStorage.getItem("url")}/api/v1/save_publication/`, {
+    fetch(`${window.location.protocol}//${window.location.host}/api/v1/save_publication/`, {
         method: "POST",
         headers: {
             "X-CSRFToken": csrfToken,
@@ -88,7 +88,7 @@ function savePublication() {
     })
     .then(response => {
         if (response.ok) {
-            document.location.href = `${localStorage.getItem("url")}/users/user_all_publications/`;
+            document.location.href = `${window.location.protocol}//${window.location.host}/users/user_all_publications/`;
         }
         return response.json()
     })
