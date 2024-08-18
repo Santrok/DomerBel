@@ -126,16 +126,6 @@ def publication_photo_delete(sender, instance, **kwargs):
     instance.preview_image.delete(False)
 
 
-class PublicationAdmin(admin.ModelAdmin):
-    """ Модель публикации для Админки """
-    list_display = ["id", "title", "slug"]
-    list_display_links = ["title"]
-    prepopulated_fields = {"slug": ("title",)}
-    ordering = [
-        "date_of_create",
-    ]
-
-
 class Help(models.Model):
     announcement = CKEditor5Field(config_name='extends', verbose_name='Текст помощи')
 
