@@ -9,7 +9,7 @@
 
 {% block mainInfo %}
     <div class="main__info">
-        <div class="dialog__subject" data-id="{{ advertisement.id }}">
+        <section class="dialog__subject" data-id="{{ advertisement.id }}">
             <div class="dialog__subject-img">
                 <img src="{% if advertisement.preview_image %} {{ advertisement.preview_image.url }} {% else %}{% static 'img/no_image.jpg' %}{% endif %}"
                      alt="{{ advertisement.title }}">
@@ -22,32 +22,28 @@
                     {% if advertisement.price %}{{ advertisement.price }}{% else %}Договорная{% endif %}
                 </p>
             </div>
-        </div>
-    <div class="message__list">
+        </section>
+    <section class="message__list" id="id_chat_item_container">
         {% if chat %}
             {% with chats=chat|first %}
                 {{ chats.id|json_script:"room-name" }}
             {% for messages in chats.message_set.all %}
-                <p style="color: black">
+                <p class="message__item {% if messages.author_id == user.id %}message-self{% else %}message-any{% endif %}">
                     {{ messages.message }}
                 </p>
             {% endfor %}
             {% endwith %}
         {% endif %}
-    </div>
-     <div class="chat__item__container" id="id_chat_item_container" style="color: black;">
-      <br />
-         <input type="text" id="id_message_send_input" />
-      <button type="submit" id="id_message_send_button">Send Message</button>
-      <br />
-      <br />
-        </div>
-
-    </div>
-{% endblock %}
+    </section>
+    <section class="message__input" data-id="{{ user.id }}">
+            <textarea name="" id="id_message_send_input"></textarea>
+            <button type="submit" id="id_message_send_button">Send Message</button>
+    </section>
+{% endblock mainInfo %}
 
 {% block js2 %}
     <script>
+    const userId = document.querySelector('.message__input').dataset.id
     const roomName = JSON.parse(document.getElementById('room-name').textContent)
       const chatSocket = new WebSocket( 'ws://' + window.location.host + '/ws/chat/' + roomName + '/');
       chatSocket.onopen = function (e) {
@@ -66,14 +62,17 @@
         let messageInput = document.querySelector(
           "#id_message_send_input"
         ).value;
-        chatSocket.send(JSON.stringify({ message: messageInput, userId: "{{ user.id }}", username : "{{request.user.first_name}}", advertisement: "{{advertisement.id}}"}));
+        chatSocket.send(JSON.stringify({ message: messageInput, userId: userId}))
       };
       chatSocket.onmessage = function (e) {
         const data = JSON.parse(e.data);
-        let div = document.createElement("div");
-        div.innerHTML = data.username + " : " + data.message;
+          console.log(data)
+          let p = document.createElement("p");
+          p.classList.add('message__item')
+          p.classList.add(userId === data.userId ? 'message-self' : 'message-any')
+        p.innerHTML = data.message;
         document.querySelector("#id_message_send_input").value = "";
-        document.querySelector("#id_chat_item_container").prepend(div);
+        document.querySelector("#id_chat_item_container").append(p);
       };
     </script>
-{% endblock %}
+{% endblock js2 %}
