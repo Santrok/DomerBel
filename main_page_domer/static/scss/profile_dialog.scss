@@ -1,0 +1,26 @@
+@import "./variables";
+@import "./mixins";
+
+
+.dialog__subject {
+  display: flex;
+  gap: 20px;
+  @include fonts($defaultColor, 20px, 400);
+  align-items: center;
+}
+
+.dialog__subject-img {
+  max-width: 120px;
+  max-height: 100px;
+  & img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+}
+
+.dialog__subject-title {
+  display: flex;
+  flex-direction: column;
+  gap: 10px
+}

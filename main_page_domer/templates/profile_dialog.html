@@ -1,0 +1,77 @@
+{% extends 'profile_user.html' %}
+{% load static %}
+{% block css2 %}
+    <link rel="stylesheet" href="{% static 'css/profile_dialog.css' %}">
+{% endblock %}
+
+{% block search %}
+{% endblock %}
+
+{% block mainInfo %}
+    <div class="main__info">
+        <div class="dialog__subject" data-id="{{ advertisement.id }}">
+            <div class="dialog__subject-img">
+                <img src="{% if advertisement.preview_image %} {{ advertisement.preview_image.url }} {% else %}{% static 'img/no_image.jpg' %}{% endif %}"
+                     alt="{{ advertisement.title }}">
+            </div>
+            <div class="dialog__subject-title">
+                <p>
+                    {{ advertisement.title }}
+                </p>
+                <p>
+                    {% if advertisement.price %}{{ advertisement.price }}{% else %}Договорная{% endif %}
+                </p>
+            </div>
+        </div>
+    <div class="message__list">
+        {% if chat %}
+            {% with chats=chat|first %}
+            {% for messages in chats.message_set.all %}
+                <p style="color: black">
+                    {{ messages.message }}
+                </p>
+            {% endfor %}
+            {% endwith %}
+        {% endif %}
+    </div>
+     <div class="chat__item__container" id="id_chat_item_container" style="color: black;">
+      <br />
+         <input type="text" id="id_message_send_input" />
+      <button type="submit" id="id_message_send_button">Send Message</button>
+      <br />
+      <br />
+        </div>
+
+    </div>
+{% endblock %}
+
+{% block js2 %}
+    <script>
+      const chatSocket = new WebSocket("ws://" + window.location.host + "/");
+      chatSocket.onopen = function (e) {
+        console.log("The connection was setup successfully !");
+      };
+      chatSocket.onclose = function (e) {
+        console.log("Something unexpected happened !");
+      };
+      document.querySelector("#id_message_send_input").focus();
+      document.querySelector("#id_message_send_input").onkeyup = function (e) {
+        if (e.keyCode == 13) {
+          document.querySelector("#id_message_send_button").click();
+        }
+      };
+      document.querySelector("#id_message_send_button").onclick = function (e) {
+        let messageInput = document.querySelector(
+          "#id_message_send_input"
+        ).value;
+        chatSocket.send(JSON.stringify({ message: messageInput, userId: "{{ user.id }}", username : "{{request.user.first_name}}", advertisement: "{{advertisement.id}}"}));
+      };
+      chatSocket.onmessage = function (e) {
+        const data = JSON.parse(e.data);
+        let div = document.createElement("div");
+        div.innerHTML = data.username + " : " + data.message;
+        document.querySelector("#id_message_send_input").value = "";
+        document.querySelector("#id_chat_item_container").prepend(div);
+      };
+    </script>
+{% endblock %}

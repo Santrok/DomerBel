@@ -108,25 +108,18 @@ class UserFavorites(models.Model):
 
 
 class Chat(models.Model):
-    DIALOG = 'Д'
-    CHAT = 'Ч'
-    CHAT_TYPE_CHOICES = (
-        (DIALOG, 'Диалог'),
-        (CHAT, 'Чат')
-    )
 
-    type = models.CharField(max_length=1, choices=CHAT_TYPE_CHOICES, default=DIALOG, verbose_name='Тип')
-    subject = models.CharField(max_length=255, verbose_name='Тема диалога')
     members = models.ManyToManyField(User, verbose_name='Участник')
+    advertisement = models.ForeignKey(Advertisement, on_delete=models.DO_NOTHING)
 
     class Meta:
         verbose_name = 'Чат'
         verbose_name_plural = 'Чаты'
 
-    def __str__(self):
-        chat_participants = self.members.all()
-        first_names = [person.first_name for person in chat_participants]
-        return f'Участники: {", ".join(first_names)}. Тема: {self.subject}'
+    # def __str__(self):
+    #     chat_participants = self.members.all()
+    #     first_names = [person.first_name for person in chat_participants]
+    #     return f'Участники: {", ".join(first_names)}. Тема: {self.advertisement}'
 
     def get_absolute_url(self):
         return reverse('users:messages', kwargs={'chat_id': self.pk})

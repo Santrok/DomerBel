@@ -214,9 +214,9 @@
             <div class="details__advertisement-about-list-item-img">
               <img src="{% static "img/icons/email.gif" %}" alt="email">
             </div>
-            <p>
+            <a href="{% if user.is_authenticated %}{% url 'users:create_dialog'  user_id=user.id recipient_id=advertisement.author.id advertisement=advertisement.slug %}{% else %}#{% endif %}">
               Отправить письмо
-            </p>
+            </a>
           </li>
         </ul>
         <ul class="details__advertisement-additional-description-list">
