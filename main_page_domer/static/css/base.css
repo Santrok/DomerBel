@@ -476,6 +476,56 @@
   gap: 15px;
 }
 
+.send__message {
+  position: relative;
+  width: 100%;
+  max-width: 450px;
+  display: none;
+  flex-direction: column;
+  gap: 20px;
+  background: white;
+  padding: 40px;
+  border-radius: 8px;
+}
+.send__message button {
+  margin-top: 10px;
+}
+.send__message label {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.send__message p {
+  font-family: "Trebuchet MS", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  color: black;
+  font-size: 14px;
+}
+.send__message p span {
+  color: red;
+}
+.send__message textarea {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid black;
+  max-width: 370px;
+}
+.send__message textarea::-moz-placeholder {
+  font-family: "Trebuchet MS", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  color: rgb(110, 109, 109);
+  font-size: 14px;
+}
+.send__message textarea::placeholder {
+  font-family: "Trebuchet MS", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  color: rgb(110, 109, 109);
+  font-size: 14px;
+}
+
 .modals__active-grid {
   display: grid;
   transition: 0.5s ease;

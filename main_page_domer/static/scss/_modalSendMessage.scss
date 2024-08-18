@@ -1,0 +1,40 @@
+.send__message {
+  position: relative;
+  width: 100%;
+  max-width: 450px;
+  display: none;
+  flex-direction: column;
+  gap: 20px;
+  background: #ffff;
+  padding: 40px;
+  border-radius: 8px;
+
+  & button {
+    margin-top: 10px;
+  }
+
+  & label {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  & p {
+    @include fonts($defaultColor, 14px, 400);
+
+    & span {
+      color: red;
+    }
+  }
+
+  & textarea {
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid black;
+    max-width: 370px;
+
+    &::placeholder {
+      @include fonts(rgb(110, 109, 109), 14px, 400);
+    }
+  }
+}
