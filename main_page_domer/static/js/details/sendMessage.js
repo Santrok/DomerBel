@@ -4,8 +4,6 @@ const sendMessageModal = document.querySelector(".send__message")
 const sendMessageFormBtn = document.querySelector(".send__message button")
 const isAuthenticated = document.querySelector(".details__advertisement-add-favorites")
 
-
-
 sendMessageBtn.forEach(item => item.addEventListener("click", () => {
   if(isAuthenticated.dataset.id) {
     blockModals.classList.add("modal__active")
