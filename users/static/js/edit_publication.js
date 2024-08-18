@@ -73,7 +73,7 @@ function removeImg(event) {
                 mainImg = ''
             }
         }
-        if (window.location.href === `${localStorage.getItem("url")}/users/personal_account/edit_publication/${document.getElementById('add_adver').dataset.slug}/`) {
+        if (window.location.href === `${window.location.protocol}//${window.location.host}/users/personal_account/edit_publication/${document.getElementById('add_adver').dataset.slug}/`) {
             deletedImages.push(target.dataset.name)
         }
         inputElementArray = inputElementArray.filter(file => file.name !== target.dataset.name);
@@ -109,7 +109,7 @@ function savePublication() {
     data.append("dataSlag", dataSlag);
     data.append("deletedImages", deletedImages);
 
-    fetch(`${localStorage.getItem("url")}/api/v1/edit_publication/`, {
+    fetch(`${window.location.protocol}//${window.location.host}/api/v1/edit_publication/`, {
         method: "POST",
         headers: {
             "X-CSRFToken": csrfToken,
@@ -118,7 +118,7 @@ function savePublication() {
     })
     .then(response => {
         if (response.ok) {
-            document.location.href = `${localStorage.getItem("url")}/users/user_all_publications/`;
+            document.location.href = `${window.location.protocol}//${window.location.host}/users/user_all_publications/`;
         }
         return response.json()
     })

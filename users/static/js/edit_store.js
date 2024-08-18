@@ -5,7 +5,7 @@ let get_element_select_city = document.querySelector("#select_city");
 
 function show_city(event){
     if (event.target.value !== "0"){
-        fetch(`${localStorage.getItem("url")}/api/v1/add_store/city/${event.target.value}`)
+        fetch(`${window.location.protocol}//${window.location.host}/api/v1/add_store/city/${event.target.value}`)
             .then((response) => response.json())
             .then(data => {
                 get_element_select_city.innerHTML = `<option value="0">---------</option>`

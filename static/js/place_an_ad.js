@@ -54,7 +54,7 @@ function showCity(event) {
   if (event.target.value !== regionStatus) {
     regionStatus = event.target.value
     if (event.target.value !== "0") {
-      fetch(`${localStorage.getItem("url")}/api/v1/get_city_list/${event.target.value}`)
+      fetch(`${window.location.protocol}//${window.location.host}/api/v1/get_city_list/${event.target.value}`)
         .then((response) => response.json())
         .then((data) => {
           if (document.querySelector(".city")) {
@@ -96,7 +96,7 @@ function showCategory(event) {
     statusCategory0 = event.target.value
     if (event.target.value !== "") {
       fetch(
-        `${localStorage.getItem("url")}/api/v1/get_category_list/?id=${event.target.value}`
+        `${window.location.protocol}//${window.location.host}/api/v1/get_category_list/?id=${event.target.value}`
       )
         .then((response) => response.json())
         .then((data) => {
@@ -139,7 +139,7 @@ function showCategory(event) {
     informationList.innerHTML = ""
     if (event.target.value !== "") {
       fetch(
-        `${localStorage.getItem("url")}/api/v1/get_category_list/?id=${event.target.value}`
+        `${window.location.protocol}//${window.location.host}/api/v1/get_category_list/?id=${event.target.value}`
       )
         .then((response) => response.json())
         .then((data) => {
@@ -177,7 +177,7 @@ function showCategory(event) {
     informationList.innerHTML = ""
     if (event.target.value !== "") {
       fetch(
-        `${localStorage.getItem("url")}/api/v1/get_category_list/?id=${event.target.value}`
+        `${window.location.protocol}//${window.location.host}/api/v1/get_category_list/?id=${event.target.value}`
       )
         .then((response) => response.json())
 
@@ -219,7 +219,7 @@ function showCategory(event) {
 }
 
 function show_additional_information(event) {
-  fetch(`${localStorage.getItem("url")}/api/v1/get_field_list/?id=${event.target.value}`)
+  fetch(`${window.location.protocol}//${window.location.host}/api/v1/get_field_list/?id=${event.target.value}`)
     .then((response) => response.json())
     .then((data) => {
       informationList.innerHTML = ""
@@ -385,7 +385,7 @@ function showAdditionalInformationTwo(event) {
     }
     if (elementTwo && statusElementTwo !== event.target.value) {
       fetch(
-        `${localStorage.getItem("url")}/api/v1/get_elementtwo_list/?slug=${elementTwo}`
+        `${window.location.protocol}//${window.location.host}/api/v1/get_elementtwo_list/?slug=${elementTwo}`
       )
         .then((response) => response.json())
         .then((data) => {
@@ -429,7 +429,7 @@ bearerCompany?.addEventListener("change", bearerCompanyInfo)
 function bearerCompanyInfo(event) {
   if (event.target.id === "bearer_company") {
     if (!document.querySelector(".bearer_company_store")) {
-      fetch(`${localStorage.getItem("url")}/api/v1/get_store_for_advertisement/`)
+      fetch(`${window.location.protocol}//${window.location.host}/api/v1/get_store_for_advertisement/`)
         .then((response) => response.json())
         .then((data) => {
           const bearerCompanyStore = document.createElement("div")
@@ -550,7 +550,7 @@ function removeImg(event) {
     }
     if (
       window.location.href ===
-      `${localStorage.getItem("url")}/advertisement/editing_an_ad/${
+      `${window.location.protocol}//${window.location.host}/advertisement/editing_an_ad/${
         document.getElementById("add_adver").dataset.advertisement
       }/`
     ) {
@@ -611,15 +611,15 @@ function saveAdvertisement() {
   }
   fetch(
     window.location.href ===
-      `${localStorage.getItem("url")}/advertisement/editing_an_ad/${
+      `${window.location.protocol}//${window.location.host}/advertisement/editing_an_ad/${
         document.getElementById("add_adver").dataset.advertisement
       }/`
-      ? `${localStorage.getItem("url")}/api/v1/update_advertisement/`
-      : `${localStorage.getItem("url")}/api/v1/save_advertisement/`,
+      ? `${window.location.protocol}//${window.location.host}/api/v1/update_advertisement/`
+      : `${window.location.protocol}//${window.location.host}/api/v1/save_advertisement/`,
     {
       method:
         window.location.href ===
-        `${localStorage.getItem("url")}/advertisement/editing_an_ad/${
+        `${window.location.protocol}//${window.location.host}/advertisement/editing_an_ad/${
           document.getElementById("add_adver").dataset.advertisement
         }/`
           ? "PATCH"

@@ -183,15 +183,15 @@ function getCategoryFunc(event, func) {
     if(event.target.value === "" || event.target.value == undefined) {
       return
     }
-    func(`${localStorage.getItem("url")}/api/v1/get_city_list/${id}`)
+    func(`${window.location.protocol}//${window.location.host}/api/v1/get_city_list/${id}`)
     return
   }  
   if(event.target.value === undefined || event.target.value === "") {
     return
   }
-  if (!func(`${localStorage.getItem("url")}/api/v1/categories_for_search/${id}`)) {
-    func(`${localStorage.getItem("url")}/api/v1/get_field_list/?id=${id}`)
+  if (!func(`${window.location.protocol}//${window.location.host}/api/v1/categories_for_search/${id}`)) {
+    func(`${window.location.protocol}//${window.location.host}/api/v1/get_field_list/?id=${id}`)
   }else{
-    func(`${localStorage.getItem("url")}/api/v1/categories_for_search/${id}`)
+    func(`${window.location.protocol}//${window.location.host}/api/v1/categories_for_search/${id}`)
   }
 }
