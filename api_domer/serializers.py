@@ -146,11 +146,6 @@ class ComplaintSerializer(serializers.ModelSerializer):
         return Complaint.objects.create(**validated_data)
 
 
-class MessageAdvertisementSerializer(AdvertisementSerializer):
-    class Meta:
-        fields = ['id']
-
-
 class MessageSerializer(serializers.Serializer):
-    advertisement = MessageAdvertisementSerializer(read_only=True)
+    advertisement = serializers.IntegerField()
     text_message = serializers.CharField()

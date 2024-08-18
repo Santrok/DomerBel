@@ -26,7 +26,7 @@
     <div class="message__list">
         {% if chat %}
             {% with chats=chat|first %}
-                {{ chats.chat_name|json_script:"room-name" }}
+                {{ chats.id|json_script:"room-name" }}
             {% for messages in chats.message_set.all %}
                 <p style="color: black">
                     {{ messages.message }}

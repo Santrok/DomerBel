@@ -22,7 +22,7 @@ resetSubmitPasswordBtn.addEventListener("click", requestResetPassword);
 function requestResetPassword() {
   const data = new FormData(modalResetPassowrd);
   data.append("recaptcha", data.get("g-recaptcha-response"));
-  fetch(`${localStorage.getItem("url")}/api/v1/password_reset/`, {
+  fetch(`${window.location.protocol}//${window.location.host}/api/v1/password_reset/`, {
     method: "POST",
     headers: {
       "X-CSRFToken": getCookie("csrftoken"),

@@ -111,7 +111,7 @@ class UserFavorites(models.Model):
 
 class Chat(models.Model):
 
-    chat_name = models.UUIDField(default=uuid.uuid4, editable=False)
+    chat_name = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     members = models.ManyToManyField(User, verbose_name='Участник')
     advertisement = models.ForeignKey(Advertisement, on_delete=models.DO_NOTHING)
 

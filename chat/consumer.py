@@ -28,19 +28,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         message = text_data_json["message"]
         username = text_data_json["username"]
         user_id = text_data_json["userId"]
-        advertisement = await sync_to_async(get_object_or_404)(Advertisement, id=text_data_json['advertisement'])
-        users = await sync_to_async(User.objects.filter)(id__in=[advertisement.author_id, user_id])
-        query = Chat.objects.filter(advertisement_id=advertisement.id, members__in=users)
-        chat = await sync_to_async(list)(query)
-        if chat:
-            await sync_to_async(Message.objects.create)(chat=chat[0],
-                                                        author_id=user_id,
-                                                        message=message)
-
-        else:
-            chat = await sync_to_async(Chat.objects.create)(advertisement_id=advertisement.id)
-            await sync_to_async(chat.members.set)(users)
-            await sync_to_async(Message.objects.create)(chat=chat,
+        await sync_to_async(Message.objects.create)(chat_id=self.room_name,
                                                         author_id=user_id,
                                                         message=message)
 
