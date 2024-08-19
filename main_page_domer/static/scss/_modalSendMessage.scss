@@ -32,6 +32,9 @@
     border-radius: 8px;
     border: 1px solid black;
     max-width: 370px;
+    &:focus {
+      border: 1px solid #3779eb;
+    }
 
     &::placeholder {
       @include fonts(rgb(110, 109, 109), 14px, 400);

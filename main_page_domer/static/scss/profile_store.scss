@@ -26,6 +26,9 @@
     padding: 5px;
     border-radius: 7px;
     @include fonts($defaultColor, 14px, 400);
+    &:focus {
+      border: 1px solid #3779eb;
+    }
   }
 
   & option {
@@ -106,6 +109,9 @@
     & select, input, textarea {
       width: 100%;
       max-width: none;
+      &:focus {
+      border: 1px solid #3779eb;
+    }
     }
 
     & label {

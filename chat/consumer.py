@@ -1,11 +1,9 @@
 import json
 
-from asgiref.sync import sync_to_async
+from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
-from django.shortcuts import get_object_or_404
 
-from advertisement.models import Advertisement
-from users.models import Chat, User, Message
+from users.models import Message
 
 
 class ChatConsumer(AsyncWebsocketConsumer):
@@ -13,33 +11,27 @@ class ChatConsumer(AsyncWebsocketConsumer):
         self.room_name = self.scope["url_route"]["kwargs"]["room_name"]
         self.room_group_name = f"chat_{self.room_name}"
 
-        # Join room group
         await self.channel_layer.group_add(self.room_group_name, self.channel_name)
-
         await self.accept()
 
-
     async def disconnect(self, close_code):
-            # Leave room group
-            await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
+        await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
 
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
         message = text_data_json["message"]
-        username = text_data_json["username"]
         user_id = text_data_json["userId"]
-        await sync_to_async(Message.objects.create)(chat_id=self.room_name,
-                                                        author_id=user_id,
-                                                        message=message)
+        await database_sync_to_async(Message.objects.create)(chat_id=self.room_name,
+                                                             author_id=user_id,
+                                                             message=message)
 
         await self.channel_layer.group_send(
             self.room_group_name, {"type": "chat.message",
                                    "message": message,
-                                   "username": username,
+                                   "userId": user_id
                                    })
-
 
     async def chat_message(self, event):
         message = event["message"]
-        username = event["username"]
-        await self.send(text_data = json.dumps({"message":message ,"username":username}))
+        user_id = event["userId"]
+        await self.send(text_data=json.dumps({"message": message, "userId": user_id}))

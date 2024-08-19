@@ -318,15 +318,10 @@ def save_complaint(request):
 
 @api_view(['POST'])
 def create_chat(request):
-    print(1)
     serializer = MessageSerializer(data=request.data, context={"request": request})
     if serializer.is_valid():
-        print(serializer.validated_data)
-        print(2)
         advertisement = get_object_or_404(Advertisement, id=serializer.validated_data.get('advertisement'))
-        print(3)
         chat = Chat.objects.filter(advertisement=advertisement, members__in=[request.user, advertisement.author_id])
-        print(4)
         if not chat:
             chat = Chat.objects.create(advertisement=advertisement)
             chat.members.set([request.user.id, advertisement.author_id])
@@ -335,6 +330,6 @@ def create_chat(request):
             Message.objects.create(chat=chat[0], author=request.user,
                                    message=serializer.validated_data.get('text_message'))
 
-        return Response({'success': 'Ваше сообщение отправлено'}, status=status.HTTP_201_CREATED)
+        return Response({'success': 'Ваше сообщение отправлено'}, status=status.HTTP_200_OK)
     else:
         return Response({"errors": serializer.errors})
