@@ -31,13 +31,28 @@
   flex-direction: column;
   gap: 10px;
   background-color: #F5F5F5;
-  border-radius: 7px;
+  border-radius: 7px 7px 0 0;
+  overflow-y: auto;
+  max-height: 550px;
+  align-items: center;
+}
+
+.messages__item-date {
+  font-family: "Trebuchet MS", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  color: black;
+  font-size: 14px;
+  padding: 5px;
+  background-color: #bdd4e2;
+  border-radius: 10px;
 }
 
 .message__item {
   padding: 5px;
-  border-radius: 7px;
   margin: 0 5px;
+  display: flex;
+  gap: 3px;
 }
 
 .message-self {
@@ -48,6 +63,7 @@
   font-style: normal;
   color: black;
   font-size: 18px;
+  border-radius: 10px 10px 0 10px;
 }
 
 .message-any {
@@ -58,16 +74,61 @@
   font-style: normal;
   color: black;
   font-size: 18px;
+  border-radius: 10px 10px 10px 0;
+}
+
+.message__item-time {
+  display: flex;
+  font-family: "Trebuchet MS", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  color: black;
+  font-size: 10px;
+  align-items: flex-end;
+}
+
+.message__input {
+  display: flex;
+  width: 100%;
+  gap: 5px;
+}
+
+.message__input-text {
+  width: 100%;
+  border: 1px solid #D4D4D4;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-left: 15px;
 }
 
 #id_message_send_input {
   resize: none;
-  width: 100%;
-  flex: 1 1;
-  margin-right: 12px;
+  width: 80%;
+  height: 60%;
   caret-color: #00ad64;
-  color: #262626;
+  font-family: "Trebuchet MS", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  color: black;
+  font-size: 18px;
   border: none;
+}
+#id_message_send_input textarea:focus {
+  border: none;
+  box-shadow: inset 0 0 5px #719ECE;
+  outline: none;
+}
+
+.message__input-send {
+  display: flex;
+  align-self: flex-end;
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+  top: 5px;
+  right: 10px;
 }
 
 /*# sourceMappingURL=profile_dialog.css.map */

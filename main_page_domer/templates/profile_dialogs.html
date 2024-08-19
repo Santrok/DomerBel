@@ -1,6 +1,7 @@
 {% extends 'profile_user.html' %}
 {% load static %}
 {% block css2 %}
+    <link rel="stylesheet" href="{% static 'css/profile_dialogs.css' %}">
 {% endblock %}
 
 {% block search %}
@@ -8,12 +9,31 @@
 
 {% block mainInfo %}
 
-    <div class="main__info">
-    {% for chat in chats %}
-    
-        <div class="chat" style="color: black;">
-            <a href="{{ chat.get_absolute_url }}">{{ chat.advertisement }}</a>
-        </div>
-    {% endfor %}
-    </div>
+    <section class="main__info" data-id="{{ advertisement.id }}">
+        <ul class="chat__list">
+            {% for chat in chats %}
+                <li class="chat__list-item">
+                    <a href="{{ chat.get_absolute_url }}">
+                        <div class="chat__list-img">
+                            <img src="{% if chat.advertisement.preview_image %} {{ chat.advertisement.preview_image.url }} {% else %}{% static 'img/no_image.jpg' %}{% endif %}"
+                                 alt="{{ chat.advertisement.title }}">
+                        </div>
+                    </a>
+                    <a href="{{ chat.get_absolute_url }}">
+                        <div class="chat__list-text">
+                            <p class="chat__list-text-title">
+                                {{ chat.advertisement.title }}
+                            </p>
+                            <p class="chat__list-text-last-message">
+                                {{ chat.message_set.last.message }}
+                            </p>
+                        </div>
+                    </a>
+                </li>
+
+            {% endfor %}
+        </ul>
+    </section>
+
+
 {% endblock %}

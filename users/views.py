@@ -331,8 +331,7 @@ def delete_store(request, store_id):
 @login_required
 def get_all_dialogs(request):
     """ Показывает все диалоги пользователя в ЛК """
-    chats = Chat.objects.filter(members__in=[request.user.id])
-    print(chats)
+    chats = Chat.objects.filter(members__in=[request.user.id]).order_by("-id").prefetch_related('message_set')
     context = {
         "user_profile": request.user,
         "chats": chats,
@@ -341,11 +340,9 @@ def get_all_dialogs(request):
     return render(request, 'profile_dialogs.html', context)
 
 
-
 @login_required
 def view_message(request, chat_id):
     '''Показывает все сообщения внутри открытого диалога'''
-
     chat = Chat.objects.filter(id=chat_id)
     advertisement = get_object_or_404(Advertisement, id=chat[0].advertisement_id)
     context = {
@@ -355,7 +352,7 @@ def view_message(request, chat_id):
     return render(request, 'profile_dialog.html', context)
 
 
-
+@login_required
 def delete_dialogs(request):
     """ Удаление выбранного диалога в ЛК """
     if request.method == "POST":

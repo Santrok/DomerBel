@@ -26,6 +26,9 @@
     padding: 7px;
     border: 1px solid gray;
     @include fonts($defaultColor, 14px, 400);
+    &:focus {
+      border: 1px solid #3779eb;
+    }
 
     &::placeholder {
       @include fonts(#545454, 14px, 400);

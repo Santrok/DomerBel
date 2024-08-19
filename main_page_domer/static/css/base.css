@@ -493,6 +493,9 @@
   border: 1px solid black;
   max-width: 370px;
 }
+.send__message textarea:focus {
+  border: 1px solid #3779eb;
+}
 .send__message textarea::placeholder {
   font-family: "Trebuchet MS", sans-serif;
   font-weight: 400;
@@ -1074,7 +1077,7 @@ a:hover {
   display: flex;
 }
 
-input:focus, select:focus, textarea:focus {
+input:focus, select:focus {
   border: 1px solid hsl(218, 81.8%, 56.9%) !important;
 }
 

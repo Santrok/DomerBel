@@ -31,33 +31,88 @@
   flex-direction: column;
   gap: 10px;
   background-color: #F5F5F5;
-  border-radius: 7px;
+  border-radius: 7px 7px 0 0;
+  overflow-y: auto;
+  max-height: 550px;
+  align-items: center;
+
+}
+
+.messages__item-date {
+  @include fonts($defaultColor, 14px, 400);
+  padding: 5px;
+  background-color: $headerTopBorder;
+  border-radius: 10px;
+
 }
 
 .message__item {
   padding: 5px;
-  border-radius: 7px;
   margin: 0 5px;
+  display: flex;
+  gap: 3px;
 }
 
 .message-self {
   align-self: flex-end;
   background-color: $userSearchBg;
   @include fonts($defaultColor, 18px, 400);
+  border-radius: 10px 10px 0 10px;
 }
 
 .message-any {
   align-self: flex-start;
   background-color: $gray;
   @include fonts($defaultColor, 18px, 400);
+  border-radius: 10px 10px 10px 0;
+}
+
+.message__item-time {
+  display: flex;
+  @include fonts($defaultColor, 10px, 400);
+  align-items: flex-end;
+}
+
+.message__input {
+  display: flex;
+  width: 100%;
+  gap: 5px;
+}
+
+.message__input-text {
+  width: 100%;
+  border: 1px solid $gray;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-left: 15px;
 }
 
 #id_message_send_input {
     resize: none;
-    width: 100%;
-    flex: 1 1;
-    margin-right: 12px;
+
+    width: 80%;
+    height: 60%;
     caret-color: #00ad64;
-    color: #262626;
-    border: none;
+    @include fonts($defaultColor, 18px, 400);
+  border: none;
+  textarea:focus {
+      border: none;
+  box-shadow: inset 0 0 5px #719ECE;
+    outline: none;
+}
+
+
+}
+
+.message__input-send {
+  display: flex;
+  align-self: flex-end;
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+  top: 5px;
+  right: 10px;
+
 }
