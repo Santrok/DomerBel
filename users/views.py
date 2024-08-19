@@ -331,7 +331,7 @@ def delete_store(request, store_id):
 @login_required
 def get_all_dialogs(request):
     """ Показывает все диалоги пользователя в ЛК """
-    chats = Chat.objects.filter(members__in=[request.user.id]).order_by("-id").prefetch_related('message_set')
+    chats = Chat.objects.filter(members__in=[request.user.id]).order_by("-id").prefetch_related('message_set').select_related('advertisement')
     context = {
         "user_profile": request.user,
         "chats": chats,

@@ -15,6 +15,7 @@
   gap: 20px;
   align-items: center;
   border-bottom: 1px solid #D4D4D4;
+  position: relative;
 }
 .chat__list-item:hover {
   color: black;
@@ -52,6 +53,15 @@
   font-style: normal;
   color: #A9A9A9;
   font-size: 16px;
+}
+
+.cross {
+  width: 20px;
+  height: 20px;
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  cursor: pointer;
 }
 
 /*# sourceMappingURL=profile_dialogs.css.map */

@@ -91,28 +91,19 @@
   display: flex;
   width: 100%;
   gap: 5px;
-}
-
-.message__input-text {
-  width: 100%;
-  border: 1px solid #D4D4D4;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding-left: 15px;
+  position: relative;
 }
 
 #id_message_send_input {
   resize: none;
-  width: 80%;
-  height: 60%;
   caret-color: #00ad64;
   font-family: "Trebuchet MS", sans-serif;
   font-weight: 400;
   font-style: normal;
   color: black;
   font-size: 18px;
-  border: none;
+  padding: 15px 5px 5px 5px;
+  border: 1px solid #D4D4D4;
 }
 #id_message_send_input textarea:focus {
   border: none;
@@ -123,12 +114,9 @@
 .message__input-send {
   display: flex;
   align-self: flex-end;
-  position: absolute;
   width: 24px;
   height: 24px;
   cursor: pointer;
-  top: 5px;
-  right: 10px;
 }
 
 /*# sourceMappingURL=profile_dialog.css.map */

@@ -19,6 +19,7 @@
   gap: 20px;
   align-items: center;
   border-bottom: 1px solid $gray;
+  position: relative;
   &:hover {
     color: $defaultColor;
   }
@@ -48,4 +49,13 @@
 
 .chat__list-text-last-message {
   @include fonts(#A9A9A9, 16px, 400);
+}
+
+.cross {
+      width: 20px;
+    height: 20px;
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    cursor: pointer;
 }

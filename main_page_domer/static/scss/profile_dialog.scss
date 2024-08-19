@@ -11,6 +11,7 @@
 
 .dialog__subject-img {
   max-width: 120px;
+
   & img {
     width: 100%;
     height: 100%;
@@ -77,30 +78,33 @@
   display: flex;
   width: 100%;
   gap: 5px;
+  position: relative;
 }
 
-.message__input-text {
-  width: 100%;
-  border: 1px solid $gray;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding-left: 15px;
-}
+//.message__input-text {
+//  width: 100%;
+//  border: 1px solid $gray;
+//  display: flex;
+//  flex-direction: column;
+//  justify-content: center;
+//  padding-left: 15px;
+//}
 
 #id_message_send_input {
-    resize: none;
+  resize: none;
+  //width: 80%;
+  //height: 60%;
+  caret-color: #00ad64;
+  @include fonts($defaultColor, 18px, 400);
+  //border: none;
+  padding: 15px 5px 5px 5px;
+  border: 1px solid $gray;
 
-    width: 80%;
-    height: 60%;
-    caret-color: #00ad64;
-    @include fonts($defaultColor, 18px, 400);
-  border: none;
   textarea:focus {
-      border: none;
-  box-shadow: inset 0 0 5px #719ECE;
+    border: none;
+    box-shadow: inset 0 0 5px #719ECE;
     outline: none;
-}
+  }
 
 
 }
@@ -108,11 +112,10 @@
 .message__input-send {
   display: flex;
   align-self: flex-end;
-  position: absolute;
+
   width: 24px;
   height: 24px;
   cursor: pointer;
-  top: 5px;
-  right: 10px;
+
 
 }
