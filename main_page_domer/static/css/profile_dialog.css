@@ -10,6 +10,7 @@
   border: 1px solid #D4D4D4;
   border-radius: 7px;
   margin-bottom: 10px;
+  position: relative;
 }
 
 .dialog__subject-img {
@@ -19,14 +20,37 @@
   width: 100%;
   height: 100%;
   max-height: 100px;
-  -o-object-fit: contain;
-     object-fit: contain;
+  object-fit: contain;
 }
 
-.dialog__subject-title {
+.dialog__subject-text {
   display: flex;
   flex-direction: column;
   gap: 10px;
+}
+
+.dialog__subject-text-title {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+}
+
+.dialog__subject-text-price {
+  font-family: "Trebuchet MS", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  color: black;
+  font-size: 16px;
+}
+
+.cross {
+  width: 20px;
+  height: 20px;
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  cursor: pointer;
 }
 
 .message__list {
@@ -57,6 +81,11 @@
   margin: 0 5px;
   display: flex;
   gap: 3px;
+  max-width: 90%;
+}
+
+.message__item-text {
+  word-break: break-word;
 }
 
 .message-self {
@@ -125,9 +154,12 @@
   width: 24px;
   height: 24px;
   cursor: pointer;
-  transition: 0.3s ease;
+  transition: 0.4s ease-in;
 }
 .message__input-send[disabled] {
-  transition: 0.3s ease;
+  transition: 0.4s ease-out;
   cursor: no-drop;
-}/*# sourceMappingURL=profile_dialog.css.map */
+  fill: #D4D4D4;
+}
+
+/*# sourceMappingURL=profile_dialog.css.map */

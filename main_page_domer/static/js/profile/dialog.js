@@ -1,6 +1,17 @@
 const messagesList = document.getElementById("id_chat_item_container")
 messagesList.scrollTo(0, messagesList.scrollHeight)
 
+function lastMessageScroll(b) {
+    const e = document.getElementById("id_chat_item_container");
+    if (!e) return ;
+
+    e.scrollTo({
+  top: messagesList.scrollHeight,
+  left: 100,
+  behavior: "smooth",
+});
+}
+
 const userId = document.querySelector(".message__input").dataset.id
 const roomName = JSON.parse(document.getElementById("room-name").textContent)
 const chatSocket = new WebSocket(
@@ -31,6 +42,7 @@ chatSocket.onmessage = function (e) {
   p.innerHTML = data.message
   document.querySelector("#id_message_send_input").value = ""
   document.querySelector("#id_chat_item_container").append(p)
+  lastMessageScroll(p)
 }
 
 
