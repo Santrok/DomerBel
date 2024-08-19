@@ -44,7 +44,6 @@
                                 </div>
                             {% endif %}
                         {% endifchanged %}
-
                         <div class="message__item {% if message.author_id == user.id %}message-self{% else %}message-any{% endif %}">
                             <p class="message__item-text">
                                 {{ message.message }}
@@ -60,8 +59,12 @@
     </section>
     <section class="message__input" data-id="{{ user.id }}">
         <textarea placeholder="Напишите сообщение" id="id_message_send_input" class="message__input-text"></textarea>
-        <div class="message__input-send">
-            <input type="submit" disabled id="id_message_send_button">
+        <button 
+        type="button" 
+        class="message__input-send" 
+        id="id_message_send_button"
+        disabled
+        >
             <svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M0.129265 23.3537C0.0787801 23.6061 0.348773 23.8007 0.57228 23.673L20.5442 12.2605C20.7457 12.1453 20.7457 11.8547 20.5442 11.7395L0.572283 0.327018C0.348776 0.1993 0.078782 0.393901 0.129267 0.646326L1.96586 9.82928C1.98697 9.93485 2.06303 10.021 2.16516 10.0551L8 12L2.16516 13.9449C2.06303 13.979 1.98697 14.0652 1.96586 14.1707L0.129265 23.3537Z"
                       fill="currentColor"></path>
@@ -74,43 +77,10 @@
                     <circle cx="10.5" cy="11.5" r="0" fill="#00AD64"></circle>
                 </g>
             </svg>
-        </div>
+        </button>
     </section>
 {% endblock mainInfo %}
 
 {% block js2 %}
-    <script>
-        const userId = document.querySelector('.message__input').dataset.id
-        const roomName = JSON.parse(document.getElementById('room-name').textContent)
-        const chatSocket = new WebSocket('ws://' + window.location.host + '/ws/chat/' + roomName + '/');
-        chatSocket.onopen = function (e) {
-            console.log("The connection was setup successfully !");
-        };
-        chatSocket.onclose = function (e) {
-            console.log("Something unexpected happened !");
-        };
-        document.querySelector("#id_message_send_input").focus();
-        document.querySelector("#id_message_send_input").onkeyup = function (e) {
-            if (e.keyCode == 13) {
-                document.querySelector("#id_message_send_button").click();
-            }
-        };
-        document.querySelector("#id_message_send_button").onclick = function (e) {
-            let messageInput = document.querySelector(
-                "#id_message_send_input"
-            ).value;
-            chatSocket.send(JSON.stringify({message: messageInput, userId: userId}))
-        };
-        chatSocket.onmessage = function (e) {
-            const data = JSON.parse(e.data);
-            console.log(data)
-            let p = document.createElement("p");
-            p.classList.add('message__item')
-            p.classList.add(userId === data.userId ? 'message-self' : 'message-any')
-            p.innerHTML = data.message;
-            document.querySelector("#id_message_send_input").value = "";
-            document.querySelector("#id_chat_item_container").append(p);
-        };
-    </script>
     <script src="{% static "js/profile/dialog.js" %}"></script>
 {% endblock js2 %}
