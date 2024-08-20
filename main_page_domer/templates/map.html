@@ -13,14 +13,14 @@
 {#        {% endfor %}#}
     {% recursetree nodes %}
         <li>
-            <a href="#">{{ node.title }}   {{ node.advertisement_counts }}</a>
+            <a href="{% url 'advertisement_by_category' node.slug %}">{{ node.title }}   {{ node.advertisement_counts }}</a>
         <div class="" style="display: flex; width: 100%;"></div>
 {#        {% for element in node.elements %}#}
-        {% for element in node.field_set.first.spisok.element_set.all %}
+{#        {% for element in node.field_set.first.spisok.element_set.all %}#}
 {#            {% if element.spisok__field__category == node.id %}#}
-            <a href="#" style="color: black;">{{ element }}</a>
+{#            <a href="#" style="color: black;">{{ element }}</a>#}
 {#            {% endif %}#}
-        {% endfor %}
+{#        {% endfor %}#}
 
             {% if not node.is_leaf_node %}
                 <ul class="map__list-children">
