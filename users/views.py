@@ -356,14 +356,14 @@ def view_message(request, chat_id):
 def delete_dialogs(request):
     """ Удаление выбранного диалога в ЛК """
     if request.method == "POST":
-        if 'delete_dialogs' in request.POST:
-            selected_dialogs = request.POST.getlist('dialog_checkbox')
-            dialogs = Chat.objects.filter(id__in=selected_dialogs)
-            for dialog in dialogs:
-                dialog.message_set.all().delete()
-                dialog.delete()
-            messages.success(request, "Выбранные диалоги удалены!")
-            return redirect('users:dialogs')
+        # if 'delete_dialogs' in request.POST:
+        #     selected_dialogs = request.POST.getlist('dialog_checkbox')
+        #     dialogs = Chat.objects.filter(id__in=selected_dialogs)
+        #     for dialog in dialogs:
+        #         dialog.message_set.all().delete()
+        #         dialog.delete()
+        #     messages.success(request, "Выбранные диалоги удалены!")
+        return redirect('users:dialogs')
 
 
 def delete_user_message(request, message_id, chat_id):

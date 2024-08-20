@@ -5,7 +5,8 @@
 {% endblock %}
 
 {% block modals %}
-    <form aria-modal="true" class="remove__dialog">
+    <form aria-modal="true" class="remove__dialog" method="POST" action="{% url 'users:delete_dialogs' %}">
+        {% csrf_token %}
         <div class="cross">
             <svg width="20.000000" height="20.000000" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"
                  xmlns:xlink="http://www.w3.org/1999/xlink">
@@ -29,14 +30,20 @@
                 <img src="{% static 'img/logo.png' %}" alt="">
             </div>
             <h2>
-                Написать сообщение
+                Удаление диалога
             </h2>
         </div>
         <fieldset>
-            <button type="button" class="submit__btn">
-                Удалить диалог
+            <p class="remove__dialog-text">
+                Вы действительно хотите удалить диалог?
+                Это действие нельзя будет отменить
+            </p>
+            <div class="remove__dialog-btn">
+            <button class="submit__btn">
+                Удалить
             </button>
             <button type="button" class="submit__btn">Отмена</button>
+                </div>
         </fieldset>
     </form>
 {% endblock modals %}
