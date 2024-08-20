@@ -57,11 +57,15 @@
   @include fonts(#A9A9A9, 16px, 400);
 }
 
-.cross {
+.cross__dialog {
   width: 20px;
   height: 20px;
   position: absolute;
   top: 5px;
   right: 5px;
   cursor: pointer;
+}
+
+.remove__dialog {
+
 }
