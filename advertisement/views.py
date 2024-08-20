@@ -306,7 +306,13 @@ def search_result(request):
 
     try:
         print(search_parameters)
-        category_queryset_an = Category.objects.add_related_count(category.get_descendants() if
+        print(category)
+        categoryi = []
+        if request.GET.get('category'):
+            categoryi=Category.objects.get(id=request.GET.get('category'))
+        print(categoryi)
+
+        category_queryset_an = Category.objects.add_related_count(categoryi.get_descendants() if
                                                                   category else
                                                                   Category.objects.root_nodes(),
                                                                   Advertisement,
