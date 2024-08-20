@@ -27,7 +27,7 @@ function show_category(event) {
         get_element_select_category4.innerHTML = `<option value="0">Все разделы</option>`;
 
         if (event.target.value !== "0") {
-            fetch(`${localStorage.getItem("url")}/api/v1/categories_for_search/${event.target.value}`)
+            fetch(`${window.location.protocol}//${window.location.host}/api/v1/categories_for_search/${event.target.value}`)
                 .then((response) => response.json())
                 .then((data) => {
                 // Показываем второй селект
@@ -52,7 +52,7 @@ function show_category(event) {
         get_element_select_category4.innerHTML = `<option value="0">Все разделы</option>`;
 
         if (event.target.value !== "0") {
-            fetch(`${localStorage.getItem("url")}/api/v1/categories_for_search/${event.target.value}`)
+            fetch(`${window.location.protocol}//${window.location.host}/api/v1/categories_for_search/${event.target.value}`)
                 .then((response) => response.json())
                 .then((data) => {
                 if (data.length > 0) {
@@ -73,7 +73,7 @@ function show_category(event) {
         get_element_select_category4.innerHTML = `<option value="0">Все разделы</option>`;
 
         if (event.target.value !== "0") {
-            fetch(`${localStorage.getItem("url")}/api/v1/categories_for_search/${event.target.value}`)
+            fetch(`${window.location.protocol}//${window.location.host}/api/v1/categories_for_search/${event.target.value}`)
                 .then((response) => response.json())
                 .then((data) => {
                 if (data.length > 0) {
@@ -101,7 +101,7 @@ let location_hidden = document.querySelector(".location_hidden")
 
 function show_region(event){
     if (event.target.value !== "0"){
-        fetch(`${localStorage.getItem("url")}/api/v1/add_store/city/${event.target.value}`)
+        fetch(`${window.location.protocol}//${window.location.host}/api/v1/add_store/city/${event.target.value}`)
             .then((response) => response.json())
             .then(data => {
                 location_hidden.style.display = "flex";

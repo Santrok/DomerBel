@@ -5,16 +5,22 @@ from datetime import datetime
 
 import PIL
 from django.contrib import messages
+
+from django.contrib.postgres.aggregates import ArrayAgg
+
+from django.contrib.postgres.fields import ArrayField
 from django.core.mail import send_mail
 from django.core.paginator import Paginator
-from django.db.models import Q, F
+from django.db.models import Q, F, Count, Func, Value, ExpressionWrapper
 from django.db.models.fields.json import KT
+from django.db.models.functions import Concat, Length
+from django.forms import CharField
 from django.http import Http404
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils.timezone import make_aware
 
 from users.models import User
-from advertisement.models import Advertisement, Region, Category, Store, ElementTwo, PhotoAdvertisement, Field
+from advertisement.models import Advertisement, Region, Category, Store, ElementTwo, PhotoAdvertisement, Field, Element
 from advertisement.utils import (get_region_variables, sorted_by, sorted_by_number, sorted_by_date_or_price,
                                  variables_for_paginator, where_to_look, search_additional_information,
                                  annotating_field)
@@ -361,11 +367,87 @@ def search_for_advertisements_in_the_store(request, store_slug):
 
 
 def get_site_map_page(request):
-    category_list = Category.objects.prefetch_related('field_set__spisok__element_set', 'field_set')
+    # category_queryset = Category.objects.add_related_count(Category.objects.all(),
+    #                                                        Advertisement,
+    #                                                        'category',
+    #                                                        'advertisement_counts',
+    #                                                        cumulative=True,
+    #                                                        extra_filters={"is_active": True,
+    #                                                                       "moderated": True
+    #                                                                       })
+    #
+    # category_queryset = Category.objects.add_related_count(Category.objects.all(),
+    #                                                        Field,
+    #                                                        'category',
+    #                                                        'element_counts',
+    #                                                        cumulative=True,
+    #                                                        extra_filters={"is_active": True,
+    #                                                                       "moderated": True
+    #                                                                       })
 
+
+    # print(category_queryset)
+
+
+
+
+
+    category_list = Category.objects.prefetch_related('field_set__spisok__element_set', 'field_set')
+                                                      # ).annotate(element=(ArrayAgg(F('field__spisok__element'))))
+
+
+
+
+    # elements = Element.objects.alias(spisok__field_set__category__advertisement_set__additional_information
+
+    # element = Element.objects.annotate(field=F('spisok__field__title')).annotate(adver=Count(F(f'spisok__field__category__advertisement__additional_information__{field}__contains'))).filter(adver__gt=1)
+    #
+    # print(element)
+    #
+    # for e in element:
+    #
+    #     print(e.adver)
+    # .filter(spisok__field__category__advertisement__additional_information_view2__values__contains=[])
+    # Concat(Value("["), 'title', Value(", "), 'elementtwo__title', Value("]")) if F('elementtwo') else
+    # elements = Element.objects.annotate(two=Length('elementtwo__title'))
+    # .filter(spisok__field__category__advertisement__additional_information_view2__values__contains=F('two'))
+
+    # elements = Element.objects.exclude(elementtwo__title__exact=None
+    #                                    ).annotate(two=Concat('title', Value(", "), 'elementtwo__title'))
+    #                                               # ).annotate(two=ArrayAgg(F('two2'))
+    #                                               #             )
+    # elements2 = Element.objects.filter(elementtwo__title__exact=None
+    #                                    ).annotate(two=F('title'))
+
+    # count = 0
+    # for e in elements2:
+    #     print(count, e)
+    #     count += 1
+
+    # x = [e.two for e in elements] + [e.two for e in elements2]
+
+    # elements3 = Element.objects.filter(spisok__field__category__advertisement__additional_information_view2__values__overlap=x).values('id','title','spisok__field__category' ).distinct('title')
+    # elements4 = Element.objects.filter(spisok__field__category__advertisement__additional_information_view2__values__overlap=).distinct('title').count()
+
+    # print(elements3)
+    # for e in elements3:
+    #     print(e)
+    # print(elements4)
+
+    # advertisement = Advertisement.objects.filter(category_id=4, additional_information_view2__values__contains=['Audi, 80'])
+    # advertisement = Advertisement.objects.filter(category_id=4, additional_information_view__contains=['Марка, модель', 'Audi, 80'])
+    # print(advertisement[0].additional_information_view)
+    # print(advertisement)
+    # field = Field.objects.alias(f'category__advertisement_set__additional_information_')
+    # advertisement = Advertisement.objects.all()
+    # for a in advertisement:
+    #     a.additional_information_view2 = {key: value for key, value in a.additional_information_view}
+    #     a.save()
 
     context = {
-        'nodes': category_list
+        # 'nodes': category_queryset,
+        'nodes': category_list,
+        # 'elements': elements3
     }
 
     return render(request, 'map.html', context)

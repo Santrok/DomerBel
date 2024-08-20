@@ -12,7 +12,7 @@ requestReportBtn.addEventListener("click", () => {
   const id = document.querySelector('.details__advertisement-id').textContent
   form.append("advertisement", id.split(":")[1])
   form.append("recaptcha", form.get("g-recaptcha-response"));
-  fetch(`${localStorage.getItem("url")}/api/v1/save_complaint/`, {
+  fetch(`${window.location.protocol}//${window.location.host}/api/v1/save_complaint/`, {
   method: "POST",
   body: form
   })

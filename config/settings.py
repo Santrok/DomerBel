@@ -22,6 +22,7 @@ ALLOWED_HOSTS = ['localhost', '127.0.0.1', '217.197.116.151']
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -40,6 +41,8 @@ INSTALLED_APPS = [
     'django_dump_load_utf8',
     'django_ckeditor_5',
 
+    'channels',
+
     'mptt',
     'django_recaptcha',
     'django_filters',
@@ -47,7 +50,8 @@ INSTALLED_APPS = [
     'main_page_domer',
     'users',
     'advertisement',
-    'api_domer'
+    'api_domer',
+    'chat',
 ]
 
 MIDDLEWARE = [
@@ -326,5 +330,13 @@ CKEDITOR_5_CONFIGS = {
 # Celery settings
 CELERY_BROKER_URL = "redis://localhost:6379"
 CELERY_RESULT_BACKEND = "redis://localhost:6379"
+
+ASGI_APPLICATION = "config.asgi.application"
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer"
+    }
+}
 
 

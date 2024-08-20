@@ -37,7 +37,7 @@ function registration() {
   const data = new FormData(registrationForm);
   data.append("recaptcha", data.get("g-recaptcha-response"));
   if (legal.classList.contains("modals__signIn-choice-active")) data.append("entity", true);
-  fetch(`${localStorage.getItem("url")}/api/v1/registration_user/`, {
+  fetch(`${window.location.protocol}//${window.location.host}/api/v1/registration_user/`, {
     method: "POST",
     headers: {
       "X-CSRFToken": getCookie("csrftoken"),
@@ -105,7 +105,7 @@ function generatingErrorSField(data, fieldForm) {
  */
 function login() {
   let data = new FormData(loginForm);
-  fetch(`${localStorage.getItem("url")}/api/v1/login_user/`, {
+  fetch(`${window.location.protocol}//${window.location.host}/api/v1/login_user/`, {
     method: "POST",
     headers: {
       "X-CSRFToken": getCookie("csrftoken"),
@@ -135,12 +135,12 @@ function login() {
  * @return {Promise<void>} A promise that resolves when the logout is successful and the user is redirected to the homepage.
  */
 function logout() {
-  fetch(`${localStorage.getItem("url")}/api/v1/logout/`, {
+  fetch(`${window.location.protocol}//${window.location.host}/api/v1/logout/`, {
     method: "POST",
     headers: {
       "X-CSRFToken": getCookie("csrftoken"),
     },
   }).then((resp) => {
-    if (resp.ok) window.location.href=`${localStorage.getItem("url")}/`;
+    if (resp.ok) window.location.href=`${window.location.protocol}//${window.location.host}/`;
   });
 }

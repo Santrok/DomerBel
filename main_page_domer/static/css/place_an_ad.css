@@ -50,6 +50,11 @@ form,
   color: black;
   font-size: 14px;
 }
+.item_input input:focus,
+.item_input select:focus,
+.item_input textarea:focus {
+  border: 1px solid #3779eb;
+}
 .item_input input[type=radio] {
   width: initial;
 }
@@ -224,6 +229,11 @@ form,
   .item_input select,
   .item_input textarea {
     max-width: none;
+  }
+  .item_input input:focus,
+  .item_input select:focus,
+  .item_input textarea:focus {
+    border: 1px solid #3779eb;
   }
   .label_fields {
     flex: initial;

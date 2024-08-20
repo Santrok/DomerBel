@@ -35,7 +35,6 @@ def get_advertisement_page(request):
         sort_for_paginator = sorted_by_number(request.GET.get('sort'))
 
 
-    category_list = Category.objects.filter(level__lte=1)
     advertisement_queryset = Advertisement.objects.filter(is_active=True,
                                                           moderated=True,
                                                           **region_filter).select_related(
@@ -69,7 +68,6 @@ def get_advertisement_page(request):
     context = {
         "ads_found": advertisement_queryset.count(),
         "category": category_queryset,
-        "category_list": category_list,
         "region_bread_crumbs": region_bread_crumbs,
         "region_param": region_param,
         "page_obj": page_obj,
@@ -99,7 +97,6 @@ def get_advertisement_by_category(request, category_slug):
         sort_for_paginator = sorted_by_number(request.GET.get('sort'))
 
     category_queryset_all = Category.objects.all()
-    category_list = category_queryset_all.filter(level__lte=1)
     category = get_object_or_404(category_queryset_all, slug=category_slug)
     category_bread_crumbs = category.get_ancestors(ascending=False, include_self=True)
     category_queryset_an = Category.objects.add_related_count(category.get_descendants(),
@@ -138,7 +135,6 @@ def get_advertisement_by_category(request, category_slug):
         "region_param": region_param,
         "category_bread_crumbs": category_bread_crumbs,
         "region_bread_crumbs": region_bread_crumbs,
-        "category_list": category_list,
         "page_obj": page_obj,
         "vip_advertisement": vip_advertisement,
         'date': state_sort_by_date,
@@ -207,7 +203,8 @@ def get_advertisement_details_page(request, slug):
         "category_crumbs": category_crumbs,
         "similar_advertisement": similar_advertisement,
         "reason_list": reason_of_complaint,
-        "form": form
+        "form": form,
+        "adaptive_navigation": f"{advertisement_main.title}.",
     }
     return render(request=request,
                   template_name='advertisement_details.html',
@@ -304,8 +301,7 @@ def search_result(request):
         search_parameters['additional_information__contains'] = search
 
     try:
-        print(search_parameters)
-        category_queryset_an = Category.objects.add_related_count(category.get_descendants() if
+        category_queryset = Category.objects.add_related_count(category.get_descendants() if
                                                                   category else
                                                                   Category.objects.root_nodes(),
                                                                   Advertisement,
@@ -315,6 +311,8 @@ def search_result(request):
                                                                   extra_filters={"is_active": True,
                                                                                  "moderated": True,
                                                                                  **search_parameters})
+        if request.GET.get('category'):
+            category_queryset_an = category_queryset.filter(parent_id=request.GET.get('category'))
     except:
         pass
 
@@ -338,7 +336,7 @@ def search_result(request):
         "page_obj": page_obj,
         "region_bread_crumbs": region_bread_crumbs,
         "category_bread_crumbs": category_bread_crumbs,
-        "category": category_queryset_an,
+        "category": category_queryset_an if request.GET.get('category') else category_queryset,
         "query": query,
         'date': state_sort_by_date,
         'adaptive_navigation': 'Результаты поиска'

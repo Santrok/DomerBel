@@ -69,6 +69,8 @@
 @import './modalsNotification';
 @import "./modalsMore";
 @import "./modalsReportAdvertisement";
+@import "./modalSendMessage";
+@import "./modalRemoveDialog";
 
 .modals__active-grid {
   display: grid;

@@ -331,63 +331,28 @@ def delete_store(request, store_id):
 @login_required
 def get_all_dialogs(request):
     """ Показывает все диалоги пользователя в ЛК """
-    category_list = Category.objects.filter(level__lte=1)
-    chats = Chat.objects.filter(members__in=[request.user.id])
+    chats = Chat.objects.filter(members__in=[request.user.id]).order_by("-id").prefetch_related('message_set').select_related('advertisement')
     context = {
-        "category_list": category_list,
         "user_profile": request.user,
-        "chats": chats
+        "chats": chats,
+        "adaptive_navigation": "Мои сообщения"
     }
-    return render(request, 'personal_account/dialogs.html', context)
-
-
-@login_required
-def create_dialog(request, user_id, recipient_id):
-    """ Создание нового диалога """
-    subject = request.GET.get("subject")
-    chats = Chat.objects.filter(members__in=[user_id, recipient_id], type=Chat.DIALOG, subject=subject).annotate(
-        c=Count('members')).filter(c=2)
-    if chats.count() == 0:
-        chat = Chat.objects.create(subject=subject)
-        chat.members.add(request.user)
-        chat.members.add(recipient_id)
-    else:
-        chat = chats.first()
-    return redirect(reverse('users:messages', kwargs={'chat_id': chat.id}))
+    return render(request, 'profile_dialogs.html', context)
 
 
 @login_required
 def view_message(request, chat_id):
-    # Показывает все сообщения внутри открытого диалога
-    if request.method == "GET":
-        category_list = Category.objects.filter(level__lte=1)
-        try:
-            chat = Chat.objects.get(id=chat_id)
-            if request.user in chat.members.all():
-                chat.message_set.filter(is_read=False).exclude(author=request.user).update(is_read=True)
-            else:
-                chat = None
-        except Chat.DoesNotExist:
-            chat = None
-        context = {
-            "category_list": category_list,
-            "chat": chat,
-            "form": MessageForm()
-        }
-        return render(request, 'personal_account/messages_in_dialog.html', context)
-
-    # Добавляет новое сообщение в открытый диалог
-    if request.method == "POST":
-        form = MessageForm(data=request.POST)
-        if form.is_valid():
-            message = form.save(commit=False)
-            message.chat_id = chat_id
-            message.author = request.user
-            message.save()
-        context = {'chat_id': chat_id}
-        return redirect(reverse('users:messages', kwargs=context))
+    '''Показывает все сообщения внутри открытого диалога'''
+    chat = Chat.objects.filter(id=chat_id)
+    advertisement = get_object_or_404(Advertisement, id=chat[0].advertisement_id)
+    context = {
+        "chat": chat,
+        'advertisement': advertisement,
+    }
+    return render(request, 'profile_dialog.html', context)
 
 
+@login_required
 def delete_dialogs(request):
     """ Удаление выбранного диалога в ЛК """
     if request.method == "POST":
