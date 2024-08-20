@@ -1,0 +1,98 @@
+{% extends 'profile_user.html' %}
+{% load static %}
+{% block css2 %}
+    <link rel="stylesheet" href="{% static 'css/profile_dialogs.css' %}">
+{% endblock %}
+
+{% block modals %}
+    <form aria-modal="true" class="remove__dialog">
+        <div class="cross">
+            <svg width="20.000000" height="20.000000" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"
+                 xmlns:xlink="http://www.w3.org/1999/xlink">
+                <desc>
+                    Created with Pixso.
+                </desc>
+                <defs>
+                    <clipPath id="clip946_10111">
+                        <rect id="Dismiss" width="20.000000" height="20.000000" fill="white" fill-opacity="0"/>
+                    </clipPath>
+                </defs>
+                <g clip-path="url(#clip946_10111)">
+                    <path id="Shape"
+                          d="M3.89 4.05L3.96 3.96C4.23 3.7 4.65 3.67 4.94 3.89L5.03 3.96L10 8.93L14.96 3.96C15.23 3.7 15.65 3.67 15.94 3.89L16.03 3.96C16.29 4.23 16.32 4.65 16.1 4.94L16.03 5.03L11.06 10L16.03 14.96C16.29 15.23 16.32 15.65 16.1 15.94L16.03 16.03C15.76 16.29 15.34 16.32 15.05 16.1L14.96 16.03L10 11.06L5.03 16.03C4.76 16.29 4.34 16.32 4.05 16.1L3.96 16.03C3.7 15.76 3.67 15.34 3.89 15.05L3.96 14.96L8.93 10L3.96 5.03C3.7 4.76 3.67 4.34 3.89 4.05L3.96 3.96L3.89 4.05Z"
+                          fill="#212121" fill-opacity="1.000000" fill-rule="nonzero"/>
+                </g>
+            </svg>
+        </div>
+        <div class="modals__login-logo-wrap">
+            <div class="modals__login-logo">
+                <img src="{% static 'img/logo.png' %}" alt="">
+            </div>
+            <h2>
+                Написать сообщение
+            </h2>
+        </div>
+        <fieldset>
+            <button type="button" class="submit__btn">
+                Удалить диалог
+            </button>
+            <button type="button" class="submit__btn">Отмена</button>
+        </fieldset>
+    </form>
+{% endblock modals %}
+
+
+
+
+{% block search %}
+{% endblock %}
+
+{% block mainInfo %}
+
+    <section class="main__info">
+        <ul class="chat__list">
+            {% for chat in chats %}
+                <li class="chat__list-item">
+                    <a href="{{ chat.get_absolute_url }}" class="chat__list-img">
+                        <img src="{% if chat.advertisement.preview_image %} {{ chat.advertisement.preview_image.url }} {% else %}{% static 'img/no_image.jpg' %}{% endif %}"
+                             alt="{{ chat.advertisement.title }}">
+                    </a>
+                    <a href="{{ chat.get_absolute_url }}" class="chat__list-text">
+                        <p class="chat__list-text-title">
+                            {{ chat.advertisement.title }}
+                        </p>
+                        <p class="chat__list-text-last-message">
+                            {% with message=chat.message_set.all|first %}
+                                {{ message.message }}
+                            {% endwith %}
+                        </p>
+                    </a>
+                    <div class="cross__dialog">
+                        <svg width="20.000000" height="20.000000" viewBox="0 0 20 20" fill="none"
+                             xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                            <desc>
+                                Created with Pixso.
+                            </desc>
+                            <defs>
+                                <clipPath id="clip946_10111">
+                                    <rect id="Dismiss" width="20.000000" height="20.000000" fill="white"
+                                          fill-opacity="0"></rect>
+                                </clipPath>
+                            </defs>
+                            <g clip-path="url(#clip946_10111)">
+                                <path id="Shape"
+                                      d="M3.89 4.05L3.96 3.96C4.23 3.7 4.65 3.67 4.94 3.89L5.03 3.96L10 8.93L14.96 3.96C15.23 3.7 15.65 3.67 15.94 3.89L16.03 3.96C16.29 4.23 16.32 4.65 16.1 4.94L16.03 5.03L11.06 10L16.03 14.96C16.29 15.23 16.32 15.65 16.1 15.94L16.03 16.03C15.76 16.29 15.34 16.32 15.05 16.1L14.96 16.03L10 11.06L5.03 16.03C4.76 16.29 4.34 16.32 4.05 16.1L3.96 16.03C3.7 15.76 3.67 15.34 3.89 15.05L3.96 14.96L8.93 10L3.96 5.03C3.7 4.76 3.67 4.34 3.89 4.05L3.96 3.96L3.89 4.05Z"
+                                      fill="#212121" fill-opacity="1.000000" fill-rule="nonzero"></path>
+                            </g>
+                        </svg>
+                    </div>
+                </li>
+
+            {% endfor %}
+        </ul>
+    </section>
+{% endblock %}
+
+{% block js2 %}
+    <script src="{% static 'js/profile/delete_dialog.js' %}"></script>
+{% endblock %}
