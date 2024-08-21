@@ -276,13 +276,11 @@ def add_store(request):
 @permission_required("advertisement.view_store", raise_exception=True)
 def get_my_store(request):
     stores = Store.objects.filter(user=request.user).order_by('id')
-    category_list = Category.objects.filter(level__lte=1)
     oblast_list = []
     if stores.exists():
         context = {
             'stores': stores,
             'oblast_list': oblast_list,
-            'category_list': category_list,
             "adaptive_navigation": "Мои магазины"
         }
     else:
@@ -331,7 +329,10 @@ def delete_store(request, store_id):
 @login_required
 def get_all_dialogs(request):
     """ Показывает все диалоги пользователя в ЛК """
-    chats = Chat.objects.filter(members__in=[request.user.id]).order_by("-id").prefetch_related('message_set').select_related('advertisement')
+    chats = Chat.objects.filter(members__in=[request.user.id]
+                                ).order_by("-id"
+                                           ).prefetch_related('message_set'
+                                                              ).select_related('advertisement')
     context = {
         "user_profile": request.user,
         "chats": chats,
@@ -343,8 +344,8 @@ def get_all_dialogs(request):
 @login_required
 def view_message(request, chat_id):
     '''Показывает все сообщения внутри открытого диалога'''
-    chat = Chat.objects.filter(id=chat_id)
-    advertisement = get_object_or_404(Advertisement, id=chat[0].advertisement_id)
+    chat = get_object_or_404(Chat, id=chat_id)
+    advertisement = get_object_or_404(Advertisement, id=chat.advertisement_id)
     context = {
         "chat": chat,
         'advertisement': advertisement,
@@ -356,13 +357,10 @@ def view_message(request, chat_id):
 def delete_dialogs(request):
     """ Удаление выбранного диалога в ЛК """
     if request.method == "POST":
-        # if 'delete_dialogs' in request.POST:
-        #     selected_dialogs = request.POST.getlist('dialog_checkbox')
-        #     dialogs = Chat.objects.filter(id__in=selected_dialogs)
-        #     for dialog in dialogs:
-        #         dialog.message_set.all().delete()
-        #         dialog.delete()
-        #     messages.success(request, "Выбранные диалоги удалены!")
+        if 'dialog' in request.POST:
+            dialog = get_object_or_404(Chat, id=request.POST.get('dialog'), members=request.user)
+            dialog.members.remove(request.user)
+            messages.success(request, "Диалог удален!")
         return redirect('users:dialogs')
 
 

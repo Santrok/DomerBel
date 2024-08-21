@@ -102,10 +102,8 @@
   max-height: 800px;
   width: 100%;
   height: 100%;
-  -o-object-fit: cover;
-     object-fit: cover;
-  -o-object-position: center;
-     object-position: center;
+  object-fit: cover;
+  object-position: center;
   border: 1px solid #D4D4D4;
   border-radius: 8px;
 }
@@ -141,10 +139,8 @@
 .magnifier__zoom-second img {
   width: 100%;
   height: 100%;
-  -o-object-fit: cover;
-     object-fit: cover;
-  -o-object-position: center;
-     object-position: center;
+  object-fit: cover;
+  object-position: center;
   border-radius: 8px;
 }
 
@@ -190,13 +186,6 @@
   padding: 10px;
   border-radius: 8px;
   border: 1px solid black;
-}
-.modals__login-field input::-moz-placeholder {
-  font-family: "Trebuchet MS", sans-serif;
-  font-weight: 400;
-  font-style: normal;
-  color: rgb(110, 109, 109);
-  font-size: 14px;
 }
 .modals__login-field input::placeholder {
   font-family: "Trebuchet MS", sans-serif;
@@ -507,13 +496,6 @@
 .send__message textarea:focus {
   border: 1px solid #3779eb;
 }
-.send__message textarea::-moz-placeholder {
-  font-family: "Trebuchet MS", sans-serif;
-  font-weight: 400;
-  font-style: normal;
-  color: rgb(110, 109, 109);
-  font-size: 14px;
-}
 .send__message textarea::placeholder {
   font-family: "Trebuchet MS", sans-serif;
   font-weight: 400;
@@ -522,7 +504,7 @@
   font-size: 14px;
 }
 
-.remove__dialog {
+.remove__modal {
   position: relative;
   width: 100%;
   max-width: 450px;
@@ -533,10 +515,10 @@
   padding: 40px;
   border-radius: 8px;
 }
-.remove__dialog button {
+.remove__modal button {
   margin-top: 10px;
 }
-.remove__dialog p {
+.remove__modal p {
   font-family: "Trebuchet MS", sans-serif;
   font-weight: 400;
   font-style: normal;
@@ -545,10 +527,10 @@
   white-space: pre-line;
   text-align: center;
 }
-.remove__dialog p span {
+.remove__modal p span {
   color: red;
 }
-.remove__dialog::placeholder {
+.remove__modal::placeholder {
   font-family: "Trebuchet MS", sans-serif;
   font-weight: 400;
   font-style: normal;
@@ -556,7 +538,7 @@
   font-size: 14px;
 }
 
-.remove__dialog-btn {
+.remove__modal-btn {
   display: flex;
   gap: 10px;
 }
@@ -785,13 +767,6 @@ header {
   color: black;
   font-size: 14px;
 }
-.main__search-form-item input::-moz-placeholder {
-  font-family: "Trebuchet MS", sans-serif;
-  font-weight: 400;
-  font-style: normal;
-  color: #545454;
-  font-size: 14px;
-}
 .main__search-form-item input::placeholder {
   font-family: "Trebuchet MS", sans-serif;
   font-weight: 400;
@@ -926,9 +901,7 @@ header {
   color: #fff;
   font-size: 16px;
   opacity: 0;
-  -webkit-user-select: none;
-     -moz-user-select: none;
-          user-select: none;
+  user-select: none;
 }
 
 .access__active {
@@ -1041,10 +1014,8 @@ footer {
 .footer__payment-info img {
   width: 100%;
   height: 100%;
-  -o-object-fit: contain;
-     object-fit: contain;
-  -o-object-position: center;
-     object-position: center;
+  object-fit: contain;
+  object-position: center;
 }
 
 a {
@@ -1167,4 +1138,6 @@ img {
   background: #3077a0;
   border-radius: 20px;
   border: 3px solid #D4D4D4;
-}/*# sourceMappingURL=base.css.map */
+}
+
+/*# sourceMappingURL=base.css.map */
