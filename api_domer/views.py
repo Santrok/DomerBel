@@ -12,6 +12,12 @@ from rest_framework import status, serializers
 from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
 
+import os
+import pillow_avif
+from PIL import Image
+from io import BytesIO
+from django.core.files.base import ContentFile
+
 from advertisement.models import Region, Category, Field, ElementTwo, PhotoAdvertisement, Advertisement, Store, Element
 from api_domer.serializers import GetListOfCitiesSerializer, GetListOfCategoriesSerializer, FieldSerialier, \
     ElementTwoSerializer, AdvertisementSerializer, StoreSerializer, \
@@ -108,6 +114,22 @@ def save_advertisement(request):
         new_advertisement.save()
         if request.data.getlist('photo_files') != ['']:
             for photo in request.data.getlist('photo_files'):
+                # Открываем загруженный файл с помощью Pillow
+                img = Image.open(photo)
+
+                # Создаём временный буфер для сохранения изображения в формате AVIF
+                img_io = BytesIO()
+
+                # Сохраняем изображение в формате AVIF
+                img.save(img_io, format='AVIF')
+
+                # Перематываем буфер обратно в начало
+                img_io.seek(0)
+
+                # Создаём Django файл из буфера и сохраняем его
+                avif_photo = ContentFile(img_io.read(), name=os.path.splitext(photo.name)[0] + '.avif')
+
+                # Если изображение является превью
                 if photo.name == request.data.get("preview_img"):
                     new_advertisement.preview_image = photo
                     new_advertisement.save()

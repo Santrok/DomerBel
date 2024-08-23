@@ -11,8 +11,10 @@ def upload_to(instance, filename):
     """Хэширование имени файла и распределение
        файлов по приложениям и далее в разные папки
        случайным образом"""
+
     folders = ('folder1', 'folder2', 'folder3')
-    save_folder = random.choice(folders)
+    # save_folder = random.choice(folders)
+    save_folder = 'folder1'
     ext = os.path.splitext(filename)[1]
     name = str(instance.pk or '') + filename
     filename = md5(name.encode('utf8')).hexdigest() + ext
