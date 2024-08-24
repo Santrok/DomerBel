@@ -1,20 +1,26 @@
 import random
 import os
+from datetime import date
 
 from uuid import uuid4
 from slugify import slugify
 from PIL import Image, ImageDraw, ImageFont
 from hashlib import md5
 
+# from .models import Advertisement
 
 def upload_to(instance, filename):
     """Хэширование имени файла и распределение
        файлов по приложениям и далее в разные папки
        случайным образом"""
-
-    folders = ('folder1', 'folder2', 'folder3')
+    # a = Advertisement(id=id)
+    # print(instance.advertisement.slug)
+    # advertisement_slug = instance.advertisement.slug if instance.advertisement else 'no-slug'
+    today = date.today().isoformat()
+    # folders = ('folder1', 'folder2', 'folder3')
     # save_folder = random.choice(folders)
-    save_folder = 'folder1'
+    # save_folder = today + '/' + advertisement_slug
+    save_folder = today
     ext = os.path.splitext(filename)[1]
     name = str(instance.pk or '') + filename
     filename = md5(name.encode('utf8')).hexdigest() + ext

@@ -1,3 +1,9 @@
+import os
+import pillow_avif
+from PIL import Image
+from io import BytesIO
+from django.core.files.base import ContentFile
+
 import calendar
 from datetime import datetime, timedelta, timezone
 
@@ -35,7 +41,27 @@ class PhotoAdvertisement(models.Model):
         return f'{self.advertisement.id}-{self.id}'
 
     def save(self, *args, **kwargs):
+        # Открываем загруженный файл с помощью Pillow
+        img = Image.open(self.photo)
+
+        # Создаём временный буфер для сохранения изображения в формате AVIF
+        img_io = BytesIO()
+
+        # Сохраняем изображение в формате AVIF
+        img.save(img_io, format='AVIF')
+
+        # Перематываем буфер обратно в начало
+        img_io.seek(0)
+
+        # Генерируем новое имя файла с расширением .avif
+        new_filename = os.path.splitext(self.photo.name)[0] + '.avif'
+
+        # Обновляем файл в поле photo с новым расширением
+        self.photo.save(new_filename, ContentFile(img_io.read()), save=False)
+
         super().save(*args, **kwargs)
+
+        # Добавление водяного знака
         photo = add_watermark_to_photo(self.photo.path)
         photo.save(self.photo.path, "WebP")
 
@@ -108,6 +134,24 @@ class Advertisement(DirtyFieldsMixin, models.Model):
         super().save(*args, **kwargs)
         if self.preview_image:
             try:
+                # Открываем загруженный файл с помощью Pillow
+                img = Image.open(self.preview_image)
+
+                # Создаём временный буфер для сохранения изображения в формате AVIF
+                img_io = BytesIO()
+
+                # Сохраняем изображение в формате AVIF
+                img.save(img_io, format='AVIF')
+
+                # Перематываем буфер обратно в начало
+                img_io.seek(0)
+
+                # Генерируем новое имя файла с расширением .avif
+                new_filename = os.path.splitext(self.preview_image.name)[0] + '.avif'
+
+                # Обновляем файл в поле photo с новым расширением
+                self.preview_image.save(new_filename, ContentFile(img_io.read()), save=False)
+
                 photo = add_watermark_to_photo(self.preview_image.path)
                 photo.save(self.preview_image.path, "WebP")
             except FileNotFoundError:
