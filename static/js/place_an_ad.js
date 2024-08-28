@@ -110,7 +110,6 @@ function showCategory(event) {
                   (elem) => `<option value="${elem.id}">${elem.title}</option>`
                 )}
             </select>
-
                 `
           event.target.parentElement.parentElement.append(category)
           // event.target.addEventListener('change', () => {
@@ -180,7 +179,6 @@ function showCategory(event) {
         `${localStorage.getItem("url")}/api/v1/get_category_list/?id=${event.target.value}`
       )
         .then((response) => response.json())
-
         .then((data) => {
           if (data.length !== 0) {
             informationList.innerHTML = ""
