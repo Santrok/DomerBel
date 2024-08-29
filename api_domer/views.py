@@ -296,7 +296,6 @@ def save_complaint(request):
     serializer = ComplaintSerializer(data=request.data, context={"request": request})
     if serializer.is_valid():
         serializer.save()
-
         reason = serializer.validated_data.get("reason")
         text = serializer.validated_data.get('text')
         user = serializer.validated_data.get("user")
@@ -305,10 +304,10 @@ def save_complaint(request):
         subject = f'Жалоба от пользователя {user} на объявление  id={advertisement.id}. Причина: {reason} '
         message = text
 
-        # try:
-        #     send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [settings.EMAIL_HOST_USER])
-        # except smtplib.SMTPException as error:
-        #     return Response({'errors': str(error)}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [settings.EMAIL_HOST_USER])
+        except smtplib.SMTPException as error:
+            return Response({'errors': str(error)}, status=status.HTTP_400_BAD_REQUEST)
 
         return Response({'success': 'Ваша жалоба на объявление отправлена администрации сайта'},
                         status=status.HTTP_201_CREATED)

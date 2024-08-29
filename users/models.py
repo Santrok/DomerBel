@@ -12,7 +12,7 @@ from django.utils import timezone
 from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 
-from advertisement.models import Advertisement
+from advertisement.models import Advertisement, Store
 from config import settings
 
 
@@ -114,6 +114,7 @@ class Chat(models.Model):
     chat_name = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     members = models.ManyToManyField(User, verbose_name='Участник')
     advertisement = models.ForeignKey(Advertisement, on_delete=models.SET_NULL, null=True)
+    store = models.ForeignKey(Store, on_delete=models.SET_NULL, null=True)
 
     class Meta:
         verbose_name = 'Чат'
