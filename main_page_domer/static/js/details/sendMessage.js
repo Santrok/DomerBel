@@ -22,6 +22,12 @@ sendMessageFormBtn.addEventListener("click", sendMessage)
 
 function sendMessage() {
   const data = new FormData(sendMessageModal)
+  if (window.location.href.includes("store")) {
+    data.append(
+      "store",
+      sendMessageBtn.find((item) => item.dataset.id).dataset.id
+    )
+  }
   data.append(
     "advertisement",
     sendMessageBtn.find((item) => item.dataset.id).dataset.id
