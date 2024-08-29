@@ -1,11 +1,10 @@
-const sendMessageBtn = document.querySelectorAll(".details__advertisement-send-message")
+const sendMessageBtn = [...document.querySelectorAll(".details__advertisement-send-message"), ...document.querySelectorAll(".store__send-email")]
 const blockModals = document.querySelector(".modals")
 const sendMessageModal = document.querySelector(".send__message")
 const sendMessageFormBtn = document.querySelector(".send__message button")
-const isAuthenticated = document.querySelector(".details__advertisement-add-favorites")
 
 sendMessageBtn.forEach(item => item.addEventListener("click", () => {
-  if(isAuthenticated.dataset.id) {
+  if(item.dataset.id) {
     blockModals.classList.add("modal__active")
     sendMessageModal.classList.add("modal__active")
   } else {
@@ -17,9 +16,9 @@ sendMessageBtn.forEach(item => item.addEventListener("click", () => {
 
 sendMessageFormBtn.addEventListener("click", sendMessage)
 
-function sendMessage() {
+function sendMessage(event) {
   const data = new FormData(sendMessageModal)
-  data.append("advertisement", isAuthenticated.dataset.id)
+  data.append("advertisement", event?.currentTarget?.dataset.id)
   fetch(`${window.location.protocol}//${window.location.host}/api/v1/create_chat/`, {
     method: "POST",
     headers: {
