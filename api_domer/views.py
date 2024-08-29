@@ -319,7 +319,10 @@ def save_complaint(request):
 def create_chat(request):
     serializer = MessageSerializer(data=request.data, context={"request": request})
     if serializer.is_valid():
-        advertisement = get_object_or_404(Advertisement, id=serializer.validated_data.get('advertisement'))
+        if request.data.get('advertisement'):
+            advertisement = get_object_or_404(Advertisement, id=serializer.validated_data.get('chat_object'))
+        elif request.data.get('store'):
+            store = get_object_or_404(Store, id=serializer.validated_data.get('chat_object'))
         chat = Chat.objects.filter(advertisement=advertisement, members=advertisement.author_id).filter(members=request.user)
         if not chat:
             chat = Chat.objects.create(advertisement=advertisement)

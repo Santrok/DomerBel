@@ -147,5 +147,5 @@ class ComplaintSerializer(serializers.ModelSerializer):
 
 
 class MessageSerializer(serializers.Serializer):
-    advertisement = serializers.IntegerField()
+    chat_object = serializers.IntegerField()
     text_message = serializers.CharField()
