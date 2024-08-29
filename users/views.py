@@ -1,6 +1,5 @@
 from datetime import datetime
 
-
 from django.contrib import messages
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.decorators import login_required, permission_required
@@ -19,6 +18,7 @@ from .models import User, Chat, Message
 
 from main_page_domer.models import PhotoPublication, Publication, photo_publications_delete
 from .forms import PublicationForm, EditContactDataForm, ChangePasswordForm, MessageForm
+
 
 @login_required
 def get_personal_account_page(request):
@@ -52,6 +52,7 @@ def get_personal_account_page(request):
     }
     return render(request, 'profile_user.html', context)
 
+
 @login_required
 def search_of_ads_in_personal_account(request):
     """ Поиск среди объявлений пользователя в личном кабинете """
@@ -74,7 +75,6 @@ def search_of_ads_in_personal_account(request):
     if request.GET.get('id'):
         search_parameters['id'] = request.GET.get('id')
 
-
     query = request.META.get('QUERY_STRING')
     for key in key_delete:
         cop.pop(key, None)
@@ -94,28 +94,14 @@ def search_of_ads_in_personal_account(request):
 
     active = request.GET.get('active')
     if not active:
-        advertisement_queryset = Advertisement.objects.annotate(**{key: KT(value) for key, value in search_annotate.items()}
-                                                                ).filter(author=request.user,
-                                                                         is_active=True,
-                                                                         moderated=True,
-                                                                         **search_parameters
-                                                                         ).select_related('category', 'region'
-                                                                                          ).order_by('-date_of_create')
-
-        advertisement_queryset_inactive = Advertisement.objects.annotate(**{key: KT(value) for key, value in search_annotate.items()}
-                                                                ).filter(author=request.user,
-                                                                         is_active=False,
-                                                                         moderated=True,
-                                                                         **search_parameters
-                                                                         ).count()
-    else:
         advertisement_queryset = Advertisement.objects.annotate(
             **{key: KT(value) for key, value in search_annotate.items()}
             ).filter(author=request.user,
                      is_active=True,
                      moderated=True,
                      **search_parameters
-                     ).count()
+                     ).select_related('category', 'region'
+                                      ).order_by('-date_of_create')
 
         advertisement_queryset_inactive = Advertisement.objects.annotate(
             **{key: KT(value) for key, value in search_annotate.items()}
@@ -123,14 +109,28 @@ def search_of_ads_in_personal_account(request):
                      is_active=False,
                      moderated=True,
                      **search_parameters
-                     ).select_related('category', 'region'
-                                      ).order_by('-date_of_create')
+                     ).count()
+    else:
+        advertisement_queryset = Advertisement.objects.annotate(
+            **{key: KT(value) for key, value in search_annotate.items()}
+        ).filter(author=request.user,
+                 is_active=True,
+                 moderated=True,
+                 **search_parameters
+                 ).count()
+
+        advertisement_queryset_inactive = Advertisement.objects.annotate(
+            **{key: KT(value) for key, value in search_annotate.items()}
+        ).filter(author=request.user,
+                 is_active=False,
+                 moderated=True,
+                 **search_parameters
+                 ).select_related('category', 'region'
+                                  ).order_by('-date_of_create')
 
     page_obj = variables_for_paginator(advertisement_queryset if not active else advertisement_queryset_inactive,
                                        request.GET.get('page'),
                                        20)
-
-    print(True if page_obj.object_list else False)
 
     context = {
         "active_ads_quantity": advertisement_queryset.count() if not active else advertisement_queryset,
@@ -197,8 +197,13 @@ def delete_or_archive_selected_ads(request):
             return redirect('users:personal_account')
         if 'restore_ads' in request.POST:
             selected_ads = request.POST.getlist('ads_checkbox')
-            ads_updated_count = Advertisement.objects.filter(author=request.user, id__in=selected_ads, date_of_deactivate__date__gte=datetime.now()).update(is_active=True)
-            messages.success(request, "Выбранные объявления удалены!")
+            ads_updated_count = Advertisement.objects.filter(author=request.user, id__in=selected_ads,
+                                                             date_of_deactivate__date__gte=datetime.now()).update(
+                is_active=True)
+            if ads_updated_count == selected_ads.count():
+                messages.success(request, "Выбранные объявления восстановлены!")
+            else:
+                messages.success(request, "Не все объявления удалось восстановить!")
             return redirect('users:inactive_adds')
         return redirect('users:personal_account')
 
@@ -209,16 +214,15 @@ def get_user_data_page(request):
     user = request.user
     edit_contact_data_form = EditContactDataForm(instance=user)
     change_pass_form = ChangePasswordForm()
-    category_list = Category.objects.filter(level__lte=1)
     if request.method == "POST":
-        # Изменяем контактные данные пользователя
+        # Изменение контактных данных пользователя
         if 'edit_contact_data' in request.POST:
             edit_contact_data_form = EditContactDataForm(request.POST, instance=user)
             if edit_contact_data_form.is_valid():
                 edit_contact_data_form.save()
-                messages.success(request, "Контактные данные пользователя успешно изменены!")
+                messages.success(request, "Ваши контактные данные успешно изменены!")
                 return redirect('users:user_data')
-        # Изменяем пароль пользователя
+        # Изменение пароля пользователя
         elif 'change_password' in request.POST:
             change_pass_form = ChangePasswordForm(request.POST, instance=user)
             if change_pass_form.is_valid():
@@ -229,11 +233,10 @@ def get_user_data_page(request):
                     user.set_password(new_password)
                     user.save()
                     update_session_auth_hash(request, user)
-                    messages.success(request, "Пароль пользователя успешно изменён!")
+                    messages.success(request, "Ваш пароль успешно изменён!")
                     return redirect('users:user_data')
     context = {'edit_contact_data_form': edit_contact_data_form,
                'change_pass_form': change_pass_form,
-               'category_list': category_list,
                "adaptive_navigation": "Контактные данные"
                }
     return render(request, 'profile_data.html', context)
@@ -254,20 +257,17 @@ def add_store(request):
         store_form = StoreForm(request.POST, request.FILES)
         store_form.errors.update(new_store.errors)
         context = {
-                   "store_form": store_form
-                   }
+            "store_form": store_form
+        }
         return render(request, 'profile_add_store.html', context)
 
-    oblast = Region.objects.filter(type='Область')
     store_form = StoreForm(initial={'contact_name': request.user.first_name, 'email': request.user.email,
                                     'phone_num': request.user.phone_number})
-    category_list = Category.objects.filter(level__lte=1)
 
-    context = {"oblast": oblast,
-               "store_form": store_form,
-               "category_list": category_list,
-               "adaptive_navigation": "Добавить магазин"
-               }
+    context = {
+        "store_form": store_form,
+        "adaptive_navigation": "Добавить магазин"
+    }
 
     return render(request, 'profile_add_store.html', context)
 
@@ -342,13 +342,11 @@ def get_all_dialogs(request):
 
 
 @login_required
-def view_message(request, chat_id):
+def view_message(request, chat_id, chat_name):
     '''Показывает все сообщения внутри открытого диалога'''
-    chat = get_object_or_404(Chat, id=chat_id)
-    advertisement = get_object_or_404(Advertisement, id=chat.advertisement_id)
+    chat = get_object_or_404(Chat, id=chat_id, members=request.user)
     context = {
         "chat": chat,
-        'advertisement': advertisement,
     }
     return render(request, 'profile_dialog.html', context)
 
@@ -427,7 +425,8 @@ def edit_publication(request, publication_slug):
             publication = form_publication.save(commit=False)
             publication.moderated = False
             publication.save()
-            messages.success(request, f"Публикация {publication} успешно изменена!")
+            messages.success(request, f"""Публикация "{publication}" успешно изменена
+                                                    и отправлена на модерацию.""")
             return redirect('users:user_all_publications')
     else:
         form_publication = PublicationForm(instance=publication)
@@ -439,10 +438,11 @@ def edit_publication(request, publication_slug):
     }
     return render(request=request, template_name='profile_edit_publication.html', context=context)
 
+
 @login_required
 def get_favorites_page(request):
-
-    favorites_list = Advertisement.objects.filter(id__in=request.user.userfavorites.favorites, is_active=True, moderated=True)
+    favorites_list = Advertisement.objects.filter(id__in=request.user.userfavorites.favorites, is_active=True,
+                                                  moderated=True)
     context = {
         "favorites_list": favorites_list,
         "adaptive_navigation": "Избранное"

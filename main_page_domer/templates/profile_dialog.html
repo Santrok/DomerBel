@@ -56,18 +56,20 @@
 
 {% block mainInfo %}
     <div class="main__info">
-    <section class="dialog__subject" data-id="{{ advertisement.id }}">
-        <div class="dialog__subject-img">
-            <img src="{% if advertisement.preview_image %} {{ advertisement.preview_image.url }} {% else %}{% static 'img/no_image.jpg' %}{% endif %}"
-                 alt="{{ advertisement.title }}">
-        </div>
+    <section class="dialog__subject">
+        <a class="dialog__subject-img" href="{% if chat.advertisement %}{{ chat.advertisement.get_absolute_url }}{% else %}#{% endif %}">
+            <img src="{% if chat.advertisement and chat.advertisement.preview_image %} {{ chat.advertisement.preview_image.url }} {% else %}{% static 'img/no_image.jpg' %}{% endif %}"
+                             alt="{% if chat.advertisement%}{{ chat.advertisement.category }}{% endif %}">
+        </a>
         <div class="dialog__subject-text">
-            <p class="dialog__subject-text-title">
-                {{ advertisement.title }}
-            </p>
+            <a class="dialog__subject-text-title" href="{% if chat.advertisement %}{{ chat.advertisement.get_absolute_url }}{% else %}#{% endif %}">
+                {% if chat.advertisement %}{{ chat.advertisement.title }}{% else %}Объявление недоступно{% endif %}
+            </a>
+            {% if chat.advertisement %}
             <p class="dialog__subject-text-price">
-                {% if advertisement.price %}{{ advertisement.price|floatformat }} руб.{% else %}Договорная{% endif %}
+                {% if chat.advertisement.price %}{{ chat.advertisement.price|floatformat }} руб.{% else %}Договорная{% endif %}
             </p>
+        {% endif %}
         </div>
     <div class="cross__dialog" data-id="{{ chat.id }}">
                         <svg width="20.000000" height="20.000000" viewBox="0 0 20 20" fill="none"

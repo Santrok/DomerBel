@@ -1,19 +1,16 @@
 .dialog__subject {
   display: flex;
   gap: 20px;
-  font-family: "Trebuchet MS", sans-serif;
-  font-weight: 400;
-  font-style: normal;
-  color: black;
-  font-size: 20px;
   align-items: center;
   border: 1px solid #D4D4D4;
   border-radius: 7px;
   margin-bottom: 10px;
   position: relative;
+  height: 110px;
 }
 
 .dialog__subject-img {
+  padding-left: 10px;
   flex: 0 0 120px;
 }
 .dialog__subject-img img {
@@ -30,6 +27,11 @@
 }
 
 .dialog__subject-text-title {
+  font-family: "Trebuchet MS", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  color: black;
+  font-size: 20px;
   overflow: hidden;
   display: -webkit-box;
   -webkit-line-clamp: 1;

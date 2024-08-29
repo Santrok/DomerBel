@@ -38,7 +38,7 @@
                         {{ publication.date_of_create|date:"d b. Y" }}
                         {{ publication.date_of_create|date:"H:i" }}
                     </p>
-                    <a href="{% url 'users:edit_publication' publication.slug %}"
+                    <a href="{% if publication.moderated %}{% url 'users:edit_publication' publication.slug %}{% else %}#{% endif %}"
                        class="article__edit">Редактировать
                     </a>
                     <label class="publications__list-item-check">

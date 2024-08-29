@@ -477,7 +477,6 @@ def get_publication_by_slug(request, slug):
         'publication': publication,
         'adaptive_navigation': f'{publication.title}'
     }
-    print(publication.get_absolute_url())
     return render(request, 'publication_by_slug.html', context)
 
 

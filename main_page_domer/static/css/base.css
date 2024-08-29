@@ -893,7 +893,8 @@ header {
   position: absolute;
   bottom: 10px;
   right: 10px;
-  padding: 10px;
+  padding: 50px 25px;
+  border-radius: 7px;
   background: rgb(28, 161, 28);
   font-family: "Trebuchet MS", sans-serif;
   font-weight: 400;
@@ -902,13 +903,16 @@ header {
   font-size: 16px;
   opacity: 0;
   user-select: none;
+  z-index: 5;
+  white-space: pre-line;
+  text-align: center;
 }
 
 .access__active {
   animation-name: notifications;
-  animation-duration: 3s;
+  animation-duration: 5s;
   animation-iteration-count: 1;
-  animation-timing-function: ease-in;
+  animation-timing-function: cubic-bezier(0.97, 0, 0, 0.99);
   animation-direction: alternate;
 }
 
@@ -917,7 +921,7 @@ header {
     transform: rotate(1deg);
   }
   50% {
-    opacity: 1;
+    opacity: 0.7;
     transform: rotate(-1deg);
   }
   75% {

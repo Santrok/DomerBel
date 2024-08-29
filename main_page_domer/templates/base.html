@@ -262,9 +262,13 @@
             {% block modals %}
             {% endblock modals %}
         </div>
-        <div aria-hidden="true" class="form__notifications-access">
-            Выполнено успешно
+        {% if messages %}
+            {% for message in messages %}
+        <div aria-hidden="true" class="form__notifications-access access__active">
+            {{ message }}
         </div>
+            {% endfor %}
+        {% endif %}
         <div class="container">
             <header>
                 <div class="header__up">

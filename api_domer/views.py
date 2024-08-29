@@ -321,7 +321,7 @@ def create_chat(request):
     serializer = MessageSerializer(data=request.data, context={"request": request})
     if serializer.is_valid():
         advertisement = get_object_or_404(Advertisement, id=serializer.validated_data.get('advertisement'))
-        chat = Chat.objects.filter(advertisement=advertisement, members__in=[request.user, advertisement.author_id])
+        chat = Chat.objects.filter(advertisement=advertisement, members=advertisement.author_id).filter(members=request.user)
         if not chat:
             chat = Chat.objects.create(advertisement=advertisement)
             chat.members.set([request.user.id, advertisement.author_id])
