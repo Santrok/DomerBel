@@ -33,6 +33,10 @@ function sendMessage() {
       sendMessageBtn.find((item) => item.dataset.id).dataset.id
     )
   }
+  data.append(
+    "chat_object",
+    sendMessageBtn.find((item) => item.dataset.id).dataset.id
+  )
   fetch(
     `${window.location.protocol}//${window.location.host}/api/v1/create_chat/`,
     {
