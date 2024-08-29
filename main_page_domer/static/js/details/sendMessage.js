@@ -22,16 +22,17 @@ sendMessageFormBtn.addEventListener("click", sendMessage)
 
 function sendMessage() {
   const data = new FormData(sendMessageModal)
-  if (window.location.href.includes("store")) {
+  if (window.location.pathname.includes("store")) {
     data.append(
       "store",
       sendMessageBtn.find((item) => item.dataset.id).dataset.id
     )
+  }else {
+    data.append(
+      "advertisement",
+      sendMessageBtn.find((item) => item.dataset.id).dataset.id
+    )
   }
-  data.append(
-    "advertisement",
-    sendMessageBtn.find((item) => item.dataset.id).dataset.id
-  )
   fetch(
     `${window.location.protocol}//${window.location.host}/api/v1/create_chat/`,
     {
