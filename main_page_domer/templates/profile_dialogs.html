@@ -5,7 +5,8 @@
 {% endblock %}
 
 {% block modals %}
-    <form aria-modal="true" class="remove__dialog">
+    <form aria-modal="true" class="remove__modal" method="POST" action="{% url 'users:delete_dialogs' %}">
+        {% csrf_token %}
         <div class="cross">
             <svg width="20.000000" height="20.000000" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"
                  xmlns:xlink="http://www.w3.org/1999/xlink">
@@ -29,14 +30,23 @@
                 <img src="{% static 'img/logo.png' %}" alt="">
             </div>
             <h2>
-                Написать сообщение
+                Удаление диалога
             </h2>
         </div>
         <fieldset>
-            <button type="button" class="submit__btn">
-                Удалить диалог
-            </button>
-            <button type="button" class="submit__btn">Отмена</button>
+            <p class="remove__modal-text">
+                Вы действительно хотите удалить диалог?
+                Это действие нельзя будет отменить
+            </p>
+            <input type="hidden" name="dialog">
+            <div class="remove__modal-btn">
+                <button class="remove__btn">
+                    Удалить
+                </button>
+                <button type="button" class="cancel__btn submit__btn">
+                    Отмена
+                </button>
+            </div>
         </fieldset>
     </form>
 {% endblock modals %}
@@ -54,20 +64,20 @@
             {% for chat in chats %}
                 <li class="chat__list-item">
                     <a href="{{ chat.get_absolute_url }}" class="chat__list-img">
-                        <img src="{% if chat.advertisement.preview_image %} {{ chat.advertisement.preview_image.url }} {% else %}{% static 'img/no_image.jpg' %}{% endif %}"
-                             alt="{{ chat.advertisement.title }}">
+                        <img src="{% if chat.advertisement and chat.advertisement.preview_image %} {{ chat.advertisement.preview_image.url }} {% else %}{% static 'img/no_image.jpg' %}{% endif %}"
+                             alt="{% if chat.advertisement%}{{ chat.advertisement.category }}{% endif %}">
                     </a>
                     <a href="{{ chat.get_absolute_url }}" class="chat__list-text">
                         <p class="chat__list-text-title">
-                            {{ chat.advertisement.title }}
+                            {% if chat.advertisement %}{{ chat.advertisement.title }}{% else %}Объявление недоступно{% endif %}
                         </p>
                         <p class="chat__list-text-last-message">
-                            {% with message=chat.message_set.all|first %}
+                            {% with message=chat.message_set.last %}
                                 {{ message.message }}
                             {% endwith %}
                         </p>
                     </a>
-                    <div class="cross__dialog">
+                    <div class="cross__dialog" data-id="{{ chat.id }}">
                         <svg width="20.000000" height="20.000000" viewBox="0 0 20 20" fill="none"
                              xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
                             <desc>
@@ -94,5 +104,5 @@
 {% endblock %}
 
 {% block js2 %}
-    <script src="{% static 'js/profile/delete_dialog.js' %}"></script>
+    <script src="{% static 'js/profile/modal_remove.js' %}"></script>
 {% endblock %}
