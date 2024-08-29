@@ -64,12 +64,12 @@
             {% for chat in chats %}
                 <li class="chat__list-item">
                     <a href="{{ chat.get_absolute_url }}" class="chat__list-img">
-                        <img src="{% if chat.advertisement and chat.advertisement.preview_image %} {{ chat.advertisement.preview_image.url }} {% else %}{% static 'img/no_image.jpg' %}{% endif %}"
-                             alt="{% if chat.advertisement%}{{ chat.advertisement.category }}{% endif %}">
+                        <img src="{% if chat.advertisement and chat.advertisement.preview_image %} {{ chat.advertisement.preview_image.url }} {% elif chat.store and chat.store.logo_image %} {{ chat.store.logo_image.url }} {% else %}{% static 'img/no_image.jpg' %}{% endif %}"
+                             alt="{% if chat.advertisement %}{{ chat.advertisement.category }} {% elif chat.store %} {{ chat.store.category }} {% endif %}">
                     </a>
                     <a href="{{ chat.get_absolute_url }}" class="chat__list-text">
                         <p class="chat__list-text-title">
-                            {% if chat.advertisement %}{{ chat.advertisement.title }}{% else %}Объявление недоступно{% endif %}
+                            {% if chat.advertisement %}{{ chat.advertisement.title }} {% elif chat.store %} {{ chat.store.title }} {% else %}Объявление недоступно{% endif %}
                         </p>
                         <p class="chat__list-text-last-message">
                             {% with message=chat.message_set.last %}

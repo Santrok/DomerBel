@@ -260,6 +260,9 @@ class Store(models.Model):
         days_till_expiration = self.date_of_deactivate - datetime.now(timezone.utc)
         return days_till_expiration.days
 
+    def get_absolute_url(self):
+        return reverse('store_by_title', kwargs={"store_slug": self.slug})
+
 
 class UploadFile(models.Model):
     '''Модель для сохранения файла для массового импорта объявлений'''
