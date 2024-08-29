@@ -16,9 +16,9 @@ sendMessageBtn.forEach(item => item.addEventListener("click", () => {
 
 sendMessageFormBtn.addEventListener("click", sendMessage)
 
-function sendMessage(event) {
+function sendMessage() {
   const data = new FormData(sendMessageModal)
-  data.append("advertisement", event?.currentTarget?.dataset.id)
+  data.append("advertisement", sendMessageBtn.find(item => item.dataset.id).dataset.id)
   fetch(`${window.location.protocol}//${window.location.host}/api/v1/create_chat/`, {
     method: "POST",
     headers: {
