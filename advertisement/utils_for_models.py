@@ -59,21 +59,25 @@ def unique_slugify(instance, slug):
 
 
 def convert_image_to_avif(photo):
+    """ Конвертирует все форматы фото в avif """
 
-    # Открываем загруженный файл с помощью Pillow
-    img = Image.open(photo)
+    # Проверка на расширение
+    if not photo.url.lower().endswith('avif'):
 
-    # Создаём временный буфер для сохранения изображения в формате AVIF
-    img_io = BytesIO()
+        # Открываем загруженный файл с помощью Pillow
+        img = Image.open(photo)
 
-    # Сохраняем изображение в формате AVIF
-    img.save(img_io, format='AVIF')
+        # Создаём временный буфер для сохранения изображения в формате AVIF
+        img_io = BytesIO()
 
-    # Перематываем буфер обратно в начало
-    img_io.seek(0)
+        # Сохраняем изображение в формате AVIF
+        img.save(img_io, format='AVIF')
 
-    # Генерируем новое имя файла с расширением .avif
-    new_filename = os.path.splitext(photo.name)[0] + '.avif'
+        # Перематываем буфер обратно в начало
+        img_io.seek(0)
 
-    # Обновляем файл в поле photo с новым расширением
-    photo.save(new_filename, ContentFile(img_io.read()), save=False)
+        # Генерируем новое имя файла с расширением .avif
+        new_filename = os.path.splitext(photo.name)[0] + '.avif'
+
+        # Обновляем файл в поле photo с новым расширением
+        photo.save(new_filename, ContentFile(img_io.read()), save=False)
