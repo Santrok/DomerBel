@@ -1,18 +1,29 @@
 import random
 import os
+import pillow_avif
+from io import BytesIO
+from datetime import date
 
 from uuid import uuid4
 from slugify import slugify
 from PIL import Image, ImageDraw, ImageFont
 from hashlib import md5
+from django.core.files.base import ContentFile
 
+# from .models import Advertisement
 
 def upload_to(instance, filename):
     """Хэширование имени файла и распределение
        файлов по приложениям и далее в разные папки
        случайным образом"""
-    folders = ('folder1', 'folder2', 'folder3')
-    save_folder = random.choice(folders)
+    # a = Advertisement(id=id)
+    # print(instance.advertisement.slug)
+    # advertisement_slug = instance.advertisement.slug if instance.advertisement else 'no-slug'
+    today = date.today().isoformat()
+    # folders = ('folder1', 'folder2', 'folder3')
+    # save_folder = random.choice(folders)
+    # save_folder = today + '/' + advertisement_slug
+    save_folder = today
     ext = os.path.splitext(filename)[1]
     name = str(instance.pk or '') + filename
     filename = md5(name.encode('utf8')).hexdigest() + ext
@@ -45,3 +56,28 @@ def unique_slugify(instance, slug):
     while model.objects.filter(slug=unique_slug).exists():
         unique_slug = f'{unique_slug}-{uuid4().hex[:8]}'
     return unique_slug
+
+
+def convert_image_to_avif(photo):
+    """ Конвертирует все форматы фото в avif """
+
+    # Проверка на расширение
+    if not photo.url.lower().endswith('avif'):
+
+        # Открываем загруженный файл с помощью Pillow
+        img = Image.open(photo)
+
+        # Создаём временный буфер для сохранения изображения в формате AVIF
+        img_io = BytesIO()
+
+        # Сохраняем изображение в формате AVIF
+        img.save(img_io, format='AVIF')
+
+        # Перематываем буфер обратно в начало
+        img_io.seek(0)
+
+        # Генерируем новое имя файла с расширением .avif
+        new_filename = os.path.splitext(photo.name)[0] + '.avif'
+
+        # Обновляем файл в поле photo с новым расширением
+        photo.save(new_filename, ContentFile(img_io.read()), save=False)
