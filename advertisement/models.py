@@ -40,7 +40,7 @@ class PhotoAdvertisement(models.Model):
 
         # Добавление водяного знака
         photo = add_watermark_to_photo(self.photo.path)
-        photo.save(self.photo.path, "WebP")
+        photo.save(self.photo.path, "avif")
 
 
 class Advertisement(DirtyFieldsMixin, models.Model):
@@ -114,7 +114,7 @@ class Advertisement(DirtyFieldsMixin, models.Model):
         if self.preview_image:
             try:
                 photo = add_watermark_to_photo(self.preview_image.path)
-                photo.save(self.preview_image.path, "WebP")
+                photo.save(self.preview_image.path, "avif")
             except FileNotFoundError:
                 self.preview_image = None
             except PIL.UnidentifiedImageError:
