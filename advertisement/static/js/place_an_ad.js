@@ -656,6 +656,7 @@ function saveAdvertisement() {
         <a href=${data?.link} class="continue__link submit__btn">${data?.link_text}</a>
     </div>
 `
+        window.scrollTo(0, 0)
     })
     .catch((msg) => {
       if (msg.data.error.title) {

@@ -76,7 +76,7 @@ class CustomUserChangeForm(UserChangeForm):
 class PublicationForm(forms.ModelForm):
     class Meta:
         model = Publication
-        fields = ['title', 'announcement', 'description', 'video_link', 'preview_image']
+        fields = ['title', 'announcement', 'description', 'preview_image']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

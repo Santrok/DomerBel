@@ -57,13 +57,13 @@
 {% block mainInfo %}
     <div class="main__info">
     <section class="dialog__subject">
-        <a class="dialog__subject-img" href="{% if chat.advertisement %}{{ chat.advertisement.get_absolute_url }}{% else %}#{% endif %}">
-            <img src="{% if chat.advertisement and chat.advertisement.preview_image %} {{ chat.advertisement.preview_image.url }} {% else %}{% static 'img/no_image.jpg' %}{% endif %}"
-                             alt="{% if chat.advertisement%}{{ chat.advertisement.category }}{% endif %}">
+        <a class="dialog__subject-img" href="{% if chat.advertisement %}{{ chat.advertisement.get_absolute_url }} {% elif chat.store %} {{ chat.store.get_absolute_url }} {% else %}#{% endif %}">
+            <img src="{% if chat.advertisement and chat.advertisement.preview_image %} {{ chat.advertisement.preview_image.url }} {% elif chat.store and chat.store.logo_image %} {{ chat.store.logo_image.url }} {% else %}{% static 'img/no_image.jpg' %}{% endif %}"
+                             alt="{% if chat.advertisement %}{{ chat.advertisement.category }} {% elif chat.store %} {{ chat.store.category }} {% endif %}">
         </a>
         <div class="dialog__subject-text">
-            <a class="dialog__subject-text-title" href="{% if chat.advertisement %}{{ chat.advertisement.get_absolute_url }}{% else %}#{% endif %}">
-                {% if chat.advertisement %}{{ chat.advertisement.title }}{% else %}Объявление недоступно{% endif %}
+            <a class="dialog__subject-text-title" href="{% if chat.advertisement %}{{ chat.advertisement.get_absolute_url }} {% elif chat.store %} {{ chat.store.get_absolute_url }} {% else %}#{% endif %}">
+                {% if chat.advertisement %}{{ chat.advertisement.title }} {% elif chat.store %} {{ chat.store.title }} {% else %}Объявление недоступно{% endif %}
             </a>
             {% if chat.advertisement %}
             <p class="dialog__subject-text-price">

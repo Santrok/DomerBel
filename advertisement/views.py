@@ -51,7 +51,7 @@ def get_advertisement_page(request):
         'contact_name',
         'counter_views',
         'phone_num')
-    vip_advertisement = advertisement_queryset.filter(vip=True)
+    vip_advertisement = advertisement_queryset.filter(vip=True, is_active=True, moderated=True)
     category_queryset = Category.objects.add_related_count(Category.objects.root_nodes(),
                                                            Advertisement,
                                                            'category',
@@ -125,7 +125,7 @@ def get_advertisement_by_category(request, category_slug):
         'contact_name',
         'counter_views',
         'phone_num')
-    vip_advertisement = advertisement_queryset.filter(vip=True)
+    vip_advertisement = advertisement_queryset.filter(vip=True, is_active=True, moderated=True)
     page_obj = variables_for_paginator(advertisement_queryset,
                                        request.GET.get('page'),
                                        sort_for_paginator)

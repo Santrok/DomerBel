@@ -296,7 +296,6 @@ def save_complaint(request):
     serializer = ComplaintSerializer(data=request.data, context={"request": request})
     if serializer.is_valid():
         serializer.save()
-
         reason = serializer.validated_data.get("reason")
         text = serializer.validated_data.get('text')
         user = serializer.validated_data.get("user")
@@ -305,10 +304,10 @@ def save_complaint(request):
         subject = f'Жалоба от пользователя {user} на объявление  id={advertisement.id}. Причина: {reason} '
         message = text
 
-        # try:
-        #     send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [settings.EMAIL_HOST_USER])
-        # except smtplib.SMTPException as error:
-        #     return Response({'errors': str(error)}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [settings.EMAIL_HOST_USER])
+        except smtplib.SMTPException as error:
+            return Response({'errors': str(error)}, status=status.HTTP_400_BAD_REQUEST)
 
         return Response({'success': 'Ваша жалоба на объявление отправлена администрации сайта'},
                         status=status.HTTP_201_CREATED)
@@ -320,11 +319,20 @@ def save_complaint(request):
 def create_chat(request):
     serializer = MessageSerializer(data=request.data, context={"request": request})
     if serializer.is_valid():
-        advertisement = get_object_or_404(Advertisement, id=serializer.validated_data.get('advertisement'))
-        chat = Chat.objects.filter(advertisement=advertisement, members=advertisement.author_id).filter(members=request.user)
+        chat_object = {}
+        if request.data.get('advertisement'):
+            advertisement = get_object_or_404(Advertisement, id=serializer.validated_data.get('chat_object'))
+            chat_object['advertisement'] = advertisement
+            chat_object['members'] = advertisement.author_id
+        elif request.data.get('store'):
+            store = get_object_or_404(Store, id=serializer.validated_data.get('chat_object'))
+            chat_object['store'] = store
+            chat_object['members'] = store.user_id
+        chat = Chat.objects.filter(**chat_object).filter(members=request.user)
         if not chat:
-            chat = Chat.objects.create(advertisement=advertisement)
-            chat.members.set([request.user.id, advertisement.author_id])
+            any_member = chat_object.pop('members', None)
+            chat = Chat.objects.create(**chat_object)
+            chat.members.set([request.user.id, any_member])
             Message.objects.create(chat=chat, author=request.user, message=serializer.validated_data.get('text_message'))
         else:
             Message.objects.create(chat=chat[0], author=request.user,

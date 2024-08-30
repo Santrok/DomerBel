@@ -44,7 +44,7 @@ def get_main_page(request):
         'contact_name',
         'counter_views',
         'phone_num')
-    vip_advertisement = Advertisement.objects.filter(vip=True)
+    vip_advertisement = Advertisement.objects.filter(vip=True, is_active=True, moderated=True)
     context = {
         "advertisement": advertisement_queryset,
         "vip_advertisement": vip_advertisement,
@@ -77,8 +77,6 @@ def get_stores_page(request):
 
 def get_store_search(request):
     """ Отдача страницы с результатами поиска по магазинам"""
-    text_search = request.GET.get("text_search")
-
     dict_for_filter = {}
     cop = dict.copy(request.GET)
 
@@ -89,8 +87,8 @@ def get_store_search(request):
 
     if category:
         dict_for_filter['category__in'] = category
-    if text_search:
-        dict_for_filter['search_vector'] = cop.pop('text_search')
+    if request.GET.get("text_search"):
+        dict_for_filter['search_vector'] = request.GET.get('text_search')
     if region:
         dict_for_filter['region__in'] = region
 
