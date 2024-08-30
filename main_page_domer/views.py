@@ -44,7 +44,7 @@ def get_main_page(request):
         'contact_name',
         'counter_views',
         'phone_num')
-    vip_advertisement = Advertisement.objects.filter(vip=True)
+    vip_advertisement = Advertisement.objects.filter(vip=True, active=True, moderated=True)
     context = {
         "advertisement": advertisement_queryset,
         "vip_advertisement": vip_advertisement,
