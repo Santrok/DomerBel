@@ -58,7 +58,7 @@ class Advertisement(DirtyFieldsMixin, models.Model):
     store = models.ForeignKey('Store', on_delete=models.CASCADE, blank=True, null=True, verbose_name="Магазин")
     slug = models.SlugField(unique=True, blank=True, verbose_name='URL', max_length=500)
     date_of_create = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания объявления')
-    date_of_change = models.DateTimeField(auto_now=True, verbose_name='Дата изменения объявления')
+    date_of_delete = models.DateTimeField(blank=True, null=True, verbose_name='Дата удаления объявления')
     date_of_deactivate = models.DateTimeField(blank=True, null=True, verbose_name='Дата деактивации объявления')
     moderated = models.BooleanField(default=False, verbose_name='Прошло модерацию')
     is_active = models.BooleanField(default=False, verbose_name='Объявление активно')
@@ -67,7 +67,6 @@ class Advertisement(DirtyFieldsMixin, models.Model):
     special_accommodation = models.BooleanField(default=False, verbose_name="Спецразмещение")
     raise_in_search = models.BooleanField(default=False, verbose_name="Поднять в поиске")
     additional_information = models.JSONField()
-    additional_information_view2 = HStoreField(default=dict)
     additional_information_view = ArrayField(ArrayField(models.CharField(max_length=500)), blank=True, null=True, editable=False)
     description = models.TextField(verbose_name='Описание',validators=[validate_words])
     video_link = models.URLField(blank=True, null=True, verbose_name='Ссылка на видео')  # хранит строку, которая представляет валидный URL-адрес
@@ -103,6 +102,7 @@ class Advertisement(DirtyFieldsMixin, models.Model):
         self.slug = unique_slugify(self, self.title)
         super().save(*args, **kwargs)
         self.date_of_deactivate = self.date_of_create + timedelta(days=60)
+        self.date_of_delete = self.date_of_create + timedelta(days=180)
         self.search_vector = SearchVector('title', 'description')
         self.search_title_vector = SearchVector('title')
         super().save(*args, **kwargs)
@@ -224,7 +224,7 @@ class Store(models.Model):
     email = models.EmailField(verbose_name='E-Mail')
     phone_num = models.CharField(max_length=255, blank=True, null=True, verbose_name='Номер телефона')
     video_link = models.URLField(blank=True, null=True, verbose_name='Ссылка на YouTube видео')  # хранит строку, которая представляет валидный URL-адрес
-    logo_image = models.ImageField(upload_to='images/store_img', default='default/no_image.jpg', blank=True, null=True, verbose_name='Логотип')
+    logo_image = models.ImageField(upload_to='images/store_img', blank=True, null=True, verbose_name='Логотип')
     date_of_create = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
     date_of_deactivate = models.DateTimeField(blank=True, null=True, verbose_name='Дата деактивации')
     user = models.ForeignKey(settings.AUTH_USER_MODEL,

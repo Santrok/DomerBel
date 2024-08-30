@@ -142,4 +142,4 @@ class Message(models.Model):
         ordering = ['pub_date']
 
     def __str__(self):
-        return f'Чат_id: {self.chat.id}, автор: {self.author.first_name}. Текст: {self.message}'
+        return f'Чат_id: {self.chat.id}, автор: {self.author.first_name}.'
