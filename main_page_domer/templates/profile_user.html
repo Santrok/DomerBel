@@ -197,7 +197,7 @@
                     </div>
                     <a href="{% url 'advertisement_details' advertisement.slug %}"
                        class="main__info-advertisement-list-item-img">
-                        <img src="{% if advertisement.preview_image %}{{ advertisement.preview_image.url }}{% else %}{% static 'no_image.jpg' %}{% endif %}"
+                        <img src="{% if advertisement.preview_image %}{{ advertisement.preview_image.url }}{% else %}{% static 'img/no_image.jpg' %}{% endif %}"
                              alt="">
                     </a>
                     <div class="main__info-advertisement-list-item-title-wrap">
@@ -230,7 +230,7 @@
         {% block action %}
         <div class="main__info-action">
             <p>Отмеченные:</p>
-            <button name="delete_ads" class="submit__btn">Удалить</button>
+{#            <button name="delete_ads" class="submit__btn">Удалить</button>#}
             <button name="archive_ads" class="submit__btn">Поместить в архив</button>
         </div>
         {% endblock action %}

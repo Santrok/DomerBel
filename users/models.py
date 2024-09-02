@@ -12,7 +12,7 @@ from django.utils import timezone
 from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 
-from advertisement.models import Advertisement
+from advertisement.models import Advertisement, Store
 from config import settings
 
 
@@ -113,7 +113,8 @@ class Chat(models.Model):
 
     chat_name = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     members = models.ManyToManyField(User, verbose_name='Участник')
-    advertisement = models.ForeignKey(Advertisement, on_delete=models.DO_NOTHING)
+    advertisement = models.ForeignKey(Advertisement, on_delete=models.SET_NULL, null=True)
+    store = models.ForeignKey(Store, on_delete=models.SET_NULL, null=True)
 
     class Meta:
         verbose_name = 'Чат'
@@ -125,7 +126,7 @@ class Chat(models.Model):
     #     return f'Участники: {", ".join(first_names)}. Тема: {self.advertisement}'
 
     def get_absolute_url(self):
-        return reverse('users:messages', kwargs={'chat_id': self.pk})
+        return reverse('users:messages', kwargs={'chat_name': self.chat_name,'chat_id': self.pk})
 
 
 class Message(models.Model):
@@ -141,4 +142,4 @@ class Message(models.Model):
         ordering = ['pub_date']
 
     def __str__(self):
-        return f'Чат_id: {self.chat.id}, автор: {self.author.first_name}. Текст: {self.message}'
+        return f'Чат_id: {self.chat.id}, автор: {self.author.first_name}.'

@@ -153,7 +153,7 @@
     <h2>
         Написать сообщение
     </h2>
-</div>
+  </div>
   <fieldset>
     <label for="chatMessage">
       <p>
@@ -298,8 +298,8 @@
             <div class="details__advertisement-about-list-item-img">
               <img src="{% static "img/icons/email.gif" %}" alt="email">
             </div>
-            <p class="details__advertisement-send-message">
-              Отправить письмо
+            <p class="details__advertisement-send-message" data-id="{% if user.is_authenticated %}{{ advertisement.id }}{% endif %}">
+              Написать сообщение
             </p>
           </li>
         </ul>

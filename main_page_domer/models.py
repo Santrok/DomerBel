@@ -89,7 +89,6 @@ class Publication(models.Model):
     announcement = CKEditor5Field(config_name='extends', verbose_name='Аннотация')
     description = CKEditor5Field(config_name='extends', verbose_name='Текст статьи')
     preview_image = models.ImageField(upload_to="images/publications/%Y/%m/%d", verbose_name="Фото")
-    video_link = models.URLField(blank=True, null=True, verbose_name="Ссылка на видео")
     date_of_create = models.DateTimeField(
         auto_now_add=True, verbose_name="Дата создания"
     )
@@ -118,12 +117,6 @@ class Publication(models.Model):
         self.search_vector = SearchVector('title', 'description', 'announcement')
         self.search_title_vector = SearchVector('title')
         super(Publication, self).save(*args, **kwargs)
-
-
-@receiver(pre_delete, sender=Publication)
-def publication_photo_delete(sender, instance, **kwargs):
-    """ Удаление файлов перед удалением экземпляра публикаций """
-    instance.preview_image.delete(False)
 
 
 class Help(models.Model):
