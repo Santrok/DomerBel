@@ -103,7 +103,7 @@ class Advertisement(DirtyFieldsMixin, models.Model):
         if 'additional_information' in self.get_dirty_fields():
             self.additional_information_view = list(self.additional_information.items())
         self.slug = unique_slugify(self, self.title)
-        if self.preview_image:
+        if self.preview_image and not self.preview_image.url.lower().endswith('avif'):
             convert_image_to_avif(photo=self.preview_image)  # Конвертация изображения в формат AVIF
         super().save(*args, **kwargs)
         self.date_of_deactivate = self.date_of_create + timedelta(days=60)

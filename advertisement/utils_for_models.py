@@ -16,13 +16,24 @@ def upload_to(instance, filename):
     """Хэширование имени файла и распределение
        файлов по приложениям и далее в разные папки
        случайным образом"""
-    today = date.today().isoformat()
-    save_folder = today
-    ext = os.path.splitext(filename)[1]
-    name = str(instance.pk or '') + filename
-    filename = md5(name.encode('utf8')).hexdigest() + ext
-    basedir = os.path.join(instance._meta.app_label)
-    return os.path.join(basedir, save_folder, filename)
+    filename_with_ext = os.path.basename(instance.preview_image.path)
+    filename_without_ext = os.path.splitext(filename_with_ext)[0] + '.avif'
+    print('-------------', filename_with_ext, filename_without_ext)
+    print(instance.preview_image.path)
+    if filename_without_ext != filename:
+        print('файл не avif')
+        today = date.today().isoformat()
+        save_folder = today
+        ext = os.path.splitext(filename)[1]
+        name = str(instance.pk or '') + filename
+        filename = md5(name.encode('utf8')).hexdigest() + ext
+        basedir = os.path.join(instance._meta.app_label)
+        return os.path.join(basedir, save_folder, filename)
+    else:
+        print('avif файл')
+        new_path = os.path.dirname(instance.preview_image.url).replace('/media/', '')
+        print(new_path, os.path.join(new_path, filename), filename)
+        return os.path.join(new_path, filename)
 
 
 def add_watermark_to_photo(photo):
@@ -55,23 +66,20 @@ def unique_slugify(instance, slug):
 def convert_image_to_avif(photo):
     """ Конвертирует все форматы фото в avif """
 
-    # Проверка на расширение
-    if not photo.url.lower().endswith('avif'):
+    # Открываем загруженный файл с помощью Pillow
+    img = Image.open(photo)
 
-        # Открываем загруженный файл с помощью Pillow
-        img = Image.open(photo)
+    # Создаём временный буфер для сохранения изображения в формате AVIF
+    img_io = BytesIO()
 
-        # Создаём временный буфер для сохранения изображения в формате AVIF
-        img_io = BytesIO()
+    # Сохраняем изображение в формате AVIF
+    img.save(img_io, format='AVIF')
 
-        # Сохраняем изображение в формате AVIF
-        img.save(img_io, format='AVIF')
+    # Перематываем буфер обратно в начало
+    img_io.seek(0)
 
-        # Перематываем буфер обратно в начало
-        img_io.seek(0)
+    # Генерируем новое имя файла с расширением .avif
+    new_filename = os.path.splitext(photo.name)[0] + '.avif'
 
-        # Генерируем новое имя файла с расширением .avif
-        new_filename = os.path.splitext(photo.name)[0] + '.avif'
-
-        # Обновляем файл в поле photo с новым расширением
-        photo.save(new_filename, ContentFile(img_io.read()), save=False)
+    # Обновляем файл в поле photo с новым расширением
+    photo.save(new_filename, ContentFile(img_io.read()), save=False)
