@@ -16,24 +16,14 @@ def upload_to(instance, filename):
     """Хэширование имени файла и распределение
        файлов по приложениям и далее в разные папки
        случайным образом"""
-    filename_with_ext = os.path.basename(instance.preview_image.path)
-    filename_without_ext = os.path.splitext(filename_with_ext)[0] + '.avif'
-    print('-------------', filename_with_ext, filename_without_ext)
-    print(instance.preview_image.path)
-    if filename_without_ext != filename:
-        print('файл не avif')
-        today = date.today().isoformat()
-        save_folder = today
-        ext = os.path.splitext(filename)[1]
-        name = str(instance.pk or '') + filename
-        filename = md5(name.encode('utf8')).hexdigest() + ext
-        basedir = os.path.join(instance._meta.app_label)
-        return os.path.join(basedir, save_folder, filename)
-    else:
-        print('avif файл')
-        new_path = os.path.dirname(instance.preview_image.url).replace('/media/', '')
-        print(new_path, os.path.join(new_path, filename), filename)
-        return os.path.join(new_path, filename)
+    today = date.today().isoformat()
+    save_folder = today
+    ext = os.path.splitext(filename)[1]
+    name = str(instance.pk or '') + filename
+    filename = md5(name.encode('utf8')).hexdigest() + ext
+    basedir = os.path.join(instance._meta.app_label)
+    return os.path.join(basedir, save_folder, filename)
+
 
 
 def add_watermark_to_photo(photo):

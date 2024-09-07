@@ -16,14 +16,10 @@ advertisements = Advertisement.objects.all()
 print(advertisements.count())
 count_advertisements = 0
 
-for advertisement in advertisements.filter(id=30):
+for advertisement in advertisements:
     if advertisement.preview_image and advertisement.preview_image.url.endswith('.jpg'):
-        print('id: ', advertisement.id)
-        # new_url = advertisement.preview_image.path.replace('.jpg', '.avif')
-        # with open(new_url, 'rb') as f:
-        #     advertisement.preview_image.save(os.path.basename(new_url), File(f))
-        # advertisement.save()
-        # count_advertisements += 1
+
+        # Меняем расширение в имени файла с .jpg на .avif
         new_image_path = advertisement.preview_image.name.replace('.jpg', '.avif')
 
         # Обновляем поле preview_image на новое имя файла
@@ -31,6 +27,7 @@ for advertisement in advertisements.filter(id=30):
 
         # Сохраняем изменения в базе данных
         advertisement.save()
-        print(advertisement.preview_image.url)
+
+        count_advertisements += 1
 
 print('count: ',count_advertisements)
