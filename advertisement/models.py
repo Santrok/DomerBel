@@ -35,7 +35,8 @@ class PhotoAdvertisement(models.Model):
         return f'{self.advertisement.id}-{self.id}'
 
     def save(self, *args, **kwargs):
-        convert_image_to_avif(photo=self.photo)  # Конвертация изображения в формат AVIF
+        if self.photo and not self.photo.url.lower().endswith('avif'):
+            convert_image_to_avif(photo=self.photo)  # Конвертация изображения в формат AVIF
         super().save(*args, **kwargs)
 
         # Добавление водяного знака
