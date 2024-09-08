@@ -15,27 +15,11 @@ def deactivate_advertisement():
     current_datetime = timezone.now()
 
     # Преобразуем текущую дату и время в часовой пояс, который вам нужен
-    timezone1 = pytz.timezone("Europe/Minsk")
-    aware_datetime = current_datetime.astimezone(timezone1)
+    timezone_now = pytz.timezone("Europe/Minsk")
+    aware_datetime = current_datetime.astimezone(timezone_now)
 
     deactivate_advertisements = Advertisement.objects.filter(date_of_deactivate__lt=aware_datetime, is_active=True)
-    print(deactivate_advertisements)
     deactivate_advertisements.update(is_active=False)
-
-
-@shared_task()
-def deactivate_store():
-    """ Функция деактивации магазина по истечению времени публикации """
-    # Получаем текущую дату и время с информацией о часовом поясе
-    current_datetime = timezone.now()
-
-    # Преобразуем текущую дату и время в часовой пояс, который вам нужен
-    timezone1 = pytz.timezone("Europe/Minsk")
-    aware_datetime = current_datetime.astimezone(timezone1)
-
-    deactivate_stores = Store.objects.filter(date_of_deactivate__lt=aware_datetime, is_active=True)
-    print(deactivate_stores)
-    deactivate_stores.update(is_active=False)
 
 
 @shared_task()
@@ -45,12 +29,25 @@ def delete_advertisement():
     current_datetime = timezone.now()
 
     # Преобразуем текущую дату и время в часовой пояс, который вам нужен
-    timezone1 = pytz.timezone("Europe/Minsk")
-    aware_datetime = current_datetime.astimezone(timezone1)
+    timezone_now = pytz.timezone("Europe/Minsk")
+    aware_datetime = current_datetime.astimezone(timezone_now)
 
-    delete_advertisements = Advertisement.objects.filter(date_of_deactivate__lt=aware_datetime, is_active=True)
-    print(delete_advertisements)
+    delete_advertisements = Advertisement.objects.filter(date_of_delete__lt=aware_datetime, is_active=False)
     delete_advertisements.delete()
+
+
+@shared_task()
+def deactivate_store():
+    """ Функция деактивации магазина по истечению времени публикации """
+    # Получаем текущую дату и время с информацией о часовом поясе
+    current_datetime = timezone.now()
+
+    # Преобразуем текущую дату и время в часовой пояс, который вам нужен
+    timezone_now = pytz.timezone("Europe/Minsk")
+    aware_datetime = current_datetime.astimezone(timezone_now)
+
+    deactivate_stores = Store.objects.filter(date_of_deactivate__lt=aware_datetime, is_active=True)
+    deactivate_stores.update(is_active=False)
 
 @shared_task()
 def delete_everything_in_folder_beat():
