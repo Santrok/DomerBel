@@ -21,7 +21,7 @@ def upload_to(instance, filename):
     ext = os.path.splitext(filename)[1]
     name = str(instance.pk or '') + filename
     filename = md5(name.encode('utf8')).hexdigest() + ext
-    basedir = os.path.join(instance._meta.app_label)
+    basedir = os.path.join(instance.__class__.__name__)
     return os.path.join(basedir, save_folder, filename)
 
 
@@ -55,23 +55,20 @@ def unique_slugify(instance, slug):
 def convert_image_to_avif(photo):
     """ Конвертирует все форматы фото в avif """
 
-    # Проверка на расширение
-    if not photo.url.lower().endswith('avif'):
+    # Открываем загруженный файл с помощью Pillow
+    img = Image.open(photo)
 
-        # Открываем загруженный файл с помощью Pillow
-        img = Image.open(photo)
+    # Создаём временный буфер для сохранения изображения в формате AVIF
+    img_io = BytesIO()
 
-        # Создаём временный буфер для сохранения изображения в формате AVIF
-        img_io = BytesIO()
+    # Сохраняем изображение в формате AVIF
+    img.save(img_io, format='AVIF')
 
-        # Сохраняем изображение в формате AVIF
-        img.save(img_io, format='AVIF')
+    # Перематываем буфер обратно в начало
+    img_io.seek(0)
 
-        # Перематываем буфер обратно в начало
-        img_io.seek(0)
+    # Генерируем новое имя файла с расширением .avif
+    new_filename = os.path.splitext(photo.name)[0] + '.avif'
 
-        # Генерируем новое имя файла с расширением .avif
-        new_filename = os.path.splitext(photo.name)[0] + '.avif'
-
-        # Обновляем файл в поле photo с новым расширением
-        photo.save(new_filename, ContentFile(img_io.read()), save=False)
+    # Обновляем файл в поле photo с новым расширением
+    photo.save(new_filename, ContentFile(img_io.read()), save=False)
