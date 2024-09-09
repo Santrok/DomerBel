@@ -4,10 +4,8 @@ from operator import attrgetter
 from string import Template
 
 from django import forms
-from django.forms import ClearableFileInput
 from django.forms.models import ModelChoiceIterator, ModelChoiceField
 from django.utils.safestring import mark_safe
-from mptt.forms import TreeNodeChoiceField
 
 from advertisement.models import Region, Category, Store
 

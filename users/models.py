@@ -120,10 +120,8 @@ class Chat(models.Model):
         verbose_name = 'Чат'
         verbose_name_plural = 'Чаты'
 
-    # def __str__(self):
-    #     chat_participants = self.members.all()
-    #     first_names = [person.first_name for person in chat_participants]
-    #     return f'Участники: {", ".join(first_names)}. Тема: {self.advertisement}'
+    def __str__(self):
+        return self.chat_name
 
     def get_absolute_url(self):
         return reverse('users:messages', kwargs={'chat_name': self.chat_name,'chat_id': self.pk})

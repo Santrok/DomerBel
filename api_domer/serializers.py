@@ -56,18 +56,18 @@ class StoreSerializer(serializers.ModelSerializer):
         fields = ['id', 'title']
 
 
-class PhotoAdvertisementSerializer(serializers.Serializer):
-    InMemoryUploadedFile = serializers.ImageField()
-
-
 class AdvertisementSerializer(serializers.ModelSerializer):
+    photo = serializers.ListField(child=serializers.ImageField(), allow_null=True,
+                                  allow_empty=True, max_length=30, required=False,
+                                  error_messages={'max_length': 'Убедитесь, что в этом поле не более 30 элементов.'})
+
     class Meta:
         model = Advertisement
         fields = ['article', 'title', "price",
                   'category', 'bearer', 'region',
                   'preview_image', 'contact_name',
                   'email', 'phone_num', 'description',
-                  'video_link', 'store']
+                  'video_link', 'store', 'photo']
 
 
 class AdditionalInformationSerializer(serializers.Serializer):
@@ -92,10 +92,14 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         return User.objects.create_user(**validated_data)
 
     def validate(self, data):
+        email = data.get('email').lower()
+        data['email'] = email
         password = data.get('password')
         password2 = data.get('password2')
+        if User.objects.filter(email=email).exists():
+            raise serializers.ValidationError({"email": ["Пользователь с таким Email уже существует"]})
         if password != password2:
-            raise serializers.ValidationError({"password":["Введенные пароли не совпадают"], "password2":[""]})
+            raise serializers.ValidationError({"password": ["Введенные пароли не совпадают"], "password2":[""]})
         return data
 
 
@@ -103,12 +107,16 @@ class UserLoginSerializer(serializers.Serializer):
     email = serializers.EmailField(write_only=True, error_messages={'blank': 'Обязательное поле'})
     password = serializers.CharField(write_only=True, error_messages={'blank': 'Обязательное поле'})
 
+    def validate(self, data):
+        data['email'] = data.get('email').lower()
+        return data
 
 class PasswordResetSerializer(serializers.Serializer):
     email = serializers.EmailField(write_only=True, error_messages={'blank': 'Обязательное поле'})
     recaptcha = ReCaptchaV2Field(write_only=True)
 
     def validate_email(self, email):
+        email = email.lower()
         if not User.objects.filter(email=email).exists():
             raise serializers.ValidationError("Пользователь с таким Email не найден")
         else:
@@ -144,6 +152,10 @@ class ComplaintSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         validated_data.pop('recaptcha')
         return Complaint.objects.create(**validated_data)
+
+    def validate(self, data):
+        data['user'] = data.get('user').lower()
+        return data
 
 
 class MessageSerializer(serializers.Serializer):

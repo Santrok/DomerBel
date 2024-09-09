@@ -82,7 +82,7 @@ class PublicationForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.fields['announcement'].widget = CKEditor5Widget(config_name='extends2')
         self.fields['preview_image'].widget = ImagePreviewWidget()
-        self.fields['preview_image'].widget.attrs.update({"id": "id_preview_image"})
+        self.fields['preview_image'].widget.attrs.update({"id": "id_logo_image"})
         self.fields['announcement'].required = False
         self.fields['description'].required = False
 
