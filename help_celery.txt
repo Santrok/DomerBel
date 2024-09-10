@@ -1,0 +1,5 @@
+# запуск селери - l ingo показывает список задач
+python -m celery -A config worker -l info
+
+запускает переодические задачи
+celery -A config beat -l info

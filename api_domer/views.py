@@ -12,14 +12,16 @@ from rest_framework import status, serializers
 from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
 
-from advertisement.models import Region, Category, Field, ElementTwo, PhotoAdvertisement, Advertisement, Store, Element
-from api_domer.serializers import GetListOfCitiesSerializer, GetListOfCategoriesSerializer, FieldSerialier, \
-    ElementTwoSerializer, AdvertisementSerializer, StoreSerializer, \
-    UserRegisterSerializer, UserLoginSerializer, PasswordResetSerializer, \
-    FavoriteSerializer, ElementSerializer, GetListOfCategoriesFieldsSerializer, ReasonOfComplaintSerializer, \
-    ComplaintSerializer, MessageSerializer
+from advertisement.models import (Region, Category, Field, ElementTwo, PhotoAdvertisement,
+                                  Advertisement, Store, Element)
+from api_domer.serializers import (GetListOfCitiesSerializer, GetListOfCategoriesSerializer, FieldSerialier,
+                                   ElementTwoSerializer, AdvertisementSerializer, StoreSerializer,
+                                   UserRegisterSerializer, UserLoginSerializer, PasswordResetSerializer,
+                                   FavoriteSerializer, ElementSerializer, GetListOfCategoriesFieldsSerializer,
+                                   ReasonOfComplaintSerializer, ComplaintSerializer, MessageSerializer)
+from api_domer.tasks import save_advertisement_task
 
-from api_domer.utils import validate_additional_information
+from api_domer.utils import validate_additional_information, save_temp_photo
 from config import settings
 from config.settings import env_keys
 from main_page_domer.models import ReasonOfComplaint
@@ -99,24 +101,17 @@ def save_advertisement(request):
     serializer_additional_error, additional_information = validate_additional_information(keys_to_delete,
                                                                                           additional_information)
     if serializer.is_valid() and not serializer_additional_error.data:
-        additional_information_save = Field.objects.filter(id__in=additional_information).order_by('id')
-        photo_list = serializer.validated_data.pop('photo', None)
-        for i in additional_information_save:
-            additional_information[i.title] = ', '.join(additional_information.pop(f'{i.id}'))
-        new_advertisement = Advertisement(author=None if request.user.is_anonymous else request.user,
-                                          additional_information=additional_information,
-                                          **serializer.validated_data)
-        new_advertisement.save()
-        if photo_list:
-            for photo in photo_list:
-                if photo.name == request.data.get("preview_img"):
-                    new_advertisement.preview_image = photo
-                    new_advertisement.save()
-                else:
-                    additional_photo = PhotoAdvertisement(photo=photo, advertisement=new_advertisement)
-                    additional_photo.save()
+        data = dict(serializer.validated_data)
+        data['category_id'] = data.pop('category').id
+        data['region_id'] = data.pop('region').id
+        files_list = data.pop('photo', None)
+
+        processed_photo = save_temp_photo(files_list, request.data.get("preview_img"))
+        save_advertisement_task.delay(request.user.id, data, additional_information, processed_photo)
+
         return Response({"success": "<p>Ваше объявление отправлено на модерацию.</p><p>После модерации оно появится в списке объявлений.</p>",
-                         "link": f"{env_keys.get('URL')}", "link_text": "Вернуться на главную"}, status=status.HTTP_201_CREATED)
+                            "link": f"{env_keys.get('URL')}", "link_text": "Вернуться на главную"},
+                        status=status.HTTP_201_CREATED)
     else:
         raise serializers.ValidationError(
             {"error_additional": serializer_additional_error.data, "error": serializer.errors})
@@ -172,8 +167,10 @@ def update_advertisement(request):
         if request.data.getlist('deleted_images'):
             PhotoAdvertisement.objects.filter(photo__in=deleted_images).delete()
 
-        return Response({"success": "<p>Ваше объявление отправлено на модерацию.</p><p>После модерации оно появится в списке объявлений.</p>",
-                         "link": f"{env_keys.get('URL')}/users/personal_account/", "link_text": "В мой кабинет"}, status=status.HTTP_201_CREATED)
+        return Response({
+            "success": "<p>Ваше объявление отправлено на модерацию.</p><p>После модерации оно появится в списке объявлений.</p>",
+            "link": f"{env_keys.get('URL')}/users/personal_account/", "link_text": "В мой кабинет"},
+            status=status.HTTP_201_CREATED)
     else:
         raise serializers.ValidationError(
             {"error_additional": serializer_additional_error.data, "error": serializer.errors})
@@ -199,7 +196,8 @@ def login_user(request):
             login(request, user)
             return Response(status=status.HTTP_205_RESET_CONTENT)
         else:
-            raise serializers.ValidationError({"errors": {"email": "Пользователь не найден. Проверьте правильность введенных данных.", "password": ''}})
+            raise serializers.ValidationError({"errors": {
+                "email": "Пользователь не найден. Проверьте правильность введенных данных.", "password": ''}})
     else:
         raise serializers.ValidationError({"errors": login_serializer.errors})
 
@@ -283,7 +281,8 @@ def get_element_list(request):
 @api_view(['GET'])
 def get_subcategory_list(request):
     '''Отдает подкатегориии и их поля по id категории'''
-    categories = Category.objects.filter(parent_id=request.query_params.get('id')).prefetch_related('field_set__spisok__element_set__elementtwo_set')
+    categories = Category.objects.filter(parent_id=request.query_params.get('id')).prefetch_related(
+        'field_set__spisok__element_set__elementtwo_set')
     serializer = GetListOfCategoriesFieldsSerializer(categories, many=True)
     return Response(serializer.data)
 
@@ -335,7 +334,8 @@ def create_chat(request):
             any_member = chat_object.pop('members', None)
             chat = Chat.objects.create(**chat_object)
             chat.members.set([request.user.id, any_member])
-            Message.objects.create(chat=chat, author=request.user, message=serializer.validated_data.get('text_message'))
+            Message.objects.create(chat=chat, author=request.user,
+                                   message=serializer.validated_data.get('text_message'))
         else:
             Message.objects.create(chat=chat[0], author=request.user,
                                    message=serializer.validated_data.get('text_message'))
