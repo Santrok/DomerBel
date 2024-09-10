@@ -112,10 +112,8 @@ form,
   max-height: 85px;
   width: 100%;
   height: 100%;
-  -o-object-fit: cover;
-     object-fit: cover;
-  -o-object-position: center;
-     object-position: center;
+  object-fit: cover;
+  object-position: center;
   border-radius: 3px;
 }
 .photo_img:hover .delete_img {
@@ -214,4 +212,6 @@ form,
   .add_adv {
     max-width: none;
   }
-}/*# sourceMappingURL=place_an_ad.css.map */
+}
+
+/*# sourceMappingURL=place_an_ad.css.map */
