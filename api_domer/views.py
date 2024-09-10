@@ -1,5 +1,7 @@
 import smtplib
+from zipfile import ZipFile
 
+import openpyxl
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
@@ -12,18 +14,21 @@ from rest_framework import status, serializers
 from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
 
-from advertisement.models import Region, Category, Field, ElementTwo, PhotoAdvertisement, Advertisement, Store, Element
+from advertisement.models import Region, Category, Field, ElementTwo, PhotoAdvertisement, Advertisement, Store, Element, \
+    UploadFile, ErrorFile
 from api_domer.serializers import GetListOfCitiesSerializer, GetListOfCategoriesSerializer, FieldSerialier, \
     ElementTwoSerializer, AdvertisementSerializer, StoreSerializer, \
     UserRegisterSerializer, UserLoginSerializer, PasswordResetSerializer, \
     FavoriteSerializer, ElementSerializer, GetListOfCategoriesFieldsSerializer, ReasonOfComplaintSerializer, \
-    ComplaintSerializer, MessageSerializer
+    ComplaintSerializer, MessageSerializer, UploadFileSerializer
 
 from api_domer.utils import validate_additional_information
 from config import settings
 from config.settings import env_keys
 from main_page_domer.models import ReasonOfComplaint
 from users.models import User, UserFavorites, Chat, Message
+
+from advertisement.tasks import save_many_ads_from_zip_task, save_many_ads_from_excel_task
 
 
 # Отдаёт список городов type='Город' по id выбранной области type='Область' из модели Region
@@ -343,3 +348,71 @@ def create_chat(request):
         return Response({'success': 'Ваше сообщение отправлено'}, status=status.HTTP_200_OK)
     else:
         return Response({"errors": serializer.errors})
+
+
+@api_view(['POST'])
+def get_bulk_import_of_ads(request):
+    file = ErrorFile.objects.filter(user=request.user).last()
+
+    serializer = UploadFileSerializer(data=request.data)
+    if serializer.is_valid():
+        if serializer.validated_data.get("file").name.endswith('xlsx'):
+            '''Работа с электронной таблицей'''
+            try:
+                uploud_file = serializer.validated_data.get("file")
+                book = openpyxl.open(uploud_file, read_only=True)
+                save_file = UploadFile(file=uploud_file, user=request.user)
+                save_file.save()
+                ads = save_many_ads_from_excel_task.delay(uploud_file=f'./media/{save_file.file.name}',
+                                                          id=request.user.id,
+                                                          first_name=request.user.first_name,
+                                                          phone_number=request.user.phone_number,
+                                                          email=request.user.email)
+
+                save_file.delete()
+                if file != None and file.status == False:
+                    file.status = True
+                    file.save(update_fields=["status"])
+            #     result = ads.get()
+            #     if result != True:
+            #         path = result.get('file')[1][1:]
+            #         context['answer_error'] = 'Несколько объявлений не были сохранены. Чтобы посмотреть объявления с ошибками скачайте файл.'
+            #         context['file'] = f'http://127.0.0.1:8000//{path}'
+            #         context['error'] = True
+            #     else:
+            #         context['answer'] = 'Объявления успешно сохранены'
+            #         context['error'] = False
+            except:
+                return Response({'error': 'Невозможно прочитать файл.'})
+
+        elif serializer.validated_data.get("file").name.endswith('zip'):
+            '''Работа с электронным архивом'''
+            try:
+                uploud_zip = serializer.validated_data.get("file")
+                with ZipFile(uploud_zip, 'r') as zip:
+                    files_from_zip = zip.namelist()
+                save_zip = UploadFile(file=uploud_zip, user=request.user)
+                save_zip.save()
+                ads = save_many_ads_from_zip_task.delay(uploud_zip=f'./media/{save_zip.file.name}',
+                                                        id=request.user.id,
+                                                        first_name=request.user.first_name,
+                                                        phone_number=request.user.phone_number,
+                                                        email=request.user.email)
+                save_zip.delete()
+                if file != None and file.status == False:
+                    file.status = True
+                    file.save(update_fields=["status"])
+                result = ads.get()
+    #             if result != True:
+    #                 path = result.get('file')[1][1:]
+    #                 context[
+    #                     'answer_error'] = 'Несколько объявлений не были сохранены. Чтобы посмотреть объявления с ошибками скачайте файл.'
+    #                 context['file'] = f'http://127.0.0.1:8000//{path}'
+    #                 context['error'] = True
+    #             else:
+    #                 context['answer'] = 'Объявления успешно сохранены'
+    #                 context['error'] = False
+            except:
+                return Response({'error': 'Невозможно прочитать файл.'})
+    else:
+        return Response({'error': 'Ошибка при загрузке файла. Убедитесь, что загружаемый файл необходимого расширения'})
