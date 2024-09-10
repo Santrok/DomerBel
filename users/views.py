@@ -23,7 +23,7 @@ from .forms import PublicationForm, EditContactDataForm, ChangePasswordForm, Mes
 @login_required
 def get_personal_account_page(request):
     """ Выводит все активные объявления пользователя в ЛК"""
-    ads = Advertisement.objects.filter(author=request.user, is_active=True).select_related('category',
+    ads = Advertisement.objects.filter(author=request.user, is_active=True, moderated=True).select_related('category',
                                                                                            'region').all().order_by(
         '-date_of_create').defer(
         'search_title_vector',
@@ -160,7 +160,7 @@ def get_personal_account_inactive_adds_page(request):
         'counter_views',
         'phone_num')
     inactive_ads_quantity = len(ads)
-    active_ads_quantity = Advertisement.objects.filter(author=request.user, is_active=True).count()
+    active_ads_quantity = Advertisement.objects.filter(author=request.user, is_active=True, moderated=True).count()
     locations = Region.objects.filter(type='Область')
     category_list = Category.objects.filter(level__lte=1)
 
@@ -184,11 +184,11 @@ def get_personal_account_inactive_adds_page(request):
 def delete_or_archive_selected_ads(request):
     if request.method == "POST":
         # Удаляет выбранные объявления из активных или архивных
-        if 'delete_ads' in request.POST:
-            selected_ads = request.POST.getlist('ads_checkbox')
-            Advertisement.objects.filter(author=request.user, id__in=selected_ads).delete()
-            messages.success(request, "Выбранные объявления удалены!")
-            return redirect('users:personal_account')
+        # if 'delete_ads' in request.POST:
+        #     selected_ads = request.POST.getlist('ads_checkbox')
+        #     Advertisement.objects.filter(author=request.user, id__in=selected_ads).delete()
+        #     messages.success(request, "Выбранные объявления удалены!")
+        #     return redirect('users:personal_account')
         # Переводит выбранные объявления из активных в архивные
         if 'archive_ads' in request.POST:
             selected_ads = request.POST.getlist('ads_checkbox')
@@ -197,10 +197,10 @@ def delete_or_archive_selected_ads(request):
             return redirect('users:personal_account')
         if 'restore_ads' in request.POST:
             selected_ads = request.POST.getlist('ads_checkbox')
-            ads_updated_count = Advertisement.objects.filter(author=request.user, id__in=selected_ads,
+            ads_updated_count = Advertisement.objects.filter(author=request.user, id__in=selected_ads, moderated=True,
                                                              date_of_deactivate__date__gte=datetime.now()).update(
                 is_active=True)
-            if ads_updated_count == selected_ads.count():
+            if ads_updated_count == len(selected_ads):
                 messages.success(request, "Выбранные объявления восстановлены!")
             else:
                 messages.success(request, "Не все объявления удалось восстановить!")

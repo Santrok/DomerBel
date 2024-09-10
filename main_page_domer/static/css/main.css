@@ -515,6 +515,15 @@
   flex-wrap: wrap-reverse;
 }
 
+.advertisement__not-found {
+  font-family: "Trebuchet MS", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  color: black;
+  font-size: 24px;
+  margin: 100px auto;
+}
+
 .recent-announcements__list-item-article {
   display: flex;
   gap: 10px;
