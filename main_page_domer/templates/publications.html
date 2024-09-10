@@ -1,7 +1,7 @@
 {% extends 'base.html' %} 
 {% load static %}
 {% block css %} 
-<link rel="stylesheet" href="{% static 'css/publications.css' %}">
+<link rel="stylesheet" href="{% static 'css/publications-min.css' %}">
 {% endblock css %} 
 {% block search %}
 <search class="main__search search__profile">
@@ -32,10 +32,10 @@
       {% for publication in publications %}
       <li>
         <article class="publications__list-item">
-          <a href="{% url 'publication_by_slug' publication.slug %}" class="article__date">
+          <p class="article__date">
             18 июля 2021 г.
             20:42	
-          </a>
+          </p>
           <a href="{% url 'publication_by_slug' publication.slug %}" class="article__img">
             <img src="{{ publication.preview_image.url }}" alt="">
           </a>

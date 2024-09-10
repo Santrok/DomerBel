@@ -1,12 +1,11 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block css %}
-    <link rel="stylesheet" type="text/css" media="all" href="{% static 'css/place_an_ad.css' %}">
+    <link rel="stylesheet" type="text/css" media="all" href="{% static 'css/place_an_ad-min.css' %}">
 {% endblock css %}
-{% block find %}
-{% endblock %}
-{% block content %}
+
 {% block search %}{% endblock search %}
+{% block content %}
     <div class="create_advertisement">
         <form action="" method="POST" enctype="multipart/form-data" id="add_adver">
             {% csrf_token %}
@@ -54,6 +53,7 @@
                               rows="10"></textarea>
                 </div>
             </div>
+            {% if user.entity %}
             <div class="bearer">
                 <div class="bearer_input item_input">
                     <p class="bearer_label label_fields">Податель</p>
@@ -71,11 +71,12 @@
                 </div>
             </div>
             <div class="bearer_company_additional_info"></div>
+            {% endif %}
             <div class="contact">
                 <div class="contact_information">
                     <div class="contact_input item_input">
                         <p class="contact_label label_fields">Контактное лицо</p>
-                        <input type="text" name="contact_name" value="{{ user.last_name }}" id="contact" class="information_item-input">
+                        <input type="text" name="contact_name" value="{{ user.first_name }}" id="contact" class="information_item-input">
                     </div>
                 </div>
                 <div class="email_information">
@@ -98,9 +99,9 @@
                 </div>
             </div>
             <div class="photo">
-                <p class="photo_label label_fields">Фотографии (не более 30 штук)</p>
+                <div class="photo_label label_fields"><p>Фотографии (не более 30 штук)</p></div>
                 <div class="photo_file">
-                    <input type="file" class="file_input" name="photo_files" id="photo_list" multiple>
+                    <input type="file" class="file_input" name="photo" id="photo_list" multiple>
                     <div class="photo_preview">
                     </div>
                 </div>

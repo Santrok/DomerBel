@@ -7,16 +7,21 @@
     {% endblock %}
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="{% if meta_category %}{{meta_category.keywords_description}}{% else %}{{adaptive_navigation}}{% endif %}" />
+    <meta name="keywords" content="DomerBel, Domer, ДомерБел, Домер, Объявления Беларусь, Объявления, advertisement, advertisement Belarus" />
+    <meta name="author" content="ITEC Technology Oliver1ck, Santrok, Kos100fei" />
+    <meta property="og:title" content="{% if meta_category %}{{ meta_category.fav_title }}{% else %}{{ adaptive_navigation }}{% endif %}" />
+    <meta name="darkreader-lock" />
     <link rel="stylesheet" href="{% static 'css/null.css' %}">
-    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'css/base-min.css' %}">
     {% block css %}
     {% endblock %}
-    <title>{{ title }}</title>
+    <title>{{ adaptive_navigation }}</title>
   </head>
   <body>
-    <div class="wrapper" data-url="{{ url }}">
-        <div class="modals">
-            <form class="modals__login" id="login_form" enctype="multipart/form-data">
+    <div class="wrapper">
+        <div aria-modal="true" class="modals">
+            <form aria-modal="true" class="modals__login" id="login_form" enctype="multipart/form-data">
                 <div class="cross">
                     <svg width="20.000000" height="20.000000" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
                         <desc>
@@ -61,15 +66,15 @@
                     </button>
                 </fieldset>
                 <fieldset class="modals__login-action">
-                    <a href="#">
+                    <a role="link" aria-disabled="true">
                         Забыли пароль?
                     </a>
-                    <a href="#">
+                    <a role="link" aria-disabled="true">
                         Регистрация
                     </a>
                 </fieldset>
             </form>
-            <form class="modals__signIn" enctype="multipart/form-data"  id="registration_form">
+            <form aria-modal="true" class="modals__signIn" enctype="multipart/form-data"  id="registration_form">
                 <div class="cross">
                     <svg width="20.000000" height="20.000000" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
                         <desc>
@@ -144,11 +149,11 @@
                 <button data-action='submit' type="button" class="submit__btn" id="registration_button">
                     Зарегистрироваться
                 </button>
-                <p class="modals__signUp">
+                <a role="link" aria-disabled="true" class="modals__signUp">
                     Вход
-                </p>
+                </a>
             </form>
-            <form class="modals__reset-password">
+            <form aria-modal="true" class="modals__reset-password">
                 <div class="cross">
                     <svg width="20.000000" height="20.000000" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
                         <desc>
@@ -188,7 +193,7 @@
                     Назад
                 </a>
             </form>
-            <div class="modals__notification">
+            <div aria-modal="true" class="modals__notification">
                 <div class="cross">
                     <svg width="20.000000" height="20.000000" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
                         <desc>
@@ -227,9 +232,6 @@
                     <button type="button" class="modals__notification-close">
                         OK
                     </button>
-                    <button type="button" class="modals__notification-signIn">
-                        Войти
-                    </button>
                 </div>
             </div>
             <div class="modals__more">
@@ -260,9 +262,13 @@
             {% block modals %}
             {% endblock modals %}
         </div>
-        <div class="form__notifications-access">
-            Выполнено успешно
+        {% if messages %}
+            {% for message in messages %}
+        <div aria-hidden="true" class="form__notifications-access access__active">
+            {{ message }}
         </div>
+            {% endfor %}
+        {% endif %}
         <div class="container">
             <header>
                 <div class="header__up">
@@ -308,8 +314,8 @@
                     {% endif %}
                 </div>
                 <div class="header__bottom">
-                    <a href="{% url 'home' %}" class="header__logo">
-                        <img src="{% static 'img/logo.png' %}" alt="">
+                    <a href="{% url 'home' %}" class="header__logo" aria-label="Go to the main page">
+                        <img src="{% static 'img/logo.png' %}" alt="logo company">
                     </a>
                     <nav class="header__bottom-nav">
                         <h2 class="header__bottom-nav-title">
@@ -350,7 +356,7 @@
                     <search class="main__search">
                         <form class="main__search-form" action="{% url 'search_result' %}" method="GET">
                         <fieldset class="main__search-form-item region">
-                            <select name="category" class="main__search-form-item-category">
+                            <select name="category" class="main__search-form-item-category" aria-label="All sections">
                                 <option value="">
                                     Все разделы
                                 </option>
@@ -363,7 +369,7 @@
                             {% endfor %}
                             </select>
                             <input type="text" name="text_search" placeholder="Поиск по тексту" />
-                            <select name="region" class="main__search-form-item-region">
+                            <select name="region" class="main__search-form-item-region" aria-label="Any location">
                                 <option value="">
                                     Любое расположение
                                 </option>
@@ -432,7 +438,7 @@
                             </a>
                         </li>
                         <li class="footer__nav-list-item">
-                            <a href="#">
+                            <a href="{% url 'feedback' %}">
                                 Обратная связь
                             </a>
                         </li>
@@ -453,19 +459,19 @@
                                 Юридический адрес:
                             </p>
                             <p>
-                                г. Минск, ул. Ленина, д. 1
+                                г. Минск, ул. Макаенка, 12Е, к.298, индекс: 220014
                             </p> 
                         </li>
                         <li>
-                            <a href="tel:+375290000000">+375 (29) 000-00-00,</a>
-                            <a href="mailto:example@example.com">example@example.com</a>
+                            <a href="tel:+375290000000">+375293018156,</a>
+                            <a href="mailto:example@example.com"> ivan-buguk1@rambler.ru</a>
                         </li>
                         <li>
                             <p>
-                                УНП: 000000000
+                                УНП: 193710778
                             </p>
                             <p>
-                                Lorem ipsum dolor sit amet consectetur adipisicing elit. Assumenda laudantium nam quibusdam excepturi sed, placeat fuga modi accusamus deserunt illum quas voluptatem id inventore neque at odio voluptate quo possimus!
+                                Номер свидетельства о государственной регистрации №193710778 от 19.09.2023 г.
                             </p>
                         </li>
                     </ul>
@@ -484,7 +490,6 @@
     <script src="{% static 'js/main/login.js' %}"></script>
     <script src="{% static 'js/signIn.js' %}"></script>
     <script src="{% static 'js/main/resetPassword.js' %}"></script>
-    <script src="{% static 'js/main/setUrl.js' %}"></script>
     <script src="{% static 'js/main/notification.js' %}"></script>
     <script src="{% static "js/main/showPassword.js" %}"></script>
     <script src="{% static "js/main/favorites.js" %}"></script>

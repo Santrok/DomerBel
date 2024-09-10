@@ -31,12 +31,16 @@
   font-size: 14px;
   width: 100%;
 }
+.modals .modals__fields-error {
+  border-color: red;
+}
 .modals a {
   font-family: "Trebuchet MS", sans-serif;
   font-weight: 400;
   font-style: normal;
   color: #3077a0;
   font-size: 14px;
+  cursor: pointer;
 }
 .modals a:hover {
   color: red;
@@ -168,6 +172,9 @@
 
 .modals__signIn-field {
   position: relative;
+}
+.modals__signIn-field:has(.modals__signIn-error ~ input[type=password]) .views {
+  top: 33px;
 }
 
 .modals__login-field {
@@ -406,6 +413,136 @@
   transform: rotate(-45deg);
 }
 
+.modals__report-advertisement {
+  width: 100%;
+  max-width: 450px;
+  display: none;
+  flex-direction: column;
+  gap: 20px;
+  background: white;
+  padding: 40px;
+  border-radius: 8px;
+}
+.modals__report-advertisement label {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.modals__report-advertisement p {
+  font-family: "Trebuchet MS", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  color: black;
+  font-size: 14px;
+}
+.modals__report-advertisement p span {
+  color: red;
+}
+.modals__report-advertisement input, .modals__report-advertisement select, .modals__report-advertisement textarea {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid black;
+  width: 100%;
+}
+.modals__report-advertisement input::placeholder, .modals__report-advertisement select::placeholder, .modals__report-advertisement textarea::placeholder {
+  font-family: "Trebuchet MS", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  color: rgb(110, 109, 109);
+  font-size: 14px;
+}
+
+.modals__report-advertisement-field {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.send__message {
+  position: relative;
+  width: 100%;
+  max-width: 450px;
+  display: none;
+  flex-direction: column;
+  gap: 20px;
+  background: white;
+  padding: 40px;
+  border-radius: 8px;
+}
+.send__message button {
+  margin-top: 10px;
+}
+.send__message label {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.send__message p {
+  font-family: "Trebuchet MS", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  color: black;
+  font-size: 14px;
+}
+.send__message p span {
+  color: red;
+}
+.send__message textarea {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid black;
+  max-width: 370px;
+}
+.send__message textarea:focus {
+  border: 1px solid #3779eb;
+}
+.send__message textarea::placeholder {
+  font-family: "Trebuchet MS", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  color: rgb(110, 109, 109);
+  font-size: 14px;
+}
+
+.remove__modal {
+  position: relative;
+  width: 100%;
+  max-width: 450px;
+  display: none;
+  flex-direction: column;
+  gap: 20px;
+  background: white;
+  padding: 40px;
+  border-radius: 8px;
+}
+.remove__modal button {
+  margin-top: 10px;
+}
+.remove__modal p {
+  font-family: "Trebuchet MS", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  color: black;
+  font-size: 16px;
+  white-space: pre-line;
+  text-align: center;
+}
+.remove__modal p span {
+  color: red;
+}
+.remove__modal::placeholder {
+  font-family: "Trebuchet MS", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  color: rgb(110, 109, 109);
+  font-size: 14px;
+}
+
+.remove__modal-btn {
+  display: flex;
+  gap: 10px;
+}
+
 .modals__active-grid {
   display: grid;
   transition: 0.5s ease;
@@ -620,7 +757,7 @@ header {
   gap: 5px;
 }
 .main__search-form-item input {
-  flex: 1 1 350px;
+  flex: 1 1 400px;
   padding: 6px;
   border: 1px solid #D4D4D4;
   border-radius: 5px;
@@ -634,7 +771,7 @@ header {
   font-family: "Trebuchet MS", sans-serif;
   font-weight: 400;
   font-style: normal;
-  color: gray;
+  color: #545454;
   font-size: 14px;
 }
 .main__search-form-item select {
@@ -713,6 +850,15 @@ header {
   .main__search-form-item button {
     flex: 1 1 200px;
   }
+  .region {
+    order: 1;
+  }
+  .labels {
+    order: 3;
+  }
+  .fields {
+    order: 2;
+  }
 }
 .paginator {
   width: 100%;
@@ -747,7 +893,8 @@ header {
   position: absolute;
   bottom: 10px;
   right: 10px;
-  padding: 10px;
+  padding: 50px 25px;
+  border-radius: 7px;
   background: rgb(28, 161, 28);
   font-family: "Trebuchet MS", sans-serif;
   font-weight: 400;
@@ -756,13 +903,16 @@ header {
   font-size: 16px;
   opacity: 0;
   user-select: none;
+  z-index: 5;
+  white-space: pre-line;
+  text-align: center;
 }
 
 .access__active {
   animation-name: notifications;
-  animation-duration: 3s;
+  animation-duration: 5s;
   animation-iteration-count: 1;
-  animation-timing-function: ease-in;
+  animation-timing-function: cubic-bezier(0.97, 0, 0, 0.99);
   animation-direction: alternate;
 }
 
@@ -771,7 +921,7 @@ header {
     transform: rotate(1deg);
   }
   50% {
-    opacity: 1;
+    opacity: 0.7;
     transform: rotate(-1deg);
   }
   75% {
@@ -851,10 +1001,13 @@ footer {
   font-family: "Trebuchet MS", sans-serif;
   font-weight: 400;
   font-style: normal;
-  color: gray;
+  color: #545454;
   font-size: 14px;
   word-break: break-word;
   line-height: 1.3;
+}
+.footer__info-organization-list li a {
+  line-height: 1.8;
 }
 
 .footer__payment-info {
@@ -910,11 +1063,49 @@ a:hover {
   color: white;
 }
 .submit__btn:hover::before {
-  z-index: -12;
+  z-index: -1;
   height: 100%;
   transition: 0.3s ease;
 }
 .submit__btn:active {
+  top: 1px;
+}
+
+.remove__btn {
+  padding: 10px;
+  border: 1px solid black;
+  border-radius: 8px;
+  font-family: "Trebuchet MS", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  color: black;
+  font-size: 14px;
+  transition: 0.3s ease;
+  position: relative;
+  z-index: 1;
+  width: 100%;
+}
+.remove__btn::before {
+  content: "";
+  display: block;
+  width: 100%;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 0;
+  background: red;
+  border-radius: 8px;
+}
+.remove__btn:hover {
+  transition: 0.3s ease;
+  color: white;
+}
+.remove__btn:hover::before {
+  z-index: -1;
+  height: 100%;
+  transition: 0.3s ease;
+}
+.remove__btn:active {
   top: 1px;
 }
 
@@ -929,12 +1120,28 @@ a:hover {
   display: flex;
 }
 
-input:focus, select:focus, textarea:focus {
+input:focus,
+select:focus {
   border: 1px solid hsl(218, 81.8%, 56.9%) !important;
 }
 
 img {
   border-radius: 7px;
+}
+
+::-webkit-scrollbar {
+  width: 15px;
+  border-radius: 20px;
+}
+
+::-webkit-scrollbar-track {
+  background: none;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #3077a0;
+  border-radius: 20px;
+  border: 3px solid #D4D4D4;
 }
 
 /*# sourceMappingURL=base.css.map */

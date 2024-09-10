@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block css %}
-    <link rel="stylesheet" href="{% static 'css/advertisement.css' %}">
+    <link rel="stylesheet" href="{% static 'css/advertisement-min.css' %}">
 {% endblock css %}
 {% block crumbs %}
     {% if category_bread_crumbs or region_bread_crumbs %}
@@ -42,6 +42,7 @@
     {% endif %}
 {% endblock %}
 {% block content %}
+    {% if page_obj %}
 {% block category_filter %}
     <section class="filter">
         <ul class="filter__list">
@@ -117,7 +118,9 @@
         </div>
     </section>
     {% endblock sort %}
+    {% endif %}
     <section class="advertisement">
+    {% if page_obj %}
         <ul class="advertisement__list">
             {% for card in page_obj|dictsortreversed:"raise_in_search" %}
                 <li>
@@ -188,6 +191,9 @@
                 </li>
             {% endfor %}
         </ul>
+    {% else %}
+        <p class="advertisement__not-found">Объявления не найдены</p>
+    {% endif %}
         {% if vip_advertisement %}
         <div class="vip__wrap">
             <ul class="vip__list">
@@ -275,5 +281,7 @@
 {% endblock content %}
 
 {% block js %}
+    {% if page_obj %}
     <script src="{% static 'js/advertisementAdd/advertisementAdd.js' %}"></script>
+    {% endif %}
 {% endblock js %}

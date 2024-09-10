@@ -250,7 +250,7 @@
 .details__advertisement-about-list-item {
     display: flex;
     align-items: center;
-    gap: 35px;
+    gap: 10px;
 
     & p {
         @include fonts($defaultColor, 14px, 400);
@@ -327,14 +327,13 @@
 }
 
 .details__advertisement-add-favorites-img {
-    max-width: 19px;
-    max-height: 19px;
-    & img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        object-position: center;
-    }
+    width: 19px;
+    height: 19px;
+    background: url(../img/favorite.png) no-repeat center / cover;
+}
+
+.advertisement__favorites-active {
+    background: url(../img/favorite_yes.png) no-repeat center/cover;
 }
 
 .details__advertisement-add-favorites{

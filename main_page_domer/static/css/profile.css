@@ -127,6 +127,22 @@
   object-position: center;
 }
 
+.advertisement__status {
+  font-family: "Trebuchet MS", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  color: red;
+  font-size: 14px;
+}
+
+.moderated {
+  font-family: "Trebuchet MS", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  color: rgb(0, 128, 0);
+  font-size: 14px;
+}
+
 .main__info-advertisement-list-item {
   display: flex;
   align-items: flex-start;
@@ -154,7 +170,7 @@
   font-family: "Trebuchet MS", sans-serif;
   font-weight: 400;
   font-style: normal;
-  color: gray;
+  color: #545454;
   font-size: 14px;
 }
 
@@ -197,7 +213,7 @@
   font-family: "Trebuchet MS", sans-serif;
   font-weight: 400;
   font-style: normal;
-  color: gray;
+  color: #545454;
   font-size: 14px;
 }
 

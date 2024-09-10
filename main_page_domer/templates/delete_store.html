@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block css2 %}
-<link rel="stylesheet" href="{% static "css/profile_remove_store.css" %}">
+<link rel="stylesheet" href="{% static "css/profile_remove_store-min.css" %}">
 {% endblock css2 %}
 
 
@@ -12,7 +12,7 @@
     <form action="" method="POST" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="buttons_for_delete">
-            <button>Удалить</button>
+            <button class="remove__btn">Удалить</button>
             <a href="{% url 'users:my_store' %}" class="submit__btn">
                 Отмена
             </a>

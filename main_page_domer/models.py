@@ -8,7 +8,7 @@ from django.db.models.signals import pre_delete
 from django.dispatch import receiver
 from django_ckeditor_5.fields import CKEditor5Field
 from advertisement.models import Advertisement
-from advertisement.utils_for_models import unique_slugify
+from advertisement.utils_for_models import unique_slugify, convert_image_to_avif, upload_to
 from users.models import User
 
 
@@ -88,8 +88,7 @@ class Publication(models.Model):
     slug = models.SlugField(max_length=255, unique=True, verbose_name="URL")
     announcement = CKEditor5Field(config_name='extends', verbose_name='Аннотация')
     description = CKEditor5Field(config_name='extends', verbose_name='Текст статьи')
-    preview_image = models.ImageField(upload_to="images/publications/%Y/%m/%d", verbose_name="Фото")
-    video_link = models.URLField(blank=True, null=True, verbose_name="Ссылка на видео")
+    preview_image = models.ImageField(upload_to=upload_to, verbose_name="Фото")
     date_of_create = models.DateTimeField(
         auto_now_add=True, verbose_name="Дата создания"
     )
@@ -113,27 +112,13 @@ class Publication(models.Model):
         return reverse('publication_by_slug', kwargs={"slug": self.slug})
 
     def save(self, *args, **kwargs):
+        if self.preview_image and not self.preview_image.url.lower().endswith('avif'):
+            convert_image_to_avif(photo=self.preview_image)  # Конвертация изображения в формат AVIF
         self.slug = unique_slugify(self, self.title)
         super().save(*args, **kwargs)
         self.search_vector = SearchVector('title', 'description', 'announcement')
         self.search_title_vector = SearchVector('title')
         super(Publication, self).save(*args, **kwargs)
-
-
-@receiver(pre_delete, sender=Publication)
-def publication_photo_delete(sender, instance, **kwargs):
-    """ Удаление файлов перед удалением экземпляра публикаций """
-    instance.preview_image.delete(False)
-
-
-class PublicationAdmin(admin.ModelAdmin):
-    """ Модель публикации для Админки """
-    list_display = ["id", "title", "slug"]
-    list_display_links = ["title"]
-    prepopulated_fields = {"slug": ("title",)}
-    ordering = [
-        "date_of_create",
-    ]
 
 
 class Help(models.Model):
@@ -145,3 +130,21 @@ class Help(models.Model):
 
     def __str__(self):
         return f'Текст страницы помощь'
+
+
+class AboutOrganization(models.Model):
+    '''Модель для отдает информацию об организации в footer страницы'''
+    name_organization = models.CharField(max_length=255,verbose_name='Название организации')
+    unp = models.CharField(max_length=9, verbose_name='УНП')
+    legal_address = models.CharField(max_length=255, verbose_name='Юридический адрес')
+    phone_num = models.CharField(max_length=255, verbose_name='Номер телефона')
+    email = models.EmailField(verbose_name='E-Mail')
+    additional_info = models.TextField(verbose_name='Дополнительная информация', null=True, blank=True)
+
+    def __str__(self):
+        return self.name_organization
+
+    class Meta:
+        verbose_name = 'Об организации'
+        verbose_name_plural = 'Об организации'
+

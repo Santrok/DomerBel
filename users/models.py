@@ -1,3 +1,5 @@
+import uuid
+
 from django.contrib import admin
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.contrib.auth.base_user import BaseUserManager
@@ -10,7 +12,7 @@ from django.utils import timezone
 from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 
-from advertisement.models import Advertisement
+from advertisement.models import Advertisement, Store
 from config import settings
 
 
@@ -101,35 +103,28 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 class UserFavorites(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    favorites = ArrayField(models.IntegerField(), blank=True, null=True)
+    favorites = ArrayField(models.IntegerField(), default=list)
 
     def __str__(self):
         return f'{self.user}'
 
 
 class Chat(models.Model):
-    DIALOG = 'Д'
-    CHAT = 'Ч'
-    CHAT_TYPE_CHOICES = (
-        (DIALOG, 'Диалог'),
-        (CHAT, 'Чат')
-    )
 
-    type = models.CharField(max_length=1, choices=CHAT_TYPE_CHOICES, default=DIALOG, verbose_name='Тип')
-    subject = models.CharField(max_length=255, verbose_name='Тема диалога')
+    chat_name = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     members = models.ManyToManyField(User, verbose_name='Участник')
+    advertisement = models.ForeignKey(Advertisement, on_delete=models.SET_NULL, null=True)
+    store = models.ForeignKey(Store, on_delete=models.SET_NULL, null=True)
 
     class Meta:
         verbose_name = 'Чат'
         verbose_name_plural = 'Чаты'
 
     def __str__(self):
-        chat_participants = self.members.all()
-        first_names = [person.first_name for person in chat_participants]
-        return f'Участники: {", ".join(first_names)}. Тема: {self.subject}'
+        return self.chat_name
 
     def get_absolute_url(self):
-        return reverse('users:messages', kwargs={'chat_id': self.pk})
+        return reverse('users:messages', kwargs={'chat_name': self.chat_name,'chat_id': self.pk})
 
 
 class Message(models.Model):
@@ -145,4 +140,4 @@ class Message(models.Model):
         ordering = ['pub_date']
 
     def __str__(self):
-        return f'Чат_id: {self.chat.id}, автор: {self.author.first_name}. Текст: {self.message}'
+        return f'Чат_id: {self.chat.id}, автор: {self.author.first_name}.'

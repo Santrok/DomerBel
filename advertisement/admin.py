@@ -7,6 +7,30 @@ from advertisement.models import Advertisement, Category, Region, PhotoAdvertise
 
 class AdvertisementAdmin(admin.ModelAdmin):
     prepopulated_fields = {"slug": ("title",)}
+    list_display = ('title',
+                    'moderated',
+                    'is_active',
+                    'vip',
+                    'highlight_ad',
+                    'special_accommodation',
+                    'raise_in_search',
+                    )
+    list_display_links = ('title',)
+    search_fields = ('title',)
+    list_filter = ('moderated',
+                    'is_active',
+                    'vip',
+                    'highlight_ad',
+                    'special_accommodation',
+                    'raise_in_search',
+                   )
+    list_editable = ["moderated",
+                    'is_active',
+                    'vip',
+                    'highlight_ad',
+                    'special_accommodation',
+                    'raise_in_search',
+                     ]  # Потом УДАЛИТЬ! редактируем поле "прошел модерацию" не заходя в заказ
 
 
 class CategoryAdmin(MPTTModelAdmin):
@@ -51,4 +75,5 @@ admin.site.register(BadWords)
 admin.site.register(Store, StoreAdmin)
 admin.site.register(UploadFile)
 admin.site.register(ErrorFile)
+
 
