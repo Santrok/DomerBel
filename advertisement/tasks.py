@@ -19,7 +19,6 @@ def deactivate_advertisement():
     aware_datetime = current_datetime.astimezone(timezone1)
 
     deactivate_advertisements = Advertisement.objects.filter(date_of_deactivate__lt=aware_datetime, is_active=True)
-    print(deactivate_advertisements)
     deactivate_advertisements.update(is_active=False)
 
 
@@ -34,7 +33,6 @@ def deactivate_store():
     aware_datetime = current_datetime.astimezone(timezone1)
 
     deactivate_stores = Store.objects.filter(date_of_deactivate__lt=aware_datetime, is_active=True)
-    print(deactivate_stores)
     deactivate_stores.update(is_active=False)
 
 
@@ -49,7 +47,6 @@ def delete_advertisement():
     aware_datetime = current_datetime.astimezone(timezone1)
 
     delete_advertisements = Advertisement.objects.filter(date_of_deactivate__lt=aware_datetime, is_active=True)
-    print(delete_advertisements)
     delete_advertisements.delete()
 
 @shared_task()
