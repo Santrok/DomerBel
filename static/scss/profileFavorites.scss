@@ -1,9 +1,0 @@
-@import "./variables";
-@import "./mixins";
-@import "./advertisementItem";
-
-.main__info-favorites-list {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-}
