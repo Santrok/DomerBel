@@ -13,6 +13,8 @@
 }
 
 .filter__list-item a {
+  display: inline-block;
+  text-align: center;
   font-family: "Trebuchet MS", sans-serif;
   font-weight: 400;
   font-style: normal;
@@ -23,7 +25,7 @@
   color: red;
 }
 .filter__list-item a span {
-  color: gray;
+  color: #545454;
 }
 
 .sort {
@@ -163,6 +165,7 @@
   display: block;
   max-width: 180px;
   max-height: 140px;
+  flex: 0 1 140px;
 }
 .default__item .advertisement__list-item-img img {
   width: 100%;
@@ -214,7 +217,7 @@
   font-family: "Trebuchet MS", sans-serif;
   font-weight: 400;
   font-style: normal;
-  color: gray;
+  color: #545454;
   font-size: 16px;
 }
 .default__item .advertisement__list-item-action {
@@ -290,7 +293,7 @@
   font-family: "Trebuchet MS", sans-serif;
   font-weight: 400;
   font-style: normal;
-  color: gray;
+  color: #545454;
   font-size: 14px;
   margin: 5px 0;
 }
@@ -303,7 +306,7 @@
   font-family: "Trebuchet MS", sans-serif;
   font-weight: 400;
   font-style: normal;
-  color: gray;
+  color: #545454;
   font-size: 14px;
 }
 .second__item .advertisement__list-item-about-text-list li:nth-child(1) {
@@ -346,6 +349,7 @@
   .default__item .advertisement__list-item-img {
     max-width: none;
     max-height: none;
+    flex: initial;
   }
   .default__item .advertisement__list-item-img img {
     max-height: 400px;

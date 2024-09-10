@@ -363,7 +363,7 @@
 .details__advertisement-about-list-item {
   display: flex;
   align-items: center;
-  gap: 35px;
+  gap: 10px;
 }
 .details__advertisement-about-list-item p {
   font-family: "Trebuchet MS", sans-serif;

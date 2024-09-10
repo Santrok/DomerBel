@@ -47,6 +47,9 @@
     padding: 5px;
     border-radius: 8px;
     @include fonts($defaultColor, 14px, 400);
+    &:focus {
+      border: 1px solid #3779eb;
+    }
   }
 
   & input[type="radio"] {
@@ -63,13 +66,20 @@
 .photo_file {
   max-width: 320px;
   width: 100%;
+    border-radius: 8px;
+  font-family: "Trebuchet MS", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    color: #000;
+    font-size: 14px;
+  border: 1px solid #d4d4d4;
 }
 
 .photo_preview {
-  margin-top: 15px;
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  gap: 15px;
+  gap: 5px;
+  margin: 5px;
 }
 
 .photo_preview {
@@ -216,6 +226,9 @@
     select,
     textarea {
       max-width: none;
+      &:focus {
+      border: 1px solid #3779eb;
+    }
     }
   }
 
@@ -241,3 +254,8 @@
   }
 
 }
+
+.file_input {
+  padding: 5px;
+}
+

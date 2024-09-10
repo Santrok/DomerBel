@@ -67,6 +67,15 @@
   }
 }
 
+.advertisement__status {
+  @include fonts($colorHover, 14px, 400);
+}
+
+.moderated {
+  @include fonts($asideExitColor, 14px, 400);
+}
+
+
 .main__info-advertisement-list-item {
   display: flex;
   align-items: flex-start;
@@ -80,8 +89,6 @@
   flex-direction: column;
   align-items: flex-start;
   gap: 6px;
-
-  
 }
 
 .main__info-advertisement-list-item-about-date {
@@ -89,7 +96,7 @@
 }
 
 .main__info-advertisement-list-item-about-time {
-  @include fonts(gray, 14px, 400);
+  @include fonts(#545454, 14px, 400);
 }
 
 .main__info-advertisement-list-item-about-remained {
@@ -121,7 +128,7 @@
   }
 
   & p {
-    @include fonts(gray, 14px, 400);
+    @include fonts(#545454, 14px, 400);
   }
 }
 

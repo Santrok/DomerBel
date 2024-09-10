@@ -76,13 +76,13 @@ class CustomUserChangeForm(UserChangeForm):
 class PublicationForm(forms.ModelForm):
     class Meta:
         model = Publication
-        fields = ['title', 'announcement', 'description', 'video_link', 'preview_image']
+        fields = ['title', 'announcement', 'description', 'preview_image']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['announcement'].widget = CKEditor5Widget(config_name='extends2')
         self.fields['preview_image'].widget = ImagePreviewWidget()
-        self.fields['preview_image'].widget.attrs.update({"id": "id_preview_image"})
+        self.fields['preview_image'].widget.attrs.update({"id": "id_logo_image"})
         self.fields['announcement'].required = False
         self.fields['description'].required = False
 

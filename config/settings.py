@@ -22,6 +22,7 @@ ALLOWED_HOSTS = ['localhost', '127.0.0.1', '217.197.116.151']
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -40,6 +41,8 @@ INSTALLED_APPS = [
     'django_dump_load_utf8',
     'django_ckeditor_5',
 
+    'channels',
+
     'mptt',
     'django_recaptcha',
     'django_filters',
@@ -47,7 +50,8 @@ INSTALLED_APPS = [
     'main_page_domer',
     'users',
     'advertisement',
-    'api_domer'
+    'api_domer',
+    'chat',
 ]
 
 MIDDLEWARE = [
@@ -79,12 +83,13 @@ TEMPLATES = [
                 'advertisement.context_processors.get_date_today',
                 'advertisement.context_processors.get_data_category_and_region',
                 'config.context_processor.get_context_data',
+                'main_page_domer.context_processor.get_data_about_organization',
             ],
         },
     },
 ]
 
-SITE_ID=2
+SITE_ID = 2
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
@@ -107,7 +112,6 @@ DATABASES = {
         'PORT': env_keys.get('DB_PORT'),
     }
 }
-
 
 # CACHES = {
 #     'default': {
@@ -176,7 +180,6 @@ LOGIN_REDIRECT_URL = 'users/personal_account/'
 LOGIN_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 
-
 # EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"  # Для отображения писем в консоли
 EMAIL_BACKEND = env_keys.get("EMAIL_BACKEND")
 EMAIL_HOST_PASSWORD = env_keys.get("EMAIL_HOST_PASSWORD")
@@ -194,16 +197,13 @@ CAPTCHA_FONT_SIZE = 40
 CAPTCHA_FONT_PATH = 'main_page_domer/static/fonts/arial/arial.ttf'
 CAPTCHA_CHALLENGE_FUNCT = 'users.captcha.random_digit_challenge'  # Функция для генерации CAPTCHA на русском языке
 
-
 RECAPTCHA_PUBLIC_KEY = env_keys.get('RECAPTCHA_PUBLIC_KEY')
 RECAPTCHA_PRIVATE_KEY = env_keys.get('RECAPTCHA_PRIVATE_KEY')
 DRF_RECAPTCHA_SECRET_KEY = env_keys.get('RECAPTCHA_PRIVATE_KEY')
 
-
-#настройки CELERY
+# настройки CELERY
 CELERY_BROKER_URL = "redis://localhost:6379"
 CELERY_RESULT_BACKEND = "redis://localhost:6379"
-
 
 # CKEditor==============
 customColorPalette = [
@@ -233,8 +233,8 @@ customColorPalette = [
     },
 ]
 
-CKEDITOR_5_CUSTOM_CSS = 'django_ckeditor_5/admin_dark_mode_fix.css' # optional
-CKEDITOR_5_FILE_STORAGE = "main_page_domer.functions.CkeditorCustomStorage" # optional
+CKEDITOR_5_CUSTOM_CSS = 'django_ckeditor_5/admin_dark_mode_fix.css'  # optional
+CKEDITOR_5_FILE_STORAGE = "main_page_domer.functions.CkeditorCustomStorage"  # optional
 CKEDITOR_5_UPLOAD_FILE_TYPES = ['jpeg', 'png', 'jpg', "gif", "bmp", "webp", "tiff"]
 CKEDITOR_5_IMAGE_BACKEND = "pillow"
 CKEDITOR_5_CONFIGS = {
@@ -326,4 +326,15 @@ CKEDITOR_5_CONFIGS = {
 CELERY_BROKER_URL = "redis://localhost:6379"
 CELERY_RESULT_BACKEND = "redis://localhost:6379"
 
+ASGI_APPLICATION = "config.asgi.application"
 
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": env_keys.get('CHANNEL_LAYERS_BACKEND'),
+        # "CONFIG": {
+        #     "hosts": [("127.0.0.1", 6379)],
+        # },
+    }
+}
+
+FILE_UPLOAD_MAX_MEMORY_SIZE = 4 * 1024 * 1024

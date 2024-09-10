@@ -13,13 +13,13 @@ app.autodiscover_tasks()
 app.conf.beat_schedule = {
     "deactivate_advertisement": {
         "task": 'advertisement.tasks.deactivate_advertisement',
-        # "schedule": timedelta(seconds=10)
-        "schedule": crontab(hour=0, minute=1)
+        "schedule": timedelta(seconds=10)
+        # "schedule": crontab(hour=0, minute=1)
     },
     "delete_advertisement": {
         "task": 'advertisement.tasks.delete_advertisement',
-        # "schedule": timedelta(seconds=10)
-        "schedule": crontab(hour=0, minute=1)
+        "schedule": timedelta(seconds=10)
+        # "schedule": crontab(hour=0, minute=1)
     },
     "deactivate_store": {
         "task": 'advertisement.tasks.deactivate_store',

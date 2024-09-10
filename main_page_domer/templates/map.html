@@ -2,15 +2,26 @@
 {% load static %}
 {% load mptt_tags %}
 {% block css %} 
-<link rel="stylesheet" href="{% static 'css/map.css' %}">
+<link rel="stylesheet" href="{% static 'css/map-min.css' %}">
 {% endblock css %} 
 {% block search %}{% endblock search %}
 {% block content %}
 <section class="map">
   <ul class="map__list">
+{#      {% for element in elements %}#}
+{#            <a href="#">{{ element.spisok__field__category }}</a>#}
+{#        {% endfor %}#}
     {% recursetree nodes %}
         <li>
-            <a href="#">{{ node.title }}</a>
+            <a href="{% url 'advertisement_by_category' node.slug %}">{{ node.title }}   {{ node.advertisement_counts }}</a>
+        <div class="" style="display: flex; width: 100%;"></div>
+{#        {% for element in node.elements %}#}
+{#        {% for element in node.field_set.first.spisok.element_set.all %}#}
+{#            {% if element.spisok__field__category == node.id %}#}
+{#            <a href="#" style="color: black;">{{ element }}</a>#}
+{#            {% endif %}#}
+{#        {% endfor %}#}
+
             {% if not node.is_leaf_node %}
                 <ul class="map__list-children">
                     {{ children }}

@@ -20,13 +20,13 @@ from api_domer.serializers import GetListOfCitiesSerializer, GetListOfCategories
     ElementTwoSerializer, AdvertisementSerializer, StoreSerializer, \
     UserRegisterSerializer, UserLoginSerializer, PasswordResetSerializer, \
     FavoriteSerializer, ElementSerializer, GetListOfCategoriesFieldsSerializer, ReasonOfComplaintSerializer, \
-    ComplaintSerializer, UploadFileSerializer
+    ComplaintSerializer, MessageSerializer, UploadFileSerializer
 
 from api_domer.utils import validate_additional_information
 from config import settings
 from config.settings import env_keys
 from main_page_domer.models import ReasonOfComplaint
-from users.models import User, UserFavorites
+from users.models import User, UserFavorites, Chat, Message
 
 from advertisement.tasks import save_many_ads_from_zip_task, save_many_ads_from_excel_task
 
@@ -97,22 +97,23 @@ def get_store_for_advertisement(request):
 @api_view(['POST'])
 def save_advertisement(request):
     additional_information = dict(request.data.copy())
-    serializer = AdvertisementSerializer(data=request.data)
+    serializer = AdvertisementSerializer(data=request.data, context={"request": request})
     serializer.is_valid()
-    keys_to_delete = ['csrfmiddlewaretoken', 'preview_img', 'photo_files']
+    keys_to_delete = ['csrfmiddlewaretoken', 'preview_img']
     keys_to_delete.extend(serializer.data.keys())
     serializer_additional_error, additional_information = validate_additional_information(keys_to_delete,
                                                                                           additional_information)
     if serializer.is_valid() and not serializer_additional_error.data:
         additional_information_save = Field.objects.filter(id__in=additional_information).order_by('id')
+        photo_list = serializer.validated_data.pop('photo', None)
         for i in additional_information_save:
             additional_information[i.title] = ', '.join(additional_information.pop(f'{i.id}'))
         new_advertisement = Advertisement(author=None if request.user.is_anonymous else request.user,
                                           additional_information=additional_information,
                                           **serializer.validated_data)
         new_advertisement.save()
-        if request.data.getlist('photo_files') != ['']:
-            for photo in request.data.getlist('photo_files'):
+        if photo_list:
+            for photo in photo_list:
                 if photo.name == request.data.get("preview_img"):
                     new_advertisement.preview_image = photo
                     new_advertisement.save()
@@ -131,7 +132,7 @@ def update_advertisement(request):
     additional_information = dict(request.data.copy())
     serializer = AdvertisementSerializer(data=request.data)
     serializer.is_valid()
-    keys_to_delete = ['csrfmiddlewaretoken', 'preview_img', 'photo_files', 'deleted_images', 'advertisement']
+    keys_to_delete = ['csrfmiddlewaretoken', 'preview_img', 'deleted_images', 'advertisement']
     keys_to_delete.extend(serializer.data.keys())
     serializer_additional_error, additional_information = validate_additional_information(keys_to_delete,
                                                                                           additional_information)
@@ -139,15 +140,16 @@ def update_advertisement(request):
         additional_information_save = Field.objects.filter(id__in=additional_information).order_by('id')
         for i in additional_information_save:
             additional_information[i.title] = ', '.join(additional_information.pop(f'{i.id}'))
+        photo_list = serializer.validated_data.pop('photo', None)
         deleted_images = request.data.get('deleted_images').split(',')
         preview_img = request.data.get("preview_img")
         Advertisement.objects.filter(author=request.user, id=request.data.get('advertisement')
                                      ).update(moderated=False, additional_information=additional_information,
-                                              **serializer.validated_data)
+                                              **serializer.validated_data, is_active=False)
         advertisement = get_object_or_404(Advertisement, id=request.data.get('advertisement'))
 
-        if request.data.getlist('photo_files') != ['']:
-            for photo in request.data.getlist('photo_files'):
+        if photo_list:
+            for photo in photo_list:
                 if photo.name == preview_img:
                     if advertisement.preview_image not in deleted_images:
                         PhotoAdvertisement.objects.create(photo=advertisement.preview_image,
@@ -301,7 +303,6 @@ def save_complaint(request):
     serializer = ComplaintSerializer(data=request.data, context={"request": request})
     if serializer.is_valid():
         serializer.save()
-
         reason = serializer.validated_data.get("reason")
         text = serializer.validated_data.get('text')
         user = serializer.validated_data.get("user")
@@ -310,15 +311,44 @@ def save_complaint(request):
         subject = f'Жалоба от пользователя {user} на объявление  id={advertisement.id}. Причина: {reason} '
         message = text
 
-        # try:
-        #     send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [settings.EMAIL_HOST_USER])
-        # except smtplib.SMTPException as error:
-        #     return Response({'errors': str(error)}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [settings.EMAIL_HOST_USER])
+        except smtplib.SMTPException as error:
+            return Response({'errors': str(error)}, status=status.HTTP_400_BAD_REQUEST)
 
         return Response({'success': 'Ваша жалоба на объявление отправлена администрации сайта'},
                         status=status.HTTP_201_CREATED)
     else:
         return Response({"errors": serializer.errors})
+
+
+@api_view(['POST'])
+def create_chat(request):
+    serializer = MessageSerializer(data=request.data, context={"request": request})
+    if serializer.is_valid():
+        chat_object = {}
+        if request.data.get('advertisement'):
+            advertisement = get_object_or_404(Advertisement, id=serializer.validated_data.get('chat_object'))
+            chat_object['advertisement'] = advertisement
+            chat_object['members'] = advertisement.author_id
+        elif request.data.get('store'):
+            store = get_object_or_404(Store, id=serializer.validated_data.get('chat_object'))
+            chat_object['store'] = store
+            chat_object['members'] = store.user_id
+        chat = Chat.objects.filter(**chat_object).filter(members=request.user)
+        if not chat:
+            any_member = chat_object.pop('members', None)
+            chat = Chat.objects.create(**chat_object)
+            chat.members.set([request.user.id, any_member])
+            Message.objects.create(chat=chat, author=request.user, message=serializer.validated_data.get('text_message'))
+        else:
+            Message.objects.create(chat=chat[0], author=request.user,
+                                   message=serializer.validated_data.get('text_message'))
+
+        return Response({'success': 'Ваше сообщение отправлено'}, status=status.HTTP_200_OK)
+    else:
+        return Response({"errors": serializer.errors})
+
 
 @api_view(['POST'])
 def get_bulk_import_of_ads(request):

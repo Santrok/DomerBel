@@ -1,6 +1,5 @@
 from datetime import datetime
 
-
 from django.contrib import messages
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.decorators import login_required, permission_required
@@ -20,10 +19,11 @@ from .models import User, Chat, Message
 from main_page_domer.models import PhotoPublication, Publication, photo_publications_delete
 from .forms import PublicationForm, EditContactDataForm, ChangePasswordForm, MessageForm
 
+
 @login_required
 def get_personal_account_page(request):
     """ Выводит все активные объявления пользователя в ЛК"""
-    ads = Advertisement.objects.filter(author=request.user, is_active=True).select_related('category',
+    ads = Advertisement.objects.filter(author=request.user, is_active=True, moderated=True).select_related('category',
                                                                                            'region').all().order_by(
         '-date_of_create').defer(
         'search_title_vector',
@@ -52,6 +52,7 @@ def get_personal_account_page(request):
     }
     return render(request, 'profile_user.html', context)
 
+
 @login_required
 def search_of_ads_in_personal_account(request):
     """ Поиск среди объявлений пользователя в личном кабинете """
@@ -74,7 +75,6 @@ def search_of_ads_in_personal_account(request):
     if request.GET.get('id'):
         search_parameters['id'] = request.GET.get('id')
 
-
     query = request.META.get('QUERY_STRING')
     for key in key_delete:
         cop.pop(key, None)
@@ -94,28 +94,14 @@ def search_of_ads_in_personal_account(request):
 
     active = request.GET.get('active')
     if not active:
-        advertisement_queryset = Advertisement.objects.annotate(**{key: KT(value) for key, value in search_annotate.items()}
-                                                                ).filter(author=request.user,
-                                                                         is_active=True,
-                                                                         moderated=True,
-                                                                         **search_parameters
-                                                                         ).select_related('category', 'region'
-                                                                                          ).order_by('-date_of_create')
-
-        advertisement_queryset_inactive = Advertisement.objects.annotate(**{key: KT(value) for key, value in search_annotate.items()}
-                                                                ).filter(author=request.user,
-                                                                         is_active=False,
-                                                                         moderated=True,
-                                                                         **search_parameters
-                                                                         ).count()
-    else:
         advertisement_queryset = Advertisement.objects.annotate(
             **{key: KT(value) for key, value in search_annotate.items()}
             ).filter(author=request.user,
                      is_active=True,
                      moderated=True,
                      **search_parameters
-                     ).count()
+                     ).select_related('category', 'region'
+                                      ).order_by('-date_of_create')
 
         advertisement_queryset_inactive = Advertisement.objects.annotate(
             **{key: KT(value) for key, value in search_annotate.items()}
@@ -123,14 +109,28 @@ def search_of_ads_in_personal_account(request):
                      is_active=False,
                      moderated=True,
                      **search_parameters
-                     ).select_related('category', 'region'
-                                      ).order_by('-date_of_create')
+                     ).count()
+    else:
+        advertisement_queryset = Advertisement.objects.annotate(
+            **{key: KT(value) for key, value in search_annotate.items()}
+        ).filter(author=request.user,
+                 is_active=True,
+                 moderated=True,
+                 **search_parameters
+                 ).count()
+
+        advertisement_queryset_inactive = Advertisement.objects.annotate(
+            **{key: KT(value) for key, value in search_annotate.items()}
+        ).filter(author=request.user,
+                 is_active=False,
+                 moderated=True,
+                 **search_parameters
+                 ).select_related('category', 'region'
+                                  ).order_by('-date_of_create')
 
     page_obj = variables_for_paginator(advertisement_queryset if not active else advertisement_queryset_inactive,
                                        request.GET.get('page'),
                                        20)
-
-    print(True if page_obj.object_list else False)
 
     context = {
         "active_ads_quantity": advertisement_queryset.count() if not active else advertisement_queryset,
@@ -160,7 +160,7 @@ def get_personal_account_inactive_adds_page(request):
         'counter_views',
         'phone_num')
     inactive_ads_quantity = len(ads)
-    active_ads_quantity = Advertisement.objects.filter(author=request.user, is_active=True).count()
+    active_ads_quantity = Advertisement.objects.filter(author=request.user, is_active=True, moderated=True).count()
     locations = Region.objects.filter(type='Область')
     category_list = Category.objects.filter(level__lte=1)
 
@@ -184,11 +184,11 @@ def get_personal_account_inactive_adds_page(request):
 def delete_or_archive_selected_ads(request):
     if request.method == "POST":
         # Удаляет выбранные объявления из активных или архивных
-        if 'delete_ads' in request.POST:
-            selected_ads = request.POST.getlist('ads_checkbox')
-            Advertisement.objects.filter(author=request.user, id__in=selected_ads).delete()
-            messages.success(request, "Выбранные объявления удалены!")
-            return redirect('users:personal_account')
+        # if 'delete_ads' in request.POST:
+        #     selected_ads = request.POST.getlist('ads_checkbox')
+        #     Advertisement.objects.filter(author=request.user, id__in=selected_ads).delete()
+        #     messages.success(request, "Выбранные объявления удалены!")
+        #     return redirect('users:personal_account')
         # Переводит выбранные объявления из активных в архивные
         if 'archive_ads' in request.POST:
             selected_ads = request.POST.getlist('ads_checkbox')
@@ -197,8 +197,13 @@ def delete_or_archive_selected_ads(request):
             return redirect('users:personal_account')
         if 'restore_ads' in request.POST:
             selected_ads = request.POST.getlist('ads_checkbox')
-            ads_updated_count = Advertisement.objects.filter(author=request.user, id__in=selected_ads, date_of_deactivate__date__gte=datetime.now()).update(is_active=True)
-            messages.success(request, "Выбранные объявления удалены!")
+            ads_updated_count = Advertisement.objects.filter(author=request.user, id__in=selected_ads, moderated=True,
+                                                             date_of_deactivate__date__gte=datetime.now()).update(
+                is_active=True)
+            if ads_updated_count == len(selected_ads):
+                messages.success(request, "Выбранные объявления восстановлены!")
+            else:
+                messages.success(request, "Не все объявления удалось восстановить!")
             return redirect('users:inactive_adds')
         return redirect('users:personal_account')
 
@@ -209,16 +214,15 @@ def get_user_data_page(request):
     user = request.user
     edit_contact_data_form = EditContactDataForm(instance=user)
     change_pass_form = ChangePasswordForm()
-    category_list = Category.objects.filter(level__lte=1)
     if request.method == "POST":
-        # Изменяем контактные данные пользователя
+        # Изменение контактных данных пользователя
         if 'edit_contact_data' in request.POST:
             edit_contact_data_form = EditContactDataForm(request.POST, instance=user)
             if edit_contact_data_form.is_valid():
                 edit_contact_data_form.save()
-                messages.success(request, "Контактные данные пользователя успешно изменены!")
+                messages.success(request, "Ваши контактные данные успешно изменены!")
                 return redirect('users:user_data')
-        # Изменяем пароль пользователя
+        # Изменение пароля пользователя
         elif 'change_password' in request.POST:
             change_pass_form = ChangePasswordForm(request.POST, instance=user)
             if change_pass_form.is_valid():
@@ -229,11 +233,10 @@ def get_user_data_page(request):
                     user.set_password(new_password)
                     user.save()
                     update_session_auth_hash(request, user)
-                    messages.success(request, "Пароль пользователя успешно изменён!")
+                    messages.success(request, "Ваш пароль успешно изменён!")
                     return redirect('users:user_data')
     context = {'edit_contact_data_form': edit_contact_data_form,
                'change_pass_form': change_pass_form,
-               'category_list': category_list,
                "adaptive_navigation": "Контактные данные"
                }
     return render(request, 'profile_data.html', context)
@@ -254,20 +257,17 @@ def add_store(request):
         store_form = StoreForm(request.POST, request.FILES)
         store_form.errors.update(new_store.errors)
         context = {
-                   "store_form": store_form
-                   }
+            "store_form": store_form
+        }
         return render(request, 'profile_add_store.html', context)
 
-    oblast = Region.objects.filter(type='Область')
     store_form = StoreForm(initial={'contact_name': request.user.first_name, 'email': request.user.email,
                                     'phone_num': request.user.phone_number})
-    category_list = Category.objects.filter(level__lte=1)
 
-    context = {"oblast": oblast,
-               "store_form": store_form,
-               "category_list": category_list,
-               "adaptive_navigation": "Добавить магазин"
-               }
+    context = {
+        "store_form": store_form,
+        "adaptive_navigation": "Добавить магазин"
+    }
 
     return render(request, 'profile_add_store.html', context)
 
@@ -276,13 +276,11 @@ def add_store(request):
 @permission_required("advertisement.view_store", raise_exception=True)
 def get_my_store(request):
     stores = Store.objects.filter(user=request.user).order_by('id')
-    category_list = Category.objects.filter(level__lte=1)
     oblast_list = []
     if stores.exists():
         context = {
             'stores': stores,
             'oblast_list': oblast_list,
-            'category_list': category_list,
             "adaptive_navigation": "Мои магазины"
         }
     else:
@@ -331,74 +329,37 @@ def delete_store(request, store_id):
 @login_required
 def get_all_dialogs(request):
     """ Показывает все диалоги пользователя в ЛК """
-    category_list = Category.objects.filter(level__lte=1)
-    chats = Chat.objects.filter(members__in=[request.user.id])
+    chats = Chat.objects.filter(members__in=[request.user.id]
+                                ).order_by("-id"
+                                           ).prefetch_related('message_set'
+                                                              ).select_related('advertisement')
     context = {
-        "category_list": category_list,
         "user_profile": request.user,
-        "chats": chats
+        "chats": chats,
+        "adaptive_navigation": "Мои сообщения"
     }
-    return render(request, 'personal_account/dialogs.html', context)
+    return render(request, 'profile_dialogs.html', context)
 
 
 @login_required
-def create_dialog(request, user_id, recipient_id):
-    """ Создание нового диалога """
-    subject = request.GET.get("subject")
-    chats = Chat.objects.filter(members__in=[user_id, recipient_id], type=Chat.DIALOG, subject=subject).annotate(
-        c=Count('members')).filter(c=2)
-    if chats.count() == 0:
-        chat = Chat.objects.create(subject=subject)
-        chat.members.add(request.user)
-        chat.members.add(recipient_id)
-    else:
-        chat = chats.first()
-    return redirect(reverse('users:messages', kwargs={'chat_id': chat.id}))
+def view_message(request, chat_id, chat_name):
+    '''Показывает все сообщения внутри открытого диалога'''
+    chat = get_object_or_404(Chat, id=chat_id, members=request.user)
+    context = {
+        "chat": chat,
+    }
+    return render(request, 'profile_dialog.html', context)
 
 
 @login_required
-def view_message(request, chat_id):
-    # Показывает все сообщения внутри открытого диалога
-    if request.method == "GET":
-        category_list = Category.objects.filter(level__lte=1)
-        try:
-            chat = Chat.objects.get(id=chat_id)
-            if request.user in chat.members.all():
-                chat.message_set.filter(is_read=False).exclude(author=request.user).update(is_read=True)
-            else:
-                chat = None
-        except Chat.DoesNotExist:
-            chat = None
-        context = {
-            "category_list": category_list,
-            "chat": chat,
-            "form": MessageForm()
-        }
-        return render(request, 'personal_account/messages_in_dialog.html', context)
-
-    # Добавляет новое сообщение в открытый диалог
-    if request.method == "POST":
-        form = MessageForm(data=request.POST)
-        if form.is_valid():
-            message = form.save(commit=False)
-            message.chat_id = chat_id
-            message.author = request.user
-            message.save()
-        context = {'chat_id': chat_id}
-        return redirect(reverse('users:messages', kwargs=context))
-
-
 def delete_dialogs(request):
     """ Удаление выбранного диалога в ЛК """
     if request.method == "POST":
-        if 'delete_dialogs' in request.POST:
-            selected_dialogs = request.POST.getlist('dialog_checkbox')
-            dialogs = Chat.objects.filter(id__in=selected_dialogs)
-            for dialog in dialogs:
-                dialog.message_set.all().delete()
-                dialog.delete()
-            messages.success(request, "Выбранные диалоги удалены!")
-            return redirect('users:dialogs')
+        if 'dialog' in request.POST:
+            dialog = get_object_or_404(Chat, id=request.POST.get('dialog'), members=request.user)
+            dialog.members.remove(request.user)
+            messages.success(request, "Диалог удален!")
+        return redirect('users:dialogs')
 
 
 def delete_user_message(request, message_id, chat_id):
@@ -464,7 +425,8 @@ def edit_publication(request, publication_slug):
             publication = form_publication.save(commit=False)
             publication.moderated = False
             publication.save()
-            messages.success(request, f"Публикация {publication} успешно изменена!")
+            messages.success(request, f"""Публикация "{publication}" успешно изменена
+                                                    и отправлена на модерацию.""")
             return redirect('users:user_all_publications')
     else:
         form_publication = PublicationForm(instance=publication)
@@ -476,10 +438,11 @@ def edit_publication(request, publication_slug):
     }
     return render(request=request, template_name='profile_edit_publication.html', context=context)
 
+
 @login_required
 def get_favorites_page(request):
-
-    favorites_list = Advertisement.objects.filter(id__in=request.user.userfavorites.favorites, is_active=True, moderated=True)
+    favorites_list = Advertisement.objects.filter(id__in=request.user.userfavorites.favorites, is_active=True,
+                                                  moderated=True)
     context = {
         "favorites_list": favorites_list,
         "adaptive_navigation": "Избранное"
