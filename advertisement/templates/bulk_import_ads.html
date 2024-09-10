@@ -3,10 +3,10 @@
 
 {% block content %}
     <p style="color:black;">{{request.user.email}}</p><br>
-    <form method="POST" action="" enctype="multipart/form-data" style="color:black;">
+    <form method="POST" action="" enctype="multipart/form-data" style="color:black;" id="file_form">
         {% csrf_token %}
         {{ form.as_p }}<br>
-        <input type="submit" value="Отправить" id="send"><br>
+        <input type="button" value="Отправить" id="send"><br>
     </form>
     <div class="answer" id="answer" style="color:black;">
         <p>{{ answer }}</p><br>
@@ -18,5 +18,5 @@
 {% endblock content %}
 
 {% block js %}
-<script src="{% static "js/bulk_import_ads.js" %}"></script>
+<script src="{% static 'js/bulk_import_ads.js' %}"></script>
 {% endblock %}

@@ -1,3 +1,4 @@
+from django.core.validators import FileExtensionValidator
 from drf_recaptcha.fields import ReCaptchaV2Field
 from rest_framework import serializers
 
@@ -144,3 +145,7 @@ class ComplaintSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         validated_data.pop('recaptcha')
         return Complaint.objects.create(**validated_data)
+
+
+class UploadFileSerializer(serializers.Serializer):
+    file = serializers.FileField(validators=[FileExtensionValidator(allowed_extensions=['xlsx', 'zip'])])
