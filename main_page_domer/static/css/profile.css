@@ -44,6 +44,13 @@
   color: red;
 }
 
+.dialog-item {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  position: relative;
+}
+
 @media (max-width: 992px) {
   .profile__aside {
     flex: initial;
@@ -53,6 +60,22 @@
     flex-direction: initial;
     flex-wrap: wrap;
     gap: 10px;
+  }
+  .unread__message-link-dialog-item {
+    display: none;
+  }
+  .unread__point {
+    padding: 2px 3px 0 0;
+  }
+  .unread__point::after {
+    content: "";
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background-color: #ff3b4c;
+    position: absolute;
+    top: 2px;
+    right: 0;
   }
 }
 .main__info {

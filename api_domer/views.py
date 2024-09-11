@@ -20,7 +20,7 @@ from api_domer.serializers import GetListOfCitiesSerializer, GetListOfCategories
     ElementTwoSerializer, AdvertisementSerializer, StoreSerializer, \
     UserRegisterSerializer, UserLoginSerializer, PasswordResetSerializer, \
     FavoriteSerializer, ElementSerializer, GetListOfCategoriesFieldsSerializer, ReasonOfComplaintSerializer, \
-    ComplaintSerializer, MessageSerializer, UploadFileSerializer
+    ComplaintSerializer, MessageSerializer, UploadFileSerializer, StatusUnreadUserMessage
 
 from api_domer.utils import validate_additional_information
 from config import settings
@@ -329,18 +329,27 @@ def create_chat(request):
         chat_object = {}
         if request.data.get('advertisement'):
             advertisement = get_object_or_404(Advertisement, id=serializer.validated_data.get('chat_object'))
-            chat_object['advertisement'] = advertisement
-            chat_object['members'] = advertisement.author_id
+            if advertisement.author_id == request.user.id:
+                return Response({'error': 'Вы не можете написать самому себе'}, status=status.HTTP_200_OK)
+            else:
+                chat_object['advertisement'] = advertisement
+                chat_object['members'] = advertisement.author_id
         elif request.data.get('store'):
             store = get_object_or_404(Store, id=serializer.validated_data.get('chat_object'))
-            chat_object['store'] = store
-            chat_object['members'] = store.user_id
+            if store.user_id == request.user.id:
+                return Response({'error': 'Вы не можете написать самому себе'}, status=status.HTTP_200_OK)
+            else:
+                chat_object['store'] = store
+                chat_object['members'] = store.user_id
         chat = Chat.objects.filter(**chat_object).filter(members=request.user)
         if not chat:
             any_member = chat_object.pop('members', None)
-            chat = Chat.objects.create(**chat_object)
-            chat.members.set([request.user.id, any_member])
-            Message.objects.create(chat=chat, author=request.user, message=serializer.validated_data.get('text_message'))
+            if any_member:
+                chat = Chat.objects.create(**chat_object)
+                chat.members.set([request.user.id, any_member])
+                Message.objects.create(chat=chat, author=request.user, message=serializer.validated_data.get('text_message'))
+            else:
+                return Response({'error': 'Возникла ошибка. Вероятно автор объявления не зарегистрирован'}, status=status.HTTP_200_OK)
         else:
             Message.objects.create(chat=chat[0], author=request.user,
                                    message=serializer.validated_data.get('text_message'))
@@ -416,3 +425,10 @@ def get_bulk_import_of_ads(request):
                 return Response({'error': 'Невозможно прочитать файл.'})
     else:
         return Response({'error': 'Ошибка при загрузке файла. Убедитесь, что загружаемый файл необходимого расширения'})
+
+
+@api_view(['GET'])
+def status_unread_message_user(request):
+    chats = Chat.objects.filter(members__in=[request.user.id])
+    unread_chat = Message.objects.filter(chat__in=chats, is_read=False).exclude(author=request.user).exists()
+    return Response({"status": unread_chat})

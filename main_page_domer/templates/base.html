@@ -302,9 +302,9 @@
                     {% endif %}
                         <div class="header__up-user-wrap">
                             <div class="header__up-user-action">
-                                <a href="{% url 'users:personal_account' %}" class="">{% if user.first_name %}{{ user.first_name }}{% else %}{{ user.email }}{% endif %}</a>
-                                <p class="">|</p>
-                                <p class="" id="logout_button">Выйти</p>
+                                <a href="{% url 'users:personal_account' %}">{% if user.first_name %}{{ user.first_name }}{% else %}{{ user.email }}{% endif %}</a>
+                                <p>|</p>
+                                <p id="logout_button">Выйти</p>
                             </div>
                         </div>
                     {% else %}
@@ -493,6 +493,10 @@
     <script src="{% static 'js/main/notification.js' %}"></script>
     <script src="{% static "js/main/showPassword.js" %}"></script>
     <script src="{% static "js/main/favorites.js" %}"></script>
+    <script src="{% static "js/main/favorites.js" %}"></script>
+    {% if user.is_authenticated %}
+    <script src="{% static "js/status_unread_message_user.js" %}"></script>
+    {% endif %}
     <script src="https://www.google.com/recaptcha/api.js" async></script>
   </body>
 </html>

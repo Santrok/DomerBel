@@ -72,7 +72,7 @@
 
 .message__item {
   padding: 5px;
-  margin: 0 5px;
+  margin: 0 10px;
   display: flex;
   gap: 3px;
   max-width: 90%;
@@ -80,7 +80,7 @@
 }
 .message__item-text {
   word-break: break-word;
-  white-space: pre-line;
+  padding-bottom: 5px;
 }
 
 .message-self {
