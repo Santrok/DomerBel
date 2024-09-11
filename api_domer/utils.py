@@ -5,6 +5,7 @@ from api_domer.serializers import AdditionalInformationSerializer
 
 
 def validate_additional_information(keys_to_delete, additional_information):
+    """ """
     for key in keys_to_delete:
         if key in additional_information:
             del additional_information[key]
@@ -18,12 +19,12 @@ def validate_additional_information(keys_to_delete, additional_information):
     return serializer_additional_error, additional_information
 
 
-def save_temp_photo(photo_list, preview_img):
+def save_temp_photo(photo_list, preview_img=None):
     """
     Сохраняет фотографии во временную директорию.
     Возвращает список адресов фотографий
     """
-    processed_photo = {'preview_img': None, 'other_images': []}
+    processed_photo = {'preview_img': None, 'other_img': []}
 
     if photo_list:
         for photo in photo_list:
@@ -44,7 +45,7 @@ def save_temp_photo(photo_list, preview_img):
             if photo.name == preview_img:
                 processed_photo['preview_img'] = file_path
             else:
-                processed_photo['other_images'].append(file_path)
+                processed_photo['other_img'].append(file_path)
 
         return processed_photo
     else:
