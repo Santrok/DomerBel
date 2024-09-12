@@ -1,11 +1,13 @@
 # from django.contrib.auth.models import Group
 # from django.db import transaction
 from django.contrib.auth.models import Group
+from django.core.mail import send_mail, EmailMultiAlternatives
 from django.db import transaction
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.template.loader import render_to_string
 
-from users.models import User, UserFavorites
+from users.models import User, UserFavorites, Message
 
 
 @receiver(post_save, sender=User)
@@ -31,3 +33,27 @@ def create_user_favorites(sender, instance, created, **kwargs):
 @receiver(post_save, sender=User)
 def save_user_favorites(sender, instance, **kwargs):
     instance.userfavorites.save()
+
+
+@receiver(post_save, sender=Message)
+def save_user_favorites(sender, instance, **kwargs):
+    members = instance.chat.members.all()
+    print(members)
+
+    # html_content = render_to_string(
+    #     "asend_message.html",
+    #     context={"instance": instance, "members": members},
+    # )
+    #
+    # for member in members:
+    #     if member != instance.author:
+    #         print(1)
+    #         msg = EmailMultiAlternatives(
+    #             "Subject here",
+    #             "Тут какой-то ткст",
+    #             "from@example.com",
+    #             ["to@example.com"],
+    #             headers={"List-Unsubscribe": "<mailto:unsub@example.com>"},
+    #         )
+    #         msg.attach_alternative(html_content, "text/html")
+    #         msg.send()
