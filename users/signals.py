@@ -1,5 +1,8 @@
 # from django.contrib.auth.models import Group
 # from django.db import transaction
+from email.mime.image import MIMEImage
+from pathlib import Path
+
 from django.contrib.auth.models import Group
 from django.core.mail import send_mail, EmailMultiAlternatives
 from django.db import transaction
@@ -38,22 +41,34 @@ def save_user_favorites(sender, instance, **kwargs):
 @receiver(post_save, sender=Message)
 def save_user_favorites(sender, instance, **kwargs):
     members = instance.chat.members.all()
-    print(members)
 
-    # html_content = render_to_string(
-    #     "asend_message.html",
-    #     context={"instance": instance, "members": members},
-    # )
-    #
-    # for member in members:
-    #     if member != instance.author:
-    #         print(1)
-    #         msg = EmailMultiAlternatives(
-    #             "Subject here",
-    #             "Тут какой-то ткст",
-    #             "from@example.com",
-    #             ["to@example.com"],
-    #             headers={"List-Unsubscribe": "<mailto:unsub@example.com>"},
-    #         )
-    #         msg.attach_alternative(html_content, "text/html")
-    #         msg.send()
+    member1 = None
+    for member in members:
+        if member != instance.author:
+            member1 = member
+
+    html_content = render_to_string(
+        "asend_message.html",
+        context={"instance": instance, "members": member1},
+    )
+
+    msg = EmailMultiAlternatives(
+        "Subject here",
+        "Тут какой-то ткст",
+        None,
+        [member1.email],
+        headers={"List-Unsubscribe": "<mailto:unsub@example.com>",
+},
+    )
+    path = Path('main_page_domer/static/img/logo.png')
+    with path.open("rb") as file:
+        content = MIMEImage(file.read())
+        content.add_header("Content-ID", "<logo.png>")
+        content.add_header("Content-Type", "image/png")
+        content.add_header("Content-Disposition", "inline")
+        content.add_header("Content-Transfer-Encoding", "base64")
+        msg.attach(content)
+
+    msg.attach_alternative(html_content, "text/html")
+    msg.send()
+
