@@ -79,4 +79,3 @@ def update_advertisement_task(user, advertisement_id, data, additional_informati
             os.remove(advertisement.preview_image.path)
             advertisement.preview_image = None
             advertisement.save()
-    return 'ХУЙ'
