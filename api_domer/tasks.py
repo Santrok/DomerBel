@@ -46,6 +46,7 @@ def update_advertisement_task(user, advertisement_id, data, additional_informati
     advertisement = Advertisement.objects.get(author=user, id=advertisement_id)
 
     if new_preview_photo_from_old_ones:
+        print('меняю главное фото')
         old_preview_image = advertisement.preview_image
         old_photo = PhotoAdvertisement.objects.get(photo=new_preview_photo_from_old_ones,
                                                    advertisement=advertisement).photo
@@ -80,7 +81,9 @@ def update_advertisement_task(user, advertisement_id, data, additional_informati
     #         advertisement.preview_image = None
     #     advertisement.save()
     #
-    print(delete_photo)
+
     if delete_photo != ['']:
-        print('да есть фото')
+        print('удаляю фото')
         PhotoAdvertisement.objects.filter(photo__in=delete_photo, advertisement=advertisement).delete()
+
+    return 'ХУЙ'

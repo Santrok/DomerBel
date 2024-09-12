@@ -132,6 +132,8 @@ def update_advertisement(request):
                                                "link": f"{env_keys.get('URL')}/users/personal_account/",
                                                "link_text": "В мой кабинет"}}})
 
+    d = {}
+
     additional_information = dict(request.data.copy())
     serializer = AdvertisementSerializer(data=request.data)
     serializer.is_valid()
@@ -146,26 +148,47 @@ def update_advertisement(request):
         data = dict(serializer.validated_data)
         data['category_id'] = data.pop('category').id
         data['region_id'] = data.pop('region').id
-        new_photo_list = data.pop('photo', None)
+        new_photo_list = data.pop('photo', [])
         preview_photo = request.data.get('preview_img')
-        new_preview_photo_from_old_ones = preview_photo if advertisement.preview_image != preview_photo and not new_photo_list else None
+
+
+        if advertisement.preview_image != preview_photo and preview_photo not in [i.name for i in new_photo_list]:
+            print('превью старая')
+            new_preview_photo_from_old_ones = preview_photo
+        else:
+            print('превью новая')
+            new_preview_photo_from_old_ones = None
+
         deleted_photo = request.data.get('deleted_images').split(',')
 
-        print('REQUEST:', request.data)
-        print('\nSERIALIZER.validated_data:', serializer.validated_data)
-        print('\nDATA:', data)
+        # print('REQUEST:', request.data)
+        # print('\nSERIALIZER.validated_data:', serializer.validated_data)
+        # print('\nDATA:', data)
 
-        processed_photo = save_temp_photo(new_photo_list, request.data.get("preview_img")) if new_photo_list else None
+        processed_photo = save_temp_photo(new_photo_list, request.data.get("preview_img")) if new_photo_list != [] else None
 
-        print('\nprecessed_photo:', processed_photo)
-        print('\nnew_preview_photo_from_old_ones:', new_preview_photo_from_old_ones)
+        # print('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
+        print('precessed_photo:', processed_photo)
+        print('new_preview_photo_from_old_ones:', new_preview_photo_from_old_ones)
+        print('new_photo_list', new_photo_list)
+        # print('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
+        # print('[i.name for i in new_photo_list]', [i.name for i in new_photo_list])
+        # print("request.data.get('preview_img')", preview_photo)
+        # print("advertisement.preview_image", advertisement.preview_image)
+        # print('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
 
-        print(request.data.get('preview_img'))
-        print(advertisement.preview_image)
-
-        update_advertisement_task.delay(request.user.id, request.data.get('advertisement'), data,
+        r = update_advertisement_task.delay(request.user.id, request.data.get('advertisement'), data,
                                         additional_information, processed_photo, new_preview_photo_from_old_ones,
                                         deleted_photo)
+
+        if r.ready():
+            result = r.get()  # Получить результат выполнения задачи
+            print("Задача выполнена, результат:", result)
+        else:
+            print("Задача еще не выполнена, подождите немного...")
+
+        result = r.get()  # Дождитесь выполнения задачи и получите результат
+        print("Задача выполнена, результат:", result)
 
         return Response()
 
