@@ -22,7 +22,8 @@ def validate_additional_information(keys_to_delete, additional_information):
 def save_temp_photo(photo_list, preview_img=None):
     """
     Сохраняет фотографии во временную директорию.
-    Возвращает список адресов фотографий
+    Возвращает список адресов фотографий.
+    Используется для сохранения и редактирования объявлений
     """
     processed_photo = {'preview_img': None, 'other_img': []}
 

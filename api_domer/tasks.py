@@ -17,9 +17,10 @@ def save_advertisement_task(user, data, additional_information, processed_photo)
                                       additional_information=additional_information,
                                       **data)
     new_advertisement.save()
+
     if processed_photo:
         preview_img = processed_photo.get('preview_img')
-        other_images = processed_photo.get('other_img')
+        other_images = processed_photo.get('other_img', None)
         with open(preview_img, 'rb') as f:
             new_advertisement.preview_image = File(f)
             new_advertisement.save()
@@ -54,36 +55,28 @@ def update_advertisement_task(user, advertisement_id, data, additional_informati
         Advertisement.objects.filter(author=user, id=advertisement_id).update(preview_image=old_photo)
         PhotoAdvertisement.objects.filter(photo=new_preview_photo_from_old_ones,
                                           advertisement=advertisement).update(photo=old_preview_image)
-
-    # if photo_list:
-    #     for photo in photo_list:
-    #         if photo.name == preview_img:
-    #             if advertisement.preview_image not in deleted_images:
-    #                 PhotoAdvertisement.objects.create(photo=advertisement.preview_image,
-    #                                                   advertisement=advertisement)
-    #             advertisement.preview_image = photo
-    #             advertisement.save()
-    #             preview_img = advertisement.preview_image
-    #         else:
-    #             additional_photo = PhotoAdvertisement(photo=photo, advertisement=advertisement)
-    #             additional_photo.save()
-
-    # if advertisement.preview_image != preview_img:
-    #     if advertisement.preview_image not in deleted_images:
-    #         PhotoAdvertisement.objects.create(photo=advertisement.preview_image,
-    #                                           advertisement=advertisement)
-    #     if preview_img:
-    #         advertisement.preview_image = preview_img
-    #         inst = get_object_or_404(PhotoAdvertisement, photo=preview_img)
-    #         PhotoAdvertisement.objects.filter(id=inst.id).update(photo=None)
-    #         PhotoAdvertisement.objects.filter(id=inst.id).delete()
-    #     else:
-    #         advertisement.preview_image = None
-    #     advertisement.save()
-    #
+    if processed_photo:
+        preview_img = processed_photo.get('preview_img', None)
+        other_images = processed_photo.get('other_img', None)
+        if preview_img:
+            if advertisement.preview_image:
+                PhotoAdvertisement.objects.create(photo=advertisement.preview_image, advertisement=advertisement)
+            with open(preview_img, 'rb') as f:
+                advertisement.preview_image = File(f)
+                advertisement.save()
+            os.remove(preview_img)
+        if other_images:
+            for photo in other_images:
+                with open(photo, 'rb') as f:
+                    additional_photo = PhotoAdvertisement(photo=File(f), advertisement=advertisement)
+                    additional_photo.save()
+                os.remove(photo)
 
     if delete_photo != ['']:
-        print('удаляю фото')
+        print('удаляю фото', delete_photo)
         PhotoAdvertisement.objects.filter(photo__in=delete_photo, advertisement=advertisement).delete()
-
+        if advertisement.preview_image in delete_photo:
+            os.remove(advertisement.preview_image.path)
+            advertisement.preview_image = None
+            advertisement.save()
     return 'ХУЙ'

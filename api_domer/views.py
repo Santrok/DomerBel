@@ -109,7 +109,7 @@ def save_advertisement(request):
         data['region_id'] = data.pop('region').id
         photo_list = data.pop('photo', None)
 
-        processed_photo = save_temp_photo(photo_list, request.data.get("preview_img"))
+        processed_photo = save_temp_photo(photo_list, request.data.get("preview_img")) if photo_list else None
         save_advertisement_task.delay(request.user.id, data, additional_information, processed_photo)
 
         return Response({
@@ -132,8 +132,6 @@ def update_advertisement(request):
                                                "link": f"{env_keys.get('URL')}/users/personal_account/",
                                                "link_text": "В мой кабинет"}}})
 
-    d = {}
-
     additional_information = dict(request.data.copy())
     serializer = AdvertisementSerializer(data=request.data)
     serializer.is_valid()
@@ -143,59 +141,29 @@ def update_advertisement(request):
                                                                                           additional_information)
     if serializer.is_valid() and not serializer_additional_error.data:
 
-        print('------------------------ data is ok --------------------------')
-
         data = dict(serializer.validated_data)
         data['category_id'] = data.pop('category').id
         data['region_id'] = data.pop('region').id
         new_photo_list = data.pop('photo', [])
         preview_photo = request.data.get('preview_img')
-
-
-        if advertisement.preview_image != preview_photo and preview_photo not in [i.name for i in new_photo_list]:
-            print('превью старая')
-            new_preview_photo_from_old_ones = preview_photo
-        else:
-            print('превью новая')
-            new_preview_photo_from_old_ones = None
-
         deleted_photo = request.data.get('deleted_images').split(',')
 
-        # print('REQUEST:', request.data)
-        # print('\nSERIALIZER.validated_data:', serializer.validated_data)
-        # print('\nDATA:', data)
+        if advertisement.preview_image != preview_photo and preview_photo not in [i.name for i in new_photo_list]:
+            new_preview_photo_from_old_ones = preview_photo
+        else:
+            new_preview_photo_from_old_ones = None
 
-        processed_photo = save_temp_photo(new_photo_list, request.data.get("preview_img")) if new_photo_list != [] else None
+        processed_photo = save_temp_photo(new_photo_list,
+                                          request.data.get("preview_img")) if new_photo_list != [] else None
 
-        # print('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
-        print('precessed_photo:', processed_photo)
-        print('new_preview_photo_from_old_ones:', new_preview_photo_from_old_ones)
-        print('new_photo_list', new_photo_list)
-        # print('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
-        # print('[i.name for i in new_photo_list]', [i.name for i in new_photo_list])
-        # print("request.data.get('preview_img')", preview_photo)
-        # print("advertisement.preview_image", advertisement.preview_image)
-        # print('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
-
-        r = update_advertisement_task.delay(request.user.id, request.data.get('advertisement'), data,
+        update_advertisement_task.delay(request.user.id, request.data.get('advertisement'), data,
                                         additional_information, processed_photo, new_preview_photo_from_old_ones,
                                         deleted_photo)
 
-        if r.ready():
-            result = r.get()  # Получить результат выполнения задачи
-            print("Задача выполнена, результат:", result)
-        else:
-            print("Задача еще не выполнена, подождите немного...")
-
-        result = r.get()  # Дождитесь выполнения задачи и получите результат
-        print("Задача выполнена, результат:", result)
-
-        return Response()
-
-        # return Response({
-        #     "success": "<p>Ваше объявление отправлено на модерацию.</p><p>После модерации оно появится в списке объявлений.</p>",
-        #     "link": f"{env_keys.get('URL')}/users/personal_account/", "link_text": "В мой кабинет"},
-        #     status=status.HTTP_201_CREATED)
+        return Response({
+            "success": "<p>Ваше объявление отправлено на модерацию.</p><p>После модерации оно появится в списке объявлений.</p>",
+            "link": f"{env_keys.get('URL')}/users/personal_account/", "link_text": "В мой кабинет"},
+            status=status.HTTP_201_CREATED)
     else:
         raise serializers.ValidationError(
             {"error_additional": serializer_additional_error.data, "error": serializer.errors})
