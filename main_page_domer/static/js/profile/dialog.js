@@ -22,16 +22,27 @@ chatSocket.onopen = function (e) {
 chatSocket.onclose = function (e) {
     console.log("Something unexpected happened !")
 }
-document.getElementById("id_message_send_input").focus()
+document.getElementById("id_message_send_button").onclick = function (e) {
+    sendMessage();
+};
 document.getElementById("id_message_send_input").onkeyup = function (e) {
-    if (e.keyCode == 13) {
-        document.getElementById("id_message_send_button").click()
+    if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault(); // Предотвращаем отправку формы по умолчанию
+        sendMessage();
     }
 }
-document.getElementById("id_message_send_button").onclick = function (e) {
-    let messageInput = document.getElementById("id_message_send_input").value
-    let date = new Date()
-    chatSocket.send(JSON.stringify({message: messageInput, userId: userId, time:`${date.getHours()}:${date.getMinutes()}`}))
+// Функция для отправки сообщения
+function sendMessage() {
+    let messageInput = document.getElementById("id_message_send_input").value;
+    if (messageInput.trim().length > 0) {  // Используем trim() для удаления пробелов
+        let date = new Date();
+        chatSocket.send(JSON.stringify({
+            message: messageInput,
+            userId: userId,
+            time: `${date.getHours()}:${date.getMinutes()}`
+        }));
+    }
+    document.getElementById("id_message_send_input").value = '';  // Очищаем поле ввода
 }
 chatSocket.onmessage = function (e) {
     const data = JSON.parse(e.data)
