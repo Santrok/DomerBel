@@ -1,6 +1,8 @@
 import codecs
 import json
 from pprint import pprint
+
+from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 import random
 from datetime import datetime, timedelta
@@ -10,6 +12,7 @@ from django.http import Http404
 from django.shortcuts import render, get_object_or_404
 from django.utils.timezone import get_current_timezone
 
+from config.settings import env_keys
 from main_page_domer.forms import ComplaintForm
 from main_page_domer.models import ReasonOfComplaint
 
@@ -349,19 +352,21 @@ def search_result(request):
     return response
 
 
-
+@login_required
 def get_bulk_import_of_ads(request):
     """Страница массового импорта объявлений"""
+    user_id = request.user.id
+    print(user_id)
     context = {
         'form': UploadFileForm(),
     }
-    file = ErrorFile.objects.filter(user=request.user).last()
+    # file = ErrorFile.objects.filter(user=request.user).last()
 
-    if file != None and file.status == False:
-        path = file.file[2:]
-        context['file'] = f'http://127.0.0.1:8000//{path}'
-        context['error'] = True
-        context['answer_error'] = 'Во время последней загрузки файлов несколько объявлений не были сохранены. Чтобы посмотреть объявления с ошибками скачайте файл.'
+    # if file != None and file.status == False:
+    #     path = file.file[2:]
+    #     context['file'] = f"{env_keys.get('URL')}//{path}"
+    #     context['error'] = True
+    #     context['answer_error'] = 'Во время последней загрузки файлов несколько объявлений не были сохранены. Чтобы посмотреть объявления с ошибками скачайте файл.'
 
     # if request.method == 'POST':
     #     form = UploadFileForm(request.POST, request.FILES)

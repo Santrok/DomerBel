@@ -1,10 +1,11 @@
 import smtplib
 from zipfile import ZipFile
-
 import openpyxl
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
+from django.db.models.expressions import result
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.utils.encoding import force_bytes
@@ -13,7 +14,6 @@ from rest_framework.decorators import api_view
 from rest_framework import status, serializers
 from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
-
 from advertisement.models import Region, Category, Field, ElementTwo, PhotoAdvertisement, Advertisement, Store, Element, \
     UploadFile, ErrorFile
 from api_domer.serializers import GetListOfCitiesSerializer, GetListOfCategoriesSerializer, FieldSerialier, \
@@ -27,8 +27,8 @@ from config import settings
 from config.settings import env_keys
 from main_page_domer.models import ReasonOfComplaint
 from users.models import User, UserFavorites, Chat, Message
-
 from advertisement.tasks import save_many_ads_from_zip_task, save_many_ads_from_excel_task
+from config.celery import app
 
 
 # Отдаёт список городов type='Город' по id выбранной области type='Область' из модели Region
@@ -352,8 +352,7 @@ def create_chat(request):
 
 @api_view(['POST'])
 def get_bulk_import_of_ads(request):
-    file = ErrorFile.objects.filter(user=request.user).last()
-
+    print(88888)
     serializer = UploadFileSerializer(data=request.data)
     if serializer.is_valid():
         if serializer.validated_data.get("file").name.endswith('xlsx'):
@@ -368,20 +367,7 @@ def get_bulk_import_of_ads(request):
                                                           first_name=request.user.first_name,
                                                           phone_number=request.user.phone_number,
                                                           email=request.user.email)
-
-                save_file.delete()
-                if file != None and file.status == False:
-                    file.status = True
-                    file.save(update_fields=["status"])
-            #     result = ads.get()
-            #     if result != True:
-            #         path = result.get('file')[1][1:]
-            #         context['answer_error'] = 'Несколько объявлений не были сохранены. Чтобы посмотреть объявления с ошибками скачайте файл.'
-            #         context['file'] = f'http://127.0.0.1:8000//{path}'
-            #         context['error'] = True
-            #     else:
-            #         context['answer'] = 'Объявления успешно сохранены'
-            #         context['error'] = False
+                return Response({'task_id': f'{ads.task_id}'})
             except:
                 return Response({'error': 'Невозможно прочитать файл.'})
 
@@ -398,21 +384,17 @@ def get_bulk_import_of_ads(request):
                                                         first_name=request.user.first_name,
                                                         phone_number=request.user.phone_number,
                                                         email=request.user.email)
-                save_zip.delete()
-                if file != None and file.status == False:
-                    file.status = True
-                    file.save(update_fields=["status"])
-                result = ads.get()
-    #             if result != True:
-    #                 path = result.get('file')[1][1:]
-    #                 context[
-    #                     'answer_error'] = 'Несколько объявлений не были сохранены. Чтобы посмотреть объявления с ошибками скачайте файл.'
-    #                 context['file'] = f'http://127.0.0.1:8000//{path}'
-    #                 context['error'] = True
-    #             else:
-    #                 context['answer'] = 'Объявления успешно сохранены'
-    #                 context['error'] = False
+                return Response({'task_id': f'{ads.task_id}'})
             except:
                 return Response({'error': 'Невозможно прочитать файл.'})
     else:
         return Response({'error': 'Ошибка при загрузке файла. Убедитесь, что загружаемый файл необходимого расширения'})
+
+@api_view(["GET", "POST"])
+def get_result_task(request,id):
+    '''Отдает прогресс выполнения таски и результат'''
+    task = app.AsyncResult(id=id)
+    if task.state == "SUCCESS":
+        return JsonResponse({'state': task.state, 'result':task.result})
+    else:
+        return JsonResponse({'state': task.state})

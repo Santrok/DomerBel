@@ -309,7 +309,7 @@ class ErrorFile(models.Model):
     time_upload_file = models.DateTimeField(auto_now_add=True, verbose_name='Время создания файла')
     file = models.CharField(max_length=255, verbose_name='Путь к файлу с объявлениями с ошибками')
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    status = models.BooleanField(default=False, verbose_name='Был доступ у пользователя к файлу или нет')
+    upload_file = models.OneToOneField(UploadFile,on_delete=models.CASCADE)
 
     class Meta:
         verbose_name = 'Файл с объявлениями с ошибками'

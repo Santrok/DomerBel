@@ -58,7 +58,9 @@ def delete_everything_in_folder_beat():
 @shared_task()
 def save_many_ads_from_excel_task(uploud_file,id,first_name,phone_number,email):
     '''Таска сохраняющая объявления из экселя'''
+    print('start')
     result = save_many_ads_from_excel(uploud_file,id,first_name,phone_number,email)
+    print('finish')
     return result
 
 @shared_task()

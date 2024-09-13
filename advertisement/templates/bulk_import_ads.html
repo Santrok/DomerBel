@@ -8,12 +8,7 @@
         {{ form.as_p }}<br>
         <input type="button" value="Отправить" id="send"><br>
     </form>
-    <div class="answer" id="answer" style="color:black;">
-        <p>{{ answer }}</p><br>
-        {% if error == True %}
-        <p>{{ answer_error }}</p><br>
-        <a href="{{ file }}" class="download_file"> Скачать </a>
-        {% endif %}
+    <div class="answer" style="color:black;">
     </div>
 {% endblock content %}
 

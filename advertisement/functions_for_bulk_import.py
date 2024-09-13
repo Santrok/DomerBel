@@ -1,6 +1,9 @@
 import time
 import openpyxl
-from advertisement.models import Advertisement, Category, Region, Spisok, ElementTwo, PhotoAdvertisement, ErrorFile
+from django_ckeditor_5.views import upload_file
+
+from advertisement.models import Advertisement, Category, Region, Spisok, ElementTwo, PhotoAdvertisement, ErrorFile, \
+    UploadFile
 from advertisement.validators import validate_words
 from users.models import User
 from transliterate import slugify
@@ -95,7 +98,7 @@ def check_additional_information(ads,check_category):
             '''Все поля'''
             fields = category.field_set.all()
             for field_from_excel in ads.keys():
-                if field_from_excel not in ['артикул','заголовок','категория', 'регион','описание'] and not field_from_excel.startswith('фото'):
+                if field_from_excel not in ['артикул','заголовок','категория', 'регион','описание', 'тип двигателя'] and not field_from_excel.startswith('фото'):
                     value = ads.get(field_from_excel)
                     field_from_db = fields.filter(title__iexact = field_from_excel)
                     if len(field_from_db) != 0:
@@ -174,7 +177,11 @@ def update_photo(ads_for_save,file_name,uploud_zip,email):
     except:
         return False
 
-def write_file_with_error_ads(list_error,email, user):
+def write_file_with_error_ads(list_error,email, user,upload_file):
+    file = upload_file.replace('./media/','')
+    print(file)
+    upload_file= UploadFile.objects.filter(file=file)
+    print(upload_file)
     path = f'./media/files_for_bulk_import_of_ads/{email}/error_{email}_{time.time()}.xlsx'
     book = xlsxwriter.Workbook(path)
     sheet = book.add_worksheet()
@@ -204,11 +211,14 @@ def write_file_with_error_ads(list_error,email, user):
                     sheet.write(0, colum, title)
                     sheet.write(row, colum, values.get(title))
     book.close()
-    file_error = ErrorFile(file = path, user = user)
+    file_error = ErrorFile(file=path,
+                           user=user,
+                           upload_file=upload_file[0])
     file_error.save()
     return file_error
 
 def save_many_ads_from_excel(uploud_file,id,first_name,phone_number,email):
+    print('stat_functions')
     '''Функция сохраняющаяя обявления из экселя'''
     book = openpyxl.open(uploud_file, read_only=True)
     sheet = book.active
@@ -244,6 +254,8 @@ def save_many_ads_from_excel(uploud_file,id,first_name,phone_number,email):
             value_description = chek_description(ads)
             if value_description != True:
                 status_ads.append(value_description)
+            print('!!!!!!!!!!!!!!!!')
+            print(status_ads)
             if len(status_ads) == 0:
                 ads_for_save = Advertisement(author = value_author,
                 article = str(ads.get('артикул')),
@@ -266,9 +278,11 @@ def save_many_ads_from_excel(uploud_file,id,first_name,phone_number,email):
                 list_ads_error.append(ads)
         row_in_excel = row_in_excel + 1
     if len(list_ads_error) != 0:
-        file_error = write_file_with_error_ads(list_ads_error,email,value_author)
-        return {'file': [file_error.id,file_error.file]}
+        file_error = write_file_with_error_ads(list_ads_error,email,value_author,uploud_file)
+        print('finish function')
+        return {'file': file_error.file}
     else:
+        print('finish function')
         return True
 
 def save_many_ads_from_zip(uploud_zip,id,first_name,phone_number,email):
@@ -360,8 +374,8 @@ def save_many_ads_from_zip(uploud_zip,id,first_name,phone_number,email):
                 list_ads_error.append(ads)
         row_in_excel = row_in_excel + 1
     if len(list_ads_error) != 0:
-        file_error = write_file_with_error_ads(list_ads_error,email,value_author)
-        return {'file': [file_error.id,file_error.file]}
+        file_error = write_file_with_error_ads(list_ads_error,email,value_author,uploud_zip)
+        return {'file': file_error.file}
     else:
         return True
 
