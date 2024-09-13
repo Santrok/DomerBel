@@ -5,8 +5,6 @@ from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
 
-from django.http import Http404
-
 from django.urls import reverse_lazy
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
@@ -15,8 +13,7 @@ from rest_framework import status, serializers
 from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
 
-from advertisement.models import (Region, Category, Field, ElementTwo, PhotoAdvertisement,
-                                  Advertisement, Store, Element)
+from advertisement.models import (Region, Category, Field, ElementTwo, Advertisement, Store, Element)
 from api_domer.serializers import (GetListOfCitiesSerializer, GetListOfCategoriesSerializer, FieldSerialier,
                                    ElementTwoSerializer, AdvertisementSerializer, StoreSerializer,
                                    UserRegisterSerializer, UserLoginSerializer, PasswordResetSerializer,
@@ -47,7 +44,7 @@ def get_list_of_categories(request):
     return Response(serializer.data)
 
 
-# Отдает список дочерних категорий по родительскому id (для поиска магазиноа и поиска в ЛК)
+# Отдает список дочерних категорий по родительскому id (для поиска магазинов и поиска в ЛК)
 @api_view(["GET", "POST"])
 def get_categories_for_search(request, id):
     categories = Category.objects.filter(parent_id=id)
@@ -103,13 +100,16 @@ def save_advertisement(request):
     keys_to_delete.extend(serializer.data.keys())
     serializer_additional_error, additional_information = validate_additional_information(keys_to_delete,
                                                                                           additional_information)
-    if serializer.is_valid() and not serializer_additional_error.data:
+    if not serializer.errors and not serializer_additional_error.data:
         data = dict(serializer.validated_data)
         data['category_id'] = data.pop('category').id
         data['region_id'] = data.pop('region').id
         photo_list = data.pop('photo', None)
 
+        # Временно сохраняем фотографии что-бы переделать их адреса в celery
         processed_photo = save_temp_photo(photo_list, request.data.get("preview_img")) if photo_list else None
+
+        # Вызываем задачу celery для сохранения объявлений
         save_advertisement_task.delay(request.user.id, data, additional_information, processed_photo)
 
         return Response({
@@ -139,23 +139,26 @@ def update_advertisement(request):
     keys_to_delete.extend(serializer.data.keys())
     serializer_additional_error, additional_information = validate_additional_information(keys_to_delete,
                                                                                           additional_information)
-    if serializer.is_valid() and not serializer_additional_error.data:
 
+    if not serializer.errors and not serializer_additional_error.data:
         data = dict(serializer.validated_data)
         data['category_id'] = data.pop('category').id
         data['region_id'] = data.pop('region').id
         new_photo_list = data.pop('photo', [])
         preview_photo = request.data.get('preview_img')
-        deleted_photo = request.data.get('deleted_images').split(',')
+        deleted_photo = request.data.get('deleted_images').split(',') if request.data.get('deleted_images') else None
 
+        # Проверка, изменилось ли главное изображение
         if advertisement.preview_image != preview_photo and preview_photo not in [i.name for i in new_photo_list]:
             new_preview_photo_from_old_ones = preview_photo
         else:
             new_preview_photo_from_old_ones = None
 
+        # Временно сохраняем новые фотографии что-бы переделать их адреса в celery
         processed_photo = save_temp_photo(new_photo_list,
                                           request.data.get("preview_img")) if new_photo_list != [] else None
 
+        # Вызываем задачу celery для сохранения объявлений
         update_advertisement_task.delay(request.user.id, request.data.get('advertisement'), data,
                                         additional_information, processed_photo, new_preview_photo_from_old_ones,
                                         deleted_photo)
@@ -164,6 +167,7 @@ def update_advertisement(request):
             "success": "<p>Ваше объявление отправлено на модерацию.</p><p>После модерации оно появится в списке объявлений.</p>",
             "link": f"{env_keys.get('URL')}/users/personal_account/", "link_text": "В мой кабинет"},
             status=status.HTTP_201_CREATED)
+
     else:
         raise serializers.ValidationError(
             {"error_additional": serializer_additional_error.data, "error": serializer.errors})
@@ -265,7 +269,7 @@ def delete_from_favorite(request):
 
 @api_view(['GET'])
 def get_element_list(request):
-    '''Отадет элементы связанные с полем по id'''
+    """Отадет элементы связанные с полем по id"""
     elements = Element.objects.filter(spisok_id__field=request.query_params.get('id'))
     serializer = ElementSerializer(elements, many=True)
     return Response(serializer.data)
@@ -273,7 +277,7 @@ def get_element_list(request):
 
 @api_view(['GET'])
 def get_subcategory_list(request):
-    '''Отдает подкатегориии и их поля по id категории'''
+    """Отдает подкатегориии и их поля по id категории"""
     categories = Category.objects.filter(parent_id=request.query_params.get('id')).prefetch_related(
         'field_set__spisok__element_set__elementtwo_set')
     serializer = GetListOfCategoriesFieldsSerializer(categories, many=True)

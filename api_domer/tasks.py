@@ -1,7 +1,6 @@
 import os
 from celery import shared_task
 from django.core.files import File
-from django.shortcuts import get_object_or_404
 
 from advertisement.models import Field, PhotoAdvertisement, Advertisement
 
@@ -11,11 +10,10 @@ def save_advertisement_task(user, data, additional_information, processed_photo)
     """ Сохранение объявлений """
     additional_information_save = Field.objects.filter(id__in=additional_information).order_by('id')
 
-    for i in additional_information_save:
-        additional_information[i.title] = ', '.join(additional_information.pop(f'{i.id}'))
-    new_advertisement = Advertisement(author_id=user,
-                                      additional_information=additional_information,
-                                      **data)
+    for field in additional_information_save:
+        additional_information[field.title] = ', '.join(additional_information.pop(f'{field.id}'))
+
+    new_advertisement = Advertisement(author_id=user, additional_information=additional_information, **data)
     new_advertisement.save()
 
     if processed_photo:
@@ -25,12 +23,19 @@ def save_advertisement_task(user, data, additional_information, processed_photo)
             new_advertisement.preview_image = File(f)
             new_advertisement.save()
         os.remove(preview_img)
+        folder_path = os.path.dirname(preview_img)  # Получаем путь к папке, в которой был файл
+
         if other_images:
             for photo in other_images:
                 with open(photo, 'rb') as f:
                     additional_photo = PhotoAdvertisement(photo=File(f), advertisement=new_advertisement)
                     additional_photo.save()
                 os.remove(photo)
+            folder_path = os.path.dirname(other_images[0])  # Получаем путь к папке, в которой был файл
+
+        if not os.listdir(folder_path):  # Если папка пуста
+            os.rmdir(folder_path)  # Удаляем папку
+
 
 
 @shared_task()
@@ -38,16 +43,17 @@ def update_advertisement_task(user, advertisement_id, data, additional_informati
                               new_preview_photo_from_old_ones, delete_photo):
     """ Редактирование объявлений """
     additional_information_save = Field.objects.filter(id__in=additional_information).order_by('id')
-    for i in additional_information_save:
-        additional_information[i.title] = ', '.join(additional_information.pop(f'{i.id}'))
 
-    Advertisement.objects.filter(author=user, id=advertisement_id
-                                 ).update(moderated=False, additional_information=additional_information,
-                                          **data, is_active=False)
+    for field in additional_information_save:
+        additional_information[field.title] = ', '.join(additional_information.pop(f'{field.id}'))
+
+    Advertisement.objects.filter(author=user, id=advertisement_id).update(moderated=False,
+                                                                          additional_information=additional_information,
+                                                                          **data, is_active=False)
+
     advertisement = Advertisement.objects.get(author=user, id=advertisement_id)
 
     if new_preview_photo_from_old_ones:
-        print('меняю главное фото')
         old_preview_image = advertisement.preview_image
         old_photo = PhotoAdvertisement.objects.get(photo=new_preview_photo_from_old_ones,
                                                    advertisement=advertisement).photo
@@ -72,10 +78,14 @@ def update_advertisement_task(user, advertisement_id, data, additional_informati
                     additional_photo.save()
                 os.remove(photo)
 
-    if delete_photo != ['']:
-        print('удаляю фото', delete_photo)
+    if delete_photo:
         PhotoAdvertisement.objects.filter(photo__in=delete_photo, advertisement=advertisement).delete()
         if advertisement.preview_image in delete_photo:
-            os.remove(advertisement.preview_image.path)
+            file_path = advertisement.preview_image.path
+            folder_path = os.path.dirname(file_path)
+            os.remove(file_path)
             advertisement.preview_image = None
             advertisement.save()
+
+            if not os.listdir(folder_path):  # Если папка пуста
+                os.rmdir(folder_path)  # Удаляем папку
