@@ -51,6 +51,12 @@
   position: relative;
 }
 
+.unread__message-link-dialog-item {
+  display: flex;
+  padding: 2px 3px 0 0;
+  position: relative;
+}
+
 @media (max-width: 992px) {
   .profile__aside {
     flex: initial;

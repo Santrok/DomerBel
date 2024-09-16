@@ -228,28 +228,32 @@ def password_reset(request):
         uid = urlsafe_base64_encode(force_bytes(user.pk))
         token = default_token_generator.make_token(user)
         activation_url = reverse_lazy('users:password_reset_confirm', kwargs={'uidb64': uid, 'token': token})
-        send_mail(
-            subject='Восстановление пароля',
-            message=f'''
-            Вы получили это письмо, потому что Вы (или кто-то другой) запросили восстановление пароля от учётной записи 
-            на сайте {url}, которая связана с этим адресом электронной почты.
-            
-            Для восстановления пароля перейдите по данной ссылке: 
-            
-            {url}{activation_url}
-            
-            Спасибо, что используете наш сайт!
-            
-            Команда сайта {url}
-            
-            
-            Если вы не запрашивали восстановление пароля, то проигнорируйте это сообщение''',
-            from_email=None,
-            recipient_list=[email],
-            fail_silently=False)
-        return Response({'success': 'На ваш адрес электронной почты было отправлено письмо для восстановления '
-                                    'пароля. Если письмо не пришло, проверьте папку спам.'},
-                        status=status.HTTP_200_OK)
+        try:
+            send_mail(
+                subject='Восстановление пароля',
+                message=f'''
+                Вы получили это письмо, потому что Вы (или кто-то другой) запросили восстановление пароля от учётной записи 
+                на сайте {url}, которая связана с этим адресом электронной почты.
+                
+                Для восстановления пароля перейдите по данной ссылке: 
+                
+                {url}{activation_url}
+                
+                Спасибо, что используете наш сайт!
+                
+                Команда сайта {url}
+                
+                
+                Если вы не запрашивали восстановление пароля, то проигнорируйте это сообщение''',
+                from_email=None,
+                recipient_list=[email],
+                fail_silently=False)
+        except:
+            raise serializers.ValidationError({"error": 'Что-то пошло не так. Попробуйте еще раз!'})
+        else:
+            return Response({'success': 'На ваш адрес электронной почты было отправлено письмо для восстановления '
+                                        'пароля. Если письмо не пришло, проверьте папку спам.'},
+                            status=status.HTTP_200_OK)
     else:
         raise serializers.ValidationError(
             {"errors": password_reset_serializer.errors})
