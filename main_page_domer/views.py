@@ -663,7 +663,7 @@ def dowload_user(request):
     #         )
     #         new_store.save()
 
-    return render(request, 'download_adver.html')
+    return render(request, 'asend_message.html')
 
 
 

@@ -126,6 +126,10 @@ a {
   }
 }
 
+.modals__notification-error {
+  display: none;
+}
+
 input,
 select {
   &:focus {
