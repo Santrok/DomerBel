@@ -45,8 +45,9 @@ def publication_photo_delete(sender, instance, **kwargs):
     """ Удаление файлов перед удалением экземпляра объявления """
     image_folder = os.path.dirname(instance.preview_image.path) if instance.preview_image else None
     instance.preview_image.delete(False)
-    if image_folder and not os.listdir(image_folder):
-        os.rmdir(image_folder)
+    if image_folder and os.path.exists(image_folder) and os.path.isdir(image_folder):
+        if not os.listdir(image_folder):
+            os.rmdir(image_folder)
 
 
 @receiver(pre_delete, sender=PhotoAdvertisement)
