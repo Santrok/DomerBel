@@ -1,5 +1,6 @@
 # from django.contrib.auth.models import Group
 # from django.db import transaction
+import smtplib
 from email.mime.image import MIMEImage
 from pathlib import Path
 
@@ -10,6 +11,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.template.loader import render_to_string
 
+from config.settings import env_keys
 from users.models import User, UserFavorites, Message
 
 
@@ -49,26 +51,30 @@ def save_user_favorites(sender, instance, **kwargs):
 
     html_content = render_to_string(
         "asend_message.html",
-        context={"instance": instance, "members": member1},
+        context={"instance": instance, "members": member1, "url": env_keys.get("URL")},
     )
-
-    msg = EmailMultiAlternatives(
-        "Subject here",
-        "Тут какой-то ткст",
-        None,
-        [member1.email],
-        headers={"List-Unsubscribe": "<mailto:unsub@example.com>",
-},
+    text_content = render_to_string(
+        "asend_message.html",
+        context={"instance": instance, "members": member1, "url": env_keys.get("URL")},
     )
-    path = Path('main_page_domer/static/img/logo.png')
-    with path.open("rb") as file:
-        content = MIMEImage(file.read())
-        content.add_header("Content-ID", "<logo.png>")
-        content.add_header("Content-Type", "image/png")
-        content.add_header("Content-Disposition", "inline")
-        content.add_header("Content-Transfer-Encoding", "base64")
-        msg.attach(content)
+    try:
+        msg = EmailMultiAlternatives(
+            instance.chat.advertisement.title if instance.chat.advertisement else instance.chat.store.title,
+            text_content,
+            None,
+            [member1.email],
+        )
+        path = Path('main_page_domer/static/img/logo.png')
+        with path.open("rb") as file:
+            content = MIMEImage(file.read())
+            content.add_header("Content-ID", "<logo.png>")
+            content.add_header("Content-Type", "image/png")
+            content.add_header("Content-Disposition", "inline")
+            content.add_header("Content-Transfer-Encoding", "base64")
+            msg.attach(content)
 
-    msg.attach_alternative(html_content, "text/html")
-    msg.send()
+        msg.attach_alternative(html_content, "text/html")
+        msg.send()
+    except smtplib.SMTPException:
+        pass
 
