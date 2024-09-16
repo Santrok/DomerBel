@@ -336,3 +336,5 @@ CHANNEL_LAYERS = {
         # },
     }
 }
+
+FILE_UPLOAD_MAX_MEMORY_SIZE = 4 * 1024 * 1024

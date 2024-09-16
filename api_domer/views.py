@@ -1,5 +1,7 @@
 import smtplib
+from zipfile import ZipFile
 
+import openpyxl
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
@@ -12,18 +14,21 @@ from rest_framework import status, serializers
 from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
 
-from advertisement.models import Region, Category, Field, ElementTwo, PhotoAdvertisement, Advertisement, Store, Element
+from advertisement.models import Region, Category, Field, ElementTwo, PhotoAdvertisement, Advertisement, Store, Element, \
+    UploadFile, ErrorFile
 from api_domer.serializers import GetListOfCitiesSerializer, GetListOfCategoriesSerializer, FieldSerialier, \
     ElementTwoSerializer, AdvertisementSerializer, StoreSerializer, \
     UserRegisterSerializer, UserLoginSerializer, PasswordResetSerializer, \
     FavoriteSerializer, ElementSerializer, GetListOfCategoriesFieldsSerializer, ReasonOfComplaintSerializer, \
-    ComplaintSerializer, MessageSerializer
+    ComplaintSerializer, MessageSerializer, UploadFileSerializer
 
 from api_domer.utils import validate_additional_information
 from config import settings
 from config.settings import env_keys
 from main_page_domer.models import ReasonOfComplaint
 from users.models import User, UserFavorites, Chat, Message
+
+from advertisement.tasks import save_many_ads_from_zip_task, save_many_ads_from_excel_task
 
 
 # Отдаёт список городов type='Город' по id выбранной области type='Область' из модели Region
@@ -92,22 +97,23 @@ def get_store_for_advertisement(request):
 @api_view(['POST'])
 def save_advertisement(request):
     additional_information = dict(request.data.copy())
-    serializer = AdvertisementSerializer(data=request.data)
+    serializer = AdvertisementSerializer(data=request.data, context={"request": request})
     serializer.is_valid()
-    keys_to_delete = ['csrfmiddlewaretoken', 'preview_img', 'photo_files']
+    keys_to_delete = ['csrfmiddlewaretoken', 'preview_img']
     keys_to_delete.extend(serializer.data.keys())
     serializer_additional_error, additional_information = validate_additional_information(keys_to_delete,
                                                                                           additional_information)
     if serializer.is_valid() and not serializer_additional_error.data:
         additional_information_save = Field.objects.filter(id__in=additional_information).order_by('id')
+        photo_list = serializer.validated_data.pop('photo', None)
         for i in additional_information_save:
             additional_information[i.title] = ', '.join(additional_information.pop(f'{i.id}'))
         new_advertisement = Advertisement(author=None if request.user.is_anonymous else request.user,
                                           additional_information=additional_information,
                                           **serializer.validated_data)
         new_advertisement.save()
-        if request.data.getlist('photo_files') != ['']:
-            for photo in request.data.getlist('photo_files'):
+        if photo_list:
+            for photo in photo_list:
                 if photo.name == request.data.get("preview_img"):
                     new_advertisement.preview_image = photo
                     new_advertisement.save()
@@ -126,7 +132,7 @@ def update_advertisement(request):
     additional_information = dict(request.data.copy())
     serializer = AdvertisementSerializer(data=request.data)
     serializer.is_valid()
-    keys_to_delete = ['csrfmiddlewaretoken', 'preview_img', 'photo_files', 'deleted_images', 'advertisement']
+    keys_to_delete = ['csrfmiddlewaretoken', 'preview_img', 'deleted_images', 'advertisement']
     keys_to_delete.extend(serializer.data.keys())
     serializer_additional_error, additional_information = validate_additional_information(keys_to_delete,
                                                                                           additional_information)
@@ -134,15 +140,16 @@ def update_advertisement(request):
         additional_information_save = Field.objects.filter(id__in=additional_information).order_by('id')
         for i in additional_information_save:
             additional_information[i.title] = ', '.join(additional_information.pop(f'{i.id}'))
+        photo_list = serializer.validated_data.pop('photo', None)
         deleted_images = request.data.get('deleted_images').split(',')
         preview_img = request.data.get("preview_img")
         Advertisement.objects.filter(author=request.user, id=request.data.get('advertisement')
                                      ).update(moderated=False, additional_information=additional_information,
-                                              **serializer.validated_data)
+                                              **serializer.validated_data, is_active=False)
         advertisement = get_object_or_404(Advertisement, id=request.data.get('advertisement'))
 
-        if request.data.getlist('photo_files') != ['']:
-            for photo in request.data.getlist('photo_files'):
+        if photo_list:
+            for photo in photo_list:
                 if photo.name == preview_img:
                     if advertisement.preview_image not in deleted_images:
                         PhotoAdvertisement.objects.create(photo=advertisement.preview_image,
@@ -341,3 +348,71 @@ def create_chat(request):
         return Response({'success': 'Ваше сообщение отправлено'}, status=status.HTTP_200_OK)
     else:
         return Response({"errors": serializer.errors})
+
+
+@api_view(['POST'])
+def get_bulk_import_of_ads(request):
+    file = ErrorFile.objects.filter(user=request.user).last()
+
+    serializer = UploadFileSerializer(data=request.data)
+    if serializer.is_valid():
+        if serializer.validated_data.get("file").name.endswith('xlsx'):
+            '''Работа с электронной таблицей'''
+            try:
+                uploud_file = serializer.validated_data.get("file")
+                book = openpyxl.open(uploud_file, read_only=True)
+                save_file = UploadFile(file=uploud_file, user=request.user)
+                save_file.save()
+                ads = save_many_ads_from_excel_task.delay(uploud_file=f'./media/{save_file.file.name}',
+                                                          id=request.user.id,
+                                                          first_name=request.user.first_name,
+                                                          phone_number=request.user.phone_number,
+                                                          email=request.user.email)
+
+                save_file.delete()
+                if file != None and file.status == False:
+                    file.status = True
+                    file.save(update_fields=["status"])
+            #     result = ads.get()
+            #     if result != True:
+            #         path = result.get('file')[1][1:]
+            #         context['answer_error'] = 'Несколько объявлений не были сохранены. Чтобы посмотреть объявления с ошибками скачайте файл.'
+            #         context['file'] = f'http://127.0.0.1:8000//{path}'
+            #         context['error'] = True
+            #     else:
+            #         context['answer'] = 'Объявления успешно сохранены'
+            #         context['error'] = False
+            except:
+                return Response({'error': 'Невозможно прочитать файл.'})
+
+        elif serializer.validated_data.get("file").name.endswith('zip'):
+            '''Работа с электронным архивом'''
+            try:
+                uploud_zip = serializer.validated_data.get("file")
+                with ZipFile(uploud_zip, 'r') as zip:
+                    files_from_zip = zip.namelist()
+                save_zip = UploadFile(file=uploud_zip, user=request.user)
+                save_zip.save()
+                ads = save_many_ads_from_zip_task.delay(uploud_zip=f'./media/{save_zip.file.name}',
+                                                        id=request.user.id,
+                                                        first_name=request.user.first_name,
+                                                        phone_number=request.user.phone_number,
+                                                        email=request.user.email)
+                save_zip.delete()
+                if file != None and file.status == False:
+                    file.status = True
+                    file.save(update_fields=["status"])
+                result = ads.get()
+    #             if result != True:
+    #                 path = result.get('file')[1][1:]
+    #                 context[
+    #                     'answer_error'] = 'Несколько объявлений не были сохранены. Чтобы посмотреть объявления с ошибками скачайте файл.'
+    #                 context['file'] = f'http://127.0.0.1:8000//{path}'
+    #                 context['error'] = True
+    #             else:
+    #                 context['answer'] = 'Объявления успешно сохранены'
+    #                 context['error'] = False
+            except:
+                return Response({'error': 'Невозможно прочитать файл.'})
+    else:
+        return Response({'error': 'Ошибка при загрузке файла. Убедитесь, что загружаемый файл необходимого расширения'})

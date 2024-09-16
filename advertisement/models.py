@@ -236,7 +236,7 @@ class Store(models.Model):
     email = models.EmailField(verbose_name='E-Mail')
     phone_num = models.CharField(max_length=255, blank=True, null=True, verbose_name='Номер телефона')
     video_link = models.URLField(blank=True, null=True, verbose_name='Ссылка на YouTube видео')  # хранит строку, которая представляет валидный URL-адрес
-    logo_image = models.ImageField(upload_to='images/store_img', blank=True, null=True, verbose_name='Логотип')
+    logo_image = models.ImageField(upload_to=upload_to, blank=True, null=True, verbose_name='Логотип')
     date_of_create = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
     date_of_deactivate = models.DateTimeField(blank=True, null=True, verbose_name='Дата деактивации')
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
@@ -265,6 +265,8 @@ class Store(models.Model):
             self.date_of_deactivate = day_now + timedelta(days=366)
         else:
             self.date_of_deactivate = day_now + timedelta(days=365)
+        if self.logo_image and not self.logo_image.url.lower().endswith('avif'):
+            convert_image_to_avif(photo=self.logo_image)  # Конвертация изображения в формат AVIF
         super().save(*args, **kwargs)
         self.search_vector = SearchVector('title', 'description')
         super(Store, self).save(*args, **kwargs)

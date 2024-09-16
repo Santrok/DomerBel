@@ -12,10 +12,14 @@
     align-items: center;
     gap: 10px;
     flex-wrap: wrap;
+    justify-content: flex-end;
 
     & p {
       flex: 0 0 200px;
       @include fonts($defaultColor, 14px, 400);
+      & span {
+      color: red;
+    }
     }
   }
 
@@ -24,7 +28,8 @@
     max-width: 320px;
     width: 100%;
     padding: 7px;
-    border: 1px solid gray;
+    border: 1px solid $gray;
+    border-radius: 7px;
     @include fonts($defaultColor, 14px, 400);
     &:focus {
       border: 1px solid #3779eb;
