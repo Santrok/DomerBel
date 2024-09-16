@@ -21,7 +21,10 @@ def upload_to(instance, filename):
     ext = os.path.splitext(filename)[1]
     name = str(instance.pk or '') + filename
     filename = md5(name.encode('utf8')).hexdigest() + ext
-    basedir = os.path.join(instance._meta.app_label)
+    if instance.__class__.__name__ == 'PhotoAdvertisement':
+        basedir = 'Advertisement'
+    else:
+        basedir = instance.__class__.__name__
     return os.path.join(basedir, save_folder, filename)
 
 
