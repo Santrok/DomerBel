@@ -37,7 +37,6 @@ def save_advertisement_task(user, data, additional_information, processed_photo)
             os.rmdir(folder_path)  # Удаляем папку
 
 
-
 @shared_task()
 def update_advertisement_task(user, advertisement_id, data, additional_information, processed_photo,
                               new_preview_photo_from_old_ones, delete_photo):
@@ -47,11 +46,16 @@ def update_advertisement_task(user, advertisement_id, data, additional_informati
     for field in additional_information_save:
         additional_information[field.title] = ', '.join(additional_information.pop(f'{field.id}'))
 
-    Advertisement.objects.filter(author=user, id=advertisement_id).update(moderated=False,
-                                                                          additional_information=additional_information,
-                                                                          **data, is_active=False)
+    Advertisement.objects.filter(author=user,
+                                 id=advertisement_id
+                                 ).update(moderated=False,
+                                          additional_information=additional_information,
+                                          **data,
+                                          additional_information_view=list(additional_information.items()),
+                                          is_active=False)
 
     advertisement = Advertisement.objects.get(author=user, id=advertisement_id)
+    advertisement.save()
 
     if new_preview_photo_from_old_ones:
         old_preview_image = advertisement.preview_image

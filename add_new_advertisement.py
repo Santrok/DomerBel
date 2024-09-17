@@ -2,9 +2,6 @@ import os
 from django.core.files import File
 
 import django
-from datetime import datetime
-from django.db.models import F, Value
-from django.db.models.functions import Replace
 
 # Устанавливаем переменную окружения DJANGO_SETTINGS_MODULE
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
