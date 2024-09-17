@@ -1,15 +1,49 @@
 {% extends "base.html" %}
 {% load static %}
-
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/bulk_import_ads.css' %}">
+{% endblock css %}
 {% block content %}
-    <p style="color:black;">{{request.user.email}}</p><br>
-    <form method="POST" action="" enctype="multipart/form-data" style="color:black;" id="file_form">
+<section class="upload__file">
+    <p class="info__text">Описание полей и требования к загружаемым данным можно посмотреть <a
+            href="{{ url }}{% url 'instructions' %}">здесь.</a></p>
+    <form method="POST" action="" enctype="multipart/form-data" id="file_form" class="form__loading">
         {% csrf_token %}
-        {{ form.as_p }}<br>
-        <input type="button" value="Отправить" id="send"><br>
+        {{ form.as_p }}
+        <button class="submit__btn" type="button" id="send">Отправить</button>
     </form>
-    <div class="answer" style="color:black;">
+    <div class="answer">
     </div>
+    <div class="table_with_files info__text">
+        {% if files.length != 0 %}
+        <table>
+            <thead>
+            <tr>
+                <th>Загруженный файл</th>
+                <th>Файл с ошибками</th>
+                <th>Время загрузки файла</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for i in files %}
+            <tr>
+                <td><a href="{{ url }}/media/{{i.file}}">Скачать файл</a></td>
+                {% if i.errorfile %}
+                <td><a href="{{ url }}/{{i.errorfile.file}}">Скачать файл</a></td>
+                {% else %}
+                <td>Сохранено</td>
+                {% endif %}
+                <td>{{i.time_upload_file}}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        {% endif %}
+    </div>
+    <div aria-hidden="true" class="form__notifications-access">
+        <p>Файл обрабатывается</p>
+    </div>
+</section>
 {% endblock content %}
 
 {% block js %}

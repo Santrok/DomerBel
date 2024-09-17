@@ -1,6 +1,7 @@
 const answerProcessing = document.querySelector('.answer');
 const fileForm = document.getElementById('file_form')
 const sendBtn = document.getElementById('send')
+const message = document.querySelector('.form__notifications-access')
 sendBtn.addEventListener('click', sendFile)
 
 function getCookie(name) {
@@ -33,8 +34,8 @@ function getResult(id) {
             } else if (data.state == 'SUCCESS'){
                 const url = data.result.file.slice(1,data.result.file.length+1)
                 answerProcessing.innerHTML =`
-                <p>При обработке вашего файла некоторые объявления не были сохранены. Чтобы посмотреть объявления с ошибками, скачайте файл по ссылке.</p>
-                <a href="${window.location.protocol}//${window.location.host}${url}">Скачать файл</a>`
+                <p class="info__text">При обработке вашего файла некоторые объявления не были сохранены. Чтобы посмотреть объявления с ошибками, скачайте файл
+                <a href="${window.location.protocol}//${window.location.host}${url}">по ссылке</a>.</p>`
             }
         })
 }
@@ -56,10 +57,11 @@ function sendFile() {
         .then(data => {
             if (data.task_id != undefined) {
                 const id = data.task_id
+                message.classList.add('access__active')
                 getResult(id)
             } else if (data.error != undefined) {
                 answerProcessing.innerHTML = `
-                <p class="amswer__text">${data.error}</p>`
+                <p class="info__text"">${data.error}</p>`
             }
         })
     fileForm.reset()

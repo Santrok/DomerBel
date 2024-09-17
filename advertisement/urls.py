@@ -14,7 +14,7 @@ urlpatterns = [
     path('advertisement_details/<slug:slug>/', get_advertisement_details_page, name='advertisement_details'),
     path('import_bulk_of_ads/',get_bulk_import_of_ads),
     path('advertisement_details/<int:id>/', get_advertisement_details_page, name='advertisement_details'),
-    path('instructions_for_bulk_import_of_ads', get_instructions_for_bulk_import_of_ads),
+    path('instructions_for_bulk_import_of_ads', get_instructions_for_bulk_import_of_ads, name='instructions'),
     path('advertisement_details/<str:slug>/', get_advertisement_details_page, name='advertisement_details'),
     path('editing_an_ad/<int:id>/', editing_an_ad, name='editing_an_ad'),
     path('search_result/', search_result, name='search_result'),
