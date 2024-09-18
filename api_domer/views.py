@@ -6,6 +6,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
+from django.template.loader import render_to_string
 from django.urls import reverse_lazy
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
@@ -29,6 +30,7 @@ from main_page_domer.models import ReasonOfComplaint
 from users.models import User, UserFavorites, Chat, Message
 
 from advertisement.tasks import save_many_ads_from_zip_task, save_many_ads_from_excel_task
+from users.tasks import send_email_about_message_in_chat
 
 
 # Отдаёт список городов type='Город' по id выбранной области type='Область' из модели Region
@@ -228,26 +230,20 @@ def password_reset(request):
         uid = urlsafe_base64_encode(force_bytes(user.pk))
         token = default_token_generator.make_token(user)
         activation_url = reverse_lazy('users:password_reset_confirm', kwargs={'uidb64': uid, 'token': token})
+
+        html_content = render_to_string(
+            "asend_reset_password.html",
+            context={"activation_url": activation_url, "url": url},
+        )
+        text_content = render_to_string(
+            "asend_reset_password.html",
+            context={"activation_url": activation_url, "url": url},
+        )
+
         try:
-            send_mail(
-                subject='Восстановление пароля',
-                message=f'''
-                Вы получили это письмо, потому что Вы (или кто-то другой) запросили восстановление пароля от учётной записи 
-                на сайте {url}, которая связана с этим адресом электронной почты.
-                
-                Для восстановления пароля перейдите по данной ссылке: 
-                
-                {url}{activation_url}
-                
-                Спасибо, что используете наш сайт!
-                
-                Команда сайта {url}
-                
-                
-                Если вы не запрашивали восстановление пароля, то проигнорируйте это сообщение''',
-                from_email=None,
-                recipient_list=[email],
-                fail_silently=False)
+            send_email_about_message_in_chat.delay(chat_title='Восстановление пароля на сайте Домер.бел',
+                                                   recipient=email,
+                                                   text_content=text_content, html_content=html_content)
         except:
             raise serializers.ValidationError({"error": 'Что-то пошло не так. Попробуйте еще раз!'})
         else:

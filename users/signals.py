@@ -1,11 +1,4 @@
-# from django.contrib.auth.models import Group
-# from django.db import transaction
-import smtplib
-from email.mime.image import MIMEImage
-from pathlib import Path
-
 from django.contrib.auth.models import Group
-from django.core.mail import send_mail, EmailMultiAlternatives
 from django.db import transaction
 from django.db.models.signals import post_save
 from django.dispatch import receiver
@@ -60,5 +53,5 @@ def save_user_favorites(sender, instance, **kwargs):
     )
 
     chat_title = instance.chat.advertisement.title if instance.chat.advertisement else instance.chat.store.title
-    send_email_about_message_in_chat.delay(chat_title=chat_title, recipient= recipient.email, text_content=text_content, html_content=html_content)
+    send_email_about_message_in_chat.delay(chat_title=chat_title, recipient=recipient.email, text_content=text_content, html_content=html_content)
 
