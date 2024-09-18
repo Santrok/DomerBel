@@ -30,7 +30,7 @@ from main_page_domer.models import ReasonOfComplaint
 from users.models import User, UserFavorites, Chat, Message
 
 from advertisement.tasks import save_many_ads_from_zip_task, save_many_ads_from_excel_task
-from users.tasks import send_email_about_message_in_chat
+from users.tasks import send_email_task
 
 
 # Отдаёт список городов type='Город' по id выбранной области type='Область' из модели Region
@@ -240,16 +240,13 @@ def password_reset(request):
             context={"activation_url": activation_url, "url": url},
         )
 
-        try:
-            send_email_about_message_in_chat.delay(chat_title='Восстановление пароля на сайте Домер.бел',
+        send_email_task.delay(chat_title='Восстановление пароля на сайте Домер.бел',
                                                    recipient=email,
                                                    text_content=text_content, html_content=html_content)
-        except:
-            raise serializers.ValidationError({"error": 'Что-то пошло не так. Попробуйте еще раз!'})
-        else:
-            return Response({'success': 'На ваш адрес электронной почты было отправлено письмо для восстановления '
-                                        'пароля. Если письмо не пришло, проверьте папку спам.'},
-                            status=status.HTTP_200_OK)
+        return Response({'success': 'На ваш адрес электронной почты было отправлено письмо для восстановления '
+                                    'пароля. Если письмо не пришло, проверьте папку спам.'},
+                        status=status.HTTP_200_OK)
+
     else:
         raise serializers.ValidationError(
             {"errors": password_reset_serializer.errors})

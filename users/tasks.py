@@ -7,7 +7,7 @@ from pathlib import Path
 
 
 @shared_task()
-def send_email_about_message_in_chat(chat_title, recipient, text_content, html_content):
+def send_email_task(chat_title, recipient, text_content, html_content):
     try:
         msg = EmailMultiAlternatives(
             chat_title,

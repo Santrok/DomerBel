@@ -6,7 +6,7 @@ from django.template.loader import render_to_string
 
 from config.settings import env_keys
 from users.models import User, UserFavorites, Message
-from users.tasks import send_email_about_message_in_chat
+from users.tasks import send_email_task
 
 
 @receiver(post_save, sender=User)
@@ -53,5 +53,5 @@ def save_user_favorites(sender, instance, **kwargs):
     )
 
     chat_title = instance.chat.advertisement.title if instance.chat.advertisement else instance.chat.store.title
-    send_email_about_message_in_chat.delay(chat_title=chat_title, recipient=recipient.email, text_content=text_content, html_content=html_content)
+    send_email_task.delay(chat_title=chat_title, recipient=recipient.email, text_content=text_content, html_content=html_content)
 
