@@ -305,13 +305,22 @@ def save_complaint(request):
         user = serializer.validated_data.get("user")
         advertisement = serializer.validated_data.get("advertisement")
 
-        subject = f'Жалоба от пользователя {user} на объявление  id={advertisement.id}. Причина: {reason} '
+        subject = f'Жалоба от пользователя {user} на объявление  id={advertisement.id}.'
         message = text
 
-        try:
-            send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [settings.EMAIL_HOST_USER])
-        except smtplib.SMTPException as error:
-            return Response({'errors': str(error)}, status=status.HTTP_400_BAD_REQUEST)
+        html_content = render_to_string(
+            "asend_complaint.html",
+            context={"message": message, "subject": subject, "reason": reason, "url": env_keys.get("URL")},
+        )
+        text_content = render_to_string(
+            "asend_complaint.html",
+            context={"message": message, "subject": subject, "reason": reason, "url": env_keys.get("URL")},
+        )
+
+        send_email_task.delay(chat_title="Жалоба",
+                              recipient=settings.EMAIL_HOST_USER,
+                              text_content=text_content,
+                              html_content=html_content)
 
         return Response({'success': 'Ваша жалоба на объявление отправлена администрации сайта'},
                         status=status.HTTP_201_CREATED)
