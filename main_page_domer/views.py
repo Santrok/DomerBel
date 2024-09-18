@@ -2,6 +2,7 @@ import codecs
 import json
 import smtplib
 from datetime import datetime
+from http.client import HTTPResponse
 
 import PIL
 from django.contrib import messages
@@ -15,7 +16,7 @@ from django.db.models import Q, F, Count, Func, Value, ExpressionWrapper
 from django.db.models.fields.json import KT
 from django.db.models.functions import Concat, Length
 from django.forms import CharField
-from django.http import Http404
+from django.http import Http404, HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils.timezone import make_aware
 
@@ -697,3 +698,11 @@ def dowload_photo(request):
 def page_not_found(request):
     '''отдает страничку с ошибкой 404'''
     return render(request, '404.html', status=404)
+
+
+def get_bepaid(request):
+    print(11111)
+    print(request)
+    response = HttpResponse('FVJH')
+    response.status_code = 200
+    return response
