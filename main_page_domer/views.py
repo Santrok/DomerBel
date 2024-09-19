@@ -2,8 +2,10 @@ import codecs
 import json
 import smtplib
 from datetime import datetime
+from http.client import HTTPResponse
 
 import PIL
+import requests
 from django.contrib import messages
 
 from django.contrib.postgres.aggregates import ArrayAgg
@@ -15,9 +17,11 @@ from django.db.models import Q, F, Count, Func, Value, ExpressionWrapper
 from django.db.models.fields.json import KT
 from django.db.models.functions import Concat, Length
 from django.forms import CharField
-from django.http import Http404
+from django.http import Http404, HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils.timezone import make_aware
+from requests.auth import HTTPBasicAuth
+from rest_framework import status
 
 from users.models import User
 from advertisement.models import Advertisement, Region, Category, Store, ElementTwo, PhotoAdvertisement, Field, Element
@@ -25,7 +29,7 @@ from advertisement.utils import (get_region_variables, sorted_by, sorted_by_numb
                                  variables_for_paginator, where_to_look, search_additional_information,
                                  annotating_field)
 from config import settings
-from main_page_domer.forms import FeedbackForm
+from main_page_domer.forms import FeedbackForm, PaidForm
 from main_page_domer.models import Help, Publication, AboutOrganization
 
 
@@ -663,7 +667,7 @@ def dowload_user(request):
     #         )
     #         new_store.save()
 
-    return render(request, 'download_adver.html')
+    return render(request, 'asend_message.html')
 
 
 
@@ -697,3 +701,78 @@ def dowload_photo(request):
 def page_not_found(request):
     '''отдает страничку с ошибкой 404'''
     return render(request, '404.html', status=404)
+
+
+def get_bepaid(request):
+    print(11111)
+    print(request)
+    response = HttpResponse('FVJH')
+    response.status_code = 200
+    return HttpResponse(status=status.HTTP_200_OK)
+
+
+def test_paid(request):
+    store_id = '28723'
+    secret_key = 'b08c17bc466d5cd391fc49cd77b6910e19c78b133dfceda65fcc4057af32b0af'
+    url = 'https://checkout.bepaid.by/ctp/api/checkouts'
+
+    form = PaidForm()
+    if request.method == 'POST':
+        form = PaidForm(request.POST)
+        if form.is_valid():
+            amount = 0
+            cost = {'vip': 500, 'highlight_ad': 300, 'special_accommodation': 200, 'raise_in_search': 100}
+            for check, status in form.cleaned_data.items():
+                if status and check != 'id_advertisement':
+                    amount += cost.get(check)
+            payload = {
+                "checkout": {
+                    "test": True,
+                    "transaction_type": "payment",
+                    "attempts": 3,
+                    "settings": {
+                        "return_url": "http://127.0.0.1:8000/api/v1/notification/",
+                        "success_url": "http://127.0.0.1:8000/api/v1/notification/",
+                        "decline_url": "http://127.0.0.1:8000/",
+                        "fail_url": "http://127.0.0.1:8000/",
+                        "cancel_url": "http://127.0.0.1:8000/",
+                        "notification_url": "http://127.0.0.1:8000/api/v1/notification/",
+                        "button_text": "Оплатить",
+                        "button_next_text": "Вернуться в магазин",
+                        "language": "ru",
+                        "card_notification_url": "https://your-card-notification-url.com",
+                        "customer_fields": {
+                            "visible": ["first_name", "last_name"],
+                            "read_only": ["email", "phone"],
+                        },
+                        "credit_card_fields": {
+                            "holder": "Rick Astley",
+                            "read_only": ["holder"]
+                        }
+                    },
+                    "payment_method": {
+                        "types": ["credit_card"]
+                    },
+                    "order": {
+                        "currency": "BYN",
+                        "amount": amount,
+                        "description": "Много букв товар",
+                        "tracking_id": "1212",
+                        "additional_data": form.cleaned_data
+                    },
+                    "customer": {
+                        "address": "Baker street 221b",
+                        "country": "GB",
+                        "city": "London",
+                        "email": "jake@example.com",
+                        "phone": "1234567890",
+                    }
+                }
+            }
+
+            response = requests.post(url, auth=HTTPBasicAuth(store_id, secret_key), json=payload)
+            return redirect(response.json().get('checkout').get('redirect_url'))
+    context = {
+        'form': form,
+    }
+    return render(request, 'test_paid.html', context)

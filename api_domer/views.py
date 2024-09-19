@@ -1,29 +1,38 @@
 import smtplib
+from pprint import pprint
+from zipfile import ZipFile
 
+import openpyxl
+import requests
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
+from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
+from requests.auth import HTTPBasicAuth
 from rest_framework.decorators import api_view
 from rest_framework import status, serializers
 from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
 
-from advertisement.models import Region, Category, Field, ElementTwo, PhotoAdvertisement, Advertisement, Store, Element
+from advertisement.models import Region, Category, Field, ElementTwo, PhotoAdvertisement, Advertisement, Store, Element, \
+    UploadFile, ErrorFile
 from api_domer.serializers import GetListOfCitiesSerializer, GetListOfCategoriesSerializer, FieldSerialier, \
     ElementTwoSerializer, AdvertisementSerializer, StoreSerializer, \
     UserRegisterSerializer, UserLoginSerializer, PasswordResetSerializer, \
     FavoriteSerializer, ElementSerializer, GetListOfCategoriesFieldsSerializer, ReasonOfComplaintSerializer, \
-    ComplaintSerializer, MessageSerializer
+    ComplaintSerializer, MessageSerializer, UploadFileSerializer, StatusUnreadUserMessage
 
 from api_domer.utils import validate_additional_information
 from config import settings
 from config.settings import env_keys
 from main_page_domer.models import ReasonOfComplaint
 from users.models import User, UserFavorites, Chat, Message
+
+from advertisement.tasks import save_many_ads_from_zip_task, save_many_ads_from_excel_task
 
 
 # Отдаёт список городов type='Город' по id выбранной области type='Область' из модели Region
@@ -223,28 +232,32 @@ def password_reset(request):
         uid = urlsafe_base64_encode(force_bytes(user.pk))
         token = default_token_generator.make_token(user)
         activation_url = reverse_lazy('users:password_reset_confirm', kwargs={'uidb64': uid, 'token': token})
-        send_mail(
-            subject='Восстановление пароля',
-            message=f'''
-            Вы получили это письмо, потому что Вы (или кто-то другой) запросили восстановление пароля от учётной записи 
-            на сайте {url}, которая связана с этим адресом электронной почты.
-            
-            Для восстановления пароля перейдите по данной ссылке: 
-            
-            {url}{activation_url}
-            
-            Спасибо, что используете наш сайт!
-            
-            Команда сайта {url}
-            
-            
-            Если вы не запрашивали восстановление пароля, то проигнорируйте это сообщение''',
-            from_email=None,
-            recipient_list=[email],
-            fail_silently=False)
-        return Response({'success': 'На ваш адрес электронной почты было отправлено письмо для восстановления '
-                                    'пароля. Если письмо не пришло, проверьте папку спам.'},
-                        status=status.HTTP_200_OK)
+        try:
+            send_mail(
+                subject='Восстановление пароля',
+                message=f'''
+                Вы получили это письмо, потому что Вы (или кто-то другой) запросили восстановление пароля от учётной записи 
+                на сайте {url}, которая связана с этим адресом электронной почты.
+                
+                Для восстановления пароля перейдите по данной ссылке: 
+                
+                {url}{activation_url}
+                
+                Спасибо, что используете наш сайт!
+                
+                Команда сайта {url}
+                
+                
+                Если вы не запрашивали восстановление пароля, то проигнорируйте это сообщение''',
+                from_email=None,
+                recipient_list=[email],
+                fail_silently=False)
+        except:
+            raise serializers.ValidationError({"error": 'Что-то пошло не так. Попробуйте еще раз!'})
+        else:
+            return Response({'success': 'На ваш адрес электронной почты было отправлено письмо для восстановления '
+                                        'пароля. Если письмо не пришло, проверьте папку спам.'},
+                            status=status.HTTP_200_OK)
     else:
         raise serializers.ValidationError(
             {"errors": password_reset_serializer.errors})
@@ -324,18 +337,27 @@ def create_chat(request):
         chat_object = {}
         if request.data.get('advertisement'):
             advertisement = get_object_or_404(Advertisement, id=serializer.validated_data.get('chat_object'))
-            chat_object['advertisement'] = advertisement
-            chat_object['members'] = advertisement.author_id
+            if advertisement.author_id == request.user.id:
+                return Response({'error': 'Вы не можете написать самому себе'}, status=status.HTTP_200_OK)
+            else:
+                chat_object['advertisement'] = advertisement
+                chat_object['members'] = advertisement.author_id
         elif request.data.get('store'):
             store = get_object_or_404(Store, id=serializer.validated_data.get('chat_object'))
-            chat_object['store'] = store
-            chat_object['members'] = store.user_id
+            if store.user_id == request.user.id:
+                return Response({'error': 'Вы не можете написать самому себе'}, status=status.HTTP_200_OK)
+            else:
+                chat_object['store'] = store
+                chat_object['members'] = store.user_id
         chat = Chat.objects.filter(**chat_object).filter(members=request.user)
         if not chat:
             any_member = chat_object.pop('members', None)
-            chat = Chat.objects.create(**chat_object)
-            chat.members.set([request.user.id, any_member])
-            Message.objects.create(chat=chat, author=request.user, message=serializer.validated_data.get('text_message'))
+            if any_member:
+                chat = Chat.objects.create(**chat_object)
+                chat.members.set([request.user.id, any_member])
+                Message.objects.create(chat=chat, author=request.user, message=serializer.validated_data.get('text_message'))
+            else:
+                return Response({'error': 'Возникла ошибка. Вероятно автор объявления не зарегистрирован'}, status=status.HTTP_200_OK)
         else:
             Message.objects.create(chat=chat[0], author=request.user,
                                    message=serializer.validated_data.get('text_message'))
@@ -343,3 +365,99 @@ def create_chat(request):
         return Response({'success': 'Ваше сообщение отправлено'}, status=status.HTTP_200_OK)
     else:
         return Response({"errors": serializer.errors})
+
+
+@api_view(['POST'])
+def get_bulk_import_of_ads(request):
+    file = ErrorFile.objects.filter(user=request.user).last()
+
+    serializer = UploadFileSerializer(data=request.data)
+    if serializer.is_valid():
+        if serializer.validated_data.get("file").name.endswith('xlsx'):
+            '''Работа с электронной таблицей'''
+            try:
+                uploud_file = serializer.validated_data.get("file")
+                book = openpyxl.open(uploud_file, read_only=True)
+                save_file = UploadFile(file=uploud_file, user=request.user)
+                save_file.save()
+                ads = save_many_ads_from_excel_task.delay(uploud_file=f'./media/{save_file.file.name}',
+                                                          id=request.user.id,
+                                                          first_name=request.user.first_name,
+                                                          phone_number=request.user.phone_number,
+                                                          email=request.user.email)
+
+                save_file.delete()
+                if file != None and file.status == False:
+                    file.status = True
+                    file.save(update_fields=["status"])
+            #     result = ads.get()
+            #     if result != True:
+            #         path = result.get('file')[1][1:]
+            #         context['answer_error'] = 'Несколько объявлений не были сохранены. Чтобы посмотреть объявления с ошибками скачайте файл.'
+            #         context['file'] = f'http://127.0.0.1:8000//{path}'
+            #         context['error'] = True
+            #     else:
+            #         context['answer'] = 'Объявления успешно сохранены'
+            #         context['error'] = False
+            except:
+                return Response({'error': 'Невозможно прочитать файл.'})
+
+        elif serializer.validated_data.get("file").name.endswith('zip'):
+            '''Работа с электронным архивом'''
+            try:
+                uploud_zip = serializer.validated_data.get("file")
+                with ZipFile(uploud_zip, 'r') as zip:
+                    files_from_zip = zip.namelist()
+                save_zip = UploadFile(file=uploud_zip, user=request.user)
+                save_zip.save()
+                ads = save_many_ads_from_zip_task.delay(uploud_zip=f'./media/{save_zip.file.name}',
+                                                        id=request.user.id,
+                                                        first_name=request.user.first_name,
+                                                        phone_number=request.user.phone_number,
+                                                        email=request.user.email)
+                save_zip.delete()
+                if file != None and file.status == False:
+                    file.status = True
+                    file.save(update_fields=["status"])
+                result = ads.get()
+    #             if result != True:
+    #                 path = result.get('file')[1][1:]
+    #                 context[
+    #                     'answer_error'] = 'Несколько объявлений не были сохранены. Чтобы посмотреть объявления с ошибками скачайте файл.'
+    #                 context['file'] = f'http://127.0.0.1:8000//{path}'
+    #                 context['error'] = True
+    #             else:
+    #                 context['answer'] = 'Объявления успешно сохранены'
+    #                 context['error'] = False
+            except:
+                return Response({'error': 'Невозможно прочитать файл.'})
+    else:
+        return Response({'error': 'Ошибка при загрузке файла. Убедитесь, что загружаемый файл необходимого расширения'})
+
+
+@api_view(['GET'])
+def status_unread_message_user(request):
+    chats = Chat.objects.filter(members__in=[request.user.id])
+    unread_chat = Message.objects.filter(chat__in=chats, is_read=False).exclude(author=request.user).exists()
+    return Response({"status": unread_chat})
+
+
+@api_view(['GET', 'POST'])
+def get_bepaid(request):
+    store_id = '28723'
+    secret_key = 'b08c17bc466d5cd391fc49cd77b6910e19c78b133dfceda65fcc4057af32b0af'
+
+    url = 'https://checkout.bepaid.by/ctp/api/checkouts/'
+    token = request.query_params.get('token')
+    information = requests.get(f'{url}{token}', auth=HTTPBasicAuth(store_id, secret_key))
+    additional = information.json().get('checkout').get('order').get('additional_data')
+    cost = ['vip', 'highlight_ad', 'special_accommodation', 'raise_in_search']
+    accommodation = {}
+    for service in cost:
+        accommodation[service] = additional.get(service)
+
+    Advertisement.objects.filter(id=additional.get('id_advertisement')).update(**accommodation)
+
+
+    pprint(additional)
+    return HttpResponseRedirect(redirect_to='http://127.0.0.1:8000/')

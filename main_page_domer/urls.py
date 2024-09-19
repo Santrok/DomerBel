@@ -20,4 +20,6 @@ urlpatterns = [
     path('download/', download_advertis),
     path('download_user/', dowload_user),
     path('download_photo/', dowload_photo),
+    path('notification/', get_bepaid),
+    path('test_paid/', test_paid)
 ]

@@ -30,3 +30,11 @@ class ComplaintForm(forms.Form):
             self.add_error('reason', 'Не выбрана причина жалобы')
         return reason
 
+
+class PaidForm(forms.Form):
+    id_advertisement = forms.IntegerField(label='ID объявления')
+    vip = forms.BooleanField(label='Сделать VIP-объявлением: 5руб', required=False)
+    highlight_ad = forms.BooleanField(label='Выделить объявление: 3руб', required=False)
+    special_accommodation = forms.BooleanField(label='Спецразмещение: 2руб', required=False)
+    raise_in_search = forms.BooleanField(label='Поднять в поиске: 1руб', required=False)
+
