@@ -30,7 +30,9 @@
                 <td><a href="{{ url }}/media/{{i.file}}">Скачать файл</a></td>
                 {% if i.errorfile %}
                 <td><a href="{{ url }}/{{i.errorfile.file}}">Скачать файл</a></td>
-                {% else %}
+                {% elif i.status == False %}
+                <td>Обрабатывается</td>
+                {% elif i.status == True %}
                 <td>Сохранено</td>
                 {% endif %}
                 <td>{{i.time_upload_file}}</td>

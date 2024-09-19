@@ -353,7 +353,7 @@ def search_result(request):
 @login_required
 def get_bulk_import_of_ads(request):
     """Страница массового импорта объявлений"""
-    files  = UploadFile.objects.select_related('errorfile').filter(user = request.user)
+    files  = UploadFile.objects.select_related('errorfile').filter(user = request.user).order_by('time_upload_file')
     url = env_keys.get('URL')
     context = {
         'files': files,
@@ -369,9 +369,11 @@ def get_instructions_for_bulk_import_of_ads(request):
     '''функция, которая отдает страницу с инструкцией по массовому импорту объявлений'''
     oblast = Region.objects.filter(level=0)
     categories = Category.objects.filter(level=0)
+    url = env_keys.get('URL')
     context = {
         'oblast': oblast,
         'categories': categories,
+        'url': url,
     }
     return render(request=request,
                   template_name='instructions_for_bulk_import_of_ads.html',

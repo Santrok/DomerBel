@@ -289,6 +289,7 @@ class UploadFile(models.Model):
     time_upload_file = models.DateTimeField(auto_now_add=True, verbose_name='Время загрузки файла')
     file = models.FileField(upload_to=get, verbose_name='Путь к файлу с объявлениями')
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    status = models.BooleanField(default=False, verbose_name='Статус обработки файла')
 
     class Meta:
         verbose_name = 'Загруженный файл'

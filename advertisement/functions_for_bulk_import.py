@@ -1,6 +1,6 @@
 import time
 import openpyxl
-from django_ckeditor_5.views import upload_file
+from OpenSSL.rand import status
 
 from advertisement.models import Advertisement, Category, Region, Spisok, ElementTwo, PhotoAdvertisement, ErrorFile, \
     UploadFile
@@ -11,7 +11,6 @@ from zipfile import ZipFile
 from advertisement.utils_for_models import upload_to
 import os
 import xlsxwriter
-import shutil
 
 
 def check_article(ads,value_author):
@@ -33,6 +32,8 @@ def check_article(ads,value_author):
             return 'Количество символов в артикле не должно быть больше 255'
     else:
         return True
+
+
 
 def chek_title(ads):
     '''Функция, проверяющая заголовок объявления'''
@@ -65,6 +66,8 @@ def chek_price(ads):
     else:
         return True
 
+
+
 def chek_category(ads):
     '''Функция, проверяющая категорию объявления'''
     if 'категория' in ads:
@@ -76,6 +79,8 @@ def chek_category(ads):
     else:
         return 'поле "Категория" обязательное'
 
+
+
 def check_region(ads):
     '''Функция, проверяющаа регион'''
     if 'регион' in ads:
@@ -86,6 +91,8 @@ def check_region(ads):
             return 'некорректно заполнено поле "Регион"'
     else:
         return 'поле "Регион" обязательное'
+
+
 
 def check_additional_information(ads,check_category):
     '''Функция проверяет поля для детальной информации и возвращает JsonFile'''
@@ -153,6 +160,8 @@ def check_additional_information(ads,check_category):
     else:
         return ['некорректно заполнено поле категории']
 
+
+
 def chek_description(ads):
     '''Функция, проверяющаа описание'''
     if 'описание' in ads:
@@ -164,6 +173,8 @@ def chek_description(ads):
     else:
         return 'поле "Описание" обязательное'
 
+
+
 def update_photo(ads_for_save,file_name,uploud_zip,email):
     '''Функция для извлечения preview_image из электронного архива,
     и хэширование имени файла и распределение файлов по приложениям
@@ -172,16 +183,21 @@ def update_photo(ads_for_save,file_name,uploud_zip,email):
         with ZipFile(uploud_zip,'r') as zip:
             image_from_zip = zip.extract(file_name,f'./media/files_for_bulk_import_of_ads/{email}')
         new_location_image = upload_to(ads_for_save,image_from_zip)
-        preview_image = os.replace(f'./{image_from_zip}',f'./media/{new_location_image}')
+        folder = new_location_image.split('/')[1]
+        if folder in os.listdir('./media/Advertisement/'):
+            os.replace(f'./{image_from_zip}', f'./media/{new_location_image}')
+        else:
+            os.mkdir(f'./media/Advertisement/{folder}')
+            os.replace(f'./{image_from_zip}', f'./media/{new_location_image}')
         return f'{new_location_image}'
     except:
         return False
 
-def write_file_with_error_ads(list_error,email, user,upload_file):
+
+
+def write_file_with_error_ads(list_error,email, user, upload_file):
     file = upload_file.replace('./media/','')
-    print(file)
     upload_file= UploadFile.objects.filter(file=file)
-    print(upload_file)
     path = f'./media/files_for_bulk_import_of_ads/{email}/error_{email}_{time.time()}.xlsx'
     book = xlsxwriter.Workbook(path)
     sheet = book.add_worksheet()
@@ -217,8 +233,9 @@ def write_file_with_error_ads(list_error,email, user,upload_file):
     file_error.save()
     return file_error
 
+
+
 def save_many_ads_from_excel(uploud_file,id,first_name,phone_number,email):
-    print('stat_functions')
     '''Функция сохраняющаяя обявления из экселя'''
     book = openpyxl.open(uploud_file, read_only=True)
     sheet = book.active
@@ -254,8 +271,6 @@ def save_many_ads_from_excel(uploud_file,id,first_name,phone_number,email):
             value_description = chek_description(ads)
             if value_description != True:
                 status_ads.append(value_description)
-            print('!!!!!!!!!!!!!!!!')
-            print(status_ads)
             if len(status_ads) == 0:
                 ads_for_save = Advertisement(author = value_author,
                 article = str(ads.get('артикул')),
@@ -279,11 +294,13 @@ def save_many_ads_from_excel(uploud_file,id,first_name,phone_number,email):
         row_in_excel = row_in_excel + 1
     if len(list_ads_error) != 0:
         file_error = write_file_with_error_ads(list_ads_error,email,value_author,uploud_file)
-        print('finish function')
+        UploadFile.objects.filter(file=uploud_file).update(status=True)
         return {'file': file_error.file}
     else:
-        print('finish function')
+        UploadFile.objects.filter(file = uploud_file).update(status = True)
         return True
+
+
 
 def save_many_ads_from_zip(uploud_zip,id,first_name,phone_number,email):
     '''Функция для сохранениея обявлений из электронного архива'''
@@ -352,13 +369,14 @@ def save_many_ads_from_zip(uploud_zip,id,first_name,phone_number,email):
                     for key in ads.keys():
                         if key.startswith('фото') and key != 'фото1':
                             photo = update_photo(ads_for_save, ads.get(key), uploud_zip, email)
-                            if photo != False:
+                            if photo != False and len(photo_in_db) <=30 :
                                 photo_save = PhotoAdvertisement(
                                     photo=photo,
                                     advertisement=ads_for_save)
                                 photo_save.save()
                                 photo_in_db.append(photo_save)
-
+                            elif len(photo_in_db) >  30:
+                                continue
                             else:
                                 for photo in photo_in_db:
                                     os.remove(f'./media/{photo.photo}')
@@ -375,13 +393,10 @@ def save_many_ads_from_zip(uploud_zip,id,first_name,phone_number,email):
         row_in_excel = row_in_excel + 1
     if len(list_ads_error) != 0:
         file_error = write_file_with_error_ads(list_ads_error,email,value_author,uploud_zip)
+        UploadFile.objects.filter(file = uploud_zip).update(status = True)
         return {'file': file_error.file}
     else:
+        UploadFile.objects.filter(file=uploud_zip).update(status=True)
         return True
 
-def delete_everything_in_folder():
-    '''Функция, удаляющая все файлы из папки для "files_for_bulk_import_of_ads" '''
-    path = './media/files_for_bulk_import_of_ads'
-    shutil.rmtree(path)
-    os.mkdir(path)
 

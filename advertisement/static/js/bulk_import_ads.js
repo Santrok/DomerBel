@@ -2,6 +2,7 @@ const answerProcessing = document.querySelector('.answer');
 const fileForm = document.getElementById('file_form')
 const sendBtn = document.getElementById('send')
 const message = document.querySelector('.form__notifications-access')
+const tableFile = document.querySelector('.table_with_files info__text')
 sendBtn.addEventListener('click', sendFile)
 
 function getCookie(name) {
@@ -30,6 +31,7 @@ function getResult(id) {
         .then(data => {
             if (data.state != undefined && data.state != 'SUCCESS') {
                 console.log(data.state)
+                // console.log(tableFile)
                 setTimeout(getResult, 3000, id)
             } else if (data.state == 'SUCCESS'){
                 const url = data.result.file.slice(1,data.result.file.length+1)
