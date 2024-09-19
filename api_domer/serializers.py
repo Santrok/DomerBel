@@ -165,3 +165,7 @@ class MessageSerializer(serializers.Serializer):
 
 class UploadFileSerializer(serializers.Serializer):
     file = serializers.FileField(validators=[FileExtensionValidator(allowed_extensions=['xlsx', 'zip'])])
+
+
+class StatusUnreadUserMessage(serializers.Serializer):
+    status = serializers.BooleanField()

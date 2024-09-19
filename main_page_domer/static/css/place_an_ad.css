@@ -143,8 +143,9 @@ form,
   right: 0;
   width: 15px;
   height: 15px;
-  background: url(../img/icons/krestik.svg) no-repeat 100% 100%/100% 100%, rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.5);
   cursor: pointer;
+  z-index: 2;
 }
 .delete_img::after, .delete_img::before {
   content: "";
@@ -163,6 +164,10 @@ form,
 }
 .delete_img:hover ~ .img_preview {
   opacity: 0.5;
+}
+.delete_img:hover::after, .delete_img:hover::before {
+  background: #FFA07A;
+  transition: 0.3s ease-out;
 }
 
 .main_img {

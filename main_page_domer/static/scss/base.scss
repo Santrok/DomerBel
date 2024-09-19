@@ -104,6 +104,32 @@ a {
   display: flex;
 }
 
+.unread__message-link {
+  display: flex;
+  padding: 2px 3px 0 0;
+  position: relative;
+}
+
+.unread__message-link-img {
+  max-width: 15px;
+  max-height: 15px;
+
+  &::after {
+    content: "";
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background-color: #ff3b4c;
+    position: absolute;
+    top: 1px;
+    right: 0
+  }
+}
+
+.modals__notification-error {
+  display: none;
+}
+
 input,
 select {
   &:focus {

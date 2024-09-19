@@ -22,26 +22,44 @@ chatSocket.onopen = function (e) {
 chatSocket.onclose = function (e) {
     console.log("Something unexpected happened !")
 }
-document.querySelector("#id_message_send_input").focus()
-document.querySelector("#id_message_send_input").onkeyup = function (e) {
-    if (e.keyCode == 13) {
-        document.querySelector("#id_message_send_button").click()
+document.getElementById("id_message_send_button").onclick = function (e) {
+    sendMessage();
+};
+document.getElementById("id_message_send_input").onkeyup = function (e) {
+    if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault(); // Предотвращаем отправку формы по умолчанию
+        sendMessage();
     }
 }
-document.querySelector("#id_message_send_button").onclick = function (e) {
-    let messageInput = document.querySelector("#id_message_send_input").value
-    chatSocket.send(JSON.stringify({message: messageInput, userId: userId}))
+// Функция для отправки сообщения
+function sendMessage() {
+    let messageInput = document.getElementById("id_message_send_input").value;
+    if (messageInput.trim().length > 0) {  // Используем trim() для удаления пробелов
+        let date = new Date();
+        chatSocket.send(JSON.stringify({
+            message: messageInput,
+            userId: userId,
+            time: `${date.getHours()}:${date.getMinutes()}`
+        }));
+    }
+    document.getElementById("id_message_send_input").value = '';  // Очищаем поле ввода
 }
 chatSocket.onmessage = function (e) {
     const data = JSON.parse(e.data)
-    console.log(data)
-    let p = document.createElement("p")
-    p.classList.add("message__item")
-    p.classList.add(userId === data.userId ? "message-self" : "message-any")
-    p.innerHTML = data.message
-    document.querySelector("#id_message_send_input").value = ""
-    document.querySelector("#id_chat_item_container").append(p)
-    lastMessageScroll(p)
+    let messageItem = document.createElement("div")
+    let messageText = document.createElement("p")
+    let messageTime = document.createElement("p")
+    messageItem.classList.add("message__item")
+    messageItem.classList.add(userId === data.userId ? "message-self" : "message-any")
+    messageText.classList.add("message__item-text")
+    messageText.innerHTML = data.message
+    messageTime.classList.add("message__item-time")
+    messageTime.innerHTML = data.time
+    messageItem.append(messageText)
+    messageItem.append(messageTime)
+    document.getElementById("id_message_send_input").value = ""
+    document.getElementById("id_chat_item_container").append(messageItem)
+    lastMessageScroll(messageItem)
 }
 
 
@@ -49,8 +67,8 @@ const chatMessageBlock = document.getElementById("id_message_send_input")
 
 chatMessageBlock.oninput = (e) => {
     if (e.currentTarget.value.length > 0) {
-        document.querySelector("#id_message_send_button").disabled = false
+        document.getElementById("id_message_send_button").disabled = false
     } else {
-        document.querySelector("#id_message_send_button").disabled = true
+        document.getElementById("id_message_send_button").disabled = true
     }
 }
