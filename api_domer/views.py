@@ -7,6 +7,7 @@ import requests
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
+from django.db import transaction
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
@@ -112,20 +113,30 @@ def save_advertisement(request):
         photo_list = serializer.validated_data.pop('photo', None)
         for i in additional_information_save:
             additional_information[i.title] = ', '.join(additional_information.pop(f'{i.id}'))
-        new_advertisement = Advertisement(author=None if request.user.is_anonymous else request.user,
-                                          additional_information=additional_information,
-                                          **serializer.validated_data)
-        new_advertisement.save()
-        if photo_list:
-            for photo in photo_list:
-                if photo.name == request.data.get("preview_img"):
-                    new_advertisement.preview_image = photo
-                    new_advertisement.save()
-                else:
-                    additional_photo = PhotoAdvertisement(photo=photo, advertisement=new_advertisement)
-                    additional_photo.save()
-        return Response({"success": "<p>Ваше объявление отправлено на модерацию.</p><p>После модерации оно появится в списке объявлений.</p>",
-                         "link": f"{env_keys.get('URL')}", "link_text": "Вернуться на главную"}, status=status.HTTP_201_CREATED)
+
+        try:
+            with transaction.atomic():
+                new_advertisement = Advertisement(author=None if request.user.is_anonymous else request.user,
+                                                  additional_information=additional_information,
+                                                  **serializer.validated_data)
+                new_advertisement.save()
+                if photo_list:
+                    for photo in photo_list:
+                        if photo.name == request.data.get("preview_img"):
+                            new_advertisement.preview_image = photo
+                            new_advertisement.save()
+                        else:
+                            additional_photo = PhotoAdvertisement(photo=photo, advertisement=new_advertisement)
+                            additional_photo.save()
+            return Response({
+                                "success": "<p>Ваше объявление отправлено на модерацию.</p><p>После модерации оно появится в списке объявлений.</p>",
+                                "link": f"{env_keys.get('URL')}", "link_text": "Вернуться на главную"},
+                            status=status.HTTP_201_CREATED)
+        except Exception as e:
+            print('--------------------\n', e)
+            # отправка на почту письма о том что объявление не создалось
+            return Response()
+
     else:
         raise serializers.ValidationError(
             {"error_additional": serializer_additional_error.data, "error": serializer.errors})
@@ -148,7 +159,7 @@ def update_advertisement(request):
         deleted_images = request.data.get('deleted_images').split(',')
         preview_img = request.data.get("preview_img")
         Advertisement.objects.filter(author=request.user, id=request.data.get('advertisement')
-                                     ).update(moderated=False, additional_information=additional_information,
+                                     ).update(moderated=None, additional_information=additional_information,
                                               **serializer.validated_data, is_active=False)
         advertisement = get_object_or_404(Advertisement, id=request.data.get('advertisement'))
 

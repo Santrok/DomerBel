@@ -50,3 +50,11 @@ def publication_photo_delete(sender, instance, **kwargs):
     """ Удаление файлов перед удалением экземпляра
     дополнительного изображения объявления """
     instance.photo.delete(False)
+
+
+@receiver(post_save, sender=Advertisement)
+def ffff(sender, instance, **kwargs):
+    if 'moderated' in instance.get_dirty_fields() and instance.moderated == True:
+        print('письмо ушло в пользователю прошло модерацию')
+    elif 'moderated' in instance.get_dirty_fields() and instance.moderated == False:
+        print('письмо ушло в пользователю не прошло модерацию')

@@ -64,7 +64,7 @@ class Advertisement(DirtyFieldsMixin, models.Model):
     date_of_create = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания объявления')
     date_of_delete = models.DateTimeField(blank=True, null=True, verbose_name='Дата удаления объявления')
     date_of_deactivate = models.DateTimeField(blank=True, null=True, verbose_name='Дата деактивации объявления')
-    moderated = models.BooleanField(default=False, verbose_name='Прошло модерацию')
+    moderated = models.BooleanField(verbose_name='Прошло модерацию', null=True, blank=True)
     is_active = models.BooleanField(default=False, verbose_name='Объявление активно')
     vip = models.BooleanField(default=False, verbose_name="Сделать VIP-объявлением")
     highlight_ad = models.BooleanField(default=False, verbose_name="Выделить объявление")
@@ -122,6 +122,43 @@ class Advertisement(DirtyFieldsMixin, models.Model):
                 self.preview_image = None
             finally:
                 super(Advertisement, self).save(*args, **kwargs)
+
+    def save(self, *args, **kwargs):
+        # Установка дат до сохранения
+        self.date_of_deactivate = self.date_of_create + timedelta(days=60)
+        self.date_of_delete = self.date_of_create + timedelta(days(180))
+
+        # Обновление slug
+        self.slug = unique_slugify(self, self.title)
+
+        # Обновление additional_information_view, если есть изменения
+        if 'additional_information' in self.get_dirty_fields():
+            self.additional_information_view = list(self.additional_information.items())
+
+        # Объединение всех операций в одну транзакцию для атомарности
+        with transaction.atomic():
+            # Сохранение основной информации
+            super().save(*args, **kwargs)
+
+            # Обработка изображения
+            if self.preview_image:
+                # Конвертация в AVIF формат
+                if not self.preview_image.url.lower().endswith('avif'):
+                    convert_image_to_avif(photo=self.preview_image)
+                    self.save(update_fields=['preview_image'])
+
+                # Добавление водяного знака
+                try:
+                    photo = add_watermark_to_photo(self.preview_image.path)
+                    photo.save(self.preview_image.path, "avif")
+                except (FileNotFoundError, PIL.UnidentifiedImageError):
+                    self.preview_image = None
+                    self.save(update_fields=['preview_image'])
+
+            # Обновление векторов поиска после сохранения данных
+            self.search_vector = SearchVector('title', 'description')
+            self.search_title_vector = SearchVector('title')
+            super().save(*args, **kwargs)
 
 
 class Category(MPTTModel):
