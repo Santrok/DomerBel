@@ -4,7 +4,7 @@ from django.contrib import messages
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.decorators import login_required, permission_required
 from django.core.paginator import Paginator
-from django.db.models import Count
+from django.db.models import Count, Min, Max
 from django.db.models.fields.json import KT
 from django.http import Http404
 from django.shortcuts import redirect, render, get_object_or_404
@@ -330,12 +330,16 @@ def delete_store(request, store_id):
 def get_all_dialogs(request):
     """ Показывает все диалоги пользователя в ЛК """
     chats = Chat.objects.filter(members__in=[request.user.id]
-                                ).order_by("-id"
-                                           ).prefetch_related('message_set'
-                                                              ).select_related('advertisement')
+                                ).annotate(last_message=Max('message__pub_date')).order_by("-last_message"
+                                           ).prefetch_related('message_set', 'message_set__chat'
+                                                              ).select_related('advertisement__category',
+                                                                               'advertisement', 'store',
+                                                                               'store__category')
+    unread_chat = Message.objects.filter(chat__in=chats, is_read=False).exclude(author=request.user).exists()
     context = {
         "user_profile": request.user,
         "chats": chats,
+        "unread_chat": unread_chat,
         "adaptive_navigation": "Мои сообщения"
     }
     return render(request, 'profile_dialogs.html', context)
@@ -345,6 +349,7 @@ def get_all_dialogs(request):
 def view_message(request, chat_id, chat_name):
     '''Показывает все сообщения внутри открытого диалога'''
     chat = get_object_or_404(Chat, id=chat_id, members=request.user)
+    Message.objects.filter(chat=chat, is_read=False).exclude(author=request.user).update(is_read=True)
     context = {
         "chat": chat,
     }

@@ -543,6 +543,10 @@ function removeImg(event) {
     let target = event.target
     if (target.classList.contains("delete_img")) {
         target.parentElement.remove()
+        // removeImages = document.getElementsByName(target.dataset.name)
+        // removeImages.forEach((item) => {
+        //     item.parentElement.remove()
+        // })
         if (target.parentElement.children[1].classList.contains("main_img")) {
             if (document.querySelector(".photo_preview").childElementCount !== 0) {
                 document
@@ -578,6 +582,31 @@ function removeImg(event) {
         target.classList.add("main_img")
         mainImg = target
     }
+}
+
+function pathSend (data) {
+    if (window.location.href.includes('editing_an_ad')){
+           return fetch(`${window.location.origin}/api/v1/update_advertisement/`,
+               {
+            method: "PATCH",
+            headers: {
+                "X-CSRFToken": getCookie("csrftoken"),
+            },
+            body: data,
+        }
+               )
+        }
+    else if (window.location.href.includes('place_an_ad')) {
+        return fetch(`${window.location.origin}/api/v1/save_advertisement/`,
+               {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": getCookie("csrftoken"),
+            },
+            body: data,
+        }
+               )
+        }
 }
 
 const addAdvForm = document.getElementById("add_adver")
@@ -620,27 +649,7 @@ function saveAdvertisement() {
     if (data.getAll("photo").length <= 1 && !data.get("photo").name) {
         data.delete("photo")
     }
-    fetch(
-        window.location.href ===
-        `${window.location.protocol}//${window.location.host}/advertisement/editing_an_ad/${
-            document.getElementById("add_adver").dataset.advertisement
-        }/`
-            ? `${window.location.protocol}//${window.location.host}/api/v1/update_advertisement/`
-            : `${window.location.protocol}//${window.location.host}/api/v1/save_advertisement/`,
-        {
-            method:
-                window.location.href ===
-                `${window.location.protocol}//${window.location.host}/advertisement/editing_an_ad/${
-                    document.getElementById("add_adver").dataset.advertisement
-                }/`
-                    ? "PATCH"
-                    : "POST",
-            headers: {
-                "X-CSRFToken": getCookie("csrftoken"),
-            },
-            body: data,
-        }
-    )
+    pathSend(data)
         .then((response) => response.json())
         .then((data) => {
             blockModals.classList.remove("modal__active")
@@ -979,6 +988,34 @@ function saveAdvertisement() {
                         }
                     }
                 }
+            }
+            if (msg.data.error.advertisement_error) {
+                document.querySelector(".create_advertisement").innerHTML = `
+        <div class="advertisement_notification-success">
+                    <svg width="34.833332" height="34.833313" viewBox="0 0 34.8333 34.8333" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                        <defs>
+                            <filter id="filter_8_7_dd" x="4.316090" y="8.224854" width="26.510229" height="26.510254" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+                                <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+                                <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+                                <feOffset dx="0" dy="4"/>
+                                <feGaussianBlur stdDeviation="1.33333"/>
+                                <feComposite in2="hardAlpha" operator="out" k2="-1" k3="1"/>
+                                <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0"/>
+                                <feBlend mode="normal" in2="BackgroundImageFix" result="effect_dropShadow_1"/>
+                                <feBlend mode="normal" in="SourceGraphic" in2="effect_dropShadow_1" result="shape"/>
+                            </filter>
+                        </defs>
+                        <circle id="circle" cx="17.416666" cy="17.416626" r="16.666666" fill="#FF0000" fill-opacity="1.000000"/>
+                        <circle id="circle" cx="17.416666" cy="17.416626" r="16.666666" stroke="#FF0000" stroke-opacity="1.000000" stroke-width="1.500000" stroke-linejoin="round"/>
+                        <g filter="url(#filter_8_7_dd)"/>
+                        <path id="Линия 1" d="M9.57121 25.48L25.5712 9.47998" stroke="#FFFFFF" stroke-opacity="1.000000" stroke-width="2.500000" stroke-linecap="round"/>
+                        <path id="Линия 2" d="M9.57121 9.47998L24.5712 25.48" stroke="#FFFFFF" stroke-opacity="1.000000" stroke-width="2.500000" stroke-linecap="round"/>
+                    </svg>
+        ${msg.data.error.advertisement_error.text}
+        <a href=${msg.data.error.advertisement_error.link} class="continue__link submit__btn">${msg.data.error.advertisement_error.link_text}</a>
+    </div>
+`
+            window.scrollTo(0, 0)
             }
         })
 }

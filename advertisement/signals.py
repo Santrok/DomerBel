@@ -1,3 +1,4 @@
+import os
 from django.core.cache import cache
 from django.db.models.signals import post_delete, post_save, pre_delete
 from django.dispatch import receiver
@@ -42,7 +43,11 @@ def object_post_save_handler(sender, **kwargs):
 @receiver(pre_delete, sender=Advertisement)
 def publication_photo_delete(sender, instance, **kwargs):
     """ Удаление файлов перед удалением экземпляра объявления """
+    image_folder = os.path.dirname(instance.preview_image.path) if instance.preview_image else None
     instance.preview_image.delete(False)
+    if image_folder and os.path.exists(image_folder) and os.path.isdir(image_folder):
+        if not os.listdir(image_folder):
+            os.rmdir(image_folder)
 
 
 @receiver(pre_delete, sender=PhotoAdvertisement)
