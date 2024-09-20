@@ -42,6 +42,15 @@ def save_advertisement_task(user, data, additional_information, processed_photo)
                 if not os.listdir(folder_path):  # Если папка пуста
                     os.rmdir(folder_path)  # Удаляем папку
     except Exception as e:
+
+        if other_images:
+            for photo in other_images:
+                os.remove(photo)
+            folder_path = os.path.dirname(other_images[0])  # Получаем путь к папке, в которой был файл
+
+            if not os.listdir(folder_path):  # Если папка пуста
+                os.rmdir(folder_path)  # Удаляем папку
+
         html_content = render_to_string(
             "asend_create_advertisement_error.html",
             context={"activation_title": data['title'], "url": env_keys.get("URL")},
