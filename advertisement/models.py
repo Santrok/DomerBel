@@ -56,7 +56,7 @@ class Advertisement(DirtyFieldsMixin, models.Model):
     date_of_create = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания объявления')
     date_of_delete = models.DateTimeField(blank=True, null=True, verbose_name='Дата удаления объявления')
     date_of_deactivate = models.DateTimeField(blank=True, null=True, verbose_name='Дата деактивации объявления')
-    moderated = models.BooleanField(default=False, verbose_name='Прошло модерацию')
+    moderated = models.BooleanField(verbose_name='Прошло модерацию', null=True, blank=True)
     is_active = models.BooleanField(default=False, verbose_name='Объявление активно')
     vip = models.BooleanField(default=False, verbose_name="Сделать VIP-объявлением")
     highlight_ad = models.BooleanField(default=False, verbose_name="Выделить объявление")

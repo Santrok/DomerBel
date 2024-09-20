@@ -2,8 +2,11 @@ import os
 from django.core.cache import cache
 from django.db.models.signals import post_delete, post_save, pre_delete
 from django.dispatch import receiver
+from django.template.loader import render_to_string
 
 from advertisement.models import Category, Region, Advertisement, PhotoAdvertisement, BadWords
+from config.settings import env_keys
+from users.tasks import send_email_task
 
 
 @receiver(post_delete, sender=Category)
@@ -55,3 +58,32 @@ def publication_photo_delete(sender, instance, **kwargs):
     """ Удаление файлов перед удалением экземпляра
     дополнительного изображения объявления """
     instance.photo.delete(False)
+
+
+@receiver(post_save, sender=Advertisement)
+def notify_moderation_result(sender, instance, **kwargs):
+    if 'moderated' in instance.get_dirty_fields() and instance.moderated == True:
+        print('письмо ушло в пользователю прошло модерацию')
+
+        html_content = render_to_string(
+            "asend_notify_moderation_result.html",
+            context={"activation_title": instance.title, "result": True, "url": env_keys.get("URL")},
+        )
+
+        send_email_task(chat_title='Объявление прошло модерацию',
+                        recipient=instance.email,
+                        text_content=html_content,
+                        html_content=html_content)
+
+    elif 'moderated' in instance.get_dirty_fields() and instance.moderated == False:
+        print('письмо ушло в пользователю не прошло модерацию')
+
+        html_content = render_to_string(
+            "asend_notify_moderation_result.html",
+            context={"activation_title": instance.title, "result": False, "url": env_keys.get("URL")},
+        )
+
+        send_email_task(chat_title='Объявление не прошло модерацию',
+                        recipient=instance.email,
+                        text_content=html_content,
+                        html_content=html_content)
