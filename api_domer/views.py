@@ -7,7 +7,7 @@ from django.core.mail import send_mail
 from django.db.models.expressions import result
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
-
+from django.template.loader import render_to_string
 from django.urls import reverse_lazy
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
@@ -33,6 +33,7 @@ from main_page_domer.models import ReasonOfComplaint
 from users.models import User, UserFavorites, Chat, Message
 from advertisement.tasks import save_many_ads_from_zip_task, save_many_ads_from_excel_task
 from config.celery import app
+from users.tasks import send_email_task
 
 
 # Отдаёт список городов type='Город' по id выбранной области type='Область' из модели Region
@@ -225,32 +226,23 @@ def password_reset(request):
         uid = urlsafe_base64_encode(force_bytes(user.pk))
         token = default_token_generator.make_token(user)
         activation_url = reverse_lazy('users:password_reset_confirm', kwargs={'uidb64': uid, 'token': token})
-        try:
-            send_mail(
-                subject='Восстановление пароля',
-                message=f'''
-                Вы получили это письмо, потому что Вы (или кто-то другой) запросили восстановление пароля от учётной записи 
-                на сайте {url}, которая связана с этим адресом электронной почты.
-                
-                Для восстановления пароля перейдите по данной ссылке: 
-                
-                {url}{activation_url}
-                
-                Спасибо, что используете наш сайт!
-                
-                Команда сайта {url}
-                
-                
-                Если вы не запрашивали восстановление пароля, то проигнорируйте это сообщение''',
-                from_email=None,
-                recipient_list=[email],
-                fail_silently=False)
-        except:
-            raise serializers.ValidationError({"error": 'Что-то пошло не так. Попробуйте еще раз!'})
-        else:
-            return Response({'success': 'На ваш адрес электронной почты было отправлено письмо для восстановления '
-                                        'пароля. Если письмо не пришло, проверьте папку спам.'},
-                            status=status.HTTP_200_OK)
+
+        html_content = render_to_string(
+            "asend_reset_password.html",
+            context={"activation_url": activation_url, "url": url},
+        )
+        text_content = render_to_string(
+            "asend_reset_password.html",
+            context={"activation_url": activation_url, "url": url},
+        )
+
+        send_email_task.delay(chat_title='Восстановление пароля на сайте Домер.бел',
+                                                   recipient=email,
+                                                   text_content=text_content, html_content=html_content)
+        return Response({'success': 'На ваш адрес электронной почты было отправлено письмо для восстановления '
+                                    'пароля. Если письмо не пришло, проверьте папку спам.'},
+                        status=status.HTTP_200_OK)
+
     else:
         raise serializers.ValidationError(
             {"errors": password_reset_serializer.errors})
@@ -310,13 +302,22 @@ def save_complaint(request):
         user = serializer.validated_data.get("user")
         advertisement = serializer.validated_data.get("advertisement")
 
-        subject = f'Жалоба от пользователя {user} на объявление  id={advertisement.id}. Причина: {reason} '
+        subject = f'Жалоба от пользователя {user} на объявление  id={advertisement.id}.'
         message = text
 
-        try:
-            send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [settings.EMAIL_HOST_USER])
-        except smtplib.SMTPException as error:
-            return Response({'errors': str(error)}, status=status.HTTP_400_BAD_REQUEST)
+        html_content = render_to_string(
+            "asend_complaint.html",
+            context={"message": message, "subject": subject, "reason": reason, "url": env_keys.get("URL")},
+        )
+        text_content = render_to_string(
+            "asend_complaint.html",
+            context={"message": message, "subject": subject, "reason": reason, "url": env_keys.get("URL")},
+        )
+
+        send_email_task.delay(chat_title="Жалоба",
+                              recipient=settings.EMAIL_HOST_USER,
+                              text_content=text_content,
+                              html_content=html_content)
 
         return Response({'success': 'Ваша жалоба на объявление отправлена администрации сайта'},
                         status=status.HTTP_201_CREATED)
