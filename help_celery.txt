@@ -3,3 +3,11 @@ python -m celery -A config worker -l info
 
 запускает переодические задачи
 celery -A config beat -l info
+
+
+# Под винду
+    # запуск селери
+    python -m celery -A config worker --pool=solo -l info
+
+    # поднять контенер
+    docker run -d -p 6379:6379 redis
