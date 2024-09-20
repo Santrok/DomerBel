@@ -1,6 +1,8 @@
 import codecs
 import json
 from pprint import pprint
+
+from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 import random
 from datetime import datetime, timedelta
@@ -10,17 +12,16 @@ from django.http import Http404
 from django.shortcuts import render, get_object_or_404
 from django.utils.timezone import get_current_timezone
 
+from config.settings import env_keys
 from main_page_domer.forms import ComplaintForm
 from main_page_domer.models import ReasonOfComplaint
 
 from .models import Advertisement, Category, Region, Spisok, Element, ElementTwo, Field,  BadWords, ErrorFile
-from .tasks import save_many_ads_from_zip_task, save_many_ads_from_excel_task
 from .utils import sorted_by_number, variables_for_paginator, sorted_by_date_or_price, sorted_by, \
     get_region_variables, where_to_look, search_additional_information, annotating_field
 from .forms import UploadFileForm
 from .models import UploadFile
-import openpyxl
-from zipfile import ZipFile
+
 
 
 def get_advertisement_page(request):
@@ -349,85 +350,16 @@ def search_result(request):
     return response
 
 
-
+@login_required
 def get_bulk_import_of_ads(request):
     """Страница массового импорта объявлений"""
+    files  = UploadFile.objects.select_related('errorfile').filter(user = request.user).order_by('time_upload_file')
+    url = env_keys.get('URL')
     context = {
+        'files': files,
         'form': UploadFileForm(),
+        'url' : url,
     }
-    file = ErrorFile.objects.filter(user=request.user).last()
-
-    if file != None and file.status == False:
-        path = file.file[2:]
-        context['file'] = f'http://127.0.0.1:8000//{path}'
-        context['error'] = True
-        context['answer_error'] = 'Во время последней загрузки файлов несколько объявлений не были сохранены. Чтобы посмотреть объявления с ошибками скачайте файл.'
-
-    # if request.method == 'POST':
-    #     form = UploadFileForm(request.POST, request.FILES)
-    #     if form.is_valid():
-    #         if form.cleaned_data.get("file").name.endswith('xlsx'):
-    #             '''Работа с электронной таблицей'''
-    #             try:
-    #                 uploud_file = form.cleaned_data.get("file")
-    #                 book = openpyxl.open(uploud_file,read_only=True)
-    #                 save_file = UploadFile(file=uploud_file, user=request.user)
-    #                 save_file.save()
-    #                 ads = save_many_ads_from_excel_task.delay(uploud_file=f'./media/{save_file.file.name}',
-    #                                                           id=request.user.id,
-    #                                                           first_name=request.user.first_name,
-    #                                                           phone_number=request.user.phone_number,
-    #                                                           email=request.user.email)
-    #
-    #                 save_file.delete()
-    #                 if file != None and file.status == False:
-    #                     file.status = True
-    #                     file.save(update_fields=["status"])
-    #                 result = ads.get()
-    #                 if result != True:
-    #                     path = result.get('file')[1][1:]
-    #                     context['answer_error'] = 'Несколько объявлений не были сохранены. Чтобы посмотреть объявления с ошибками скачайте файл.'
-    #                     context['file'] = f'http://127.0.0.1:8000//{path}'
-    #                     context['error'] = True
-    #                 else:
-    #                     context['answer'] = 'Объявления успешно сохранены'
-    #                     context['error'] = False
-    #             except:
-    #                 context['answer'] = 'Невозможно прочитать файл.'
-    #                 context['error'] = False
-    #         elif form.cleaned_data.get("file").name.endswith('zip'):
-    #             '''Работа с электронным архивом'''
-    #             try:
-    #                 uploud_zip = form.cleaned_data.get("file")
-    #                 with ZipFile(uploud_zip,'r') as zip:
-    #                     files_from_zip = zip.namelist()
-    #                 save_zip = UploadFile(file=uploud_zip, user=request.user)
-    #                 save_zip.save()
-    #                 ads = save_many_ads_from_zip_task.delay(uploud_zip=f'./media/{save_zip.file.name}',
-    #                                                         id=request.user.id,
-    #                                                         first_name=request.user.first_name,
-    #                                                         phone_number=request.user.phone_number,
-    #                                                         email=request.user.email)
-    #                 save_zip.delete()
-    #                 if file != None and file.status == False:
-    #                     file.status = True
-    #                     file.save(update_fields=["status"])
-    #                 result = ads.get()
-    #                 if result != True:
-    #                     path = result.get('file')[1][1:]
-    #                     context['answer_error'] = 'Несколько объявлений не были сохранены. Чтобы посмотреть объявления с ошибками скачайте файл.'
-    #                     context['file'] = f'http://127.0.0.1:8000//{path}'
-    #                     context['error'] = True
-    #                 else:
-    #                     context['answer'] = 'Объявления успешно сохранены'
-    #                     context['error'] = False
-    #             except:
-    #                 context['answer'] = 'Невозможно прочитать файл'
-    #                 context['error'] = False
-    #     else:
-    #         context['answer'] = 'Ошибка при загрузке файла. Убедитесь, что загружаемый файл необходимого расширения'
-    # else:
-    #     form = UploadFileForm()
     return render(request=request,
                   template_name='bulk_import_ads.html',
                   context = context)
@@ -437,9 +369,11 @@ def get_instructions_for_bulk_import_of_ads(request):
     '''функция, которая отдает страницу с инструкцией по массовому импорту объявлений'''
     oblast = Region.objects.filter(level=0)
     categories = Category.objects.filter(level=0)
+    url = env_keys.get('URL')
     context = {
         'oblast': oblast,
         'categories': categories,
+        'url': url,
     }
     return render(request=request,
                   template_name='instructions_for_bulk_import_of_ads.html',
