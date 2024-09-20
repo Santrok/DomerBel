@@ -1,9 +1,11 @@
+import os
+import shutil
 import pytz
 from celery import shared_task
 from django.utils import timezone
 from datetime import datetime
 from advertisement.models import Advertisement, Store
-from advertisement.functions_for_bulk_import import delete_everything_in_folder, save_many_ads_from_excel, \
+from advertisement.functions_for_bulk_import import save_many_ads_from_excel, \
     save_many_ads_from_zip
 from advertisement.models import ErrorFile
 
@@ -53,12 +55,17 @@ def deactivate_store():
 def delete_everything_in_folder_beat():
     '''Таска удаляющая все файлы из папки для "files_for_bulk_import_of_ads"
     Таска отрабатывает раз в сутки в 00.00'''
-    delete_everything_in_folder()
+    path = './media/files_for_bulk_import_of_ads'
+    shutil.rmtree(path)
+    os.mkdir(path)
+
 
 @shared_task()
 def save_many_ads_from_excel_task(uploud_file,id,first_name,phone_number,email):
     '''Таска сохраняющая объявления из экселя'''
+    print('start')
     result = save_many_ads_from_excel(uploud_file,id,first_name,phone_number,email)
+    print('finish')
     return result
 
 @shared_task()

@@ -8,7 +8,7 @@ from api_domer.views import get_list_of_cities, get_list_of_categories, get_regi
     update_advertisement, registration_user, login_user, logout_user, password_reset, add_to_favorite, \
     get_subcategory_list, \
     get_element_list, delete_from_favorite, ReasonOfComplaintView, save_complaint, create_chat, get_bulk_import_of_ads, \
-    status_unread_message_user
+    get_result_task, status_unread_message_user
 
 urlpatterns = [
     path('get_city_list/<int:id>', get_list_of_cities, name='list_of_cities'),
@@ -33,6 +33,7 @@ urlpatterns = [
     path('save_complaint/', save_complaint),
     path('create_chat/', create_chat),
     path('get_bulk_import_of_ads/', get_bulk_import_of_ads),
+    path('get_result_task/<str:id>', get_result_task),
     path('status_unread_message_user/', status_unread_message_user),
 
 ]

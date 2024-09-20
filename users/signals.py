@@ -1,11 +1,4 @@
-# from django.contrib.auth.models import Group
-# from django.db import transaction
-import smtplib
-from email.mime.image import MIMEImage
-from pathlib import Path
-
 from django.contrib.auth.models import Group
-from django.core.mail import send_mail, EmailMultiAlternatives
 from django.db import transaction
 from django.db.models.signals import post_save
 from django.dispatch import receiver
@@ -13,6 +6,7 @@ from django.template.loader import render_to_string
 
 from config.settings import env_keys
 from users.models import User, UserFavorites, Message
+from users.tasks import send_email_task
 
 
 @receiver(post_save, sender=User)
@@ -44,37 +38,20 @@ def save_user_favorites(sender, instance, **kwargs):
 def save_user_favorites(sender, instance, **kwargs):
     members = instance.chat.members.all()
 
-    member1 = None
+    recipient = None
     for member in members:
         if member != instance.author:
-            member1 = member
+            recipient = member
 
     html_content = render_to_string(
         "asend_message.html",
-        context={"instance": instance, "members": member1, "url": env_keys.get("URL")},
+        context={"instance": instance, "members": recipient, "url": env_keys.get("URL")},
     )
     text_content = render_to_string(
         "asend_message.html",
-        context={"instance": instance, "members": member1, "url": env_keys.get("URL")},
+        context={"instance": instance, "members": recipient, "url": env_keys.get("URL")},
     )
-    try:
-        msg = EmailMultiAlternatives(
-            instance.chat.advertisement.title if instance.chat.advertisement else instance.chat.store.title,
-            text_content,
-            None,
-            [member1.email],
-        )
-        path = Path('main_page_domer/static/img/logo.png')
-        with path.open("rb") as file:
-            content = MIMEImage(file.read())
-            content.add_header("Content-ID", "<logo.png>")
-            content.add_header("Content-Type", "image/png")
-            content.add_header("Content-Disposition", "inline")
-            content.add_header("Content-Transfer-Encoding", "base64")
-            msg.attach(content)
 
-        msg.attach_alternative(html_content, "text/html")
-        msg.send()
-    except smtplib.SMTPException:
-        pass
+    chat_title = instance.chat.advertisement.title if instance.chat.advertisement else instance.chat.store.title
+    send_email_task.delay(chat_title=chat_title, recipient=recipient.email, text_content=text_content, html_content=html_content)
 
