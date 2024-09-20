@@ -1,23 +1,15 @@
 import calendar
 from datetime import datetime, timedelta, timezone
-
 import PIL
 from dirtyfields import DirtyFieldsMixin
 from django.contrib.postgres.fields import ArrayField, HStoreField
-
 from django.contrib.postgres.indexes import GinIndex, OpClass, BrinIndex
 from django.contrib.postgres.search import SearchVectorField, SearchVector
-
 from django.db import models
 from django.db.models.functions import Upper
-
 from django.urls import reverse
-from django.utils.timezone import make_aware
-
 from mptt.models import MPTTModel, TreeForeignKey
-
 from django.conf import settings
-
 from .utils_for_models import add_watermark_to_photo, upload_to, unique_slugify, convert_image_to_avif
 from users.validators import validate_phone
 from .validators import validate_words
@@ -71,9 +63,11 @@ class Advertisement(DirtyFieldsMixin, models.Model):
     special_accommodation = models.BooleanField(default=False, verbose_name="Спецразмещение")
     raise_in_search = models.BooleanField(default=False, verbose_name="Поднять в поиске")
     additional_information = models.JSONField()
-    additional_information_view = ArrayField(ArrayField(models.CharField(max_length=500)), blank=True, null=True, editable=False)
-    description = models.TextField(verbose_name='Описание',validators=[validate_words])
-    video_link = models.URLField(blank=True, null=True, verbose_name='Ссылка на видео')  # хранит строку, которая представляет валидный URL-адрес
+    additional_information_view = ArrayField(ArrayField(models.CharField(max_length=500)), blank=True, null=True,
+                                             editable=False)
+    description = models.TextField(verbose_name='Описание', validators=[validate_words])
+    video_link = models.URLField(blank=True, null=True,
+                                 verbose_name='Ссылка на видео')  # хранит строку, которая представляет валидный URL-адрес
     search_vector = SearchVectorField(null=True, editable=False)
     search_title_vector = SearchVectorField(null=True, editable=False)
 
@@ -235,7 +229,8 @@ class Store(models.Model):
     contact_name = models.CharField(max_length=100, verbose_name='Контактное лицо')
     email = models.EmailField(verbose_name='E-Mail')
     phone_num = models.CharField(max_length=255, blank=True, null=True, verbose_name='Номер телефона')
-    video_link = models.URLField(blank=True, null=True, verbose_name='Ссылка на YouTube видео')  # хранит строку, которая представляет валидный URL-адрес
+    video_link = models.URLField(blank=True, null=True,
+                                 verbose_name='Ссылка на YouTube видео')  # хранит строку, которая представляет валидный URL-адрес
     logo_image = models.ImageField(upload_to=upload_to, blank=True, null=True, verbose_name='Логотип')
     date_of_create = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
     date_of_deactivate = models.DateTimeField(blank=True, null=True, verbose_name='Дата деактивации')
