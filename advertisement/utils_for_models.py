@@ -28,6 +28,7 @@ def upload_to(instance, filename):
     return os.path.join(basedir, save_folder, filename)
 
 
+
 def add_watermark_to_photo(photo):
     """Добавление водяного знака на изображение"""
     photo = Image.open(photo)

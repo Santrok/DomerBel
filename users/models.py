@@ -121,7 +121,7 @@ class Chat(models.Model):
         verbose_name_plural = 'Чаты'
 
     def __str__(self):
-        return self.chat_name
+        return f'{self.chat_name}'
 
     def get_absolute_url(self):
         return reverse('users:messages', kwargs={'chat_name': self.chat_name,'chat_id': self.pk})

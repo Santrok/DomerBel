@@ -81,7 +81,7 @@
                                 </li>
                             {% endif %}
                         {% endif %}
-                        <li class="profile__aside-nav-list-item">
+                        <li class="profile__aside-nav-list-item dialog-item">
                             <a href="{% url 'users:dialogs' %}">
                                 Диалоги
                             </a>
@@ -111,6 +111,11 @@
                         <li class="profile__aside-nav-list-item">
                             <a href="{% url 'users:favorites' %}">
                                 Избранное
+                            </a>
+                        </li>
+                        <li class="profile__aside-nav-list-item">
+                            <a href="{% url 'bulk_import' %}">
+                                Массовый импорт обявлений
                             </a>
                         </li>
                     </ul>
