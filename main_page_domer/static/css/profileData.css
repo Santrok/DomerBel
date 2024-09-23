@@ -16,6 +16,7 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
+  max-width: 460px;
 }
 .form__wrapper button {
   max-width: 150px;
@@ -68,7 +69,13 @@
 }
 
 @media (max-width: 992px) {
+  .form__wrapper form {
+    max-width: none;
+  }
   .form__wrapper input {
-    flex: 1 1 800px;
+    max-width: none;
+  }
+  .form__fields {
+    max-width: none;
   }
 }/*# sourceMappingURL=profileData.css.map */
