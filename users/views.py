@@ -14,6 +14,7 @@ from advertisement.forms import StoreForm
 from advertisement.models import Region, Category, Advertisement, Store, Field
 from advertisement.utils import where_to_look, search_additional_information, \
     annotating_field, variables_for_paginator
+from paid_service.forms import PaidForm
 from .models import User, Chat, Message
 
 from main_page_domer.models import PhotoPublication, Publication, photo_publications_delete
@@ -42,13 +43,15 @@ def get_personal_account_page(request):
     paginator = Paginator(ads, 20)
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
+    form = PaidForm()
 
     context = {
         "ads": ads,
         "active_ads_quantity": active_ads_quantity,
         "inactive_ads_quantity": inactive_ads_quantity,
         "page_obj": page_obj,
-        "adaptive_navigation": "Мои объявления. Активные объявления"
+        "adaptive_navigation": "Мои объявления. Активные объявления",
+        'form': form
     }
     return render(request, 'profile_user.html', context)
 
@@ -132,13 +135,15 @@ def search_of_ads_in_personal_account(request):
                                        request.GET.get('page'),
                                        20)
 
+    form = PaidForm()
     context = {
         "active_ads_quantity": advertisement_queryset.count() if not active else advertisement_queryset,
         "inactive_ads_quantity": advertisement_queryset_inactive if not active else advertisement_queryset_inactive.count(),
         "page_obj": page_obj,
         "query": query,
         "active": active,
-        'adaptive_navigation': f'Результаты поиска. {"Активные объявления" if not active else "Архивые объявления"}'
+        'adaptive_navigation': f'Результаты поиска. {"Активные объявления" if not active else "Архивые объявления"}',
+        'form': form,
     }
     return render(request, 'personal_account_search_results.html', context)
 
@@ -168,6 +173,8 @@ def get_personal_account_inactive_adds_page(request):
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
 
+    form = PaidForm()
+
     context = {
         "ads": ads,
         "inactive_ads_quantity": inactive_ads_quantity,
@@ -175,7 +182,8 @@ def get_personal_account_inactive_adds_page(request):
         "locations": locations,
         "category_list": category_list,
         "page_obj": page_obj,
-        "adaptive_navigation": "Мои объявления. Архивные объявления"
+        "adaptive_navigation": "Мои объявления. Архивные объявления",
+        "form": form,
     }
     return render(request, 'inactive_adds.html', context)
 

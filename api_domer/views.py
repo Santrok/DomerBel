@@ -4,6 +4,7 @@ import openpyxl
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
+from django.db import transaction
 from django.db.models.expressions import result
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
@@ -360,7 +361,6 @@ def create_chat(request):
         return Response({'success': 'Ваше сообщение отправлено'}, status=status.HTTP_200_OK)
     else:
         return Response({"errors": serializer.errors})
-
 
 
 @api_view(['POST'])
