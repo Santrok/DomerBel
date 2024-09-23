@@ -12,7 +12,7 @@ requestReportBtn.addEventListener("click", () => {
   const formData = new FormData(form)
   const id = document.querySelector('.details__advertisement-id').textContent
   formData.append("advertisement", id.split(":")[1])
-  formData.append("recaptcha", formData.get("g-recaptcha-response"));
+  // formData.append("recaptcha", formData.get("g-recaptcha-response"));
   fetch(`${window.location.protocol}//${window.location.host}/api/v1/save_complaint/`, {
   method: "POST",
     headers: {
@@ -40,9 +40,8 @@ requestReportBtn.addEventListener("click", () => {
       registrationButton.removeEventListener("click", registration);
     }
     delete data["recaptcha"];
-    // reseting recaptcha field
     grecaptcha.reset();
-    generatingErrorSField(data, ".modals__signIn");
+    generatingErrorSField(data, ".modals__report-advertisement");
   });
 })
 

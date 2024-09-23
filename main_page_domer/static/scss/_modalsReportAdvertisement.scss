@@ -15,15 +15,15 @@
     display: flex;
     flex-direction: column;
     gap: 5px;
-  }
-
-  & p {
-    @include fonts($defaultColor, 14px, 400);
-
-    & span {
-      color: red;
+    & p {
+      @include fonts($defaultColor, 14px, 400);
+  
+      & span {
+        color: red;
+      }
     }
   }
+
 
   & input, select, textarea {
     padding: 10px;

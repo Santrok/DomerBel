@@ -6362,7 +6362,7 @@
         "kind": 6,
         "importPath": "api_domer.serializers",
         "description": "api_domer.serializers",
-        "peekOfCode": "class ReasonOfComplaintSerializer(serializers.Serializer):\n    class Meta:\n        model = ReasonOfComplaint\n        fields = '__all__'\nclass ComplaintSerializer(serializers.ModelSerializer):\n    user = serializers.EmailField(required=True)\n    recaptcha = ReCaptchaV2Field(write_only=True)\n    class Meta:\n        model = Complaint\n        fields = ['reason', 'text', 'user', 'advertisement', 'recaptcha']",
+        "peekOfCode": "class ReasonOfComplaintSerializer(serializers.Serializer):\n    class Meta:\n        model = ReasonOfComplaint\n        fields = '__all__'\nclass ComplaintSerializer(serializers.ModelSerializer):\n    user = serializers.EmailField(required=True)\n    # recaptcha = ReCaptchaV2Field(write_only=True)\n    class Meta:\n        model = Complaint\n        # fields = ['reason', 'text', 'user', 'advertisement', 'recaptcha']",
         "detail": "api_domer.serializers",
         "documentation": {}
     },
@@ -6371,7 +6371,7 @@
         "kind": 6,
         "importPath": "api_domer.serializers",
         "description": "api_domer.serializers",
-        "peekOfCode": "class ComplaintSerializer(serializers.ModelSerializer):\n    user = serializers.EmailField(required=True)\n    recaptcha = ReCaptchaV2Field(write_only=True)\n    class Meta:\n        model = Complaint\n        fields = ['reason', 'text', 'user', 'advertisement', 'recaptcha']\n    def create(self, validated_data):\n        validated_data.pop('recaptcha')\n        return Complaint.objects.create(**validated_data)\n    def validate(self, data):",
+        "peekOfCode": "class ComplaintSerializer(serializers.ModelSerializer):\n    user = serializers.EmailField(required=True)\n    # recaptcha = ReCaptchaV2Field(write_only=True)\n    class Meta:\n        model = Complaint\n        # fields = ['reason', 'text', 'user', 'advertisement', 'recaptcha']\n        fields = ['reason', 'text', 'user', 'advertisement']\n    def create(self, validated_data):\n        # validated_data.pop('recaptcha')\n        return Complaint.objects.create(**validated_data)",
         "detail": "api_domer.serializers",
         "documentation": {}
     },
