@@ -9,8 +9,8 @@ modalsBlock.addEventListener('mousedown', (event) => {
             i.classList.remove('modal__active') || i.classList.remove("modals__active-grid");
             const fieldError = [...document.querySelectorAll('.modals__signIn-error'), ...document.querySelectorAll(".modals__fields-error"), ...document.querySelectorAll('.paid__form-error')]
             fieldError.forEach(item => {
-                if (item.classList.contains('paid__form-error')){
-                    item.classList.remove("paid__form-error")
+                if (item.classList.contains('paid__form-error') || item.classList.contains('modals__fields-error')) {
+                    item.classList.remove("paid__form-error") || item.classList.remove("modals__fields-error")
                 }
                 else {
                     item.remove()
