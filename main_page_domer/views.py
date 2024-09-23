@@ -5,32 +5,32 @@ from datetime import datetime
 from http.client import HTTPResponse
 
 import PIL
+from datetime import datetime
 import requests
 from django.contrib import messages
-
-from django.contrib.postgres.aggregates import ArrayAgg
-
-from django.contrib.postgres.fields import ArrayField
-from django.core.mail import send_mail
 from django.core.paginator import Paginator
-from django.db.models import Q, F, Count, Func, Value, ExpressionWrapper
+from django.db.models import Q, F
 from django.db.models.fields.json import KT
+from django.http import Http404
 from django.db.models.functions import Concat, Length
 from django.forms import CharField
 from django.http import Http404, HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
+from django.template.loader import render_to_string
 from django.utils.timezone import make_aware
 from requests.auth import HTTPBasicAuth
 from rest_framework import status
 
+from config import settings
+from config.settings import env_keys
 from users.models import User
 from advertisement.models import Advertisement, Region, Category, Store, ElementTwo, PhotoAdvertisement, Field, Element
 from advertisement.utils import (get_region_variables, sorted_by, sorted_by_number, sorted_by_date_or_price,
                                  variables_for_paginator, where_to_look, search_additional_information,
                                  annotating_field)
-from config import settings
 from main_page_domer.forms import FeedbackForm
-from main_page_domer.models import Help, Publication, AboutOrganization
+from main_page_domer.models import Help, Publication
+from users.tasks import send_email_task
 
 
 def get_main_page(request):
@@ -519,14 +519,23 @@ def get_feedback_page(request):
         new_feedback_form = FeedbackForm(request.POST)
 
         if new_feedback_form.is_valid():
-            subject = f'"{new_feedback_form.cleaned_data.get("subject")}" от пользователя {new_feedback_form.cleaned_data.get("email")}'
+            subject = new_feedback_form.cleaned_data.get("subject")
+            sender = new_feedback_form.cleaned_data.get("email")
             message = new_feedback_form.cleaned_data.get("message")
 
-            try:
-                send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [settings.EMAIL_HOST_USER])
-            except smtplib.SMTPException as error:
-                return render(request, 'feedback.html',
-                              {'feedback_form': new_feedback_form, 'error_message': str(error)})
+            html_content = render_to_string(
+                "asend_feedbeck.html",
+                context={"message": message, "subject": subject, "sender": sender, "url": env_keys.get("URL")},
+            )
+            text_content = render_to_string(
+                "asend_feedbeck.html",
+                context={"message": message, "subject": subject, "sender": sender, "url": env_keys.get("URL")},
+            )
+
+            send_email_task.delay(chat_title="Обратная связь",
+                                  recipient=settings.EMAIL_HOST_USER,
+                                  text_content=text_content,
+                                  html_content=html_content)
 
             messages.success(request, f"Ваше письмо отправлено администрации сайта ")
             return redirect("feedback")

@@ -32,19 +32,12 @@ function requestResetPassword() {
     .then((response) => response.json())
     .then((data) => {
       if(data.errors) throw new Error(JSON.stringify(data.errors));
-      if (data.error) {
-          modalResetPassowrd.classList.remove("modal__active");
-          document.querySelector(".modals__notification").classList.add("modals__active-resetPassword");
-            document.querySelector(".modals__notification-success").style.display = 'none'
-            document.querySelector(".modals__notification-error").style.display = 'flex'
-          document.querySelector(".modals__notification-text").innerHTML = data.error;
-        }
-      else if(data.success) {
+      if(data.success) {
         modalResetPassowrd.classList.remove("modal__active");
         document.querySelector(".modals__notification").classList.add("modals__active-resetPassword");
-        document.querySelector(".modals__notification-success").style.display = 'flex'
-            document.querySelector(".modals__notification-error").style.display = 'none'
         document.querySelector(".modals__notification-text").innerHTML = data.success;
+        modalResetPassowrd.reset()
+          grecaptcha.reset(1)
       }
     })
     .catch((error) => {
