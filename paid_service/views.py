@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 from pprint import pprint
 
 import requests
@@ -144,10 +145,13 @@ def send_paid(request):
             }
         }
         response = requests.post(url, auth=HTTPBasicAuth(store_id, secret_key), json=payload)
-        return Response({"redirect": response.json().get('checkout').get('redirect_url')})
+        if response.status_code == 201:
+            return Response({"redirect": response.json().get('checkout').get('redirect_url')})
+        else:
+            raise serializers.ValidationError(
+                {"errors": {"connect": "Ошибка связи с банком. Пожалуйста, попробуйте позже!"}})
     else:
-        raise serializers.ValidationError(
-            {"errors": serializer.errors})
+        raise serializers.ValidationError({"errors": serializer.errors})
 
 
 @api_view(['GET', 'POST'])
@@ -159,14 +163,17 @@ def get_bepaid(request):
     token = request.query_params.get('token')
     information = requests.get(f'{url}{token}', auth=HTTPBasicAuth(store_id, secret_key))
     additional = information.json().get('checkout').get('order').get('additional_data')
-    cost = [i.key_word for i in Service.objects.all()]
+    services = Service.objects.all()
+    keys_date_of_deactivate = {"vip": "date_of_deactivate_vip",
+                               "highlight_ad": "date_of_deactivate_highlight_ad",
+                               "special_accommodation": "date_of_deactivate_special_accommodation",
+                               "raise_in_search": "date_of_deactivate_raise_in_search"}
     accommodation = {}
-    pprint(additional)
-    for service in cost:
-        if additional.get(service):
-            accommodation[service] = additional.get(service)
+    for service in services:
+        if additional.get(service.key_word):
+            accommodation[service.key_word] = additional.get(service.key_word)
+            accommodation[keys_date_of_deactivate.get(service.key_word)] = datetime.now() + timedelta(days=service.validity_period)
 
     Advertisement.objects.filter(id=additional.get('advertisement')).update(**accommodation)
 
-    pprint(additional)
     return HttpResponseRedirect(redirect_to='http://127.0.0.1:8000/')

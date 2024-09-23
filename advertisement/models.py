@@ -59,9 +59,13 @@ class Advertisement(DirtyFieldsMixin, models.Model):
     moderated = models.BooleanField(verbose_name='Прошло модерацию', null=True, blank=True)
     is_active = models.BooleanField(default=False, verbose_name='Объявление активно')
     vip = models.BooleanField(default=False, verbose_name="Сделать VIP-объявлением")
+    date_of_deactivate_vip = models.DateTimeField(blank=True, null=True, verbose_name="Дата деактивации VIP")
     highlight_ad = models.BooleanField(default=False, verbose_name="Выделить объявление")
+    date_of_deactivate_highlight_ad = models.DateTimeField(blank=True, null=True, verbose_name="Дата деактивации выделения")
     special_accommodation = models.BooleanField(default=False, verbose_name="Спецразмещение")
+    date_of_deactivate_special_accommodation = models.DateTimeField(blank=True, null=True, verbose_name="Дата деактивации спецразмещения")
     raise_in_search = models.BooleanField(default=False, verbose_name="Поднять в поиске")
+    date_of_deactivate_raise_in_search = models.DateTimeField(blank=True, null=True, verbose_name="Дата поднятия в поиске")
     additional_information = models.JSONField()
     additional_information_view = ArrayField(ArrayField(models.CharField(max_length=500)), blank=True, null=True,
                                              editable=False)
