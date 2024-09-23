@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'advertisement',
     'api_domer',
     'chat',
+    'paid_service',
 ]
 
 MIDDLEWARE = [
@@ -172,7 +173,7 @@ INTERNAL_IPS = [
 
 ]
 
-CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_ALL_ORIGINS = True
 
 AUTH_USER_MODEL = 'users.User'
 

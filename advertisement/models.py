@@ -123,42 +123,42 @@ class Advertisement(DirtyFieldsMixin, models.Model):
             finally:
                 super(Advertisement, self).save(*args, **kwargs)
 
-    def save(self, *args, **kwargs):
-        # Установка дат до сохранения
-        self.date_of_deactivate = self.date_of_create + timedelta(days=60)
-        self.date_of_delete = self.date_of_create + timedelta(days(180))
-
-        # Обновление slug
-        self.slug = unique_slugify(self, self.title)
-
-        # Обновление additional_information_view, если есть изменения
-        if 'additional_information' in self.get_dirty_fields():
-            self.additional_information_view = list(self.additional_information.items())
-
-        # Объединение всех операций в одну транзакцию для атомарности
-        with transaction.atomic():
-            # Сохранение основной информации
-            super().save(*args, **kwargs)
-
-            # Обработка изображения
-            if self.preview_image:
-                # Конвертация в AVIF формат
-                if not self.preview_image.url.lower().endswith('avif'):
-                    convert_image_to_avif(photo=self.preview_image)
-                    self.save(update_fields=['preview_image'])
-
-                # Добавление водяного знака
-                try:
-                    photo = add_watermark_to_photo(self.preview_image.path)
-                    photo.save(self.preview_image.path, "avif")
-                except (FileNotFoundError, PIL.UnidentifiedImageError):
-                    self.preview_image = None
-                    self.save(update_fields=['preview_image'])
-
-            # Обновление векторов поиска после сохранения данных
-            self.search_vector = SearchVector('title', 'description')
-            self.search_title_vector = SearchVector('title')
-            super().save(*args, **kwargs)
+    # def save(self, *args, **kwargs):
+    #     # Установка дат до сохранения
+    #     self.date_of_deactivate = self.date_of_create + timedelta(days=60)
+    #     self.date_of_delete = self.date_of_create + timedelta(days=180)
+    #
+    #     # Обновление slug
+    #     self.slug = unique_slugify(self, self.title)
+    #
+    #     # Обновление additional_information_view, если есть изменения
+    #     if 'additional_information' in self.get_dirty_fields():
+    #         self.additional_information_view = list(self.additional_information.items())
+    #
+    #     # Объединение всех операций в одну транзакцию для атомарности
+    #     with transaction.atomic():
+    #         # Сохранение основной информации
+    #         super().save(*args, **kwargs)
+    #
+    #         # Обработка изображения
+    #         if self.preview_image:
+    #             # Конвертация в AVIF формат
+    #             if not self.preview_image.url.lower().endswith('avif'):
+    #                 convert_image_to_avif(photo=self.preview_image)
+    #                 self.save(update_fields=['preview_image'])
+    #
+    #             # Добавление водяного знака
+    #             try:
+    #                 photo = add_watermark_to_photo(self.preview_image.path)
+    #                 photo.save(self.preview_image.path, "avif")
+    #             except (FileNotFoundError, PIL.UnidentifiedImageError):
+    #                 self.preview_image = None
+    #                 self.save(update_fields=['preview_image'])
+    #
+    #         # Обновление векторов поиска после сохранения данных
+    #         self.search_vector = SearchVector('title', 'description')
+    #         self.search_title_vector = SearchVector('title')
+    #         super().save(*args, **kwargs)
 
 
 class Category(MPTTModel):

@@ -543,6 +543,101 @@
   gap: 10px;
 }
 
+.paid__modal {
+  position: relative;
+  width: 100%;
+  max-width: 450px;
+  display: none;
+  flex-direction: column;
+  gap: 10px;
+  background: white;
+  padding: 40px;
+  border-radius: 8px;
+}
+.paid__modal button {
+  margin-top: 10px;
+}
+
+.remove__modal-btn {
+  display: flex;
+  gap: 10px;
+}
+
+.paid__form {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 2px;
+}
+.paid__form label {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.paid__form label span {
+  font-family: "Trebuchet MS", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  color: black;
+  font-size: 16px;
+  white-space: pre-line;
+}
+
+.paid__form-title {
+  display: flex;
+  flex-direction: column;
+  min-width: 200px;
+}
+
+.paid__form-title-label {
+  font-family: "Trebuchet MS", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  color: black;
+  font-size: 16px;
+  white-space: pre-line;
+}
+
+.paid__form-title-period {
+  font-family: "Trebuchet MS", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  color: #6e6d6d;
+  font-size: 13px;
+  white-space: pre-line;
+}
+
+.paid__form-cost {
+  font-family: "Trebuchet MS", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  color: black;
+  font-size: 16px;
+  white-space: pre-line;
+}
+
+.paid__form-total {
+  font-family: "Trebuchet MS", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  color: black;
+  font-size: 16px;
+  align-self: flex-end;
+}
+
+.paid__form-error {
+  border: 1px solid red;
+  border-radius: 8px;
+}
+
+.error__text {
+  font-family: "Trebuchet MS", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  color: red;
+  font-size: 14px;
+}
+
 .modals__active-grid {
   display: grid;
   transition: 0.5s ease;

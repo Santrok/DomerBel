@@ -1,19 +1,15 @@
 import smtplib
-from pprint import pprint
 from zipfile import ZipFile
 
 import openpyxl
-import requests
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
 from django.db import transaction
-from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
-from requests.auth import HTTPBasicAuth
 from rest_framework.decorators import api_view
 from rest_framework import status, serializers
 from rest_framework.generics import ListAPIView
@@ -452,23 +448,3 @@ def status_unread_message_user(request):
     unread_chat = Message.objects.filter(chat__in=chats, is_read=False).exclude(author=request.user).exists()
     return Response({"status": unread_chat})
 
-
-@api_view(['GET', 'POST'])
-def get_bepaid(request):
-    store_id = '28723'
-    secret_key = 'b08c17bc466d5cd391fc49cd77b6910e19c78b133dfceda65fcc4057af32b0af'
-
-    url = 'https://checkout.bepaid.by/ctp/api/checkouts/'
-    token = request.query_params.get('token')
-    information = requests.get(f'{url}{token}', auth=HTTPBasicAuth(store_id, secret_key))
-    additional = information.json().get('checkout').get('order').get('additional_data')
-    cost = ['vip', 'highlight_ad', 'special_accommodation', 'raise_in_search']
-    accommodation = {}
-    for service in cost:
-        accommodation[service] = additional.get(service)
-
-    Advertisement.objects.filter(id=additional.get('id_advertisement')).update(**accommodation)
-
-
-    pprint(additional)
-    return HttpResponseRedirect(redirect_to='http://127.0.0.1:8000/')

@@ -7,8 +7,15 @@ modalsBlock.addEventListener('click', (event) => {
         const activeList = [...document.querySelectorAll('.modal__active'), ...document.querySelectorAll('.modals__active-grid')];
         for(let i of activeList) {
             i.classList.remove('modal__active') || i.classList.remove("modals__active-grid");
-            const fieldErorr = document.querySelectorAll('.modals__signIn-error')
-            fieldErorr.forEach(item => item.remove())
+            const fieldError = [...document.querySelectorAll('.modals__signIn-error'), ...document.querySelectorAll(".modals__fields-error"), ...document.querySelectorAll('.paid__form-error')]
+            fieldError.forEach(item => {
+                if (item.classList.contains('paid__form-error')){
+                    item.classList.remove("paid__form-error")
+                }
+                else {
+                    item.remove()
+                }
+            })
             if (i.tagName === 'FORM') {
                 i.reset()
             }
@@ -26,6 +33,7 @@ document.addEventListener("keyup", (event) => {
                 i.reset()
                 document.querySelectorAll(".modals__signIn-error").forEach(item => item.remove())
                 document.querySelectorAll(".modals__fields-error").forEach(item => item.classList.remove("modals__fields-error"))
+                document.querySelectorAll(".paid__form-error").forEach(item => item.classList.remove("paid__form-error"))
             }
         }
         document.body.style.overflow = 'auto';  

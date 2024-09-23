@@ -103,6 +103,10 @@
   @include fonts($asideExitColor, 14px, 400);
 }
 
+.main__info-advertisement-list-item-about-services {
+  cursor: pointer;
+}
+
 .main__info-advertisement-list-item-img {
    flex: 0 0 200px; 
    display: block;
