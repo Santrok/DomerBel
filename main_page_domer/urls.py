@@ -20,4 +20,5 @@ urlpatterns = [
     path('download/', download_advertis),
     path('download_user/', dowload_user),
     path('download_photo/', dowload_photo),
+    path('test_view/', test_view),
 ]
