@@ -48,20 +48,24 @@ def list_shown_vip():
         # Получаем все вип объявления
         all_ads_vip = Advertisement.objects.filter(vip=True)
 
-        if all_ads_vip.exists():
+        # Проверяем если ли вообще объявления
+        if not all_ads_vip.exists():
             print('no vip')
+            return
 
         # Получаем активные для показа vip объявления
-        all_ads_shown_vip = all_ads_vip.filter(shown_vip=True)
+        total_vip_count = all_ads_vip.count()
+        all_ads_shown_vip_count = all_ads_vip.filter(shown_vip=True).count()
 
         # Если vip объявлений меньше или равно 3 и есть all_ads_shown_vip False
-        if all_ads_shown_vip.count() <= 3 and all_ads_shown_vip.count() != all_ads_vip.count():
-            print(f'Меньше 3: {all_ads_shown_vip.count()} - {all_ads_vip.count()}')
+        if 3 >= total_vip_count != all_ads_shown_vip_count:
+            print(f'Меньше 3: {all_ads_shown_vip_count} - {all_ads_vip.count()}')
             all_ads_vip.update(shown_vip=True)
+            return
 
-        # Если больше 3 то запускай процедуру изменения показываемых объявлений
-        if all_ads_shown_vip.count() > 3:
-            print(f'Меняю: {all_ads_vip.filter(shown_vip=True).count()}')
+        # Если больше 3, то запускай процедуру изменения показываемых объявлений
+        if total_vip_count > 3:
+            print(f'Меняю: {all_ads_shown_vip_count}')
 
             # Деактивируем все вип объявления
             all_ads_vip.update(shown_vip=False)
@@ -72,18 +76,20 @@ def list_shown_vip():
             # Проверяем, сколько раз объявление было показано (все ли объявления показаны одинаково)
             min_shown_count = vip_ads.first().shown_vip_count
 
+            # Возможно это не надо от слова совсем !!!!!!!!!!!!!!!!!!
             # Сбрасываем счетчик если объявления показаны больше 100 раз
             if min_shown_count > 100:
                 all_ads_vip.update(shown_vip_count=0)
+                vip_ads = all_ads_vip.order_by('shown_vip_count')
 
             # Отбираем три объявления с минимальным количеством показов
             ads_to_show = vip_ads.filter(shown_vip_count=min_shown_count)[:3]
 
             # Если нашлось меньше трёх объявлений, добираем оставшиеся из списка
             if ads_to_show.count() < 3:
-                remaining_ads = vip_ads.exclude(id__in=ads_to_show).order_by('shown_vip_count')[
-                                :3 - ads_to_show.count()]
-                ads_to_show = list(ads_to_show) + list(remaining_ads)
+                remaining_ads = vip_ads.exclude(id__in=ads_to_show
+                                                ).order_by('shown_vip_count')[:3 - ads_to_show.count()]
+                ads_to_show = ads_to_show.union(remaining_ads)
 
             # Обновляем счетчик показов для выбранных объявлений
             Advertisement.objects.filter(id__in=[ad.id for ad in ads_to_show]
@@ -91,31 +97,6 @@ def list_shown_vip():
                                                   shown_vip_count=F('shown_vip_count') + 1)
         else:
             print(f'Не меняю: {all_ads_vip.filter(shown_vip=True).count()}')
-    # list_vip = Advertisement.objects.filter(shown_vip=True, vip=True).order_by('id')
-    # for shown_vip in list_vip[:3]:
-    #     print(shown_vip.id)
-    # # if len(list_vip) == 0:
-    # #     Advertisement.objects.filter(id__in=range(1, 11), vip=True, shown_vip=False).update(shown_vip=True)
-    # #     return
-    #
-    # if len(list_vip) >= 3:
-    #     Advertisement.objects.filter(id__in=[i.id for i in list(list_vip)[:3]]).update(shown_vip=False)
-    #     return
-    #
-    # if len(list_vip) == 1:
-    #     all_vip = Advertisement.objects.filter(vip=True, shown_vip=True).order_by('id')
-    #     id_list = [i.id for i in all_vip]
-    #     Advertisement.objects.filter(id__in=range(1, 11), vip=True, shown_vip=False).update(shown_vip=True)
-    #     Advertisement.objects.filter(id__in=id_list, vip=True).update(shown_vip=False)
-    #
-    # if len(list_vip) == 2:
-    #     all_vip = Advertisement.objects.filter(vip=True, shown_vip=True).order_by('id')
-    #     id_list = [i.id for i in all_vip]
-    #     Advertisement.objects.filter(id__in=range(1, 11), vip=True, shown_vip=False).update(shown_vip=True)
-    #     Advertisement.objects.filter(id__in=id_list, vip=True).update(shown_vip=False)
-    #
-    # if len(list_vip) == 0:
-    #     Advertisement.objects.filter(id__in=range(1, 11), vip=True, shown_vip=False).update(shown_vip=True)
 
 
 @shared_task()
