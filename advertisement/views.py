@@ -52,7 +52,7 @@ def get_advertisement_page(request):
         'contact_name',
         'counter_views',
         'phone_num')
-    vip_advertisement = advertisement_queryset.filter(vip=True, is_active=True, moderated=True)
+    vip_advertisement = advertisement_queryset.filter(vip=True, shown_vip=True, is_active=True, moderated=True)
     category_queryset = Category.objects.add_related_count(Category.objects.root_nodes(),
                                                            Advertisement,
                                                            'category',

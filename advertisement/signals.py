@@ -62,9 +62,8 @@ def publication_photo_delete(sender, instance, **kwargs):
 
 @receiver(post_save, sender=Advertisement)
 def notify_moderation_result(sender, instance, **kwargs):
+    """ Проверяем прошло ли письмо модерацию или нет и отправляем письмо пользователю """
     if 'moderated' in instance.get_dirty_fields() and instance.moderated == True:
-        print('письмо ушло в пользователю прошло модерацию')
-
         html_content = render_to_string(
             "asend_notify_moderation_result.html",
             context={"activation_title": instance.title, "result": True, "url": env_keys.get("URL")},
@@ -76,8 +75,6 @@ def notify_moderation_result(sender, instance, **kwargs):
                         html_content=html_content)
 
     elif 'moderated' in instance.get_dirty_fields() and instance.moderated == False:
-        print('письмо ушло в пользователю не прошло модерацию')
-
         html_content = render_to_string(
             "asend_notify_moderation_result.html",
             context={"activation_title": instance.title, "result": False, "url": env_keys.get("URL")},
@@ -87,3 +84,23 @@ def notify_moderation_result(sender, instance, **kwargs):
                         recipient=instance.email,
                         text_content=html_content,
                         html_content=html_content)
+
+
+@receiver(post_save, sender=Advertisement)
+def reset_all_shown_vip_count(sender, instance, **kwargs):
+    """
+    Функция для установки минимальное значение показанных объявлений новому VIP и
+    обнуляем счетчик после отключения VIP.
+    """
+
+    # Устанавливаем минимальное значение показанных объявлений новому VIP
+    if instance.vip:
+        vip_ads = Advertisement.objects.filter(vip=True).order_by('shown_vip_count')
+        # Если больше одного объявления, то устанавливаем количество просмотров, равное минимальному количеству просмотров
+        if vip_ads.count() > 1:
+            min_shown_count = vip_ads[1].shown_vip_count
+            Advertisement.objects.filter(vip=True).update(shown_vip_count=min_shown_count)
+
+    # Обнуляем счетчик после отключения VIP
+    if instance.vip == False and instance.shown_vip_count > 0 or instance.shown_vip:
+        Advertisement.objects.filter(id=instance.id).update(shown_vip=False, shown_vip_count=0)
