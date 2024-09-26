@@ -43,7 +43,7 @@ class GroupedModelChoiceField(ModelChoiceField):
         if isinstance(choices_groupby, str):
             choices_groupby = attrgetter(choices_groupby)
         elif not callable(choices_groupby):
-            raise TypeError('choices_groupby must either be a str or a callable accepting a single argument')
+            raise TypeError('choice_groupby должен быть либо строкой, либо вызываемым объектом, принимающим один аргумент')
         self.iterator = partial(GroupedModelChoiceIterator, groupby=choices_groupby)
         super().__init__(*args, **kwargs)
 
