@@ -1,7 +1,7 @@
 import codecs
 import json
 from pprint import pprint
-
+import logging
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 import random
@@ -21,6 +21,9 @@ from .utils import sorted_by_number, variables_for_paginator, sorted_by_date_or_
     get_region_variables, where_to_look, search_additional_information, annotating_field
 from .forms import UploadFileForm
 from .models import UploadFile
+
+# настройка логирования приложения
+logger = logging.getLogger(__name__)
 
 
 
@@ -151,6 +154,7 @@ def get_advertisement_by_category(request, category_slug):
 
 
 def get_page_place_an_ad(request):
+    logger.warning(f'user: {request.user}, action: save ads')
     category_list = Category.objects.filter(level__lte=1)
     oblast = Region.objects.filter(level=0)
     categories = Category.objects.filter(level=0)
@@ -213,6 +217,7 @@ def get_advertisement_details_page(request, slug):
 
 
 def editing_an_ad(request, id):
+    logger.warning(f'user: {request.user}, action: editing an ads, id ads: {id}')
     advertisement = Advertisement.objects.get(id=id)
 
     region = Region.objects.all()
@@ -353,6 +358,7 @@ def search_result(request):
 @login_required
 def get_bulk_import_of_ads(request):
     """Страница массового импорта объявлений"""
+    logger.warning(f'user: {request.user}, action: bulk import ads')
     files  = UploadFile.objects.select_related('errorfile').filter(user = request.user).order_by('time_upload_file')
     url = env_keys.get('URL')
     context = {

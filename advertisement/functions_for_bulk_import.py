@@ -1,7 +1,5 @@
 import time
 import openpyxl
-from OpenSSL.rand import status
-
 from advertisement.models import Advertisement, Category, Region, Spisok, ElementTwo, PhotoAdvertisement, ErrorFile, \
     UploadFile
 from advertisement.validators import validate_words
@@ -11,7 +9,6 @@ from zipfile import ZipFile
 from advertisement.utils_for_models import upload_to
 import os
 import xlsxwriter
-
 
 def check_article(ads,value_author):
     advertisements = Advertisement.objects.filter(author=value_author)

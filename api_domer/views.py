@@ -1,3 +1,4 @@
+import logging
 import smtplib
 from zipfile import ZipFile
 import openpyxl
@@ -31,6 +32,12 @@ from advertisement.tasks import save_many_ads_from_zip_task, save_many_ads_from_
 from config.celery import app
 
 
+# настройка логирования приложения
+logger = logging.getLogger(__name__)
+
+
+# настройка логирования приложения
+logger = logging.getLogger(__name__)
 # Отдаёт список городов type='Город' по id выбранной области type='Область' из модели Region
 @api_view(["GET", "POST"])
 def get_list_of_cities(request, id):
@@ -120,9 +127,11 @@ def save_advertisement(request):
                 else:
                     additional_photo = PhotoAdvertisement(photo=photo, advertisement=new_advertisement)
                     additional_photo.save()
+        logger.info(f'User: {request.user}, action: save ads, id ads {new_advertisement.id}')
         return Response({"success": "<p>Ваше объявление отправлено на модерацию.</p><p>После модерации оно появится в списке объявлений.</p>",
                          "link": f"{env_keys.get('URL')}", "link_text": "Вернуться на главную"}, status=status.HTTP_201_CREATED)
     else:
+        logger.info(f'User: {request.user}, action: save ads, error {serializer.errors}')
         raise serializers.ValidationError(
             {"error_additional": serializer_additional_error.data, "error": serializer.errors})
 

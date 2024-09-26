@@ -1,5 +1,7 @@
 from pathlib import Path
 import os
+
+from django.conf.global_settings import LOGGING
 from dotenv import dotenv_values
 
 env_keys = dotenv_values()
@@ -338,3 +340,52 @@ CHANNEL_LAYERS = {
 }
 
 FILE_UPLOAD_MAX_MEMORY_SIZE = 4 * 1024 * 1024
+
+# настрокойка логов
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'simple':{
+            'format': '!!!!!!!! Time: {asctime}, level: {levelname}, {message}, name: {name}, line: {lineno}',
+            'style': '{',
+        },
+        'api':{
+            'format': '&&&&&&&&& Time: {asctime}, level: {levelname}, {message}, name: {name}, line: {lineno}',
+            'style': '{',
+        },
+    },
+    'handlers':{
+        'writer_logs_ads':{
+            'level': 'WARNING',
+            'class': 'logging.FileHandler',
+            'filename': 'logs/ads_log.log',
+            # 'filename': '/home/lendows/Desktop/log/ads_log.log',
+            'formatter': 'simple',
+        },
+        'writer_logs_api':{
+            'level': 'WARNING',
+            'class': 'logging.FileHandler',
+            'filename': 'logs/api_log.log',
+            'formatter': 'api',
+        },
+        'console_logs':{
+            'level': 'INFO',
+            'class': 'logging.StreamHandler',
+            'formatter': 'api',
+            # 'formatter': 'simple',
+        },
+    },
+    'loggers': {
+        'advertisement':{
+            'handlers': ['writer_logs_ads','console_logs'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+        'api_domer':{
+            'handlers': ['writer_logs_api','console_logs'],
+            'level': 'INFO',
+            'propagate': True,
+        }
+    },
+}
