@@ -336,7 +336,6 @@ def get_all_dialogs(request):
                                                                                'advertisement', 'store',
                                                                                'store__category')
     unread_chat = Message.objects.filter(chat__in=chats, is_read=False).exclude(author=request.user).exists()
-    print(unread_chat)
     context = {
         "user_profile": request.user,
         "chats": chats,

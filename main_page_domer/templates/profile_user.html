@@ -113,11 +113,13 @@
                                 Избранное
                             </a>
                         </li>
+                    {% if user.entity %}
                         <li class="profile__aside-nav-list-item">
                             <a href="{% url 'bulk_import' %}">
-                                Массовый импорт обявлений
+                                Массовый импорт объявлений
                             </a>
                         </li>
+                    {% endif %}
                     </ul>
                 </nav>
             </aside>

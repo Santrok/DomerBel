@@ -3,12 +3,12 @@ import os
 import pillow_avif
 from io import BytesIO
 from datetime import date
-
 from uuid import uuid4
 from slugify import slugify
 from PIL import Image, ImageDraw, ImageFont
 from hashlib import md5
 from django.core.files.base import ContentFile
+
 
 # from .models import Advertisement
 
@@ -44,6 +44,7 @@ def add_watermark_to_photo(photo):
     photo = photo.convert(mode="RGBA")
     photo = Image.alpha_composite(photo, watermark_text)
     return photo
+
 
 def unique_slugify(instance, slug):
     """ Генератор уникальных SLUG для

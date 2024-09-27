@@ -339,19 +339,19 @@ CHANNEL_LAYERS = {
     }
 }
 
-FILE_UPLOAD_MAX_MEMORY_SIZE = 4 * 1024 * 1024
+FILE_UPLOAD_MAX_MEMORY_SIZE = 20 * 1024 * 1024
 
 # настрокойка логов
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
     'formatters': {
-        'simple':{
-            'format': '!!!!!!!! Time: {asctime}, level: {levelname}, {message}, name: {name}, line: {lineno}',
+        'advertisement':{
+            'format': 'Time: {asctime}, level: {levelname}, {message}, name: {name}, line: {lineno}',
             'style': '{',
         },
         'api':{
-            'format': '&&&&&&&&& Time: {asctime}, level: {levelname}, {message}, name: {name}, line: {lineno}',
+            'format': 'Time: {asctime}, level: {levelname}, {message}, name: {name}, line: {lineno}',
             'style': '{',
         },
     },
@@ -360,8 +360,7 @@ LOGGING = {
             'level': 'WARNING',
             'class': 'logging.FileHandler',
             'filename': 'logs/ads_log.log',
-            # 'filename': '/home/lendows/Desktop/log/ads_log.log',
-            'formatter': 'simple',
+            'formatter': 'advertisement',
         },
         'writer_logs_api':{
             'level': 'WARNING',
@@ -373,12 +372,11 @@ LOGGING = {
             'level': 'INFO',
             'class': 'logging.StreamHandler',
             'formatter': 'api',
-            # 'formatter': 'simple',
         },
     },
     'loggers': {
         'advertisement':{
-            'handlers': ['writer_logs_ads','console_logs'],
+            'handlers': ['writer_logs_ads'],
             'level': 'INFO',
             'propagate': True,
         },

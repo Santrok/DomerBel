@@ -1,6 +1,6 @@
 import logging
 import smtplib
-from zipfile import ZipFile
+from zipfile import ZipFile, error
 import openpyxl
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.tokens import default_token_generator
@@ -8,6 +8,7 @@ from django.core.mail import send_mail
 from django.db.models.expressions import result
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
+from django.template.loader import render_to_string
 from django.urls import reverse_lazy
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
@@ -15,29 +16,32 @@ from rest_framework.decorators import api_view
 from rest_framework import status, serializers
 from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
-from advertisement.models import Region, Category, Field, ElementTwo, PhotoAdvertisement, Advertisement, Store, Element, \
-    UploadFile, ErrorFile
-from api_domer.serializers import GetListOfCitiesSerializer, GetListOfCategoriesSerializer, FieldSerialier, \
-    ElementTwoSerializer, AdvertisementSerializer, StoreSerializer, \
-    UserRegisterSerializer, UserLoginSerializer, PasswordResetSerializer, \
-    FavoriteSerializer, ElementSerializer, GetListOfCategoriesFieldsSerializer, ReasonOfComplaintSerializer, \
-    ComplaintSerializer, MessageSerializer, UploadFileSerializer, StatusUnreadUserMessage
 
-from api_domer.utils import validate_additional_information
+from advertisement.models import (Region, Category, Field, ElementTwo, PhotoAdvertisement, Advertisement, Store,
+                                  Element, UploadFile, ErrorFile)
+from api_domer.serializers import (GetListOfCitiesSerializer, GetListOfCategoriesSerializer, FieldSerialier,
+                                   ElementTwoSerializer, AdvertisementSerializer, StoreSerializer,
+                                   UserRegisterSerializer, UserLoginSerializer, PasswordResetSerializer,
+                                   FavoriteSerializer, ElementSerializer, GetListOfCategoriesFieldsSerializer,
+                                   ReasonOfComplaintSerializer, ComplaintSerializer, MessageSerializer,
+                                   UploadFileSerializer, StatusUnreadUserMessage)
+from api_domer.tasks import save_advertisement_task, update_advertisement_task
+
+from api_domer.utils import validate_additional_information, save_temp_photo
 from config import settings
 from config.settings import env_keys
 from main_page_domer.models import ReasonOfComplaint
 from users.models import User, UserFavorites, Chat, Message
 from advertisement.tasks import save_many_ads_from_zip_task, save_many_ads_from_excel_task
 from config.celery import app
+from users.tasks import send_email_task
 
 
 # настройка логирования приложения
 logger = logging.getLogger(__name__)
 
 
-# настройка логирования приложения
-logger = logging.getLogger(__name__)
+
 # Отдаёт список городов type='Город' по id выбранной области type='Область' из модели Region
 @api_view(["GET", "POST"])
 def get_list_of_cities(request, id):
@@ -54,7 +58,7 @@ def get_list_of_categories(request):
     return Response(serializer.data)
 
 
-# Отдает список дочерних категорий по родительскому id (для поиска магазиноа и поиска в ЛК)
+# Отдает список дочерних категорий по родительскому id (для поиска магазинов и поиска в ЛК)
 @api_view(["GET", "POST"])
 def get_categories_for_search(request, id):
     categories = Category.objects.filter(parent_id=id)
@@ -110,34 +114,38 @@ def save_advertisement(request):
     keys_to_delete.extend(serializer.data.keys())
     serializer_additional_error, additional_information = validate_additional_information(keys_to_delete,
                                                                                           additional_information)
-    if serializer.is_valid() and not serializer_additional_error.data:
-        additional_information_save = Field.objects.filter(id__in=additional_information).order_by('id')
-        photo_list = serializer.validated_data.pop('photo', None)
-        for i in additional_information_save:
-            additional_information[i.title] = ', '.join(additional_information.pop(f'{i.id}'))
-        new_advertisement = Advertisement(author=None if request.user.is_anonymous else request.user,
-                                          additional_information=additional_information,
-                                          **serializer.validated_data)
-        new_advertisement.save()
-        if photo_list:
-            for photo in photo_list:
-                if photo.name == request.data.get("preview_img"):
-                    new_advertisement.preview_image = photo
-                    new_advertisement.save()
-                else:
-                    additional_photo = PhotoAdvertisement(photo=photo, advertisement=new_advertisement)
-                    additional_photo.save()
-        logger.info(f'User: {request.user}, action: save ads, id ads {new_advertisement.id}')
-        return Response({"success": "<p>Ваше объявление отправлено на модерацию.</p><p>После модерации оно появится в списке объявлений.</p>",
-                         "link": f"{env_keys.get('URL')}", "link_text": "Вернуться на главную"}, status=status.HTTP_201_CREATED)
+    if not serializer.errors and not serializer_additional_error.data:
+        data = dict(serializer.validated_data)
+        data['category_id'] = data.pop('category').id
+        data['region_id'] = data.pop('region').id
+        photo_list = data.pop('photo', None)
+
+        # Временно сохраняем фотографии что-бы переделать их адреса в celery
+        processed_photo = save_temp_photo(photo_list, request.data.get("preview_img")) if photo_list else None
+
+        return Response({
+            "success": "<p>Ваше объявление отправлено на модерацию.</p><p>После модерации оно появится в списке объявлений.</p>",
+            "link": f"{env_keys.get('URL')}", "link_text": "Вернуться на главную"},
+            status=status.HTTP_201_CREATED)
     else:
-        logger.info(f'User: {request.user}, action: save ads, error {serializer.errors}')
+        # записываем лог ошибки
+        logger.warning(f'User: {request.user}, action: save ads, error_additional: {serializer_additional_error.data}, error {serializer.errors}')
         raise serializers.ValidationError(
             {"error_additional": serializer_additional_error.data, "error": serializer.errors})
 
 
 @api_view(['PATCH'])
 def update_advertisement(request):
+    # Проверяем есть ли такое объявление у пользователя если нет выдаем ошибку
+    try:
+        advertisement = Advertisement.objects.get(id=request.data.get('advertisement'), author=request.user.id)
+    except Advertisement.DoesNotExist as error:
+        logger.warning(f'user: {request.user}, action: update ads, error: {error}')
+        raise serializers.ValidationError(
+            {"error": {'advertisement_error': {"text": "<p>Ошибка сохранения объявления, попробуйте еще раз</p>",
+                                               "link": f"{env_keys.get('URL')}/users/personal_account/",
+                                               "link_text": "В мой кабинет"}}})
+
     additional_information = dict(request.data.copy())
     serializer = AdvertisementSerializer(data=request.data)
     serializer.is_valid()
@@ -145,50 +153,38 @@ def update_advertisement(request):
     keys_to_delete.extend(serializer.data.keys())
     serializer_additional_error, additional_information = validate_additional_information(keys_to_delete,
                                                                                           additional_information)
-    if serializer.is_valid() and not serializer_additional_error.data:
-        additional_information_save = Field.objects.filter(id__in=additional_information).order_by('id')
-        for i in additional_information_save:
-            additional_information[i.title] = ', '.join(additional_information.pop(f'{i.id}'))
-        photo_list = serializer.validated_data.pop('photo', None)
-        deleted_images = request.data.get('deleted_images').split(',')
-        preview_img = request.data.get("preview_img")
-        Advertisement.objects.filter(author=request.user, id=request.data.get('advertisement')
-                                     ).update(moderated=False, additional_information=additional_information,
-                                              **serializer.validated_data, is_active=False)
-        advertisement = get_object_or_404(Advertisement, id=request.data.get('advertisement'))
 
-        if photo_list:
-            for photo in photo_list:
-                if photo.name == preview_img:
-                    if advertisement.preview_image not in deleted_images:
-                        PhotoAdvertisement.objects.create(photo=advertisement.preview_image,
-                                                          advertisement=advertisement)
-                    advertisement.preview_image = photo
-                    advertisement.save()
-                    preview_img = advertisement.preview_image
-                else:
-                    additional_photo = PhotoAdvertisement(photo=photo, advertisement=advertisement)
-                    additional_photo.save()
+    if not serializer.errors and not serializer_additional_error.data:
+        data = dict(serializer.validated_data)
+        data['category_id'] = data.pop('category').id
+        data['region_id'] = data.pop('region').id
+        new_photo_list = data.pop('photo', [])
+        preview_photo = request.data.get('preview_img')
+        deleted_photo = request.data.get('deleted_images').split(',') if request.data.get('deleted_images') else None
 
-        if advertisement.preview_image != preview_img:
-            if advertisement.preview_image not in deleted_images:
-                PhotoAdvertisement.objects.create(photo=advertisement.preview_image,
-                                                  advertisement=advertisement)
-            if preview_img:
-                advertisement.preview_image = preview_img
-                inst = get_object_or_404(PhotoAdvertisement, photo=preview_img)
-                PhotoAdvertisement.objects.filter(id=inst.id).update(photo=None)
-                PhotoAdvertisement.objects.filter(id=inst.id).delete()
-            else:
-                advertisement.preview_image = None
-            advertisement.save()
+        # Проверка, изменилось ли главное изображение
+        if advertisement.preview_image != preview_photo and preview_photo not in [i.name for i in new_photo_list]:
+            new_preview_photo_from_old_ones = preview_photo
+        else:
+            new_preview_photo_from_old_ones = None
 
-        if request.data.getlist('deleted_images'):
-            PhotoAdvertisement.objects.filter(photo__in=deleted_images).delete()
+        # Временно сохраняем новые фотографии что-бы переделать их адреса в celery
+        processed_photo = save_temp_photo(new_photo_list,
+                                          request.data.get("preview_img")) if new_photo_list != [] else None
 
-        return Response({"success": "<p>Ваше объявление отправлено на модерацию.</p><p>После модерации оно появится в списке объявлений.</p>",
-                         "link": f"{env_keys.get('URL')}/users/personal_account/", "link_text": "В мой кабинет"}, status=status.HTTP_201_CREATED)
+        # Вызываем задачу celery для сохранения объявлений
+        update_advertisement_task.delay(request.user.id, request.data.get('advertisement'), data,
+                                        additional_information, processed_photo, new_preview_photo_from_old_ones,
+                                        deleted_photo)
+
+        return Response({
+            "success": "<p>Ваше объявление отправлено на модерацию.</p><p>После модерации оно появится в списке объявлений.</p>",
+            "link": f"{env_keys.get('URL')}/users/personal_account/", "link_text": "В мой кабинет"},
+            status=status.HTTP_201_CREATED)
+
     else:
+        # логируем ошибку
+        logger.warning(f'user{request.user}, actionn: update ads, error_additional: {serializer_additional_error.data}, error: {serializer.errors}')
         raise serializers.ValidationError(
             {"error_additional": serializer_additional_error.data, "error": serializer.errors})
 
@@ -200,6 +196,8 @@ def registration_user(request):
         registration_serializer.save()
         return Response({'success': 'Вы успешно зарегистрированы'}, status=status.HTTP_201_CREATED)
     else:
+        # логируем ошибку
+        logger.warning(f'action: register user, errors: {registration_serializer.errors}')
         raise serializers.ValidationError(
             {"errors": registration_serializer.errors})
 
@@ -213,7 +211,8 @@ def login_user(request):
             login(request, user)
             return Response(status=status.HTTP_205_RESET_CONTENT)
         else:
-            raise serializers.ValidationError({"errors": {"email": "Пользователь не найден. Проверьте правильность введенных данных.", "password": ''}})
+            raise serializers.ValidationError({"errors": {
+                "email": "Пользователь не найден. Проверьте правильность введенных данных.", "password": ''}})
     else:
         raise serializers.ValidationError({"errors": login_serializer.errors})
 
@@ -223,7 +222,9 @@ def logout_user(request):
     try:
         logout(request)
         return Response(status=status.HTTP_205_RESET_CONTENT)
-    except Exception:
+    except Exception as error:
+        # логируем ошибку
+        logger.error(f'action: logout user, error: {error}')
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -237,33 +238,26 @@ def password_reset(request):
         uid = urlsafe_base64_encode(force_bytes(user.pk))
         token = default_token_generator.make_token(user)
         activation_url = reverse_lazy('users:password_reset_confirm', kwargs={'uidb64': uid, 'token': token})
-        try:
-            send_mail(
-                subject='Восстановление пароля',
-                message=f'''
-                Вы получили это письмо, потому что Вы (или кто-то другой) запросили восстановление пароля от учётной записи 
-                на сайте {url}, которая связана с этим адресом электронной почты.
-                
-                Для восстановления пароля перейдите по данной ссылке: 
-                
-                {url}{activation_url}
-                
-                Спасибо, что используете наш сайт!
-                
-                Команда сайта {url}
-                
-                
-                Если вы не запрашивали восстановление пароля, то проигнорируйте это сообщение''',
-                from_email=None,
-                recipient_list=[email],
-                fail_silently=False)
-        except:
-            raise serializers.ValidationError({"error": 'Что-то пошло не так. Попробуйте еще раз!'})
-        else:
-            return Response({'success': 'На ваш адрес электронной почты было отправлено письмо для восстановления '
-                                        'пароля. Если письмо не пришло, проверьте папку спам.'},
-                            status=status.HTTP_200_OK)
+
+        html_content = render_to_string(
+            "asend_reset_password.html",
+            context={"activation_url": activation_url, "url": url},
+        )
+        text_content = render_to_string(
+            "asend_reset_password.html",
+            context={"activation_url": activation_url, "url": url},
+        )
+
+        send_email_task.delay(chat_title='Восстановление пароля на сайте Домер.бел',
+                                                   recipient=email,
+                                                   text_content=text_content, html_content=html_content)
+        return Response({'success': 'На ваш адрес электронной почты было отправлено письмо для восстановления '
+                                    'пароля. Если письмо не пришло, проверьте папку спам.'},
+                        status=status.HTTP_200_OK)
+
     else:
+        # логируем ошибку
+        logger.warning(f"action: password reset, error: {password_reset_serializer.errors}")
         raise serializers.ValidationError(
             {"errors": password_reset_serializer.errors})
 
@@ -292,7 +286,7 @@ def delete_from_favorite(request):
 
 @api_view(['GET'])
 def get_element_list(request):
-    '''Отадет элементы связанные с полем по id'''
+    """Отадет элементы связанные с полем по id"""
     elements = Element.objects.filter(spisok_id__field=request.query_params.get('id'))
     serializer = ElementSerializer(elements, many=True)
     return Response(serializer.data)
@@ -300,8 +294,9 @@ def get_element_list(request):
 
 @api_view(['GET'])
 def get_subcategory_list(request):
-    '''Отдает подкатегориии и их поля по id категории'''
-    categories = Category.objects.filter(parent_id=request.query_params.get('id')).prefetch_related('field_set__spisok__element_set__elementtwo_set')
+    """Отдает подкатегориии и их поля по id категории"""
+    categories = Category.objects.filter(parent_id=request.query_params.get('id')).prefetch_related(
+        'field_set__spisok__element_set__elementtwo_set')
     serializer = GetListOfCategoriesFieldsSerializer(categories, many=True)
     return Response(serializer.data)
 
@@ -321,17 +316,28 @@ def save_complaint(request):
         user = serializer.validated_data.get("user")
         advertisement = serializer.validated_data.get("advertisement")
 
-        subject = f'Жалоба от пользователя {user} на объявление  id={advertisement.id}. Причина: {reason} '
+        subject = f'Жалоба от пользователя {user} на объявление  id={advertisement.id}.'
         message = text
 
-        try:
-            send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [settings.EMAIL_HOST_USER])
-        except smtplib.SMTPException as error:
-            return Response({'errors': str(error)}, status=status.HTTP_400_BAD_REQUEST)
+        html_content = render_to_string(
+            "asend_complaint.html",
+            context={"message": message, "subject": subject, "reason": reason, "url": env_keys.get("URL")},
+        )
+        text_content = render_to_string(
+            "asend_complaint.html",
+            context={"message": message, "subject": subject, "reason": reason, "url": env_keys.get("URL")},
+        )
+
+        send_email_task.delay(chat_title="Жалоба",
+                              recipient=settings.EMAIL_HOST_USER,
+                              text_content=text_content,
+                              html_content=html_content)
 
         return Response({'success': 'Ваша жалоба на объявление отправлена администрации сайта'},
                         status=status.HTTP_201_CREATED)
     else:
+        # логируем ошибку
+        logger.warning(f'user: {serializer.validated_data.get("user")}, action: save complaint, error: {serializer.errors}')
         return Response({"errors": serializer.errors})
 
 
@@ -369,7 +375,10 @@ def create_chat(request):
 
         return Response({'success': 'Ваше сообщение отправлено'}, status=status.HTTP_200_OK)
     else:
+        # логируем ошибку
+        logger.warning(f'user: {request.user.id}, error: {serializer.errors}')
         return Response({"errors": serializer.errors})
+
 
 
 @api_view(['POST'])
@@ -390,6 +399,8 @@ def get_bulk_import_of_ads(request):
                                                           email=request.user.email)
                 return Response({'task_id': f'{ads.task_id}'})
             except:
+                # логируем ошибку
+                logger.warning(f'user: {request.user}, action:bulk ads from file, error: incorrect file format')
                 return Response({'error': 'Невозможно прочитать файл.'})
 
         elif serializer.validated_data.get("file").name.endswith('zip'):
@@ -407,8 +418,12 @@ def get_bulk_import_of_ads(request):
                                                         email=request.user.email)
                 return Response({'task_id': f'{ads.task_id}'})
             except:
+                # логируем ошибку
+                logger.warning(f'user: {request.user}, action:bulk ads from file, error: unable to open file')
                 return Response({'error': 'Невозможно прочитать файл.'})
     else:
+        # логируем ошибку
+        logger.warning(f'user: {request.user}, action:bulk ads from file, error: incorrect file format')
         return Response({'error': 'Ошибка при загрузке файла. Убедитесь, что загружаемый файл необходимого расширения'})
 
 

@@ -1,5 +1,5 @@
 <div>
-    <div style="max-width: 600px; margin: 0 auto;">
+    <div style="max-width: 800px; margin: 0 auto;">
         <table style="">
             <tr>
                 <th>
@@ -13,19 +13,13 @@
             </tr>
         </table>
         <div style="background: lightgray; padding: 10px; border-radius: 8px;">
-            <h2 style="flex-wrap: wrap; margin: 0 10px; padding-bottom: 10px;">
-                {% if members.first_name %}{{ members.first_name }}{% else %}Пользователь{% endif %}, у вас новое сообщение об {% if instance.chat.advertisement %}объявлении "{{ instance.chat.advertisement.title }}"{% elif instance.chat.store %}магазине "{{ instance.chat.store.title }}"{% endif %}
-            </h2>
             <div style="background-color: #ffffff; padding: 10px; border-radius: 10px;">
-                <h3 style="margin: 0 10px 10px 10px;">
-                    {% if instance.author.first_name %}
-                    {{ instance.author.first_name }}
-                    {% else %}
-                    Пользователь
-                    {% endif %}
-                </h3>
                 <p style="flex-wrap: wrap; margin: 10px 0 10px 10px;">
-                    {{ instance.message }}
+                    {% if result  %}
+                        Объявление "<b>{{ activation_title }}</b>" прошло модерацию.
+                    {% else %}
+                        Объявление "<b>{{ activation_title }}</b>" не прошло модерацию.
+                    {% endif %}
                 </p>
             </div>
             <div style="padding: 20px 0 10px 0;">
