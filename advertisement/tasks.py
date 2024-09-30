@@ -120,15 +120,6 @@ def list_shown_vip_category():
             print('no vip')
             return
 
-        # dict_vip_categories = {}
-        # for all_ads_vip_cat in all_ads_vip:
-        #     if all_ads_vip_cat.category not in dict_vip_categories:
-        #         dict_vip_categories[all_ads_vip_cat.category] = []
-        #         dict_vip_categories[all_ads_vip_cat.category].append(all_ads_vip_cat)
-        #     else:
-        #         dict_vip_categories[all_ads_vip_cat.category].append(all_ads_vip_cat)
-        # print(dict_vip_categories)
-
         list_vip_categories = []
         for ads_vip in all_ads_vip:
             if ads_vip.category not in list_vip_categories:
@@ -146,7 +137,7 @@ def list_shown_vip_category():
 
             # Если vip объявлений меньше или равно 3 и есть all_ads_shown_vip False
             if 3 >= total_vip_category_count != all_ads_shown_vip_category_count:
-                print(f'Меньше 3: {all_ads_shown_vip_category_count} - {all_ads_vip.count()}')
+                print(f'Меньше 3: {all_ads_shown_vip_category_count} - {total_vip_category_count}')
                 all_ads_vip_category.update(shown_vip_category=True)
                 return
 
@@ -158,30 +149,29 @@ def list_shown_vip_category():
                 all_ads_vip_category.update(shown_vip_category=False)
 
                 # Отбираем все VIP объявления
-                vip_ads = all_ads_vip_category.order_by('shown_vip_count')
+                vip_category_ads = all_ads_vip_category.order_by('shown_vip_count')
 
                 # Проверяем, сколько раз объявление было показано (все ли объявления показаны одинаково)
-                min_shown_count = all_ads_vip_category.first().shown_vip_count
+                min_shown_count = vip_category_ads.first().shown_vip_count
 
                 # Возможно это не надо от слова совсем !!!!!!!!!!!!!!!!!!
                 # Сбрасываем счетчик если объявления показаны больше 100 раз
                 if min_shown_count > 10000:
                     all_ads_vip_category.update(shown_vip_category_count=0)
-                    vip_ads = all_ads_vip_category.order_by('shown_vip_category_count')
+                    vip_category_ads = all_ads_vip_category.order_by('shown_vip_category_count')
 
                 # Отбираем три объявления с минимальным количеством показов
-                ads_to_show = all_ads_vip_category.filter(shown_vip_category_count=min_shown_count)[:3]
+                ads_to_show = vip_category_ads.filter(shown_vip_category_count=min_shown_count)[:3]
 
                 # Если нашлось меньше трёх объявлений, добираем оставшиеся из списка
-                if all_ads_vip_category.count() < 3:
+                if ads_to_show.count() < 3:
                     remaining_ads = all_ads_vip_category.exclude(id__in=ads_to_show
                                                     ).order_by('shown_vip_category_count')[:3 - ads_to_show.count()]
                     ads_to_show = ads_to_show.union(remaining_ads)
 
                 # Обновляем счетчик показов для выбранных объявлений
-                Advertisement.objects.filter(id__in=[ad.id for ad in all_ads_vip_category]
-                                             ).update(shown_vip=True,
-                                                      category=category,
+                Advertisement.objects.filter(id__in=[ad.id for ad in ads_to_show]
+                                             ).update(shown_vip_category=True,
                                                       shown_vip_category_count=F('shown_vip_count') + 1)
             else:
                 print(f'Не меняю: {all_ads_vip_category.filter(shown_vip_category=True).count()}')

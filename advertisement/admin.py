@@ -12,7 +12,9 @@ class AdvertisementAdmin(admin.ModelAdmin):
                     'is_active',
                     'vip',
                     'shown_vip',
+                    'shown_vip_count',
                     'shown_vip_category',
+                    'shown_vip_category_count',
                     'special_accommodation',
                     'raise_in_search',
                     )
