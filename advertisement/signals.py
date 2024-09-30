@@ -89,18 +89,43 @@ def notify_moderation_result(sender, instance, **kwargs):
 @receiver(post_save, sender=Advertisement)
 def reset_all_shown_vip_count(sender, instance, **kwargs):
     """
-    Функция для установки минимальное значение показанных объявлений новому VIP и
+    Функция устанавливает количество показанных объявлений новому VIP и
     обнуляем счетчик после отключения VIP.
     """
 
     # Устанавливаем минимальное значение показанных объявлений новому VIP
-    if instance.vip:
-        vip_ads = Advertisement.objects.filter(vip=True).order_by('shown_vip_count')
-        # Если больше одного объявления, то устанавливаем количество просмотров, равное минимальному количеству просмотров
-        if vip_ads.count() > 1:
-            min_shown_count = vip_ads[1].shown_vip_count
-            Advertisement.objects.filter(vip=True).update(shown_vip_count=min_shown_count)
+    if 'vip' in instance.get_dirty_fields():
 
-    # Обнуляем счетчик после отключения VIP
-    if instance.vip == False and instance.shown_vip_count > 0 or instance.shown_vip:
-        Advertisement.objects.filter(id=instance.id).update(shown_vip=False, shown_vip_count=0)
+        if instance.vip:
+            print(111111)
+            print(Advertisement.objects.filter(id=instance.id))
+            vip_ads = Advertisement.objects.filter(moderated=True,
+                                                   is_active=True,
+                                                   vip=True).order_by('shown_vip_count')
+            vip_ads_category = Advertisement.objects.filter(category=instance.category,
+                                                            moderated=True,
+                                                            is_active=True,
+                                                            vip=True).order_by('shown_vip_category_count')
+            print(vip_ads)
+            print(vip_ads_category)
+            # Если больше одного объявления, то устанавливаем количество просмотров, равное минимальному количеству просмотров
+            if vip_ads.count() > 1:
+                print('yes')
+                min_shown_count = vip_ads[1].shown_vip_count
+                print(min_shown_count)
+                Advertisement.objects.filter(id=instance.id).update(shown_vip_count=min_shown_count)
+            if vip_ads_category.count() > 1:
+                print('yes')
+                min_shown_category_count = vip_ads[1].shown_vip_category_count
+                print(min_shown_category_count)
+                Advertisement.objects.filter(id=instance.id).update(shown_vip_category_count=min_shown_category_count)
+        else:
+            print(222222)
+            # Обнуляем счетчик после отключения VIP
+            print(Advertisement.objects.filter(id=instance.id))
+            Advertisement.objects.filter(id=instance.id).update(shown_vip=False,
+                                                                shown_vip_count=0,
+                                                                shown_vip_category=False,
+                                                                shown_vip_category_count=0)
+            q = Advertisement.objects.get(id=instance.id)
+            print(q.vip, q.shown_vip, q.shown_vip_count, q.shown_vip_category, q.shown_vip_category_count)

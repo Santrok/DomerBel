@@ -169,7 +169,7 @@
                                         <img src="{% static 'img/special.png' %}" alt="">
                                     </li>
                                 {% endif %}
-                                {% if card.vip %}
+                                {% if card.vip and card.shown_vip_category %}
                                     <li class="advertisement__list-item-action-item">
                                         <img src="{% static 'img/VIP.png' %}" alt="">
                                     </li>

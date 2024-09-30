@@ -35,10 +35,10 @@ app.conf.beat_schedule = {
     #     "schedule": crontab(minute=15, hour=0),
     #     # "schedule": timedelta(seconds=120)
     # },
-    # "list_shown_vip": {
-    #     "task": "advertisement.tasks.list_shown_vip",
-    #     "schedule": timedelta(seconds=15)
-    # },
+    "list_shown_vip": {
+        "task": "advertisement.tasks.list_shown_vip",
+        "schedule": timedelta(seconds=15)
+    },
     "list_shown_vip_category": {
         "task": "advertisement.tasks.list_shown_vip_category",
         "schedule": timedelta(seconds=15)

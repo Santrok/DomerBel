@@ -126,7 +126,7 @@ def get_advertisement_by_category(request, category_slug):
         'contact_name',
         'counter_views',
         'phone_num')
-    vip_advertisement = advertisement_queryset.filter(vip=True, is_active=True, moderated=True)
+    vip_advertisement = advertisement_queryset.filter(vip=True, shown_vip_category=True, is_active=True, moderated=True)
     page_obj = variables_for_paginator(advertisement_queryset,
                                        request.GET.get('page'),
                                        sort_for_paginator)

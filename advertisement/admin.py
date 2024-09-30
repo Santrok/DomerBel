@@ -15,6 +15,7 @@ class AdvertisementAdmin(admin.ModelAdmin):
                     'shown_vip_count',
                     'shown_vip_category',
                     'shown_vip_category_count',
+                    'highlight_ad',
                     'special_accommodation',
                     'raise_in_search',
                     )
@@ -28,10 +29,11 @@ class AdvertisementAdmin(admin.ModelAdmin):
                     'raise_in_search',
                    )
     list_editable = ["moderated",
-                    'is_active',
+                     'is_active',
                     'vip',
                     'shown_vip',
                     'shown_vip_category',
+                    'highlight_ad',
                     'special_accommodation',
                     'raise_in_search',
                      ]  # Потом УДАЛИТЬ! редактируем поле "прошел модерацию" не заходя в заказ
