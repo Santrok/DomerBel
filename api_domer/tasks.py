@@ -51,31 +51,30 @@ def add_new_photos(advertisement, temporarily_saving_photos, files_to_delete):
         for photo in other_images:
             with open(photo, 'rb') as f:
                 additional_photo = PhotoAdvertisement(photo=File(f), advertisement=advertisement)
-                additional_photo.save()  # Сохраняем каждую фотографию по отдельности
+                additional_photo.save()
             files_to_delete.append(photo)
 
 
-def delete_photos(advertisement, photos_to_delete, files_to_delete):
+def delete_photos(advertisement, photos_to_delete):
     """Удаляем фотографии."""
     PhotoAdvertisement.objects.filter(photo__in=photos_to_delete, advertisement=advertisement).delete()
 
     if advertisement.preview_image in photos_to_delete:
         file_path = advertisement.preview_image.path
-        # folder_path = os.path.dirname(file_path)
+        folder_path = os.path.dirname(file_path)
 
         # Удаляем файл превью и очищаем поле
-        files_to_delete.append(file_path)
+        os.remove(file_path)
         advertisement.preview_image = None
         advertisement.save()
 
-        # # Если папка пуста, удаляем её
-        # if not os.listdir(folder_path):
-        #     os.rmdir(folder_path)
+        # Если папка пуста, удаляем её
+        if not os.listdir(folder_path):
+            os.rmdir(folder_path)
 
 
 def delete_files(files_to_delete):
     """Удаляем временные файлы."""
-    print(f'files_to_delete: {files_to_delete}')
     folder_path = os.path.dirname(files_to_delete[0])
     for file in files_to_delete:
         try:
@@ -88,7 +87,7 @@ def delete_files(files_to_delete):
 
 @shared_task()
 def save_advertisement_task(user, data, additional_information, temporarily_saving_photos):
-    """ Сохранение объявлений """
+    """Сохранение объявлений."""
     additional_information = update_additional_information(additional_information)
 
     files_to_delete = []  # Создаем список для хранения файлов, которые нужно удалить
@@ -107,40 +106,22 @@ def save_advertisement_task(user, data, additional_information, temporarily_savi
                 new_advertisement.preview_image = File(f)
                 new_advertisement.save()
             files_to_delete.append(preview_img)
-            # os.remove(preview_img)
-            # folder_path = os.path.dirname(preview_img)  # Получаем путь к папке, в которой был файл
 
             if other_images:
-                photos_to_save = []
                 for photo in other_images:
                     with open(photo, 'rb') as f:
                         additional_photo = PhotoAdvertisement(photo=File(f), advertisement=new_advertisement)
                         additional_photo.save()  # Сохраняем каждую фотографию по отдельности
-                        # additional_photo = PhotoAdvertisement(photo=File(f), advertisement=new_advertisement)
-                        # photos_to_save.append(additional_photo)
                     files_to_delete.append(photo)
-                    # os.remove(photo)
-                # PhotoAdvertisement.objects.bulk_create(photos_to_save)
-                # folder_path = os.path.dirname(other_images[0])  # Получаем путь к папке, в которой был файл
-
-            # if not os.listdir(folder_path):  # Если папка пуста
-            #     os.rmdir(folder_path)  # Удаляем папку
 
     except Exception as e:
         if temporarily_saving_photos:
             preview_img = temporarily_saving_photos.get('preview_img')
             other_images = temporarily_saving_photos.get('other_img', None)
             files_to_delete.append(preview_img)
-            # os.remove(preview_img)
-            # folder_path = os.path.dirname(preview_img)  # Получаем путь к папке, в которой был файл
             if other_images:
                 for photo in other_images:
                     files_to_delete.append(photo)
-                    # os.remove(photo)
-                # folder_path = os.path.dirname(other_images[0])  # Получаем путь к папке, в которой был файл
-
-            # if not os.listdir(folder_path):  # Если папка пуста
-            #     os.rmdir(folder_path)  # Удаляем папку
 
         # !!! Переписать на новую функцию отправки писем!!!
         html_content = render_to_string(
@@ -153,7 +134,6 @@ def save_advertisement_task(user, data, additional_information, temporarily_savi
                         html_content=html_content)
 
     if files_to_delete:
-        # Удаляем все файлы из списка
         delete_files(files_to_delete)
 
 @shared_task()
@@ -189,11 +169,10 @@ def update_advertisement_task(user, advertisement_id, data, additional_informati
 
             if delete_photo:
                 print('Удаляем фотки')
-                delete_photos(editing_advertisement, delete_photo, files_to_delete)
+                delete_photos(editing_advertisement, delete_photo)
 
     except Exception as e:
         print(f"Ошибка при обновлении объявления: {e}")
 
     if files_to_delete:
-        # Удаляем все файлы из списка
         delete_files(files_to_delete)
