@@ -152,7 +152,7 @@ def get_advertisement_by_category(request, category_slug):
 
 def get_page_place_an_ad(request):
     category_list = Category.objects.filter(level__lte=1)
-    oblast = Region.objects.filter(level=0)
+    oblast = Region.objects.filter(level=0).order_by('id')
     categories = Category.objects.filter(level=0)
 
     context = {

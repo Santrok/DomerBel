@@ -103,27 +103,30 @@ class Advertisement(DirtyFieldsMixin, models.Model):
         return reverse('advertisement_details', kwargs={"slug": self.slug})
 
     def save(self, *args, **kwargs):
+        print("Только зашли в save")
+        print(f'в модели {self.get_dirty_fields()}')
         if 'additional_information' in self.get_dirty_fields():
             self.additional_information_view = list(self.additional_information.items())
         self.slug = unique_slugify(self, self.title)
+
+        if not self.date_of_deactivate and not self.date_of_delete:
+            print('Заполняем даты')
+            self.date_of_deactivate = datetime.now(timezone.utc) + timedelta(days=60)
+            self.date_of_delete = datetime.now(timezone.utc) + timedelta(days=180)
+            self.date_of_deactivate_raise_in_search = datetime.now(timezone.utc)
+
         if self.preview_image and not self.preview_image.url.lower().endswith('avif'):
             convert_image_to_avif(photo=self.preview_image)  # Конвертация изображения в формат AVIF
-        super().save(*args, **kwargs)
-        self.date_of_deactivate = self.date_of_create + timedelta(days=60)
-        self.date_of_delete = self.date_of_create + timedelta(days=180)
-        self.search_vector = SearchVector('title', 'description')
-        self.search_title_vector = SearchVector('title')
-        super().save(*args, **kwargs)
         if self.preview_image:
             try:
                 photo = add_watermark_to_photo(self.preview_image.path)
-                photo.save(self.preview_image.path, "avif")
+                photo.save(self.preview_image.path, "avif", save=False)
             except FileNotFoundError:
                 self.preview_image = None
             except PIL.UnidentifiedImageError:
                 self.preview_image = None
-            finally:
-                super(Advertisement, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
+        print("вызов save")
 
 
 class Category(MPTTModel):

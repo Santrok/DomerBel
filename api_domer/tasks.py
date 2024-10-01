@@ -20,33 +20,40 @@ def save_advertisement_task(user, data, additional_information, processed_photo)
     try:
         with transaction.atomic():
             new_advertisement = Advertisement(author_id=user, additional_information=additional_information, **data)
-            new_advertisement.save()
 
-            if processed_photo:
-                preview_img = processed_photo.get('preview_img')
-                other_images = processed_photo.get('other_img', None)
-                with open(preview_img, 'rb') as f:
-                    new_advertisement.preview_image = File(f)
-                    new_advertisement.save()
-                os.remove(preview_img)
-                folder_path = os.path.dirname(preview_img)  # Получаем путь к папке, в которой был файл
+            if not processed_photo:
+                new_advertisement.save()
+                return
 
-                if other_images:
-                    for photo in other_images:
-                        with open(photo, 'rb') as f:
-                            additional_photo = PhotoAdvertisement(photo=File(f), advertisement=new_advertisement)
-                            additional_photo.save()
-                        os.remove(photo)
-                    folder_path = os.path.dirname(other_images[0])  # Получаем путь к папке, в которой был файл
+            preview_img = processed_photo.get('preview_img')
+            other_images = processed_photo.get('other_img', None)
+            with open(preview_img, 'rb') as f:
+                new_advertisement.preview_image = File(f)
+                new_advertisement.save()
+            os.remove(preview_img)
+            folder_path = os.path.dirname(preview_img)  # Получаем путь к папке, в которой был файл
 
-                if not os.listdir(folder_path):  # Если папка пуста
-                    os.rmdir(folder_path)  # Удаляем папку
+            if other_images:
+                for photo in other_images:
+                    with open(photo, 'rb') as f:
+                        additional_photo = PhotoAdvertisement(photo=File(f), advertisement=new_advertisement)
+                        additional_photo.save()
+                    os.remove(photo)
+                folder_path = os.path.dirname(other_images[0])  # Получаем путь к папке, в которой был файл
+
+            if not os.listdir(folder_path):  # Если папка пуста
+                os.rmdir(folder_path)  # Удаляем папку
     except Exception as e:
 
-        if other_images:
-            for photo in other_images:
-                os.remove(photo)
-            folder_path = os.path.dirname(other_images[0])  # Получаем путь к папке, в которой был файл
+        if processed_photo:
+            preview_img = processed_photo.get('preview_img')
+            other_images = processed_photo.get('other_img', None)
+            os.remove(preview_img)
+            folder_path = os.path.dirname(preview_img)  # Получаем путь к папке, в которой был файл
+            if other_images:
+                for photo in other_images:
+                    os.remove(photo)
+                folder_path = os.path.dirname(other_images[0])  # Получаем путь к папке, в которой был файл
 
             if not os.listdir(folder_path):  # Если папка пуста
                 os.rmdir(folder_path)  # Удаляем папку
