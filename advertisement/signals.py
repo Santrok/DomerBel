@@ -68,7 +68,7 @@ def publication_photo_delete(sender, instance, **kwargs):
 
 @receiver(post_save, sender=Advertisement)
 def notify_moderation_result(sender, instance, **kwargs):
-    """ Проверяем прошло ли письмо модерацию или нет и отправляем письмо пользователю """
+    """Функция проверяет прошло ли письмо модерацию или нет и отправляем письмо пользователю с результатом"""
     if 'moderated' in instance.get_dirty_fields() and instance.moderated == True:
         html_content = render_to_string(
             "asend_notify_moderation_result.html",
@@ -95,27 +95,12 @@ def notify_moderation_result(sender, instance, **kwargs):
 @receiver(post_save, sender=Advertisement)
 def create_date_of_deactivate_and_delete(sender, instance, **kwargs):
     """Функция заполняет поля для полнотекстового поиска"""
-    print(f'signal post_save: {instance.get_dirty_fields()}')
-    if not instance.search_vector and not instance.search_title_vector:
-        print(555555)
-        search_vector = SearchVector('title', 'description')
-        search_title_vector = SearchVector('title')
-        sender.objects.filter(id=instance.id).update(search_vector=search_vector,
-                                                     search_title_vector=search_title_vector)
+    dirty_fields = instance.get_dirty_fields()
+    if (not instance.search_vector or not instance.search_title_vector or
+            'title' in dirty_fields or 'description' in dirty_fields):
+        sender.objects.filter(id=instance.id).update(search_vector=SearchVector('title', 'description'),
+                                                     search_title_vector=SearchVector('title'))
 
-        # instance.search_vector = SearchVector('title', 'description')
-        # instance.search_title_vector = SearchVector('title')
-        # instance.save(update_fields=['search_vector', 'search_title_vector'])
-    if 'title' in instance.get_dirty_fields() or 'description' in instance.get_dirty_fields():
-        print(666666)
-        # instance.search_vector = SearchVector('title', 'description')
-        # instance.search_title_vector = SearchVector('title')
-        # instance.save(update_fields=['search_vector', 'search_title_vector'])
-
-
-# @receiver(pre_save, sender=Advertisement)
-# def create_date_of_deactivate_and_delete(sender, instance, **kwargs):
-#     print(f'signal pre_save: {instance.get_dirty_fields()}')
 
 # @receiver(post_save, sender=Advertisement)
 # def reset_all_shown_vip_count(sender, instance, **kwargs):
@@ -130,63 +115,63 @@ def create_date_of_deactivate_and_delete(sender, instance, **kwargs):
 #
 #     with transaction.atomic():
 #         print(f'Категории: {instance.category}')
-        # if instance.vip:
-        #     print(111111)
-        #     print(Advertisement.objects.filter(id=instance.id))
-        #     # Находим объявления по всем категориям и по конкретной категории
-        #     vip_ads = Advertisement.objects.filter(moderated=True, is_active=True, vip=True)
-        #     vip_ads_category = Advertisement.objects.filter(moderated=True,
-        #                                                     is_active=True,
-        #                                                     vip=True,
-        #                                                     category=instance.category)
-        #     print(vip_ads)
-        #     print(vip_ads_category)
-        #
-            # # Устанавливаем минимальное значение показов по всем объявлениям
-            # min_shown_count = vip_ads.exclude(id=instance.id).aggregate(
-            #     min_count=Min('shown_vip_count'))['min_count']
-            # if min_shown_count is not None:
-            #     instance.shown_vip_count = min_shown_count
-            #
-            # # Устанавливаем минимальное значение показов в категории
-            # min_shown_category_count = vip_ads_category.exclude(id=instance.id).aggregate(
-            #     min_count=Min('shown_vip_category_count'))['min_count']
-            # if min_shown_category_count is not None:
-            #     instance.shown_vip_category_count = min_shown_category_count
-            #
-            # # Сохраняем изменения
-            # instance.save(update_fields=['shown_vip_count', 'shown_vip_category_count'])
-        # else:
-        #     print(222222)
-            # pass
-            # Обнуляем счетчики после отключения VIP
-            # instance.shown_vip_count = 0
-            # instance.shown_vip_category_count = 0
-            # instance.shown_vip = False
-            # instance.shown_vip_category = False
-            # instance.save(update_fields=['shown_vip',
-            #                              'shown_vip_category',
-            #                              'shown_vip_count',
-            #                              'shown_vip_category_count'])
-            # Advertisement.objects.filter(id=instance.id).update(shown_vip=False,
-            #                                                     shown_vip_count=0,
-            #                                                     shown_vip_category=False,
-            #                                                     shown_vip_category_count=0)
-            # a = Advertisement.objects.get(id=instance.id)
-            # print(a.shown_vip)
+# if instance.vip:
+#     print(111111)
+#     print(Advertisement.objects.filter(id=instance.id))
+#     # Находим объявления по всем категориям и по конкретной категории
+#     vip_ads = Advertisement.objects.filter(moderated=True, is_active=True, vip=True)
+#     vip_ads_category = Advertisement.objects.filter(moderated=True,
+#                                                     is_active=True,
+#                                                     vip=True,
+#                                                     category=instance.category)
+#     print(vip_ads)
+#     print(vip_ads_category)
+#
+# # Устанавливаем минимальное значение показов по всем объявлениям
+# min_shown_count = vip_ads.exclude(id=instance.id).aggregate(
+#     min_count=Min('shown_vip_count'))['min_count']
+# if min_shown_count is not None:
+#     instance.shown_vip_count = min_shown_count
+#
+# # Устанавливаем минимальное значение показов в категории
+# min_shown_category_count = vip_ads_category.exclude(id=instance.id).aggregate(
+#     min_count=Min('shown_vip_category_count'))['min_count']
+# if min_shown_category_count is not None:
+#     instance.shown_vip_category_count = min_shown_category_count
+#
+# # Сохраняем изменения
+# instance.save(update_fields=['shown_vip_count', 'shown_vip_category_count'])
+# else:
+#     print(222222)
+# pass
+# Обнуляем счетчики после отключения VIP
+# instance.shown_vip_count = 0
+# instance.shown_vip_category_count = 0
+# instance.shown_vip = False
+# instance.shown_vip_category = False
+# instance.save(update_fields=['shown_vip',
+#                              'shown_vip_category',
+#                              'shown_vip_count',
+#                              'shown_vip_category_count'])
+# Advertisement.objects.filter(id=instance.id).update(shown_vip=False,
+#                                                     shown_vip_count=0,
+#                                                     shown_vip_category=False,
+#                                                     shown_vip_category_count=0)
+# a = Advertisement.objects.get(id=instance.id)
+# print(a.shown_vip)
 
-            # Устанавливаем минимальное значение показанных объявлений новому VIP
-        # if instance.vip:
-        #     print(111111)
-        #     vip_ads = Advertisement.objects.filter(vip=True).order_by('shown_vip_count')
-        #     # Если больше одного объявления, то устанавливаем количество просмотров, равное минимальному количеству просмотров
-        #     if vip_ads.count() > 1:
-        #         min_shown_count = vip_ads[1].shown_vip_count
-        #         Advertisement.objects.filter(vip=True).update(shown_vip_count=min_shown_count)
-        #
-        # # Обнуляем счетчик после отключения VIP
-        # if not instance.vip:
-        #     print(222222)
-        #     Advertisement.objects.filter(id=instance.id).update(shown_vip=False, shown_vip_count=0)
-        #     a = Advertisement.objects.get(id=instance.id)
-        #     print(a.shown_vip, a.shown_vip_count)
+# Устанавливаем минимальное значение показанных объявлений новому VIP
+# if instance.vip:
+#     print(111111)
+#     vip_ads = Advertisement.objects.filter(vip=True).order_by('shown_vip_count')
+#     # Если больше одного объявления, то устанавливаем количество просмотров, равное минимальному количеству просмотров
+#     if vip_ads.count() > 1:
+#         min_shown_count = vip_ads[1].shown_vip_count
+#         Advertisement.objects.filter(vip=True).update(shown_vip_count=min_shown_count)
+#
+# # Обнуляем счетчик после отключения VIP
+# if not instance.vip:
+#     print(222222)
+#     Advertisement.objects.filter(id=instance.id).update(shown_vip=False, shown_vip_count=0)
+#     a = Advertisement.objects.get(id=instance.id)
+#     print(a.shown_vip, a.shown_vip_count)

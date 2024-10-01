@@ -104,13 +104,11 @@ class Advertisement(DirtyFieldsMixin, models.Model):
 
     def save(self, *args, **kwargs):
         print("Только зашли в save")
-        print(f'в модели {self.get_dirty_fields()}')
         if 'additional_information' in self.get_dirty_fields():
             self.additional_information_view = list(self.additional_information.items())
         self.slug = unique_slugify(self, self.title)
 
         if not self.date_of_deactivate and not self.date_of_delete:
-            print('Заполняем даты')
             self.date_of_deactivate = datetime.now(timezone.utc) + timedelta(days=60)
             self.date_of_delete = datetime.now(timezone.utc) + timedelta(days=180)
             self.date_of_deactivate_raise_in_search = datetime.now(timezone.utc)
