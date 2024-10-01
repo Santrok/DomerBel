@@ -27,7 +27,7 @@ from api_domer.serializers import (GetListOfCitiesSerializer, GetListOfCategorie
                                    UploadFileSerializer, StatusUnreadUserMessage)
 from api_domer.tasks import save_advertisement_task, update_advertisement_task
 
-from api_domer.utils import validate_additional_information, save_temp_photo
+from api_domer.utils import validate_additional_information, save_temp_photos
 from config import settings
 from config.settings import env_keys
 from main_page_domer.models import ReasonOfComplaint
@@ -116,10 +116,10 @@ def save_advertisement(request):
         photo_list = data.pop('photo', None)
 
         # Временно сохраняем фотографии что-бы переделать их адреса в celery
-        processed_photo = save_temp_photo(photo_list, request.data.get("preview_img")) if photo_list else None
+        temporarily_saving_photos = save_temp_photos(photo_list, request.data.get("preview_img")) if photo_list else None
 
         # Вызываем задачу celery для сохранения объявлений
-        save_advertisement_task.delay(request.user.id, data, additional_information, processed_photo)
+        save_advertisement_task.delay(request.user.id, data, additional_information, temporarily_saving_photos)
 
         return Response({
             "success": "<p>Ваше объявление отправлено на модерацию.</p><p>После модерации оно появится в списке объявлений.</p>",
@@ -164,12 +164,12 @@ def update_advertisement(request):
             new_preview_photo_from_old_ones = None
 
         # Временно сохраняем новые фотографии что-бы переделать их адреса в celery
-        processed_photo = save_temp_photo(new_photo_list,
+        temporarily_saving_photos = save_temp_photos(new_photo_list,
                                           request.data.get("preview_img")) if new_photo_list != [] else None
 
         # Вызываем задачу celery для сохранения объявлений
         update_advertisement_task.delay(request.user.id, request.data.get('advertisement'), data,
-                                        additional_information, processed_photo, new_preview_photo_from_old_ones,
+                                        additional_information, temporarily_saving_photos, new_preview_photo_from_old_ones,
                                         deleted_photo)
 
         return Response({
