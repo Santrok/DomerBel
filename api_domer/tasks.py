@@ -162,15 +162,12 @@ def update_advertisement_task(user, advertisement_id, data, additional_informati
                 return
 
             if new_preview_photo_from_old_ones:
-                print('Меняем две фотки местами')
                 swap_preview_images(editing_advertisement, new_preview_photo_from_old_ones)
 
             if temporarily_saving_photos:
-                print('Добавляем новые фотки и можем поменять местами')
                 add_new_photos(editing_advertisement, temporarily_saving_photos)
 
             if delete_photo:
-                print('Удаляем фотки')
                 delete_photos(editing_advertisement, delete_photo)
 
     except Exception as e:
