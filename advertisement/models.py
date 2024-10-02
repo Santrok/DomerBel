@@ -103,18 +103,32 @@ class Advertisement(DirtyFieldsMixin, models.Model):
         return reverse('advertisement_details', kwargs={"slug": self.slug})
 
     def save(self, *args, **kwargs):
-        print("Только зашли в save")
+        print(f'Только зашли в save {self.title}')
+
+        time_now1 = datetime.now(timezone.utc)  # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        time_now = datetime.now(timezone.utc)
+
         if 'additional_information' in self.get_dirty_fields():
             self.additional_information_view = list(self.additional_information.items())
+        print(f'save additional_information_view 1: {datetime.now(timezone.utc)-time_now}')
+        time_now = datetime.now(timezone.utc)
+
         self.slug = unique_slugify(self, self.title)
+        print(f'save slug 2: {datetime.now(timezone.utc)-time_now}')
+        time_now = datetime.now(timezone.utc)
 
         if not self.date_of_deactivate and not self.date_of_delete:
             self.date_of_deactivate = datetime.now(timezone.utc) + timedelta(days=60)
             self.date_of_delete = datetime.now(timezone.utc) + timedelta(days=180)
             self.date_of_deactivate_raise_in_search = datetime.now(timezone.utc)
+        print(f'save date 3: {datetime.now(timezone.utc)-time_now}')
+        time_now = datetime.now(timezone.utc)
 
         if self.preview_image and not self.preview_image.url.lower().endswith('avif'):
             convert_image_to_avif(photo=self.preview_image)  # Конвертация изображения в формат AVIF
+        print(f'save convert_image_to_avif  4: {datetime.now(timezone.utc)-time_now}')
+        time_now = datetime.now(timezone.utc)
+
         if self.preview_image:
             try:
                 photo = add_watermark_to_photo(self.preview_image.path)
@@ -123,7 +137,10 @@ class Advertisement(DirtyFieldsMixin, models.Model):
                 self.preview_image = None
             except PIL.UnidentifiedImageError:
                 self.preview_image = None
+        print(f'save add_watermark_to_photo 5: {datetime.now(timezone.utc)-time_now}')
+
         super().save(*args, **kwargs)
+        print(f'save end total time 5: {datetime.now(timezone.utc) - time_now1}')
         print("вызов save")
 
 

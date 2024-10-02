@@ -1,4 +1,6 @@
 import os
+from datetime import datetime, timezone
+
 from celery import shared_task
 from django.core.files import File
 from django.db import transaction
@@ -34,18 +36,19 @@ def add_new_photos(advertisement, temporarily_saving_photos, files_to_delete):
     """Добавляем новые фотографии к объявлению."""
     preview_img = temporarily_saving_photos.get('preview_img')
     other_images = temporarily_saving_photos.get('other_img', None)
-
+    time_now = datetime.now(timezone.utc)  # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    print(f'add_new_photos 1: {datetime.now(timezone.utc) - time_now}')
     if preview_img:
         # Сохраняем старое превью как дополнительное фото
         if advertisement.preview_image:
             PhotoAdvertisement.objects.create(photo=advertisement.preview_image, advertisement=advertisement)
-
+        print(f'add_new_photos 2: {datetime.now(timezone.utc) - time_now}')
         # Обновляем превью с новой фотографией
         with open(preview_img, 'rb') as f:
             advertisement.preview_image = File(f)
             advertisement.save()
         files_to_delete.append(preview_img)
-
+    print(f'add_new_photos 3: {datetime.now(timezone.utc) - time_now}')
     # Добавляем другие изображения
     if other_images:
         for photo in other_images:
@@ -53,7 +56,7 @@ def add_new_photos(advertisement, temporarily_saving_photos, files_to_delete):
                 additional_photo = PhotoAdvertisement(photo=File(f), advertisement=advertisement)
                 additional_photo.save()
             files_to_delete.append(photo)
-
+    print(f'add_new_photos 4: {datetime.now(timezone.utc) - time_now}')
 
 def delete_photos(advertisement, photos_to_delete):
     """Удаляем фотографии."""

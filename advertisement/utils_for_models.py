@@ -2,7 +2,7 @@ import random
 import os
 import pillow_avif
 from io import BytesIO
-from datetime import date
+from datetime import date, datetime, timezone
 from uuid import uuid4
 from slugify import slugify
 from PIL import Image, ImageDraw, ImageFont
@@ -60,20 +60,34 @@ def unique_slugify(instance, slug):
 def convert_image_to_avif(photo):
     """ Конвертирует все форматы фото в avif """
 
+    time_now1 = datetime.now(timezone.utc)  # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    time_now = datetime.now(timezone.utc)
+
     # Открываем загруженный файл с помощью Pillow
     img = Image.open(photo)
+    print(f'Image.open(photo) 1: {datetime.now(timezone.utc) - time_now}')
+    time_now = datetime.now(timezone.utc)
 
     # Создаём временный буфер для сохранения изображения в формате AVIF
     img_io = BytesIO()
+    print(f'BytesIO() 2: {datetime.now(timezone.utc) - time_now}')
+    time_now = datetime.now(timezone.utc)
 
     # Сохраняем изображение в формате AVIF
     img.save(img_io, format='AVIF')
+    print(f'img.save 3: {datetime.now(timezone.utc) - time_now}')
+    time_now = datetime.now(timezone.utc)
 
     # Перематываем буфер обратно в начало
     img_io.seek(0)
+    print(f'img_io.seek(0) 4: {datetime.now(timezone.utc) - time_now}')
+    time_now = datetime.now(timezone.utc)
 
     # Генерируем новое имя файла с расширением .avif
     new_filename = os.path.splitext(photo.name)[0] + '.avif'
+    print(f'new_filename 5: {datetime.now(timezone.utc) - time_now}')
+    time_now = datetime.now(timezone.utc)
 
     # Обновляем файл в поле photo с новым расширением
     photo.save(new_filename, ContentFile(img_io.read()), save=False)
+    print(f'photo.save total time 6: {datetime.now(timezone.utc) - time_now1}')
