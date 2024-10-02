@@ -1,5 +1,5 @@
+import contextlib
 import os
-from datetime import datetime, timezone
 
 from celery import shared_task
 from django.core.files import File
@@ -32,31 +32,27 @@ def swap_preview_images(advertisement, new_preview_photo):
     old_photo.save()
 
 
-def add_new_photos(advertisement, temporarily_saving_photos, files_to_delete):
+def add_new_photos(advertisement, temporarily_saving_photos):
     """Добавляем новые фотографии к объявлению."""
     preview_img = temporarily_saving_photos.get('preview_img')
     other_images = temporarily_saving_photos.get('other_img', None)
-    time_now = datetime.now(timezone.utc)  # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    print(f'add_new_photos 1: {datetime.now(timezone.utc) - time_now}')
     if preview_img:
         # Сохраняем старое превью как дополнительное фото
         if advertisement.preview_image:
             PhotoAdvertisement.objects.create(photo=advertisement.preview_image, advertisement=advertisement)
-        print(f'add_new_photos 2: {datetime.now(timezone.utc) - time_now}')
         # Обновляем превью с новой фотографией
         with open(preview_img, 'rb') as f:
             advertisement.preview_image = File(f)
             advertisement.save()
-        files_to_delete.append(preview_img)
-    print(f'add_new_photos 3: {datetime.now(timezone.utc) - time_now}')
+        # files_to_delete.append(preview_img)
     # Добавляем другие изображения
     if other_images:
         for photo in other_images:
             with open(photo, 'rb') as f:
                 additional_photo = PhotoAdvertisement(photo=File(f), advertisement=advertisement)
                 additional_photo.save()
-            files_to_delete.append(photo)
-    print(f'add_new_photos 4: {datetime.now(timezone.utc) - time_now}')
+            # files_to_delete.append(photo)
+
 
 def delete_photos(advertisement, photos_to_delete):
     """Удаляем фотографии."""
@@ -76,24 +72,38 @@ def delete_photos(advertisement, photos_to_delete):
             os.rmdir(folder_path)
 
 
-def delete_files(files_to_delete):
-    """Удаляем временные файлы."""
-    folder_path = os.path.dirname(files_to_delete[0])
-    for file in files_to_delete:
-        try:
-            os.remove(file)
-        except OSError as e:
-            print(f"Ошибка при удалении файла {file}: {e}")
-    if not os.listdir(folder_path):  # Если папка пуста
-        os.rmdir(folder_path)  # Удаляем папку
+def remove_file(file_path):
+    """Удаляет файл, если он существует, и выводит сообщение об ошибке в случае неудачи."""
+    with contextlib.suppress(OSError):
+        os.remove(file_path)
+
+
+def delete_files(temporarily_saving_photos):
+    """Удаляем временные файлы и пустые папки."""
+    preview_img = temporarily_saving_photos.get('preview_img')
+    other_images = temporarily_saving_photos.get('other_img', [])
+
+    folder_path = None
+
+    if preview_img:
+        folder_path = os.path.dirname(preview_img)
+        remove_file(preview_img)
+
+    if other_images:
+        folder_path = os.path.dirname(other_images[0])
+        for photo in other_images:
+            remove_file(photo)
+
+    # Удаляем папку, если она пуста
+    if folder_path and not os.listdir(folder_path):
+        with contextlib.suppress(OSError):
+            os.rmdir(folder_path)
 
 
 @shared_task()
 def save_advertisement_task(user, data, additional_information, temporarily_saving_photos):
     """Сохранение объявлений."""
     additional_information = update_additional_information(additional_information)
-
-    files_to_delete = []  # Создаем список для хранения файлов, которые нужно удалить
 
     try:
         with transaction.atomic():
@@ -104,28 +114,18 @@ def save_advertisement_task(user, data, additional_information, temporarily_savi
                 return
 
             preview_img = temporarily_saving_photos.get('preview_img')
-            other_images = temporarily_saving_photos.get('other_img', None)
+            other_images = temporarily_saving_photos.get('other_img', [])
             with open(preview_img, 'rb') as f:
                 new_advertisement.preview_image = File(f)
                 new_advertisement.save()
-            files_to_delete.append(preview_img)
 
             if other_images:
                 for photo in other_images:
                     with open(photo, 'rb') as f:
                         additional_photo = PhotoAdvertisement(photo=File(f), advertisement=new_advertisement)
-                        additional_photo.save()  # Сохраняем каждую фотографию по отдельности
-                    files_to_delete.append(photo)
+                        additional_photo.save()
 
     except Exception as e:
-        if temporarily_saving_photos:
-            preview_img = temporarily_saving_photos.get('preview_img')
-            other_images = temporarily_saving_photos.get('other_img', None)
-            files_to_delete.append(preview_img)
-            if other_images:
-                for photo in other_images:
-                    files_to_delete.append(photo)
-
         # !!! Переписать на новую функцию отправки писем!!!
         html_content = render_to_string(
             "asend_create_advertisement_error.html",
@@ -136,8 +136,9 @@ def save_advertisement_task(user, data, additional_information, temporarily_savi
                         text_content=html_content,
                         html_content=html_content)
 
-    if files_to_delete:
-        delete_files(files_to_delete)
+    if temporarily_saving_photos:
+        delete_files(temporarily_saving_photos)
+
 
 @shared_task()
 def update_advertisement_task(user, advertisement_id, data, additional_information, temporarily_saving_photos,
@@ -154,8 +155,6 @@ def update_advertisement_task(user, advertisement_id, data, additional_informati
     for key, value in data.items():
         setattr(editing_advertisement, key, value)
 
-    files_to_delete = []  # Создаем список для хранения файлов, которые нужно удалить
-
     try:
         with transaction.atomic():
             if not new_preview_photo_from_old_ones and not temporarily_saving_photos and not delete_photo:
@@ -168,7 +167,7 @@ def update_advertisement_task(user, advertisement_id, data, additional_informati
 
             if temporarily_saving_photos:
                 print('Добавляем новые фотки и можем поменять местами')
-                add_new_photos(editing_advertisement, temporarily_saving_photos, files_to_delete)
+                add_new_photos(editing_advertisement, temporarily_saving_photos)
 
             if delete_photo:
                 print('Удаляем фотки')
@@ -177,5 +176,5 @@ def update_advertisement_task(user, advertisement_id, data, additional_informati
     except Exception as e:
         print(f"Ошибка при обновлении объявления: {e}")
 
-    if files_to_delete:
-        delete_files(files_to_delete)
+    if temporarily_saving_photos:
+        delete_files(temporarily_saving_photos)
