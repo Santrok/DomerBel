@@ -16,12 +16,11 @@ from config.settings import env_keys
 from main_page_domer.forms import ComplaintForm
 from main_page_domer.models import ReasonOfComplaint
 
-from .models import Advertisement, Category, Region, Spisok, Element, ElementTwo, Field,  BadWords, ErrorFile
+from .models import Advertisement, Category, Region, Spisok, Element, ElementTwo, Field, BadWords, ErrorFile
 from .utils import sorted_by_number, variables_for_paginator, sorted_by_date_or_price, sorted_by, \
     get_region_variables, where_to_look, search_additional_information, annotating_field
 from .forms import UploadFileForm
 from .models import UploadFile
-
 
 
 def get_advertisement_page(request):
@@ -34,7 +33,6 @@ def get_advertisement_page(request):
         state_sort_by_date, order_by = sorted_by_date_or_price(request.GET)
     if request.GET.get('sort'):
         sort_for_paginator = sorted_by_number(request.GET.get('sort'))
-
 
     advertisement_queryset = Advertisement.objects.filter(is_active=True,
                                                           moderated=True,
@@ -126,7 +124,37 @@ def get_advertisement_by_category(request, category_slug):
         'contact_name',
         'counter_views',
         'phone_num')
-    vip_advertisement = advertisement_queryset.filter(vip=True, shown_vip_category=True, is_active=True, moderated=True)
+
+    # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    if category_queryset:
+        vip_advertisements_in_category = Advertisement.objects.filter(category__in=category_queryset,
+                                                                      vip=True,
+                                                                      shown_vip_category=True,
+                                                                      is_active=True,
+                                                                      moderated=True).distinct('category')
+        # Получаем список уникальных категорий из найденных VIP-объявлений
+        vip_categories = vip_advertisements_in_category.values_list('category', flat=True)
+        # Если есть VIP-объявления в категориях, выбираем случайную категорию
+        if vip_categories.exists():
+            random_category = random.choice(vip_categories)  # Выбираем случайную категорию
+            vip_advertisement = Advertisement.objects.filter(category=random_category,
+                                                             vip=True,
+                                                             shown_vip_category=True,
+                                                             is_active=True,
+                                                             moderated=True)
+        else:
+            vip_advertisement = Advertisement.objects.filter(vip=True,
+                                                             shown_vip_category=True,
+                                                             is_active=True,
+                                                             moderated=True)
+
+    else:
+        vip_advertisement = Advertisement.objects.filter(vip=True,
+                                                         shown_vip_category=True,
+                                                         is_active=True,
+                                                         moderated=True)
+    # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
     page_obj = variables_for_paginator(advertisement_queryset,
                                        request.GET.get('page'),
                                        sort_for_paginator)
@@ -188,11 +216,11 @@ def get_advertisement_details_page(request, slug):
     category_crumbs = advertisement_main.category.get_ancestors(ascending=False, include_self=True)
     date = datetime.now(tz=get_current_timezone()) - timedelta(days=50)
     similar_advertisement = list(Advertisement.objects.filter(moderated=True,
-                                                         is_active=True,
-                                                         category_id=advertisement_main.category,
-                                                         date_of_create__date__gte=date
-                                                         ).exclude(id=advertisement_main.id).values_list('id',
-                                                                                                         flat=True))
+                                                              is_active=True,
+                                                              category_id=advertisement_main.category,
+                                                              date_of_create__date__gte=date
+                                                              ).exclude(id=advertisement_main.id).values_list('id',
+                                                                                                              flat=True))
 
     similar_advertisement = random.sample(similar_advertisement,
                                           4 if len(similar_advertisement) >= 4 else len(similar_advertisement))
@@ -256,7 +284,7 @@ def search_result(request):
     search_parameters = {}
     search_parameters_only = {}
     category_queryset_an = []
-    key_delete = ['page', 'sort', 'date', 'price', 'text_search','only_title']
+    key_delete = ['page', 'sort', 'date', 'price', 'text_search', 'only_title']
     cop = dict.copy(request.GET)
 
     sort_for_paginator = sorted_by_number(request.COOKIES.get('sort'))
@@ -303,15 +331,15 @@ def search_result(request):
 
     try:
         category_queryset = Category.objects.add_related_count(category.get_descendants() if
-                                                                  category else
-                                                                  Category.objects.root_nodes(),
-                                                                  Advertisement,
-                                                                  'category',
-                                                                  'advertisement_counts',
-                                                                  cumulative=True,
-                                                                  extra_filters={"is_active": True,
-                                                                                 "moderated": True,
-                                                                                 **search_parameters})
+                                                               category else
+                                                               Category.objects.root_nodes(),
+                                                               Advertisement,
+                                                               'category',
+                                                               'advertisement_counts',
+                                                               cumulative=True,
+                                                               extra_filters={"is_active": True,
+                                                                              "moderated": True,
+                                                                              **search_parameters})
         if request.GET.get('category'):
             category_queryset_an = category_queryset.filter(parent_id=request.GET.get('category'))
     except:
@@ -325,8 +353,8 @@ def search_result(request):
                                                                      ).exclude(**search_parameters_only
                                                                                ).select_related('category', 'region'
                                                                                                 ).order_by(
-                                                                                                    "-raise_in_search",
-                                                                                                    order_by)
+        "-raise_in_search",
+        order_by)
 
     page_obj = variables_for_paginator(advertisement_queryset,
                                        request.GET.get('page'),
@@ -353,16 +381,16 @@ def search_result(request):
 @login_required
 def get_bulk_import_of_ads(request):
     """Страница массового импорта объявлений"""
-    files  = UploadFile.objects.select_related('errorfile').filter(user = request.user).order_by('time_upload_file')
+    files = UploadFile.objects.select_related('errorfile').filter(user=request.user).order_by('time_upload_file')
     url = env_keys.get('URL')
     context = {
         'files': files,
         'form': UploadFileForm(),
-        'url' : url,
+        'url': url,
     }
     return render(request=request,
                   template_name='bulk_import_ads.html',
-                  context = context)
+                  context=context)
 
 
 def get_instructions_for_bulk_import_of_ads(request):
@@ -390,5 +418,3 @@ def get_instructions_for_bulk_import_of_ads(request):
 #     print(ad)
 #     ad.save()
 #     return render(request, template_name='import_words.html')
-
-
