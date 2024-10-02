@@ -46,7 +46,7 @@ class Advertisement(DirtyFieldsMixin, models.Model):
                               verbose_name='Податель', default='Частное лицо')
     region = models.ForeignKey('Region', on_delete=models.CASCADE, verbose_name='Регион, город, район')
     preview_image = models.ImageField(upload_to=upload_to, verbose_name='Главная фотография',
-                                      blank=True, null=True)
+                                      blank=True, null=True, default=None)
     counter_views = models.IntegerField(default=0, verbose_name='Счетчик просмотров')
     contact_name = models.CharField(max_length=255, verbose_name='Контактное лицо', validators=[validate_words])
     phone_num = models.CharField(max_length=255, verbose_name='Телефон', validators=[validate_phone])
@@ -74,7 +74,7 @@ class Advertisement(DirtyFieldsMixin, models.Model):
     additional_information_view = ArrayField(ArrayField(models.CharField(max_length=500)), blank=True, null=True,
                                              editable=False)
     description = models.TextField(verbose_name='Описание', validators=[validate_words])
-    video_link = models.URLField(blank=True, null=True,
+    video_link = models.URLField(blank=True, null=True, default=None,
                                  verbose_name='Ссылка на видео')  # хранит строку, которая представляет валидный URL-адрес
     search_vector = SearchVectorField(null=True, editable=False)
     search_title_vector = SearchVectorField(null=True, editable=False)
@@ -103,6 +103,7 @@ class Advertisement(DirtyFieldsMixin, models.Model):
         return reverse('advertisement_details', kwargs={"slug": self.slug})
 
     def save(self, *args, **kwargs):
+        time_start = datetime.now(timezone.utc)
         if 'additional_information' in self.get_dirty_fields():
             self.additional_information_view = list(self.additional_information.items())
 
@@ -116,7 +117,7 @@ class Advertisement(DirtyFieldsMixin, models.Model):
         if self.preview_image and not self.preview_image.url.lower().endswith('avif'):
             convert_image_to_avif(photo=self.preview_image)  # Конвертация изображения в формат AVIF
 
-        if self.preview_image:
+        if self.preview_image and not 'preview_image' in self.get_dirty_fields():
             try:
                 photo = add_watermark_to_photo(self.preview_image.path)
                 photo.save(self.preview_image.path, "avif", save=False)
@@ -126,7 +127,7 @@ class Advertisement(DirtyFieldsMixin, models.Model):
                 self.preview_image = None
 
         super().save(*args, **kwargs)
-
+        print(f'Время сохранения объявления {self.title}: {datetime.now(timezone.utc) - time_start}')
 
 class Category(MPTTModel):
     title = models.CharField(max_length=255, verbose_name='Категория')
