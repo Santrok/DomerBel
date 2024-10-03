@@ -94,7 +94,7 @@ def notify_moderation_result(sender, instance, **kwargs):
 
 
 @receiver(post_save, sender=Advertisement)
-def create_date_of_deactivate_and_delete(sender, instance, **kwargs):
+def create_fild_for_search_adv(sender, instance, **kwargs):
     """Функция заполняет поля для полнотекстового поиска"""
     dirty_fields = instance.get_dirty_fields()
     if (not instance.search_vector or not instance.search_title_vector or
