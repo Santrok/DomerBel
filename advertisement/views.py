@@ -137,22 +137,22 @@ def get_advertisement_by_category(request, category_slug):
         # Если есть VIP-объявления в категориях, выбираем случайную категорию
         if vip_categories.exists():
             random_category = random.choice(vip_categories)  # Выбираем случайную категорию
-            vip_advertisement = Advertisement.objects.filter(category=random_category,
-                                                             vip=True,
-                                                             shown_vip_category=True,
-                                                             is_active=True,
-                                                             moderated=True)
+            vip_advertisement = advertisement_queryset.filter(category=random_category,
+                                                              vip=True,
+                                                              shown_vip_category=True,
+                                                              is_active=True,
+                                                              moderated=True)
         else:
-            vip_advertisement = Advertisement.objects.filter(vip=True,
-                                                             shown_vip_category=True,
-                                                             is_active=True,
-                                                             moderated=True)
+            vip_advertisement = advertisement_queryset.filter(vip=True,
+                                                              shown_vip_category=True,
+                                                              is_active=True,
+                                                              moderated=True)
 
     else:
-        vip_advertisement = Advertisement.objects.filter(vip=True,
-                                                         shown_vip_category=True,
-                                                         is_active=True,
-                                                         moderated=True)
+        vip_advertisement = advertisement_queryset.filter(vip=True,
+                                                          shown_vip_category=True,
+                                                          is_active=True,
+                                                          moderated=True)
     # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
     page_obj = variables_for_paginator(advertisement_queryset,
