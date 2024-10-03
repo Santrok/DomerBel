@@ -107,6 +107,11 @@ def reset_shown_vip_count():
         Advertisement.objects.filter(vip=True).update(shown_vip_count=0)
 
 
+def fn():
+    """"""
+    pass
+
+
 @shared_task()
 def list_shown_vip_category():
     """ Функция делает ротацию объявлений в категориях """
@@ -114,6 +119,8 @@ def list_shown_vip_category():
 
         # Получаем все вип объявления
         all_ads_vip = Advertisement.objects.filter(moderated=True, is_active=True, vip=True)
+
+        # values_list('category', flat=True)
 
         # Проверяем если ли вообще объявления
         if not all_ads_vip.exists():
@@ -206,9 +213,7 @@ def delete_everything_in_folder_beat():
 @shared_task()
 def save_many_ads_from_excel_task(uploud_file, id, first_name, phone_number, email):
     '''Таска сохраняющая объявления из экселя'''
-    print('start')
     result = save_many_ads_from_excel(uploud_file, id, first_name, phone_number, email)
-    print('finish')
     return result
 
 
