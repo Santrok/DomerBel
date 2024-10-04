@@ -45,6 +45,10 @@
         bottom: 0;
         right: 0;
     }
+
+    & .advertisement__list-item:has(.advertisement__list-item-action) .advertisement__list-item-about-favorites {
+        bottom: 25px;
+    }
     
     & .advertisement__list-item-title {
         & a {
