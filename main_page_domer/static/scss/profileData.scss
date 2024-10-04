@@ -16,6 +16,7 @@
     display: flex;
     flex-direction: column;
     gap: 10px;
+    max-width: 460px;
   }
 
   & button {
@@ -56,8 +57,17 @@
 
 @media(max-width:992px) {
   .form__wrapper {
+    & form {
+      max-width: none;
+    }
+  
     & input {
-      flex: 1 1 800px;
+      max-width: none;
     }
   }
+
+  .form__fields {
+    max-width: none;
+  }
+
 }

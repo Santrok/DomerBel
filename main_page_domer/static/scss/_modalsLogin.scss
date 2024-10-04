@@ -13,12 +13,11 @@
     }
 }
 
-.modals__signIn-field {
+.modals__signIn-field-wrap {
     position: relative;
-    &:has(.modals__signIn-error ~input[type=password]) .views {
-        top: 33px;
-      }
 }
+
+
 
 
 

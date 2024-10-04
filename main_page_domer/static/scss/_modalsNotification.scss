@@ -31,10 +31,3 @@
     text-align: center;
     word-break: break-word;
 }
-
-.modals__active-resetPassword {
-    display: flex;
-    & .modals__notification-signIn {
-      display: none
-    }
-  }

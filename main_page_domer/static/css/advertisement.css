@@ -192,6 +192,9 @@
   bottom: 0;
   right: 0;
 }
+.default__item .advertisement__list-item:has(.advertisement__list-item-action) .advertisement__list-item-about-favorites {
+  bottom: 25px;
+}
 .default__item .advertisement__list-item-title a {
   font-family: "Trebuchet MS", sans-serif;
   font-weight: 400;

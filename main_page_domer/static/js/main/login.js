@@ -1,16 +1,16 @@
-const modalsBlock = document.querySelector('.modals');
-const modalLogin = document.querySelector('.modals__login');
-const loginBtn = document.querySelector('.header__up-user');
+const modalsBlock = document.querySelector(".modals")
+const modalLogin = document.querySelector(".modals__login")
+const loginBtn = document.querySelector(".header__up-user")
 
-modalsBlock.addEventListener('click', (event) => {    
+modalsBlock.addEventListener('mousedown', (event) => {    
     if(event.target === modalsBlock){
         const activeList = [...document.querySelectorAll('.modal__active'), ...document.querySelectorAll('.modals__active-grid')];
         for(let i of activeList) {
             i.classList.remove('modal__active') || i.classList.remove("modals__active-grid");
             const fieldError = [...document.querySelectorAll('.modals__signIn-error'), ...document.querySelectorAll(".modals__fields-error"), ...document.querySelectorAll('.paid__form-error')]
             fieldError.forEach(item => {
-                if (item.classList.contains('paid__form-error')){
-                    item.classList.remove("paid__form-error")
+                if (item.classList.contains('paid__form-error') || item.classList.contains('modals__fields-error')) {
+                    item.classList.remove("paid__form-error") || item.classList.remove("modals__fields-error")
                 }
                 else {
                     item.remove()
@@ -45,8 +45,8 @@ document.addEventListener("keyup", (event) => {
     }
 })
 
-loginBtn?.addEventListener('click', () => {
-    document.body.style.overflow = 'hidden';
-    modalsBlock.classList.add('modal__active');
-    modalLogin.classList.add('modal__active');
+loginBtn?.addEventListener("click", () => {
+  document.body.style.overflow = "hidden"
+  modalsBlock.classList.add("modal__active")
+  modalLogin.classList.add("modal__active")
 })
