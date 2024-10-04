@@ -83,7 +83,7 @@ function registration() {
  */
 
 function generatingErrorSField(data, fieldForm) {
-  console.log(data);
+  console.log(fieldForm,data);
   
   for (let i in data) {
     const field = document.querySelector(`${fieldForm} input[name="${i}"]`) || 
@@ -97,7 +97,7 @@ function generatingErrorSField(data, fieldForm) {
         "modals__signIn-error"
       )
     ) {
-      // field.parentElement.parentElement.children[0].remove()
+      field.parentElement.parentElement.children[0].remove()
     }
     const p = document.createElement("p")
     if (data[i] !== "") {

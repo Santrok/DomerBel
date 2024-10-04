@@ -57,6 +57,6 @@ function requestResetPassword() {
       }
       if (errorMessage["recaptcha"]) delete errorMessage["recaptcha"]
       grecaptcha.reset(1)
-      generatingErrorSField(errorMessage, ".modal__active")
+      generatingErrorSField(errorMessage, ".modals__reset-password")
     })
 }

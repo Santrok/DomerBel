@@ -116,13 +116,19 @@
                 </div>
                 <fieldset class="modals__signIn-fields">
                     <div class="modals__signIn-field">
-                        <input type="text" name="first_name" placeholder="Контактное лицо">
+                        <div class="modals__signIn-field-wrap">
+                            <input type="text" name="first_name" placeholder="Контактное лицо">
+                        </div>
                     </div>
                     <div class="modals__signIn-field">
-                        <input type="email" name="email" placeholder="Введите вашу почту">
+                        <div class="modals__signIn-field-wrap">
+                            <input type="email" name="email" placeholder="Введите вашу почту">
+                        </div>
                     </div>
                     <div class="modals__signIn-field">
-                    <input type="tel" name="phone_number" placeholder="Номер телефона">
+                        <div class="modals__signIn-field-wrap">
+                            <input type="tel" name="phone_number" placeholder="Номер телефона">
+                        </div>
                     </div>
                     <div class="modals__signIn-field">
                         <div class="modals__signIn-field-wrap">
@@ -185,7 +191,9 @@
                     </h2>
                 </div>
                 <fieldset class="modals__reset-password-field">
-                    <input type="email" name="email" placeholder="Введите вашу почту">
+                    <div class="modals__field-wrap">
+                        <input type="email" name="email" placeholder="Введите вашу почту">
+                    </div>
                 </fieldset>
                 <div class="g-recaptcha" 
                 data-sitekey="{{ public_key }}"
