@@ -39,7 +39,7 @@ def get_advertisement_page(request):
                                                           **region_filter).select_related(
         'category',
         'region'
-    ).order_by("-raise_in_search", order_by).defer(
+    ).order_by("date_of_deactivate_special_accommodation", order_by).defer(
         'search_title_vector',
         'search_vector',
         'video_link',
@@ -92,6 +92,7 @@ def get_advertisement_by_category(request, category_slug):
 
     if request.GET.get('date') or request.GET.get('price'):
         state_sort_by_date, order_by = sorted_by_date_or_price(request.GET)
+        print(state_sort_by_date, order_by)
     if request.GET.get('sort'):
         sort_for_paginator = sorted_by_number(request.GET.get('sort'))
 
