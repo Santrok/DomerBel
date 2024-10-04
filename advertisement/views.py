@@ -119,7 +119,37 @@ def get_advertisement_by_category(request, category_slug):
         'contact_name',
         'counter_views',
         'phone_num')
-    vip_advertisement = advertisement_queryset.filter(vip=True, is_active=True, moderated=True)
+
+    # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    if category_queryset:
+        vip_advertisements_in_category = Advertisement.objects.filter(category__in=category_queryset,
+                                                                      vip=True,
+                                                                      shown_vip_category=True,
+                                                                      is_active=True,
+                                                                      moderated=True).distinct('category')
+        # Получаем список уникальных категорий из найденных VIP-объявлений
+        vip_categories = vip_advertisements_in_category.values_list('category', flat=True)
+        # Если есть VIP-объявления в категориях, выбираем случайную категорию
+        if vip_categories.exists():
+            random_category = random.choice(vip_categories)  # Выбираем случайную категорию
+            vip_advertisement = advertisement_queryset.filter(category=random_category,
+                                                              vip=True,
+                                                              shown_vip_category=True,
+                                                              is_active=True,
+                                                              moderated=True)
+        else:
+            vip_advertisement = advertisement_queryset.filter(vip=True,
+                                                              shown_vip_category=True,
+                                                              is_active=True,
+                                                              moderated=True)
+
+    else:
+        vip_advertisement = advertisement_queryset.filter(vip=True,
+                                                          shown_vip_category=True,
+                                                          is_active=True,
+                                                          moderated=True)
+    # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
     page_obj = variables_for_paginator(advertisement_queryset,
                                        request.GET.get('page'),
                                        sort_for_paginator)
@@ -145,7 +175,7 @@ def get_advertisement_by_category(request, category_slug):
 
 def get_page_place_an_ad(request):
     category_list = Category.objects.filter(level__lte=1)
-    oblast = Region.objects.filter(level=0)
+    oblast = Region.objects.filter(level=0).order_by('id')
     categories = Category.objects.filter(level=0)
 
     context = {
@@ -370,3 +400,5 @@ def get_instructions_for_bulk_import_of_ads(request):
 #     print(ad)
 #     ad.save()
 #     return render(request, template_name='import_words.html')
+
+

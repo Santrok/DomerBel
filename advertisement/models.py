@@ -2,7 +2,7 @@ import calendar
 from datetime import datetime, timedelta, timezone
 import PIL
 from dirtyfields import DirtyFieldsMixin
-from django.contrib.postgres.fields import ArrayField, HStoreField
+from django.contrib.postgres.fields import ArrayField
 from django.contrib.postgres.indexes import GinIndex, OpClass, BrinIndex
 from django.contrib.postgres.search import SearchVectorField, SearchVector
 from django.db import models
@@ -46,7 +46,7 @@ class Advertisement(DirtyFieldsMixin, models.Model):
                               verbose_name='Податель', default='Частное лицо')
     region = models.ForeignKey('Region', on_delete=models.CASCADE, verbose_name='Регион, город, район')
     preview_image = models.ImageField(upload_to=upload_to, verbose_name='Главная фотография',
-                                      blank=True, null=True)
+                                      blank=True, null=True, default=None)
     counter_views = models.IntegerField(default=0, verbose_name='Счетчик просмотров')
     contact_name = models.CharField(max_length=255, verbose_name='Контактное лицо', validators=[validate_words])
     phone_num = models.CharField(max_length=255, verbose_name='Телефон', validators=[validate_phone])
@@ -59,9 +59,10 @@ class Advertisement(DirtyFieldsMixin, models.Model):
     moderated = models.BooleanField(verbose_name='Прошло модерацию', null=True, blank=True)
     is_active = models.BooleanField(default=False, verbose_name='Объявление активно')
     vip = models.BooleanField(default=False, verbose_name="Сделать VIP-объявлением")
-    shown_vip = models.BooleanField(default=False, verbose_name="Показано на главной странице")         # -------------
-    shown_vip_count = models.IntegerField(default=0, verbose_name='Счетчик показов')                    # -------------
-    shown_vip_cat = models.BooleanField(default=False, verbose_name="Показано на странице категории")   # -------------
+    shown_vip = models.BooleanField(default=False, verbose_name="Показано на главной странице")
+    shown_vip_count = models.IntegerField(default=0, verbose_name='Счетчик показов на главной странице')
+    shown_vip_category = models.BooleanField(default=False, verbose_name="Показано на странице категории")
+    shown_vip_category_count = models.IntegerField(default=0, verbose_name='Счетчик показов на странице категории')
     date_of_deactivate_vip = models.DateTimeField(blank=True, null=True, verbose_name="Дата деактивации VIP")
     highlight_ad = models.BooleanField(default=False, verbose_name="Выделить объявление")
     date_of_deactivate_highlight_ad = models.DateTimeField(blank=True, null=True, verbose_name="Дата деактивации выделения")
@@ -73,7 +74,7 @@ class Advertisement(DirtyFieldsMixin, models.Model):
     additional_information_view = ArrayField(ArrayField(models.CharField(max_length=500)), blank=True, null=True,
                                              editable=False)
     description = models.TextField(verbose_name='Описание', validators=[validate_words])
-    video_link = models.URLField(blank=True, null=True,
+    video_link = models.URLField(blank=True, null=True, default=None,
                                  verbose_name='Ссылка на видео')  # хранит строку, которая представляет валидный URL-адрес
     search_vector = SearchVectorField(null=True, editable=False)
     search_title_vector = SearchVectorField(null=True, editable=False)
@@ -102,65 +103,31 @@ class Advertisement(DirtyFieldsMixin, models.Model):
         return reverse('advertisement_details', kwargs={"slug": self.slug})
 
     def save(self, *args, **kwargs):
+        time_start = datetime.now(timezone.utc)
         if 'additional_information' in self.get_dirty_fields():
             self.additional_information_view = list(self.additional_information.items())
+
         self.slug = unique_slugify(self, self.title)
+
+        if not self.date_of_deactivate and not self.date_of_delete:
+            self.date_of_deactivate = datetime.now(timezone.utc) + timedelta(days=60)
+            self.date_of_delete = datetime.now(timezone.utc) + timedelta(days=180)
+            self.date_of_deactivate_raise_in_search = datetime.now(timezone.utc)
+
         if self.preview_image and not self.preview_image.url.lower().endswith('avif'):
             convert_image_to_avif(photo=self.preview_image)  # Конвертация изображения в формат AVIF
-        super().save(*args, **kwargs)
-        self.date_of_deactivate = self.date_of_create + timedelta(days=60)
-        self.date_of_delete = self.date_of_create + timedelta(days=180)
-        self.search_vector = SearchVector('title', 'description')
-        self.search_title_vector = SearchVector('title')
-        super().save(*args, **kwargs)
-        if self.preview_image:
+
+        if self.preview_image and not 'preview_image' in self.get_dirty_fields():
             try:
                 photo = add_watermark_to_photo(self.preview_image.path)
-                photo.save(self.preview_image.path, "avif")
+                photo.save(self.preview_image.path, "avif", save=False)
             except FileNotFoundError:
                 self.preview_image = None
             except PIL.UnidentifiedImageError:
                 self.preview_image = None
-            finally:
-                super(Advertisement, self).save(*args, **kwargs)
 
-    # def save(self, *args, **kwargs):
-    #     # Установка дат до сохранения
-    #     self.date_of_deactivate = self.date_of_create + timedelta(days=60)
-    #     self.date_of_delete = self.date_of_create + timedelta(days=180)
-    #
-    #     # Обновление slug
-    #     self.slug = unique_slugify(self, self.title)
-    #
-    #     # Обновление additional_information_view, если есть изменения
-    #     if 'additional_information' in self.get_dirty_fields():
-    #         self.additional_information_view = list(self.additional_information.items())
-    #
-    #     # Объединение всех операций в одну транзакцию для атомарности
-    #     with transaction.atomic():
-    #         # Сохранение основной информации
-    #         super().save(*args, **kwargs)
-    #
-    #         # Обработка изображения
-    #         if self.preview_image:
-    #             # Конвертация в AVIF формат
-    #             if not self.preview_image.url.lower().endswith('avif'):
-    #                 convert_image_to_avif(photo=self.preview_image)
-    #                 self.save(update_fields=['preview_image'])
-    #
-    #             # Добавление водяного знака
-    #             try:
-    #                 photo = add_watermark_to_photo(self.preview_image.path)
-    #                 photo.save(self.preview_image.path, "avif")
-    #             except (FileNotFoundError, PIL.UnidentifiedImageError):
-    #                 self.preview_image = None
-    #                 self.save(update_fields=['preview_image'])
-    #
-    #         # Обновление векторов поиска после сохранения данных
-    #         self.search_vector = SearchVector('title', 'description')
-    #         self.search_title_vector = SearchVector('title')
-    #         super().save(*args, **kwargs)
-
+        super().save(*args, **kwargs)
+        print(f'Время сохранения объявления {self.title}: {datetime.now(timezone.utc) - time_start}')
 
 class Category(MPTTModel):
     title = models.CharField(max_length=255, verbose_name='Категория')

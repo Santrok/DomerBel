@@ -37,12 +37,12 @@ app.conf.beat_schedule = {
     # },
     "list_shown_vip": {
         "task": "advertisement.tasks.list_shown_vip",
-        "schedule": timedelta(seconds=5)
+        "schedule": timedelta(seconds=15)
     },
-    # "reset_shown_vip_count": {
-    #     "task": "advertisement.tasks.reset_shown_vip_count",
-    #     "schedule": timedelta(hours=1)
-    # }
+    "list_shown_vip_category": {
+        "task": "advertisement.tasks.list_shown_vip_category",
+        "schedule": timedelta(seconds=15)
+    }
 }
 
 if __name__ == '__main__':
