@@ -113,6 +113,7 @@ def save_advertisement(request):
         data = dict(serializer.validated_data)
         data['category_id'] = data.pop('category').id
         data['region_id'] = data.pop('region').id
+        data['store_id'] = data.pop('store').id
         photo_list = data.pop('photo', None)
 
         # Временно сохраняем фотографии что-бы переделать их адреса в celery
@@ -153,6 +154,7 @@ def update_advertisement(request):
         data = dict(serializer.validated_data)
         data['category_id'] = data.pop('category').id
         data['region_id'] = data.pop('region').id
+        data['store_id'] = data.pop('store').id
         new_photo_list = data.pop('photo', [])
         preview_photo = request.data.get('preview_img')
         deleted_photo = request.data.get('deleted_images').split(',') if request.data.get('deleted_images') else None

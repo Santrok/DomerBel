@@ -58,14 +58,15 @@ class GroupedModelChoiceField(ModelChoiceField):
 
 class StoreForm(forms.ModelForm):
     region = forms.ModelChoiceField(queryset=Region.objects.filter(type="Город"),
-                                    label="Регион, город, область")
-
+                                    label="Регион, город, область",
+                                    required=True)
     category = GroupedModelChoiceField(queryset=Category.objects.filter(level=1).prefetch_related('parent'),
                                        choices_group_by='parent',
                                        label="Раздел",
+                                       required=True,
                                        widget=forms.Select(attrs={'size': 10}), empty_label=None)
     phone_num = forms.CharField(max_length=255,
-                                required=False,
+                                required=True,
                                 label="Телефон",
                                 validators=[validate_phone])
     logo_image = forms.ImageField(required=True,
@@ -78,7 +79,7 @@ class StoreForm(forms.ModelForm):
                   'phone_num', 'video_link', 'logo_image']
         labels = {
             "slug": """Имя магазина, которое будет отображаться в URL-e страницы Вашего магазина 
-                    (только латинские буквы и тире, должно начинаться с буквы и до 30 символов""",
+                        (только латинские буквы и тире, должно начинаться с буквы и до 30 символов""",
         }
         widgets = {
             "email": forms.TextInput(attrs={'id': 'store_email'}),

@@ -214,7 +214,7 @@ def get_store_by_title_and_category(request, store_slug, category_slug):
     store_page = get_object_or_404(Store, slug=store_slug)
     category = get_object_or_404(Category, slug=category_slug)
     category_bread_crumbs = category.get_ancestors(ascending=False, include_self=True)
-    category_queryset = Category.objects.filter(parent_id=category.id).add_related_count(category.get_descendants(),
+    category_queryset_an = Category.objects.add_related_count(category.get_descendants(),
                                                               Advertisement,
                                                               'category',
                                                               'advertisement_counts',
@@ -224,9 +224,8 @@ def get_store_by_title_and_category(request, store_slug, category_slug):
                                                                   "store": store_page,
                                                                   "is_active": True,
                                                                   "moderated": True
-                                                              })
-    category_queryset = category_queryset_an.filter(parent_id=category.id)
-    advertisement_queryset = Advertisement.objects.filter(Q(category__in=category_queryset) |
+                                                              }).filter(parent_id=category.id)
+    advertisement_queryset = Advertisement.objects.filter(Q(category__in=category_queryset_an) |
                                                           Q(category__slug=category.slug),
                                                           store=store_page,
                                                           **region_filter,
@@ -241,7 +240,7 @@ def get_store_by_title_and_category(request, store_slug, category_slug):
     context = {
         'store': store_page,
         "ads_found": advertisement_queryset.count(),
-        "category": category_queryset,
+        "category": category_queryset_an,
         "category_bread_crumbs": category_bread_crumbs,
         "region_bread_crumbs": region_bread_crumbs,
         "region_param": region_param,

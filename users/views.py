@@ -254,23 +254,24 @@ def get_user_data_page(request):
 @permission_required("advertisement.add_store", raise_exception=True)
 def add_store(request):
     if request.method == 'POST':
-        new_store = StoreForm(request.POST, request.FILES)
-        if new_store.is_valid():
-            store = new_store.save(commit=False)
+        store_form = StoreForm(request.POST, request.FILES)
+
+        if store_form.is_valid():
+            store = store_form.save(commit=False)
             store.user = request.user
             store.save()
             messages.success(request, f"Новый магазин {store} успешно создан!")
             return redirect('users:my_store')
-
-        store_form = StoreForm(request.POST, request.FILES)
-        store_form.errors.update(new_store.errors)
-        context = {
-            "store_form": store_form
-        }
-        return render(request, 'profile_add_store.html', context)
-
-    store_form = StoreForm(initial={'contact_name': request.user.first_name, 'email': request.user.email,
-                                    'phone_num': request.user.phone_number})
+        else:
+            # Если форма не валидна, сохраняем ошибки
+            messages.error(request, "Пожалуйста, исправьте ошибки в форме.")
+    else:
+        # Инициализация формы с данными пользователя
+        store_form = StoreForm(initial={
+            'contact_name': request.user.first_name,
+            'email': request.user.email,
+            'phone_num': request.user.phone_number
+        })
 
     context = {
         "store_form": store_form,
@@ -300,18 +301,22 @@ def get_my_store(request):
 @permission_required("advertisement.change_store", raise_exception=True)
 def edit_store(request, store_id):
     store = get_object_or_404(Store, user=request.user, id=store_id)
+
     if request.method == 'POST':
         edit_selected_store = StoreForm(request.POST, request.FILES, instance=store)
+
         if edit_selected_store.is_valid():
             edit_selected_store.save()
             messages.success(request, f"Магазин {store} успешно изменён!")
             return redirect('users:my_store')
+        else:
+            messages.error(request, "Пожалуйста, исправьте ошибки в форме.")
     else:
         edit_selected_store = StoreForm(instance=store)
 
     context = {
         'store_form': edit_selected_store,
-        'selected_region': Region.objects.get(id=store.region_id),
+        'selected_region': store.region,
         "adaptive_navigation": "Редактирование магазина"
     }
     return render(request, 'profile_edit_shop.html', context)

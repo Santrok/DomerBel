@@ -112,12 +112,8 @@
                             {% endif %}
                         {% endifchanged %}
                         <div class="message__item {% if message.author_id == user.id %}message-self{% else %}message-any{% endif %}">
-                            <p class="message__item-text">
-                                {{ message.message }}
-                            </p>
-                            <p class="message__item-time">
-                                {{ message.pub_date|date:"H:i" }}
-                            </p>
+                            <p class="message__item-text">{{ message.message|safe }}</p>
+                            <p class="message__item-time">{{ message.pub_date|date:"H:i" }}</p>
                         </div>
                     {% endfor %}
                 {% endwith %}

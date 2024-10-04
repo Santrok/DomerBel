@@ -285,7 +285,7 @@
         </div>
         {% if messages %}
             {% for message in messages %}
-        <div aria-hidden="true" class="form__notifications-access access__active">
+        <div aria-hidden="true" class="form__notifications-access access__active" {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}style="background-color: red"{% endif %}>
             {{ message }}
         </div>
             {% endfor %}
