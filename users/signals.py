@@ -35,7 +35,7 @@ def save_user_favorites(sender, instance, **kwargs):
 
 
 @receiver(post_save, sender=Message)
-def save_user_favorites(sender, instance, **kwargs):
+def sending_notification_about_new_message(sender, instance, **kwargs):
     members = instance.chat.members.all()
 
     recipient = None

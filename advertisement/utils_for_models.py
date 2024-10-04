@@ -15,7 +15,7 @@ from django.core.files.base import ContentFile
 def upload_to(instance, filename):
     """Хэширование имени файла и распределение
        файлов по приложениям и далее в разные папки
-       случайным образом"""
+       по дате"""
     today = date.today().isoformat()
     save_folder = today
     ext = os.path.splitext(filename)[1]

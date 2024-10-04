@@ -284,11 +284,9 @@ def add_store(request):
 @permission_required("advertisement.view_store", raise_exception=True)
 def get_my_store(request):
     stores = Store.objects.filter(user=request.user).order_by('id')
-    oblast_list = []
     if stores.exists():
         context = {
             'stores': stores,
-            'oblast_list': oblast_list,
             "adaptive_navigation": "Мои магазины"
         }
     else:

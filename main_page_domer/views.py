@@ -27,7 +27,7 @@ from users.models import User
 from advertisement.models import Advertisement, Region, Category, Store, ElementTwo, PhotoAdvertisement, Field, Element
 from advertisement.utils import (get_region_variables, sorted_by, sorted_by_number, sorted_by_date_or_price,
                                  variables_for_paginator, where_to_look, search_additional_information,
-                                 annotating_field)
+                                 annotating_field, setting_values_for_sorting_from_cookie_or_request_get)
 from main_page_domer.forms import FeedbackForm
 from main_page_domer.models import Help, Publication
 from users.tasks import send_email_task
@@ -155,15 +155,12 @@ def get_stores_by_category(request, category_slug):
 
 def get_store_by_title(request, store_slug):
     """ Переход на страницу выбранного магазина с его объявлениями """
-    order_by = sorted_by(request.COOKIES.get('sorted_by'))
-    sort_for_paginator = sorted_by_number(request.COOKIES.get('sort'))
-    state_sort_by_date = request.COOKIES.get('date', 0)
-    region_filter, region_param, region_bread_crumbs = get_region_variables(request.GET.get('region'))
-
-    if request.GET.get('date') or request.GET.get('price'):
-        state_sort_by_date, order_by = sorted_by_date_or_price(request.GET)
-    if request.GET.get('sort'):
-        sort_for_paginator = sorted_by_number(request.GET.get('sort'))
+    (order_by,
+     sort_for_paginator,
+     state_sort_by_date) = setting_values_for_sorting_from_cookie_or_request_get(request.COOKIES, request.GET)
+    (region_filter,
+     region_param,
+     region_bread_crumbs) = get_region_variables(request.GET.get('region'))
 
     store_page = get_object_or_404(Store, slug=store_slug)
     advertisement_queryset = Advertisement.objects.filter(store=store_page, is_active=True,
@@ -207,21 +204,17 @@ def get_store_by_title(request, store_slug):
 
 def get_store_by_title_and_category(request, store_slug, category_slug):
     """ Переходы по дочерним категориям объявлений выбранного магазина """
-    order_by = sorted_by(request.COOKIES.get('sorted_by'))
-    sort_for_paginator = sorted_by_number(request.COOKIES.get('sort'))
-    state_sort_by_date = request.COOKIES.get('date', 0)
-    region_filter, region_param, region_bread_crumbs = get_region_variables(request.GET.get('region'))
-
-    if request.GET.get('date') or request.GET.get('price'):
-        state_sort_by_date, order_by = sorted_by_date_or_price(request.GET)
-    if request.GET.get('sort'):
-        sort_for_paginator = sorted_by_number(request.GET.get('sort'))
+    (order_by,
+     sort_for_paginator,
+     state_sort_by_date) = setting_values_for_sorting_from_cookie_or_request_get(request.COOKIES, request.GET)
+    (region_filter,
+     region_param,
+     region_bread_crumbs) = get_region_variables(request.GET.get('region'))
 
     store_page = get_object_or_404(Store, slug=store_slug)
-    category_queryset_all = Category.objects.all()
-    category = get_object_or_404(category_queryset_all, slug=category_slug)
+    category = get_object_or_404(Category, slug=category_slug)
     category_bread_crumbs = category.get_ancestors(ascending=False, include_self=True)
-    category_queryset_an = Category.objects.add_related_count(category.get_descendants(),
+    category_queryset = Category.objects.filter(parent_id=category.id).add_related_count(category.get_descendants(),
                                                               Advertisement,
                                                               'category',
                                                               'advertisement_counts',
@@ -233,7 +226,7 @@ def get_store_by_title_and_category(request, store_slug, category_slug):
                                                                   "moderated": True
                                                               })
     category_queryset = category_queryset_an.filter(parent_id=category.id)
-    advertisement_queryset = Advertisement.objects.filter(Q(category__in=category_queryset_an) |
+    advertisement_queryset = Advertisement.objects.filter(Q(category__in=category_queryset) |
                                                           Q(category__slug=category.slug),
                                                           store=store_page,
                                                           **region_filter,
@@ -269,34 +262,26 @@ def get_store_by_title_and_category(request, store_slug, category_slug):
 
 def search_for_advertisements_in_the_store(request, store_slug):
     search_parameters = {}
-    search_parameters_only = {}
     category_queryset_an = []
-    key_delete = ['page', 'sort', 'date', 'price', 'text_search', 'only_video']
+    key_delete = ['page', 'sort', 'date', 'price', 'text_search', 'only_photo', 'only_video', 'only_title']
     cop = dict.copy(request.GET)
 
-    sort_for_paginator = sorted_by_number(request.COOKIES.get('sort'))
-    order_by = sorted_by(request.COOKIES.get('sorted_by'))
-    state_sort_by_date = request.COOKIES.get('date', 0)
+    (order_by,
+     sort_for_paginator,
+     state_sort_by_date) = setting_values_for_sorting_from_cookie_or_request_get(request.COOKIES, request.GET)
     category, category_bread_crumbs = where_to_look(cop.pop('category', None), Category)
     region, region_bread_crumbs = where_to_look(cop.pop('region', None), Region)
-
-    if request.GET.get('date') or request.GET.get('price'):
-        state_sort_by_date, order_by = sorted_by_date_or_price(request.GET)
-    if request.GET.get('sort'):
-        sort_for_paginator = sorted_by_number(request.GET.get('sort'))
 
     if category:
         search_parameters['category__in'] = category
     if region:
         search_parameters['region__in'] = region
     if request.GET.get('only_photo'):
-        search_parameters_only['preview_image__exact'] = ''
-        cop.pop('only_photo')
+        search_parameters['preview_image__isnull'] = False
     if request.GET.get('only_video'):
-        search_parameters_only['video_link__exact'] = ''
+        search_parameters['video_link__isnull'] = False
     if request.GET.get('only_title') and request.GET.get('text_search'):
         search_parameters['search_title_vector'] = request.GET.get('text_search')
-        cop.pop('only_title')
     elif request.GET.get('text_search'):
         search_parameters['search_vector'] = request.GET.get('text_search')
 
@@ -305,12 +290,7 @@ def search_for_advertisements_in_the_store(request, store_slug):
         cop.pop(key, None)
         query = query.replace(f'{key}={request.GET.get(key)}&', '')
 
-    try:
-        fields = Field.objects.filter(id__in=cop.keys())
-    except ValueError:
-        raise Http404()
-
-    search, search_kt = search_additional_information(fields, cop)
+    search, search_kt = search_additional_information(cop)
     search_q, search_annotate = annotating_field(search_kt)
 
     if search:
@@ -339,8 +319,7 @@ def search_for_advertisements_in_the_store(request, store_slug):
                                                                      moderated=True,
                                                                      store=store_page,
                                                                      **search_parameters
-                                                                     ).exclude(**search_parameters_only
-                                                                               ).select_related('category', 'region'
+                                                                     ).select_related('category', 'region'
                                                                                                 ).order_by(
         "-raise_in_search",
         order_by)
@@ -632,7 +611,7 @@ def download_advertis(request):
             raise_in_search= False,
             additional_information= desc_and_opis(advertis),
             description= advertis.get("opis").split('<hr>')[1],
-            video_link= advertis.get("video_link"))
+            video_link= advertis.get("video_link") if advertis.get("video_link") != "" else None)
 
             # new_advertis.save()
 
