@@ -19,7 +19,7 @@ def validate_additional_information(keys_to_delete, additional_information):
     return serializer_additional_error, additional_information
 
 
-def save_temp_photo(photo_list, preview_img=None):
+def save_temp_photos(photo_list, preview_img=None):
     """
     Сохраняет фотографии во временную директорию.
     Возвращает список адресов фотографий.

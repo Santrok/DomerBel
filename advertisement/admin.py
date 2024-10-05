@@ -11,6 +11,10 @@ class AdvertisementAdmin(admin.ModelAdmin):
                     'moderated',
                     'is_active',
                     'vip',
+                    'shown_vip',
+                    'shown_vip_count',
+                    'shown_vip_category',
+                    'shown_vip_category_count',
                     'highlight_ad',
                     'special_accommodation',
                     'raise_in_search',
@@ -18,18 +22,16 @@ class AdvertisementAdmin(admin.ModelAdmin):
     list_display_links = ('title',)
     search_fields = ('title',)
     list_filter = ('moderated',
-                    'is_active',
-                    'vip',
-                    'highlight_ad',
-                    'special_accommodation',
-                    'raise_in_search',
+                   'is_active',
+                   'vip',
+                   'highlight_ad',
+                   'special_accommodation',
+                   'raise_in_search',
                    )
-    list_editable = ["moderated",
-                    'is_active',
-                    'vip',
-                    'highlight_ad',
-                    'special_accommodation',
-                    'raise_in_search',
+    list_editable = ['moderated',
+                     'is_active',
+                     'vip',
+                     'raise_in_search',
                      ]  # Потом УДАЛИТЬ! редактируем поле "прошел модерацию" не заходя в заказ
 
 
@@ -75,5 +77,3 @@ admin.site.register(BadWords)
 admin.site.register(Store, StoreAdmin)
 admin.site.register(UploadFile)
 admin.site.register(ErrorFile)
-
-

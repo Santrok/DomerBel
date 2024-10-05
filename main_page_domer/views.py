@@ -48,7 +48,7 @@ def get_main_page(request):
         'contact_name',
         'counter_views',
         'phone_num')
-    vip_advertisement = Advertisement.objects.filter(vip=True, is_active=True, moderated=True)
+    vip_advertisement = Advertisement.objects.filter(vip=True, shown_vip=True, is_active=True, moderated=True)
     context = {
         "advertisement": advertisement_queryset,
         "vip_advertisement": vip_advertisement,
@@ -710,3 +710,8 @@ def dowload_photo(request):
 def page_not_found(request):
     '''отдает страничку с ошибкой 404'''
     return render(request, '404.html', status=404)
+
+
+def test_view(request):
+    list_vip = Advertisement.objects.filter(vip=True, shown_vip=True)
+    return render(request, 'download_adver.html', context={'vip': list_vip})

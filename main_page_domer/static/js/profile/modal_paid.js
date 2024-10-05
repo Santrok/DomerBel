@@ -64,6 +64,16 @@ function sendPaid() {
                     advertisementError.innerHTML = msg.data.errors.advertisement
                     errorList.append(advertisementError)
                 }
+                if (msg.data.errors.connect) {
+                    if (document.querySelector(".connect__error")) {
+                    document.querySelector(".connect__error").remove()
+                }
+                    let advertisementError = document.createElement('p')
+                    advertisementError.classList.add('connect__error')
+                    advertisementError.classList.add('modals__signIn-error')
+                    advertisementError.innerHTML = msg.data.errors.connect
+                    errorList.append(advertisementError)
+                }
             }
         )
 }

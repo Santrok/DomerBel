@@ -1,6 +1,5 @@
-import random
 import os
-import pillow_avif
+import pillow_avif  # Не удалять
 from io import BytesIO
 from datetime import date
 from uuid import uuid4
@@ -9,8 +8,6 @@ from PIL import Image, ImageDraw, ImageFont
 from hashlib import md5
 from django.core.files.base import ContentFile
 
-
-# from .models import Advertisement
 
 def upload_to(instance, filename):
     """Хэширование имени файла и распределение
@@ -26,7 +23,6 @@ def upload_to(instance, filename):
     else:
         basedir = instance.__class__.__name__
     return os.path.join(basedir, save_folder, filename)
-
 
 
 def add_watermark_to_photo(photo):
