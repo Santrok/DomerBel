@@ -17,14 +17,6 @@
         "documentation": {}
     },
     {
-        "label": "HStoreField",
-        "importPath": "django.contrib.postgres.fields",
-        "description": "django.contrib.postgres.fields",
-        "isExtraImport": true,
-        "detail": "django.contrib.postgres.fields",
-        "documentation": {}
-    },
-    {
         "label": "ArrayField",
         "importPath": "django.contrib.postgres.fields",
         "description": "django.contrib.postgres.fields",
@@ -657,7 +649,95 @@
         "documentation": {}
     },
     {
+        "label": "migrations",
+        "importPath": "django.db",
+        "description": "django.db",
+        "isExtraImport": true,
+        "detail": "django.db",
+        "documentation": {}
+    },
+    {
         "label": "models",
+        "importPath": "django.db",
+        "description": "django.db",
+        "isExtraImport": true,
+        "detail": "django.db",
+        "documentation": {}
+    },
+    {
+        "label": "migrations",
+        "importPath": "django.db",
+        "description": "django.db",
+        "isExtraImport": true,
+        "detail": "django.db",
+        "documentation": {}
+    },
+    {
+        "label": "models",
+        "importPath": "django.db",
+        "description": "django.db",
+        "isExtraImport": true,
+        "detail": "django.db",
+        "documentation": {}
+    },
+    {
+        "label": "migrations",
+        "importPath": "django.db",
+        "description": "django.db",
+        "isExtraImport": true,
+        "detail": "django.db",
+        "documentation": {}
+    },
+    {
+        "label": "models",
+        "importPath": "django.db",
+        "description": "django.db",
+        "isExtraImport": true,
+        "detail": "django.db",
+        "documentation": {}
+    },
+    {
+        "label": "migrations",
+        "importPath": "django.db",
+        "description": "django.db",
+        "isExtraImport": true,
+        "detail": "django.db",
+        "documentation": {}
+    },
+    {
+        "label": "migrations",
+        "importPath": "django.db",
+        "description": "django.db",
+        "isExtraImport": true,
+        "detail": "django.db",
+        "documentation": {}
+    },
+    {
+        "label": "models",
+        "importPath": "django.db",
+        "description": "django.db",
+        "isExtraImport": true,
+        "detail": "django.db",
+        "documentation": {}
+    },
+    {
+        "label": "models",
+        "importPath": "django.db",
+        "description": "django.db",
+        "isExtraImport": true,
+        "detail": "django.db",
+        "documentation": {}
+    },
+    {
+        "label": "transaction",
+        "importPath": "django.db",
+        "description": "django.db",
+        "isExtraImport": true,
+        "detail": "django.db",
+        "documentation": {}
+    },
+    {
+        "label": "transaction",
         "importPath": "django.db",
         "description": "django.db",
         "isExtraImport": true,
@@ -1953,6 +2033,14 @@
         "documentation": {}
     },
     {
+        "label": "SearchVector",
+        "importPath": "django.contrib.postgres.search",
+        "description": "django.contrib.postgres.search",
+        "isExtraImport": true,
+        "detail": "django.contrib.postgres.search",
+        "documentation": {}
+    },
+    {
         "label": "SearchVectorField",
         "importPath": "django.contrib.postgres.search",
         "description": "django.contrib.postgres.search",
@@ -2269,6 +2357,22 @@
         "documentation": {}
     },
     {
+        "label": "timedelta",
+        "importPath": "datetime",
+        "description": "datetime",
+        "isExtraImport": true,
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
+        "label": "datetime",
+        "importPath": "datetime",
+        "description": "datetime",
+        "isExtraImport": true,
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
         "label": "datetime",
         "importPath": "datetime",
         "description": "datetime",
@@ -2326,6 +2430,22 @@
     },
     {
         "label": "datetime",
+        "importPath": "datetime",
+        "description": "datetime",
+        "isExtraImport": true,
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
+        "label": "datetime",
+        "importPath": "datetime",
+        "description": "datetime",
+        "isExtraImport": true,
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
+        "label": "timedelta",
         "importPath": "datetime",
         "description": "datetime",
         "isExtraImport": true,
@@ -3092,6 +3212,102 @@
         "documentation": {}
     },
     {
+        "label": "Min",
+        "importPath": "django.db.models",
+        "description": "django.db.models",
+        "isExtraImport": true,
+        "detail": "django.db.models",
+        "documentation": {}
+    },
+    {
+        "label": "F",
+        "importPath": "django.db.models",
+        "description": "django.db.models",
+        "isExtraImport": true,
+        "detail": "django.db.models",
+        "documentation": {}
+    },
+    {
+        "label": "Q",
+        "importPath": "django.db.models",
+        "description": "django.db.models",
+        "isExtraImport": true,
+        "detail": "django.db.models",
+        "documentation": {}
+    },
+    {
+        "label": "Q",
+        "importPath": "django.db.models",
+        "description": "django.db.models",
+        "isExtraImport": true,
+        "detail": "django.db.models",
+        "documentation": {}
+    },
+    {
+        "label": "F",
+        "importPath": "django.db.models",
+        "description": "django.db.models",
+        "isExtraImport": true,
+        "detail": "django.db.models",
+        "documentation": {}
+    },
+    {
+        "label": "Q",
+        "importPath": "django.db.models",
+        "description": "django.db.models",
+        "isExtraImport": true,
+        "detail": "django.db.models",
+        "documentation": {}
+    },
+    {
+        "label": "F",
+        "importPath": "django.db.models",
+        "description": "django.db.models",
+        "isExtraImport": true,
+        "detail": "django.db.models",
+        "documentation": {}
+    },
+    {
+        "label": "Count",
+        "importPath": "django.db.models",
+        "description": "django.db.models",
+        "isExtraImport": true,
+        "detail": "django.db.models",
+        "documentation": {}
+    },
+    {
+        "label": "Min",
+        "importPath": "django.db.models",
+        "description": "django.db.models",
+        "isExtraImport": true,
+        "detail": "django.db.models",
+        "documentation": {}
+    },
+    {
+        "label": "Max",
+        "importPath": "django.db.models",
+        "description": "django.db.models",
+        "isExtraImport": true,
+        "detail": "django.db.models",
+        "documentation": {}
+    },
+    {
+        "label": "F",
+        "importPath": "django.db.models",
+        "description": "django.db.models",
+        "isExtraImport": true,
+        "detail": "django.db.models",
+        "documentation": {}
+    },
+    {
+        "label": "Value",
+        "importPath": "django.db.models",
+        "description": "django.db.models",
+        "isExtraImport": true,
+        "detail": "django.db.models",
+        "documentation": {}
+    },
+    {
         "label": "post_delete",
         "importPath": "django.db.models.signals",
         "description": "django.db.models.signals",
@@ -3109,6 +3325,14 @@
     },
     {
         "label": "pre_delete",
+        "importPath": "django.db.models.signals",
+        "description": "django.db.models.signals",
+        "isExtraImport": true,
+        "detail": "django.db.models.signals",
+        "documentation": {}
+    },
+    {
+        "label": "pre_save",
         "importPath": "django.db.models.signals",
         "description": "django.db.models.signals",
         "isExtraImport": true,
@@ -3590,15 +3814,6 @@
         "documentation": {}
     },
     {
-        "label": "random",
-        "kind": 6,
-        "isExtraImport": true,
-        "importPath": "random",
-        "description": "random",
-        "detail": "random",
-        "documentation": {}
-    },
-    {
         "label": "pillow_avif",
         "kind": 6,
         "isExtraImport": true,
@@ -3755,83 +3970,12 @@
         "documentation": {}
     },
     {
-        "label": "Q",
-        "importPath": "django.db.models",
-        "description": "django.db.models",
+        "label": "random",
+        "kind": 6,
         "isExtraImport": true,
-        "detail": "django.db.models",
-        "documentation": {}
-    },
-    {
-        "label": "Q",
-        "importPath": "django.db.models",
-        "description": "django.db.models",
-        "isExtraImport": true,
-        "detail": "django.db.models",
-        "documentation": {}
-    },
-    {
-        "label": "F",
-        "importPath": "django.db.models",
-        "description": "django.db.models",
-        "isExtraImport": true,
-        "detail": "django.db.models",
-        "documentation": {}
-    },
-    {
-        "label": "Q",
-        "importPath": "django.db.models",
-        "description": "django.db.models",
-        "isExtraImport": true,
-        "detail": "django.db.models",
-        "documentation": {}
-    },
-    {
-        "label": "F",
-        "importPath": "django.db.models",
-        "description": "django.db.models",
-        "isExtraImport": true,
-        "detail": "django.db.models",
-        "documentation": {}
-    },
-    {
-        "label": "Count",
-        "importPath": "django.db.models",
-        "description": "django.db.models",
-        "isExtraImport": true,
-        "detail": "django.db.models",
-        "documentation": {}
-    },
-    {
-        "label": "Min",
-        "importPath": "django.db.models",
-        "description": "django.db.models",
-        "isExtraImport": true,
-        "detail": "django.db.models",
-        "documentation": {}
-    },
-    {
-        "label": "Max",
-        "importPath": "django.db.models",
-        "description": "django.db.models",
-        "isExtraImport": true,
-        "detail": "django.db.models",
-        "documentation": {}
-    },
-    {
-        "label": "F",
-        "importPath": "django.db.models",
-        "description": "django.db.models",
-        "isExtraImport": true,
-        "detail": "django.db.models",
-        "documentation": {}
-    },
-    {
-        "label": "Value",
-        "importPath": "django.db.models",
-        "description": "django.db.models",
-        "isExtraImport": true,
-        "detail": "django.db.models",
+        "importPath": "random",
+        "description": "random",
+        "detail": "random",
         "documentation": {}
     },
     {
@@ -4081,6 +4225,15 @@
         "description": "api_domer.validators",
         "isExtraImport": true,
         "detail": "api_domer.validators",
+        "documentation": {}
+    },
+    {
+        "label": "contextlib",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "contextlib",
+        "description": "contextlib",
+        "detail": "contextlib",
         "documentation": {}
     },
     {
@@ -4494,7 +4647,7 @@
         "documentation": {}
     },
     {
-        "label": "save_temp_photo",
+        "label": "save_temp_photos",
         "importPath": "api_domer.utils",
         "description": "api_domer.utils",
         "isExtraImport": true,
@@ -5521,6 +5674,51 @@
         "documentation": {}
     },
     {
+        "label": "Migration",
+        "kind": 6,
+        "importPath": "advertisement.migrations.0034_advertisement_date_of_deactivate_highlight_ad_and_more",
+        "description": "advertisement.migrations.0034_advertisement_date_of_deactivate_highlight_ad_and_more",
+        "peekOfCode": "class Migration(migrations.Migration):\n    dependencies = [\n        ('advertisement', '0033_merge_20240920_1343'),\n    ]\n    operations = [\n        migrations.AddField(\n            model_name='advertisement',\n            name='date_of_deactivate_highlight_ad',\n            field=models.DateTimeField(blank=True, null=True, verbose_name='Дата деактивации выделения'),\n        ),",
+        "detail": "advertisement.migrations.0034_advertisement_date_of_deactivate_highlight_ad_and_more",
+        "documentation": {}
+    },
+    {
+        "label": "Migration",
+        "kind": 6,
+        "importPath": "advertisement.migrations.0035_advertisement_shown_vip_advertisement_shown_vip_cat_and_more",
+        "description": "advertisement.migrations.0035_advertisement_shown_vip_advertisement_shown_vip_cat_and_more",
+        "peekOfCode": "class Migration(migrations.Migration):\n    dependencies = [\n        ('advertisement', '0034_advertisement_date_of_deactivate_highlight_ad_and_more'),\n    ]\n    operations = [\n        migrations.AddField(\n            model_name='advertisement',\n            name='shown_vip',\n            field=models.BooleanField(default=False, verbose_name='Показано на главной странице'),\n        ),",
+        "detail": "advertisement.migrations.0035_advertisement_shown_vip_advertisement_shown_vip_cat_and_more",
+        "documentation": {}
+    },
+    {
+        "label": "Migration",
+        "kind": 6,
+        "importPath": "advertisement.migrations.0036_advertisement_shown_vip_cat_count_and_more",
+        "description": "advertisement.migrations.0036_advertisement_shown_vip_cat_count_and_more",
+        "peekOfCode": "class Migration(migrations.Migration):\n    dependencies = [\n        ('advertisement', '0035_advertisement_shown_vip_advertisement_shown_vip_cat_and_more'),\n    ]\n    operations = [\n        migrations.AddField(\n            model_name='advertisement',\n            name='shown_vip_cat_count',\n            field=models.IntegerField(default=0, verbose_name='Счетчик показов на странице категории'),\n        ),",
+        "detail": "advertisement.migrations.0036_advertisement_shown_vip_cat_count_and_more",
+        "documentation": {}
+    },
+    {
+        "label": "Migration",
+        "kind": 6,
+        "importPath": "advertisement.migrations.0037_rename_shown_vip_cat_advertisement_shown_vip_category_and_more",
+        "description": "advertisement.migrations.0037_rename_shown_vip_cat_advertisement_shown_vip_category_and_more",
+        "peekOfCode": "class Migration(migrations.Migration):\n    dependencies = [\n        ('advertisement', '0036_advertisement_shown_vip_cat_count_and_more'),\n    ]\n    operations = [\n        migrations.RenameField(\n            model_name='advertisement',\n            old_name='shown_vip_cat',\n            new_name='shown_vip_category',\n        ),",
+        "detail": "advertisement.migrations.0037_rename_shown_vip_cat_advertisement_shown_vip_category_and_more",
+        "documentation": {}
+    },
+    {
+        "label": "Migration",
+        "kind": 6,
+        "importPath": "advertisement.migrations.0038_alter_advertisement_preview_image_and_more",
+        "description": "advertisement.migrations.0038_alter_advertisement_preview_image_and_more",
+        "peekOfCode": "class Migration(migrations.Migration):\n    dependencies = [\n        ('advertisement', '0037_rename_shown_vip_cat_advertisement_shown_vip_category_and_more'),\n    ]\n    operations = [\n        migrations.AlterField(\n            model_name='advertisement',\n            name='preview_image',\n            field=models.ImageField(blank=True, default=None, null=True, upload_to=advertisement.utils_for_models.upload_to, verbose_name='Главная фотография'),\n        ),",
+        "detail": "advertisement.migrations.0038_alter_advertisement_preview_image_and_more",
+        "documentation": {}
+    },
+    {
         "label": "get_item",
         "kind": 2,
         "importPath": "advertisement.templatetags.advertisement_tags",
@@ -5552,7 +5750,7 @@
         "kind": 6,
         "importPath": "advertisement.admin",
         "description": "advertisement.admin",
-        "peekOfCode": "class AdvertisementAdmin(admin.ModelAdmin):\n    prepopulated_fields = {\"slug\": (\"title\",)}\n    list_display = ('title',\n                    'moderated',\n                    'is_active',\n                    'vip',\n                    'highlight_ad',\n                    'special_accommodation',\n                    'raise_in_search',\n                    )",
+        "peekOfCode": "class AdvertisementAdmin(admin.ModelAdmin):\n    prepopulated_fields = {\"slug\": (\"title\",)}\n    list_display = ('title',\n                    'moderated',\n                    'is_active',\n                    'vip',\n                    'shown_vip',\n                    'shown_vip_count',\n                    'shown_vip_category',\n                    'shown_vip_category_count',",
         "detail": "advertisement.admin",
         "documentation": {}
     },
@@ -5642,7 +5840,7 @@
         "kind": 6,
         "importPath": "advertisement.forms",
         "description": "advertisement.forms",
-        "peekOfCode": "class GroupedModelChoiceField(ModelChoiceField):\n    def __init__(self, *args, choices_groupby, **kwargs):\n        if isinstance(choices_groupby, str):\n            choices_groupby = attrgetter(choices_groupby)\n        elif not callable(choices_groupby):\n            raise TypeError('choices_groupby must either be a str or a callable accepting a single argument')\n        self.iterator = partial(GroupedModelChoiceIterator, groupby=choices_groupby)\n        super().__init__(*args, **kwargs)\nclass StoreForm(forms.ModelForm):\n    region = forms.ModelChoiceField(queryset=Region.objects.filter(type=\"Город\"),",
+        "peekOfCode": "class GroupedModelChoiceField(ModelChoiceField):\n    def __init__(self, *args, choices_groupby, **kwargs):\n        if isinstance(choices_groupby, str):\n            choices_groupby = attrgetter(choices_groupby)\n        elif not callable(choices_groupby):\n            raise TypeError('choice_groupby должен быть либо строкой, либо вызываемым объектом, принимающим один аргумент')\n        self.iterator = partial(GroupedModelChoiceIterator, groupby=choices_groupby)\n        super().__init__(*args, **kwargs)\nclass StoreForm(forms.ModelForm):\n    region = forms.ModelChoiceField(queryset=Region.objects.filter(type=\"Город\"),",
         "detail": "advertisement.forms",
         "documentation": {}
     },
@@ -5876,7 +6074,7 @@
         "kind": 2,
         "importPath": "advertisement.signals",
         "description": "advertisement.signals",
-        "peekOfCode": "def object_post_delete_handler(sender, **kwargs):\n    \"\"\"Удаление из кэша списка категорий\n    если был удален экземпляр модели Category\"\"\"\n    cache.delete('objects')\n@receiver(post_save, sender=Category)\ndef object_post_save_handler(sender, **kwargs):\n    \"\"\"Удаление из кэша списка категорий\n        если был добавлен экземпляр модели Category\"\"\"\n    cache.delete('objects')\n@receiver(post_save,sender=BadWords)",
+        "peekOfCode": "def object_post_delete_handler(sender, **kwargs):\n    \"\"\"Удаление из кэша списка категорий\n    если был удален экземпляр модели Category\"\"\"\n    cache.delete('objects')\n@receiver(post_save, sender=Category)\ndef object_post_save_handler(sender, **kwargs):\n    \"\"\"Удаление из кэша списка категорий\n        если был добавлен экземпляр модели Category\"\"\"\n    cache.delete('objects')\n@receiver(post_save, sender=BadWords)",
         "detail": "advertisement.signals",
         "documentation": {}
     },
@@ -5885,7 +6083,7 @@
         "kind": 2,
         "importPath": "advertisement.signals",
         "description": "advertisement.signals",
-        "peekOfCode": "def object_post_save_handler(sender, **kwargs):\n    \"\"\"Удаление из кэша списка категорий\n        если был добавлен экземпляр модели Category\"\"\"\n    cache.delete('objects')\n@receiver(post_save,sender=BadWords)\ndef object_post_save_handler(sender, **kwargs):\n    \"\"\"Удаление из кэша списка нецензурных слов\n        если был добавлен экземпляр модели BadWords\"\"\"\n    cache.delete('objects')\n@receiver(post_delete, sender=Region)",
+        "peekOfCode": "def object_post_save_handler(sender, **kwargs):\n    \"\"\"Удаление из кэша списка категорий\n        если был добавлен экземпляр модели Category\"\"\"\n    cache.delete('objects')\n@receiver(post_save, sender=BadWords)\ndef object_post_save_handler(sender, **kwargs):\n    \"\"\"Удаление из кэша списка нецензурных слов\n        если был добавлен экземпляр модели BadWords\"\"\"\n    cache.delete('objects')\n@receiver(post_delete, sender=Region)",
         "detail": "advertisement.signals",
         "documentation": {}
     },
@@ -5912,7 +6110,7 @@
         "kind": 2,
         "importPath": "advertisement.signals",
         "description": "advertisement.signals",
-        "peekOfCode": "def object_post_save_handler(sender, **kwargs):\n    \"\"\"Удаление из кэша списка категорий\n            если был добавлен экземпляр модели Region\"\"\"\n    cache.delete('objects')\n@receiver(pre_delete, sender=Advertisement)\ndef publication_photo_delete(sender, instance, **kwargs):\n    \"\"\" Удаление файлов перед удалением экземпляра объявления \"\"\"\n    image_folder = os.path.dirname(instance.preview_image.path) if instance.preview_image else None\n    instance.preview_image.delete(False)\n    if image_folder and os.path.exists(image_folder) and os.path.isdir(image_folder):",
+        "peekOfCode": "def object_post_save_handler(sender, **kwargs):\n    \"\"\"Удаление из кэша списка категорий\n            если был добавлен экземпляр модели Region\"\"\"\n    cache.delete('objects')\n@receiver(pre_delete, sender=Advertisement)\ndef publication_photo_delete(sender, instance, **kwargs):\n    \"\"\"Удаление файлов и папок, перед удалением экземпляра объявления \"\"\"\n    image_folder = os.path.dirname(instance.preview_image.path) if instance.preview_image else None\n    instance.preview_image.delete(False)\n    if image_folder and os.path.exists(image_folder) and os.path.isdir(image_folder):",
         "detail": "advertisement.signals",
         "documentation": {}
     },
@@ -5921,7 +6119,7 @@
         "kind": 2,
         "importPath": "advertisement.signals",
         "description": "advertisement.signals",
-        "peekOfCode": "def publication_photo_delete(sender, instance, **kwargs):\n    \"\"\" Удаление файлов перед удалением экземпляра объявления \"\"\"\n    image_folder = os.path.dirname(instance.preview_image.path) if instance.preview_image else None\n    instance.preview_image.delete(False)\n    if image_folder and os.path.exists(image_folder) and os.path.isdir(image_folder):\n        if not os.listdir(image_folder):\n            os.rmdir(image_folder)\n@receiver(pre_delete, sender=PhotoAdvertisement)\ndef publication_photo_delete(sender, instance, **kwargs):\n    \"\"\" Удаление файлов перед удалением экземпляра",
+        "peekOfCode": "def publication_photo_delete(sender, instance, **kwargs):\n    \"\"\"Удаление файлов и папок, перед удалением экземпляра объявления \"\"\"\n    image_folder = os.path.dirname(instance.preview_image.path) if instance.preview_image else None\n    instance.preview_image.delete(False)\n    if image_folder and os.path.exists(image_folder) and os.path.isdir(image_folder):\n        if not os.listdir(image_folder):\n            os.rmdir(image_folder)\n@receiver(pre_delete, sender=PhotoAdvertisement)\ndef publication_photo_delete(sender, instance, **kwargs):\n    \"\"\" Удаление файлов перед удалением экземпляра",
         "detail": "advertisement.signals",
         "documentation": {}
     },
@@ -5930,7 +6128,7 @@
         "kind": 2,
         "importPath": "advertisement.signals",
         "description": "advertisement.signals",
-        "peekOfCode": "def publication_photo_delete(sender, instance, **kwargs):\n    \"\"\" Удаление файлов перед удалением экземпляра\n    дополнительного изображения объявления \"\"\"\n    instance.photo.delete(False)\n@receiver(post_save, sender=Advertisement)\ndef notify_moderation_result(sender, instance, **kwargs):\n    if 'moderated' in instance.get_dirty_fields() and instance.moderated == True:\n        print('письмо ушло в пользователю прошло модерацию')\n        html_content = render_to_string(\n            \"asend_notify_moderation_result.html\",",
+        "peekOfCode": "def publication_photo_delete(sender, instance, **kwargs):\n    \"\"\" Удаление файлов перед удалением экземпляра\n    дополнительного изображения объявления \"\"\"\n    instance.photo.delete(False)\n@receiver(post_save, sender=Advertisement)\ndef notify_moderation_result(sender, instance, **kwargs):\n    \"\"\"Функция проверяет прошло ли письмо модерацию или нет и отправляем письмо пользователю с результатом\"\"\"\n    # !!! Переписать на новую функцию отправки писем!!!\n    if 'moderated' in instance.get_dirty_fields() and instance.moderated == True:\n        html_content = render_to_string(",
         "detail": "advertisement.signals",
         "documentation": {}
     },
@@ -5939,7 +6137,34 @@
         "kind": 2,
         "importPath": "advertisement.signals",
         "description": "advertisement.signals",
-        "peekOfCode": "def notify_moderation_result(sender, instance, **kwargs):\n    if 'moderated' in instance.get_dirty_fields() and instance.moderated == True:\n        print('письмо ушло в пользователю прошло модерацию')\n        html_content = render_to_string(\n            \"asend_notify_moderation_result.html\",\n            context={\"activation_title\": instance.title, \"result\": True, \"url\": env_keys.get(\"URL\")},\n        )\n        send_email_task(chat_title='Объявление прошло модерацию',\n                        recipient=instance.email,\n                        text_content=html_content,",
+        "peekOfCode": "def notify_moderation_result(sender, instance, **kwargs):\n    \"\"\"Функция проверяет прошло ли письмо модерацию или нет и отправляем письмо пользователю с результатом\"\"\"\n    # !!! Переписать на новую функцию отправки писем!!!\n    if 'moderated' in instance.get_dirty_fields() and instance.moderated == True:\n        html_content = render_to_string(\n            \"asend_notify_moderation_result.html\",\n            context={\"activation_title\": instance.title, \"result\": True, \"url\": env_keys.get(\"URL\")},\n        )\n        send_email_task(chat_title='Объявление прошло модерацию',\n                        recipient=instance.email,",
+        "detail": "advertisement.signals",
+        "documentation": {}
+    },
+    {
+        "label": "create_fild_for_search_adv",
+        "kind": 2,
+        "importPath": "advertisement.signals",
+        "description": "advertisement.signals",
+        "peekOfCode": "def create_fild_for_search_adv(sender, instance, **kwargs):\n    \"\"\"Функция заполняет поля для полнотекстового поиска\"\"\"\n    dirty_fields = instance.get_dirty_fields()\n    if (not instance.search_vector or not instance.search_title_vector or\n            'title' in dirty_fields or 'description' in dirty_fields):\n        sender.objects.filter(id=instance.id).update(search_vector=SearchVector('title', 'description'),\n                                                     search_title_vector=SearchVector('title'))\ndef min_count_shown_vip_advertisement(advertisements_for_sort, instance_id, fild_for_sort):\n    min_shown_count = advertisements_for_sort.exclude(id=instance_id).aggregate(\n        min_count=Min(fild_for_sort))['min_count']",
+        "detail": "advertisement.signals",
+        "documentation": {}
+    },
+    {
+        "label": "min_count_shown_vip_advertisement",
+        "kind": 2,
+        "importPath": "advertisement.signals",
+        "description": "advertisement.signals",
+        "peekOfCode": "def min_count_shown_vip_advertisement(advertisements_for_sort, instance_id, fild_for_sort):\n    min_shown_count = advertisements_for_sort.exclude(id=instance_id).aggregate(\n        min_count=Min(fild_for_sort))['min_count']\n    shown_count = min_shown_count if min_shown_count is not None else 0\n    return shown_count\n@receiver(post_save, sender=Advertisement)\ndef reset_all_shown_vip_and_count(sender, instance, **kwargs):\n    \"\"\"\n    Функция устанавливает актуальное количество показанных объявлений новому VIP и\n    обнуляем счетчик после отключения VIP.",
+        "detail": "advertisement.signals",
+        "documentation": {}
+    },
+    {
+        "label": "reset_all_shown_vip_and_count",
+        "kind": 2,
+        "importPath": "advertisement.signals",
+        "description": "advertisement.signals",
+        "peekOfCode": "def reset_all_shown_vip_and_count(sender, instance, **kwargs):\n    \"\"\"\n    Функция устанавливает актуальное количество показанных объявлений новому VIP и\n    обнуляем счетчик после отключения VIP.\n    \"\"\"\n    if 'vip' not in instance.get_dirty_fields():\n        return\n    with transaction.atomic():\n        advertisement = Advertisement.objects.filter(id=instance.id)\n        # Обнуляем счетчик после отключения VIP",
         "detail": "advertisement.signals",
         "documentation": {}
     },
@@ -5957,7 +6182,43 @@
         "kind": 2,
         "importPath": "advertisement.tasks",
         "description": "advertisement.tasks",
-        "peekOfCode": "def delete_advertisement():\n    \"\"\" Функция удаления объявлений по истечению времени \"\"\"\n    # Получаем текущую дату и время с информацией о часовом поясе\n    current_datetime = timezone.now()\n    # Преобразуем текущую дату и время в часовой пояс, который вам нужен\n    timezone_now = pytz.timezone(\"Europe/Minsk\")\n    aware_datetime = current_datetime.astimezone(timezone_now)\n    delete_advertisements = Advertisement.objects.filter(date_of_delete__lt=aware_datetime, is_active=False)\n    delete_advertisements.delete()\n@shared_task()",
+        "peekOfCode": "def delete_advertisement():\n    \"\"\" Функция удаления объявлений по истечению времени \"\"\"\n    # Получаем текущую дату и время с информацией о часовом поясе\n    current_datetime = timezone.now()\n    # Преобразуем текущую дату и время в часовой пояс, который вам нужен\n    timezone_now = pytz.timezone(\"Europe/Minsk\")\n    aware_datetime = current_datetime.astimezone(timezone_now)\n    delete_advertisements = Advertisement.objects.filter(date_of_delete__lt=aware_datetime, is_active=False)\n    delete_advertisements.delete()\ndef reset_shown_count(ad_filter, field, min_shown_count, max_shown_number):",
+        "detail": "advertisement.tasks",
+        "documentation": {}
+    },
+    {
+        "label": "reset_shown_count",
+        "kind": 2,
+        "importPath": "advertisement.tasks",
+        "description": "advertisement.tasks",
+        "peekOfCode": "def reset_shown_count(ad_filter, field, min_shown_count, max_shown_number):\n    \"\"\"Сбрасывает счетчик показов для объявлений.\"\"\"\n    if min_shown_count > max_shown_number:\n        ad_filter.update(**{field: 0})\ndef update_vip_advertisements(ad_filter, field_shown, field_count):\n    \"\"\"Обновляет показанные VIP объявления на основе минимальных показов.\"\"\"\n    total_count = ad_filter.count()\n    total_shown_count = ad_filter.filter(**{field_shown: True}).count()\n    first_ad = ad_filter.order_by(field_count).first()\n    min_shown_count = getattr(first_ad, field_count)",
+        "detail": "advertisement.tasks",
+        "documentation": {}
+    },
+    {
+        "label": "update_vip_advertisements",
+        "kind": 2,
+        "importPath": "advertisement.tasks",
+        "description": "advertisement.tasks",
+        "peekOfCode": "def update_vip_advertisements(ad_filter, field_shown, field_count):\n    \"\"\"Обновляет показанные VIP объявления на основе минимальных показов.\"\"\"\n    total_count = ad_filter.count()\n    total_shown_count = ad_filter.filter(**{field_shown: True}).count()\n    first_ad = ad_filter.order_by(field_count).first()\n    min_shown_count = getattr(first_ad, field_count)\n    reset_shown_count(ad_filter, field_count, min_shown_count, 10)\n    if 3 >= total_count != total_shown_count:\n        ad_filter.update(**{field_shown: True})\n        return",
+        "detail": "advertisement.tasks",
+        "documentation": {}
+    },
+    {
+        "label": "list_shown_vip",
+        "kind": 2,
+        "importPath": "advertisement.tasks",
+        "description": "advertisement.tasks",
+        "peekOfCode": "def list_shown_vip():\n    \"\"\"Ротация VIP объявлений.\"\"\"\n    with transaction.atomic():\n        all_ads_vip = Advertisement.objects.filter(moderated=True, is_active=True, vip=True)\n        if not all_ads_vip.exists():\n            return\n        update_vip_advertisements(all_ads_vip, 'shown_vip', 'shown_vip_count')\n@shared_task()\ndef list_shown_vip_category():\n    \"\"\"Ротация VIP объявлений по категориям.\"\"\"",
+        "detail": "advertisement.tasks",
+        "documentation": {}
+    },
+    {
+        "label": "list_shown_vip_category",
+        "kind": 2,
+        "importPath": "advertisement.tasks",
+        "description": "advertisement.tasks",
+        "peekOfCode": "def list_shown_vip_category():\n    \"\"\"Ротация VIP объявлений по категориям.\"\"\"\n    with transaction.atomic():\n        categories = Advertisement.objects.filter(moderated=True,\n                                                  is_active=True,\n                                                  vip=True).values_list('category', flat=True).distinct('category')\n        if not categories.exists():\n            print('No VIP ads')\n            return\n        for category in categories:",
         "detail": "advertisement.tasks",
         "documentation": {}
     },
@@ -5975,7 +6236,7 @@
         "kind": 2,
         "importPath": "advertisement.tasks",
         "description": "advertisement.tasks",
-        "peekOfCode": "def delete_everything_in_folder_beat():\n    '''Таска удаляющая все файлы из папки для \"files_for_bulk_import_of_ads\"\n    Таска отрабатывает раз в сутки в 00.00'''\n    path = './media/files_for_bulk_import_of_ads'\n    shutil.rmtree(path)\n    os.mkdir(path)\n@shared_task()\ndef save_many_ads_from_excel_task(uploud_file,id,first_name,phone_number,email):\n    '''Таска сохраняющая объявления из экселя'''\n    print('start')",
+        "peekOfCode": "def delete_everything_in_folder_beat():\n    '''Таска удаляющая все файлы из папки для \"files_for_bulk_import_of_ads\"\n    Таска отрабатывает раз в сутки в 00.00'''\n    path = './media/files_for_bulk_import_of_ads'\n    shutil.rmtree(path)\n    os.mkdir(path)\n@shared_task()\ndef save_many_ads_from_excel_task(uploud_file, id, first_name, phone_number, email):\n    '''Таска сохраняющая объявления из экселя'''\n    result = save_many_ads_from_excel(uploud_file, id, first_name, phone_number, email)",
         "detail": "advertisement.tasks",
         "documentation": {}
     },
@@ -5984,7 +6245,7 @@
         "kind": 2,
         "importPath": "advertisement.tasks",
         "description": "advertisement.tasks",
-        "peekOfCode": "def save_many_ads_from_excel_task(uploud_file,id,first_name,phone_number,email):\n    '''Таска сохраняющая объявления из экселя'''\n    print('start')\n    result = save_many_ads_from_excel(uploud_file,id,first_name,phone_number,email)\n    print('finish')\n    return result\n@shared_task()\ndef save_many_ads_from_zip_task(uploud_zip, id,first_name,phone_number,email):\n    '''Таска сохраняющая объявления из zip-архива'''\n    result = save_many_ads_from_zip(uploud_zip, id,first_name,phone_number,email)",
+        "peekOfCode": "def save_many_ads_from_excel_task(uploud_file, id, first_name, phone_number, email):\n    '''Таска сохраняющая объявления из экселя'''\n    result = save_many_ads_from_excel(uploud_file, id, first_name, phone_number, email)\n    return result\n@shared_task()\ndef save_many_ads_from_zip_task(uploud_zip, id, first_name, phone_number, email):\n    '''Таска сохраняющая объявления из zip-архива'''\n    result = save_many_ads_from_zip(uploud_zip, id, first_name, phone_number, email)\n    return result\n@shared_task()",
         "detail": "advertisement.tasks",
         "documentation": {}
     },
@@ -5993,7 +6254,7 @@
         "kind": 2,
         "importPath": "advertisement.tasks",
         "description": "advertisement.tasks",
-        "peekOfCode": "def save_many_ads_from_zip_task(uploud_zip, id,first_name,phone_number,email):\n    '''Таска сохраняющая объявления из zip-архива'''\n    result = save_many_ads_from_zip(uploud_zip, id,first_name,phone_number,email)\n    return result\n@shared_task()\ndef delete_error_file_beat():\n    '''Таска удаляющая все экземпляры модели ErrorFile разы в сутки '''\n    files = ErrorFile.objects.all()\n    files.delete()",
+        "peekOfCode": "def save_many_ads_from_zip_task(uploud_zip, id, first_name, phone_number, email):\n    '''Таска сохраняющая объявления из zip-архива'''\n    result = save_many_ads_from_zip(uploud_zip, id, first_name, phone_number, email)\n    return result\n@shared_task()\ndef delete_error_file_beat():\n    '''Таска удаляющая все экземпляры модели ErrorFile разы в сутки '''\n    files = ErrorFile.objects.all()\n    files.delete()",
         "detail": "advertisement.tasks",
         "documentation": {}
     },
@@ -6155,7 +6416,7 @@
         "kind": 2,
         "importPath": "advertisement.views",
         "description": "advertisement.views",
-        "peekOfCode": "def get_page_place_an_ad(request):\n    category_list = Category.objects.filter(level__lte=1)\n    oblast = Region.objects.filter(level=0)\n    categories = Category.objects.filter(level=0)\n    context = {\n        \"category_list\": category_list,\n        'adaptive_navigation': \"Добавление объявления\",\n        'oblast': oblast,\n        'categories': categories,\n    }",
+        "peekOfCode": "def get_page_place_an_ad(request):\n    category_list = Category.objects.filter(level__lte=1)\n    oblast = Region.objects.filter(level=0).order_by('id')\n    categories = Category.objects.filter(level=0)\n    context = {\n        \"category_list\": category_list,\n        'adaptive_navigation': \"Добавление объявления\",\n        'oblast': oblast,\n        'categories': categories,\n    }",
         "detail": "advertisement.views",
         "documentation": {}
     },
@@ -6173,7 +6434,7 @@
         "kind": 2,
         "importPath": "advertisement.views",
         "description": "advertisement.views",
-        "peekOfCode": "def get_advertisement_details_page(request, slug):\n    '''Отдаем страничку с детальным описанием объявления'''\n    advertisement_main = get_object_or_404(Advertisement.objects.prefetch_related(\"photoadvertisement_set\"), slug=slug)\n    Advertisement.objects.filter(id=advertisement_main.id).update(counter_views=F(\"counter_views\") + 1)\n    category_crumbs = advertisement_main.category.get_ancestors(ascending=False, include_self=True)\n    date = datetime.now(tz=get_current_timezone()) - timedelta(days=50)\n    similar_advertisement = list(Advertisement.objects.filter(moderated=True,\n                                                         is_active=True,\n                                                         category_id=advertisement_main.category,\n                                                         date_of_create__date__gte=date",
+        "peekOfCode": "def get_advertisement_details_page(request, slug):\n    '''Отдаем страничку с детальным описанием объявления'''\n    advertisement_main = get_object_or_404(Advertisement.objects.prefetch_related(\"photoadvertisement_set\"), slug=slug)\n    Advertisement.objects.filter(id=advertisement_main.id).update(counter_views=F(\"counter_views\") + 1)\n    category_crumbs = advertisement_main.category.get_ancestors(ascending=False, include_self=True)\n    date = datetime.now(tz=get_current_timezone()) - timedelta(days=50)\n    similar_advertisement = list(Advertisement.objects.filter(moderated=True,\n                                                              is_active=True,\n                                                              category_id=advertisement_main.category,\n                                                              date_of_create__date__gte=date",
         "detail": "advertisement.views",
         "documentation": {}
     },
@@ -6191,7 +6452,7 @@
         "kind": 2,
         "importPath": "advertisement.views",
         "description": "advertisement.views",
-        "peekOfCode": "def search_result(request):\n    search_parameters = {}\n    search_parameters_only = {}\n    category_queryset_an = []\n    key_delete = ['page', 'sort', 'date', 'price', 'text_search','only_title']\n    cop = dict.copy(request.GET)\n    sort_for_paginator = sorted_by_number(request.COOKIES.get('sort'))\n    order_by = sorted_by(request.COOKIES.get('sorted_by'))\n    state_sort_by_date = request.COOKIES.get('date', 0)\n    category, category_bread_crumbs = where_to_look(cop.pop('category', None), Category)",
+        "peekOfCode": "def search_result(request):\n    search_parameters = {}\n    search_parameters_only = {}\n    category_queryset_an = []\n    key_delete = ['page', 'sort', 'date', 'price', 'text_search', 'only_title']\n    cop = dict.copy(request.GET)\n    sort_for_paginator = sorted_by_number(request.COOKIES.get('sort'))\n    order_by = sorted_by(request.COOKIES.get('sorted_by'))\n    state_sort_by_date = request.COOKIES.get('date', 0)\n    category, category_bread_crumbs = where_to_look(cop.pop('category', None), Category)",
         "detail": "advertisement.views",
         "documentation": {}
     },
@@ -6200,7 +6461,7 @@
         "kind": 2,
         "importPath": "advertisement.views",
         "description": "advertisement.views",
-        "peekOfCode": "def get_bulk_import_of_ads(request):\n    \"\"\"Страница массового импорта объявлений\"\"\"\n    files  = UploadFile.objects.select_related('errorfile').filter(user = request.user).order_by('time_upload_file')\n    url = env_keys.get('URL')\n    context = {\n        'files': files,\n        'form': UploadFileForm(),\n        'url' : url,\n    }\n    return render(request=request,",
+        "peekOfCode": "def get_bulk_import_of_ads(request):\n    \"\"\"Страница массового импорта объявлений\"\"\"\n    files = UploadFile.objects.select_related('errorfile').filter(user=request.user).order_by('time_upload_file')\n    url = env_keys.get('URL')\n    context = {\n        'files': files,\n        'form': UploadFileForm(),\n        'url': url,\n    }\n    return render(request=request,",
         "detail": "advertisement.views",
         "documentation": {}
     },
@@ -6403,11 +6664,65 @@
         "documentation": {}
     },
     {
+        "label": "update_additional_information",
+        "kind": 2,
+        "importPath": "api_domer.tasks",
+        "description": "api_domer.tasks",
+        "peekOfCode": "def update_additional_information(additional_information):\n    \"\"\"Обновляем дополнительную информацию для объявления.\"\"\"\n    fields = Field.objects.filter(id__in=additional_information).order_by('id')\n    for field in fields:\n        additional_information[field.title] = ', '.join(additional_information.pop(f'{field.id}'))\n    return additional_information\ndef swap_preview_images(advertisement, new_preview_photo):\n    \"\"\"Меняем местами главное изображение с другим.\"\"\"\n    old_preview_image = advertisement.preview_image\n    old_photo = PhotoAdvertisement.objects.get(photo=new_preview_photo, advertisement=advertisement)",
+        "detail": "api_domer.tasks",
+        "documentation": {}
+    },
+    {
+        "label": "swap_preview_images",
+        "kind": 2,
+        "importPath": "api_domer.tasks",
+        "description": "api_domer.tasks",
+        "peekOfCode": "def swap_preview_images(advertisement, new_preview_photo):\n    \"\"\"Меняем местами главное изображение с другим.\"\"\"\n    old_preview_image = advertisement.preview_image\n    old_photo = PhotoAdvertisement.objects.get(photo=new_preview_photo, advertisement=advertisement)\n    # Меняем изображения\n    advertisement.preview_image = old_photo.photo\n    advertisement.save()\n    old_photo.photo = old_preview_image\n    old_photo.save()\ndef add_new_photos(advertisement, temporarily_saving_photos):",
+        "detail": "api_domer.tasks",
+        "documentation": {}
+    },
+    {
+        "label": "add_new_photos",
+        "kind": 2,
+        "importPath": "api_domer.tasks",
+        "description": "api_domer.tasks",
+        "peekOfCode": "def add_new_photos(advertisement, temporarily_saving_photos):\n    \"\"\"Добавляем новые фотографии к объявлению.\"\"\"\n    preview_img = temporarily_saving_photos.get('preview_img')\n    other_images = temporarily_saving_photos.get('other_img', None)\n    if preview_img:\n        # Сохраняем старое превью как дополнительное фото\n        if advertisement.preview_image:\n            PhotoAdvertisement.objects.create(photo=advertisement.preview_image, advertisement=advertisement)\n        # Обновляем превью с новой фотографией\n        with open(preview_img, 'rb') as f:",
+        "detail": "api_domer.tasks",
+        "documentation": {}
+    },
+    {
+        "label": "delete_photos",
+        "kind": 2,
+        "importPath": "api_domer.tasks",
+        "description": "api_domer.tasks",
+        "peekOfCode": "def delete_photos(advertisement, photos_to_delete):\n    \"\"\"Удаляем фотографии.\"\"\"\n    PhotoAdvertisement.objects.filter(photo__in=photos_to_delete, advertisement=advertisement).delete()\n    if advertisement.preview_image in photos_to_delete:\n        file_path = advertisement.preview_image.path\n        folder_path = os.path.dirname(file_path)\n        # Удаляем файл превью и очищаем поле\n        os.remove(file_path)\n        advertisement.preview_image = None\n        advertisement.save()",
+        "detail": "api_domer.tasks",
+        "documentation": {}
+    },
+    {
+        "label": "remove_file",
+        "kind": 2,
+        "importPath": "api_domer.tasks",
+        "description": "api_domer.tasks",
+        "peekOfCode": "def remove_file(file_path):\n    \"\"\"Удаляет файл, если он существует, и выводит сообщение об ошибке в случае неудачи.\"\"\"\n    with contextlib.suppress(OSError):\n        os.remove(file_path)\ndef delete_files(temporarily_saving_photos):\n    \"\"\"Удаляем временные файлы и пустые папки.\"\"\"\n    preview_img = temporarily_saving_photos.get('preview_img')\n    other_images = temporarily_saving_photos.get('other_img', [])\n    folder_path = None\n    if preview_img:",
+        "detail": "api_domer.tasks",
+        "documentation": {}
+    },
+    {
+        "label": "delete_files",
+        "kind": 2,
+        "importPath": "api_domer.tasks",
+        "description": "api_domer.tasks",
+        "peekOfCode": "def delete_files(temporarily_saving_photos):\n    \"\"\"Удаляем временные файлы и пустые папки.\"\"\"\n    preview_img = temporarily_saving_photos.get('preview_img')\n    other_images = temporarily_saving_photos.get('other_img', [])\n    folder_path = None\n    if preview_img:\n        folder_path = os.path.dirname(preview_img)\n        remove_file(preview_img)\n    if other_images:\n        folder_path = os.path.dirname(other_images[0])",
+        "detail": "api_domer.tasks",
+        "documentation": {}
+    },
+    {
         "label": "save_advertisement_task",
         "kind": 2,
         "importPath": "api_domer.tasks",
         "description": "api_domer.tasks",
-        "peekOfCode": "def save_advertisement_task(user, data, additional_information, processed_photo):\n    \"\"\" Сохранение объявлений \"\"\"\n    additional_information_save = Field.objects.filter(id__in=additional_information).order_by('id')\n    for field in additional_information_save:\n        additional_information[field.title] = ', '.join(additional_information.pop(f'{field.id}'))\n    try:\n        with transaction.atomic():\n            new_advertisement = Advertisement(author_id=user, additional_information=additional_information, **data)\n            new_advertisement.save()\n            if processed_photo:",
+        "peekOfCode": "def save_advertisement_task(user, data, additional_information, temporarily_saving_photos):\n    \"\"\"Сохранение объявлений.\"\"\"\n    additional_information = update_additional_information(additional_information)\n    try:\n        with transaction.atomic():\n            new_advertisement = Advertisement(author_id=user, additional_information=additional_information, **data)\n            if not temporarily_saving_photos:\n                new_advertisement.save()\n                return\n            preview_img = temporarily_saving_photos.get('preview_img')",
         "detail": "api_domer.tasks",
         "documentation": {}
     },
@@ -6416,7 +6731,7 @@
         "kind": 2,
         "importPath": "api_domer.tasks",
         "description": "api_domer.tasks",
-        "peekOfCode": "def update_advertisement_task(user, advertisement_id, data, additional_information, processed_photo,\n                              new_preview_photo_from_old_ones, delete_photo):\n    \"\"\" Редактирование объявлений \"\"\"\n    additional_information_save = Field.objects.filter(id__in=additional_information).order_by('id')\n    for field in additional_information_save:\n        additional_information[field.title] = ', '.join(additional_information.pop(f'{field.id}'))\n    Advertisement.objects.filter(author=user,\n                                 id=advertisement_id\n                                 ).update(moderated='',\n                                          additional_information=additional_information,",
+        "peekOfCode": "def update_advertisement_task(user, advertisement_id, data, additional_information, temporarily_saving_photos,\n                              new_preview_photo_from_old_ones, delete_photo):\n    \"\"\"Редактирование объявления.\"\"\"\n    additional_information = update_additional_information(additional_information)\n    editing_advertisement = Advertisement.objects.get(author=user, id=advertisement_id)\n    data['moderated'] = ''\n    data['additional_information'] = additional_information\n    data['is_active'] = False\n    # Обновляем поля объявления\n    for key, value in data.items():",
         "detail": "api_domer.tasks",
         "documentation": {}
     },
@@ -6439,11 +6754,11 @@
         "documentation": {}
     },
     {
-        "label": "save_temp_photo",
+        "label": "save_temp_photos",
         "kind": 2,
         "importPath": "api_domer.utils",
         "description": "api_domer.utils",
-        "peekOfCode": "def save_temp_photo(photo_list, preview_img=None):\n    \"\"\"\n    Сохраняет фотографии во временную директорию.\n    Возвращает список адресов фотографий.\n    Используется для сохранения и редактирования объявлений\n    \"\"\"\n    processed_photo = {'preview_img': None, 'other_img': []}\n    if photo_list:\n        for photo in photo_list:\n            # Указываем путь для временного хранения файлов",
+        "peekOfCode": "def save_temp_photos(photo_list, preview_img=None):\n    \"\"\"\n    Сохраняет фотографии во временную директорию.\n    Возвращает список адресов фотографий.\n    Используется для сохранения и редактирования объявлений\n    \"\"\"\n    processed_photo = {'preview_img': None, 'other_img': []}\n    if photo_list:\n        for photo in photo_list:\n            # Указываем путь для временного хранения файлов",
         "detail": "api_domer.utils",
         "documentation": {}
     },
@@ -6722,7 +7037,7 @@
         "kind": 5,
         "importPath": "config.celery",
         "description": "config.celery",
-        "peekOfCode": "app = Celery(\"config\")\napp.config_from_object(\"django.conf:settings\", namespace=\"CELERY\")\napp.autodiscover_tasks()\n'''плановые задачи'''\napp.conf.beat_schedule = {\n    \"deactivate_advertisement\": {\n        \"task\": 'advertisement.tasks.deactivate_advertisement',\n        \"schedule\": timedelta(seconds=10)\n        # \"schedule\": crontab(hour=0, minute=1)\n    },",
+        "peekOfCode": "app = Celery(\"config\")\napp.config_from_object(\"django.conf:settings\", namespace=\"CELERY\")\napp.autodiscover_tasks()\n'''плановые задачи'''\napp.conf.beat_schedule = {\n    # \"deactivate_advertisement\": {\n    #     \"task\": 'advertisement.tasks.deactivate_advertisement',\n    #     # \"schedule\": timedelta(seconds=10)\n    #     \"schedule\": crontab(hour=0, minute=1)\n    # },",
         "detail": "config.celery",
         "documentation": {}
     },
@@ -6731,7 +7046,7 @@
         "kind": 5,
         "importPath": "config.celery",
         "description": "config.celery",
-        "peekOfCode": "app.conf.beat_schedule = {\n    \"deactivate_advertisement\": {\n        \"task\": 'advertisement.tasks.deactivate_advertisement',\n        \"schedule\": timedelta(seconds=10)\n        # \"schedule\": crontab(hour=0, minute=1)\n    },\n    \"delete_advertisement\": {\n        \"task\": 'advertisement.tasks.delete_advertisement',\n        \"schedule\": timedelta(seconds=10)\n        # \"schedule\": crontab(hour=0, minute=1)",
+        "peekOfCode": "app.conf.beat_schedule = {\n    # \"deactivate_advertisement\": {\n    #     \"task\": 'advertisement.tasks.deactivate_advertisement',\n    #     # \"schedule\": timedelta(seconds=10)\n    #     \"schedule\": crontab(hour=0, minute=1)\n    # },\n    # \"delete_advertisement\": {\n    #     \"task\": 'advertisement.tasks.delete_advertisement',\n    #     # \"schedule\": timedelta(seconds=10)\n    #     \"schedule\": crontab(hour=0, minute=1)",
         "detail": "config.celery",
         "documentation": {}
     },
@@ -7721,7 +8036,16 @@
         "kind": 2,
         "importPath": "main_page_domer.views",
         "description": "main_page_domer.views",
-        "peekOfCode": "def page_not_found(request):\n    '''отдает страничку с ошибкой 404'''\n    return render(request, '404.html', status=404)",
+        "peekOfCode": "def page_not_found(request):\n    '''отдает страничку с ошибкой 404'''\n    return render(request, '404.html', status=404)\ndef test_view(request):\n    list_vip = Advertisement.objects.filter(vip=True, shown_vip=True)\n    return render(request, 'download_adver.html', context={'vip': list_vip})",
+        "detail": "main_page_domer.views",
+        "documentation": {}
+    },
+    {
+        "label": "test_view",
+        "kind": 2,
+        "importPath": "main_page_domer.views",
+        "description": "main_page_domer.views",
+        "peekOfCode": "def test_view(request):\n    list_vip = Advertisement.objects.filter(vip=True, shown_vip=True)\n    return render(request, 'download_adver.html', context={'vip': list_vip})",
         "detail": "main_page_domer.views",
         "documentation": {}
     },
@@ -7847,7 +8171,7 @@
         "kind": 2,
         "importPath": "paid_service.views",
         "description": "paid_service.views",
-        "peekOfCode": "def get_bepaid(request):\n    store_id = '28723'\n    secret_key = 'b08c17bc466d5cd391fc49cd77b6910e19c78b133dfceda65fcc4057af32b0af'\n    url = 'https://checkout.bepaid.by/ctp/api/checkouts/'\n    token = request.query_params.get('token')\n    information = requests.get(f'{url}{token}', auth=HTTPBasicAuth(store_id, secret_key))\n    additional = information.json().get('checkout').get('order').get('additional_data')\n    cost = [i.key_word for i in Service.objects.all()]\n    accommodation = {}\n    pprint(additional)",
+        "peekOfCode": "def get_bepaid(request):\n    store_id = '28723'\n    secret_key = 'b08c17bc466d5cd391fc49cd77b6910e19c78b133dfceda65fcc4057af32b0af'\n    url = 'https://checkout.bepaid.by/ctp/api/checkouts/'\n    token = request.query_params.get('token')\n    information = requests.get(f'{url}{token}', auth=HTTPBasicAuth(store_id, secret_key))\n    additional = information.json().get('checkout').get('order').get('additional_data')\n    services = Service.objects.all()\n    keys_date_of_deactivate = {\"vip\": \"date_of_deactivate_vip\",\n                               \"highlight_ad\": \"date_of_deactivate_highlight_ad\",",
         "detail": "paid_service.views",
         "documentation": {}
     },
@@ -8369,7 +8693,7 @@
         "kind": 5,
         "importPath": "add_new_advertisement",
         "description": "add_new_advertisement",
-        "peekOfCode": "new_advertisement = Advertisement(author_id=4564, additional_information={'': 'потеряно'}, title='Морж',\n                  bearer='Частное лицо', contact_name='Alexander', email='admin@super.com',\n                  phone_num='+375447113036', description='Привет', video_link='',\n                  category_id=101, region_id=6)\nnew_advertisement.save()\npreview_img = '/home/nemo/Загрузки/images.jpeg'\nwith open(preview_img, 'rb') as f:\n    new_advertisement.preview_image = File(f)\n    new_advertisement.save()\nother_images = ['/home/nemo/Загрузки/1626630161_b_.jpg', '/home/nemo/Загрузки/паспорт.jpg']",
+        "peekOfCode": "new_advertisement = Advertisement(author_id=4564, additional_information={'': 'потеряно'}, title='',\n                  bearer='Частное лицо', contact_name='Alexander', email='admin@super.com',\n                  phone_num='+375447113036', description='Привет', video_link='',\n                  category_id=101, region_id=6)\nnew_advertisement.save()\n# preview_img = '/home/nemo/Загрузки/images.jpeg'\npreview_img = r'C:\\Users\\dkv\\Documents\\Гора.png'\nwith open(preview_img, 'rb') as f:\n    new_advertisement.preview_image = File(f)\n    new_advertisement.save()",
         "detail": "add_new_advertisement",
         "documentation": {}
     },
@@ -8378,7 +8702,7 @@
         "kind": 5,
         "importPath": "add_new_advertisement",
         "description": "add_new_advertisement",
-        "peekOfCode": "preview_img = '/home/nemo/Загрузки/images.jpeg'\nwith open(preview_img, 'rb') as f:\n    new_advertisement.preview_image = File(f)\n    new_advertisement.save()\nother_images = ['/home/nemo/Загрузки/1626630161_b_.jpg', '/home/nemo/Загрузки/паспорт.jpg']\nfor photo in other_images:\n    with open(photo, 'rb') as f:\n        additional_photo = PhotoAdvertisement(photo=File(f), advertisement=new_advertisement)\n        additional_photo.save()\nprint('да')",
+        "peekOfCode": "preview_img = r'C:\\Users\\dkv\\Documents\\Гора.png'\nwith open(preview_img, 'rb') as f:\n    new_advertisement.preview_image = File(f)\n    new_advertisement.save()\n# other_images = ['/home/nemo/Загрузки/1626630161_b_.jpg', '/home/nemo/Загрузки/паспорт.jpg']\nother_images = [r'C:\\Users\\dkv\\Documents\\Паспорт.png', r'C:\\Users\\dkv\\Documents\\морж.jfif']\nfor photo in other_images:\n    with open(photo, 'rb') as f:\n        additional_photo = PhotoAdvertisement(photo=File(f), advertisement=new_advertisement)\n        additional_photo.save()",
         "detail": "add_new_advertisement",
         "documentation": {}
     },
@@ -8387,7 +8711,7 @@
         "kind": 5,
         "importPath": "add_new_advertisement",
         "description": "add_new_advertisement",
-        "peekOfCode": "other_images = ['/home/nemo/Загрузки/1626630161_b_.jpg', '/home/nemo/Загрузки/паспорт.jpg']\nfor photo in other_images:\n    with open(photo, 'rb') as f:\n        additional_photo = PhotoAdvertisement(photo=File(f), advertisement=new_advertisement)\n        additional_photo.save()\nprint('да')",
+        "peekOfCode": "other_images = [r'C:\\Users\\dkv\\Documents\\Паспорт.png', r'C:\\Users\\dkv\\Documents\\морж.jfif']\nfor photo in other_images:\n    with open(photo, 'rb') as f:\n        additional_photo = PhotoAdvertisement(photo=File(f), advertisement=new_advertisement)\n        additional_photo.save()\nprint('да')",
         "detail": "add_new_advertisement",
         "documentation": {}
     },

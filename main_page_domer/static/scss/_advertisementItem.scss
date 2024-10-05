@@ -51,6 +51,7 @@
     }
     
     & .advertisement__list-item-title {
+        align-self: flex-start;
         & a {
             @include fonts($mainColor, 18px, 400);
             overflow: hidden;

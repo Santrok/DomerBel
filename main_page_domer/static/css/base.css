@@ -78,10 +78,6 @@
   cursor: pointer;
 }
 
-.modal__active-form {
-  display: flex;
-}
-
 .magnifier__zoom {
   width: 100%;
   background: #fff;
