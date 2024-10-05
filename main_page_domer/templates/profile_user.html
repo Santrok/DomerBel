@@ -48,12 +48,12 @@
         <p class="paid__form-title-period">Срок действия услуги: {% if checkbox.get_validity_period != 0 %} {{ checkbox.get_validity_period }} дн. {% else %} один раз {% endif %}</p>
         </div>
         {{ checkbox.tag }}
-        <p class="paid__form-cost">{{ checkbox.get_cost|floatformat }}</p><span>руб</span>
+        <p class="paid__form-cost">{{ checkbox.get_cost|floatformat }} руб</p>
     </label>
     {% endfor %}
 
     </fieldset>
-    <p class="paid__form-total">Сумма: 0 руб</p>
+    <p class="paid__form-total">Сумма: <span>0 руб</span></p>
         <button class="submit__btn" type="button" id="paid_button">Оплатить</button>
     </form>
 {% endblock modals %}
@@ -342,5 +342,6 @@
     <script src="{% static 'js/profile/selectAdvertisement.js' %}"></script>
     <script src="{% static 'js/profile/errors.js' %}"></script>
     <script src="{% static 'js/profile/modal_paid.js' %}"></script>
+    <script src="{% static "js/profile/sumService.js" %}"></script>
     {% block js2 %}{% endblock js2 %}
 {% endblock js %}

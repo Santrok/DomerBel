@@ -52,6 +52,7 @@ class PaidMultipleCheckbox(forms.CheckboxSelectMultiple):
         if "id" in option_attrs:
             option_attrs["id"] = self.id_for_label(option_attrs["id"], index)
         cost = value.instance.cost
+        option_attrs["data-cost"] = cost
         validity_period = value.instance.validity_period
         return {
             "name": name,

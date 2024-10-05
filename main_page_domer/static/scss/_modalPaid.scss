@@ -9,6 +9,11 @@
   padding: 40px;
   border-radius: 8px;
 
+
+  & input {
+    width: initial;
+  }
+
   & button {
     margin-top: 10px;
   }
@@ -29,6 +34,7 @@
     display: flex;
     gap: 10px; 
     align-items: center;
+    justify-content: space-between;
     & span {
       @include fonts($defaultColor, 16px, 400);
       white-space: pre-line;
@@ -54,7 +60,9 @@
 
 .paid__form-cost {
   @include fonts($defaultColor, 16px, 400);
-  white-space: pre-line;
+  white-space: nowrap;
+  flex: 0 1 100px;
+  text-align: end
 }
 
 .paid__form-total {

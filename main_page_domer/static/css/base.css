@@ -576,6 +576,9 @@
   padding: 40px;
   border-radius: 8px;
 }
+.paid__modal input {
+  width: initial;
+}
 .paid__modal button {
   margin-top: 10px;
 }
@@ -595,6 +598,7 @@
   display: flex;
   gap: 10px;
   align-items: center;
+  justify-content: space-between;
 }
 .paid__form label span {
   font-family: "Trebuchet MS", sans-serif;
@@ -635,7 +639,9 @@
   font-style: normal;
   color: black;
   font-size: 16px;
-  white-space: pre-line;
+  white-space: nowrap;
+  flex: 0 1 100px;
+  text-align: end;
 }
 
 .paid__form-total {
