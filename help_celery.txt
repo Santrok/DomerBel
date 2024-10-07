@@ -5,7 +5,7 @@ celery -A config worker -l info
 celery -A config beat -l info
 
 запускаем flower
-celery -A config.celery_app flowe
+celery -A config.celery_app flower
 
 
 # Под винду
