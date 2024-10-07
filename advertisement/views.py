@@ -3,7 +3,7 @@ import json
 from pprint import pprint
 
 from django.contrib.auth.decorators import login_required
-from django.db.models import Q
+from django.db.models import Q, Func, FloatField
 import random
 from datetime import datetime, timedelta
 from django.db.models import Q, F
@@ -331,7 +331,10 @@ def search_result(request):
     if search_q:
         search_parameters.update(search_q)
 
-    advertisement_queryset = Advertisement.objects.annotate(**{key: KT(value) for key, value in search_annotate.items()}
+    advertisement_queryset = Advertisement.objects.annotate(**{key: Func(KT(value), function='CAST',
+                                                                         template='CAST(%(expressions)s AS numeric)',
+                                                                         output_field=FloatField()) if search_q.get(
+        f'{key}__lte') or search_q.get(f'{key}__gte') else KT(value) for key, value in search_annotate.items()}
                                                             ).filter(is_active=True, moderated=True, **search_parameters
                                                                      ).select_related('category', 'region'
                                                                                       ).order_by(
@@ -400,5 +403,3 @@ def get_instructions_for_bulk_import_of_ads(request):
 #     print(ad)
 #     ad.save()
 #     return render(request, template_name='import_words.html')
-
-

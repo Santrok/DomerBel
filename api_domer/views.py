@@ -113,7 +113,7 @@ def save_advertisement(request):
         data = dict(serializer.validated_data)
         data['category_id'] = data.pop('category').id
         data['region_id'] = data.pop('region').id
-        data['store_id'] = data.pop('store').id
+        data['store_id'] = data.pop('store').id if data.get('store') else None
         photo_list = data.pop('photo', None)
 
         # Временно сохраняем фотографии что-бы переделать их адреса в celery
@@ -154,7 +154,7 @@ def update_advertisement(request):
         data = dict(serializer.validated_data)
         data['category_id'] = data.pop('category').id
         data['region_id'] = data.pop('region').id
-        data['store_id'] = data.pop('store').id
+        data['store_id'] = data.pop('store').id if data.get('store') else None
         new_photo_list = data.pop('photo', [])
         preview_photo = request.data.get('preview_img')
         deleted_photo = request.data.get('deleted_images').split(',') if request.data.get('deleted_images') else None
@@ -328,41 +328,65 @@ def save_complaint(request):
         return Response({"errors": serializer.errors})
 
 
+def get_chat_object(chat_object, model, author_field, user):
+    try:
+        obj = model.objects.get(id=chat_object)
+        if getattr(obj, author_field) == user:
+            return None, Response({'error': 'Вы не можете написать самому себе'}, status=status.HTTP_400_BAD_REQUEST)
+        return obj, None
+    except model.DoesNotExist:
+        return None, Response({'error': 'Ошибка: объект чата не найден'}, status=status.HTTP_400_BAD_REQUEST)
+    # except Exception as e:
+    # logger.error(f"Ошибка при получении объявления: {str(e)}")
+
+
 @api_view(['POST'])
 def create_chat(request):
     serializer = MessageSerializer(data=request.data, context={"request": request})
-    if serializer.is_valid():
-        chat_object = {}
-        if request.data.get('advertisement'):
-            advertisement = get_object_or_404(Advertisement, id=serializer.validated_data.get('chat_object'))
-            if advertisement.author_id == request.user.id:
-                return Response({'error': 'Вы не можете написать самому себе'}, status=status.HTTP_200_OK)
-            else:
-                chat_object['advertisement'] = advertisement
-                chat_object['members'] = advertisement.author_id
-        elif request.data.get('store'):
-            store = get_object_or_404(Store, id=serializer.validated_data.get('chat_object'))
-            if store.user_id == request.user.id:
-                return Response({'error': 'Вы не можете написать самому себе'}, status=status.HTTP_200_OK)
-            else:
-                chat_object['store'] = store
-                chat_object['members'] = store.user_id
-        chat = Chat.objects.filter(**chat_object).filter(members=request.user)
-        if not chat:
-            any_member = chat_object.pop('members', None)
-            if any_member:
+    if not serializer.is_valid():
+        return Response({"errors": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+
+    chat_object = {}
+    chat_type = None
+
+    if request.data.get('advertisement'):
+        chat_type = 'advertisement'
+        advertisement, error_response = get_chat_object(serializer.validated_data.get('chat_object'), Advertisement,
+                                                        'author_id', request.user.id)
+        if error_response:
+            return error_response
+        chat_object['advertisement'] = advertisement
+
+    elif request.data.get('store'):
+        chat_type = 'store'
+        store, error_response = get_chat_object(serializer.validated_data.get('chat_object'), Store,
+                                                'user_id', request.user.id)
+        if error_response:
+            return error_response
+        chat_object['store'] = store
+
+    if not chat_type:
+        return Response({'error': 'Ошибка: объект чата не найден'}, status=status.HTTP_400_BAD_REQUEST)
+
+    chat_object['members'] = (advertisement.author_id if chat_type == 'advertisement' else store.user_id)
+
+    chat_exists = Chat.objects.filter(members=request.user).filter(**chat_object).exists()
+
+    if chat_object.get('members'):
+        with transaction.atomic():
+            if not chat_exists:
                 chat = Chat.objects.create(**chat_object)
-                chat.members.set([request.user.id, any_member])
-                Message.objects.create(chat=chat, author=request.user, message=serializer.validated_data.get('text_message'))
+                chat.members.set([request.user.id, chat_object['members']])
             else:
-                return Response({'error': 'Возникла ошибка. Вероятно автор объявления не зарегистрирован'}, status=status.HTTP_200_OK)
-        else:
-            Message.objects.create(chat=chat[0], author=request.user,
+                chat = Chat.objects.filter(**chat_object, members=request.user).first()
+
+            Message.objects.create(chat=chat, author=request.user,
                                    message=serializer.validated_data.get('text_message'))
 
-        return Response({'success': 'Ваше сообщение отправлено'}, status=status.HTTP_200_OK)
+            return Response({'success': 'Ваше сообщение отправлено'}, status=status.HTTP_200_OK)
     else:
-        return Response({"errors": serializer.errors})
+        return Response({'error': 'Ошибка: вероятно автор объявления не зарегистрирован'},
+                        status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['POST'])

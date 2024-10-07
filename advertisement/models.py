@@ -127,7 +127,7 @@ class Advertisement(DirtyFieldsMixin, models.Model):
                 self.preview_image = None
 
         super().save(*args, **kwargs)
-        print(f'Время сохранения объявления {self.title}: {datetime.now(timezone.utc) - time_start}')
+        # print(f' {self.id} Время сохранения объявления {self.title}: {datetime.now(timezone.utc) - time_start}')
 
 class Category(MPTTModel):
     title = models.CharField(max_length=255, verbose_name='Категория')

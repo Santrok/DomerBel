@@ -10,8 +10,8 @@ from django.core.files.base import ContentFile
 
 
 def upload_to(instance, filename):
-    """Хэширование имени файла и распределение
-       файлов по приложениям и далее в разные папки
+    """Хэширует имя файла и распределяет
+       файлы по приложениям и далее в разные папки
        по дате"""
     today = date.today().isoformat()
     save_folder = today
@@ -26,7 +26,7 @@ def upload_to(instance, filename):
 
 
 def add_watermark_to_photo(photo):
-    """Добавление водяного знака на изображение"""
+    """Добавлеет водяной знак на изображение"""
     photo = Image.open(photo)
     draw = ImageDraw.Draw(photo)
     width, height = photo.size
@@ -43,9 +43,9 @@ def add_watermark_to_photo(photo):
 
 
 def unique_slugify(instance, slug):
-    """ Генератор уникальных SLUG для
+    """Генерирует уникальный SLUG для
         моделей, в случае существования
-        такого SLUG."""
+         такого SLUG."""
     model = instance.__class__
     unique_slug = slugify(slug)
     while model.objects.filter(slug=unique_slug).exists():

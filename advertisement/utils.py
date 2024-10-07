@@ -96,43 +96,96 @@ def create_variables_for_filter(parameter, model):
     return get_object_or_404(model, id=parameter[-1]).get_descendants(include_self=True)
 
 
-def search_additional_information(cop):
-    search = {}
-    search_kt = {}
+# def search_additional_information(cop):
+#     search = {}
+#     search_kt = {}
+#     try:
+#         for i in Field.objects.filter(id__in=cop.keys()):
+#             if "от" not in i.search and cop.get(f'{i.id}') != ['undefined']:
+#                 if len(cop.get(f'{i.id}')) > 1 and i.title == 'Этаж':
+#                     if cop.get(f'{i.id}') == ['undefined', 'undefined']:
+#                         pass
+#                     elif cop.get(f'{i.id}')[0] == 'undefined':
+#                         search_kt[i.title] = ', '.join(cop.get(f'{i.id}')).replace('undefined,', ',')
+#                     else:
+#                         search_kt[i.title] = ', '.join(cop.get(f'{i.id}')).replace(', undefined', ',')
+#                 elif len(cop.get(f'{i.id}')) > 1:
+#                     search_kt[i.title] = ', '.join(cop.get(f'{i.id}')).replace(', undefined', '')
+#                 else:
+#                     search[i.title] = ', '.join(cop.get(f'{i.id}'))
+#             elif cop.get(f'{i.id}') != ['undefined']:
+#                 search_kt[i.title] = cop.get(f'{i.id}')
+#         return search, search_kt
+#     except:
+#         raise Http404()
+
+
+def search_additional_information(copy_of_request_get):
+    # make_field_for_search_by_additional_information
+    """Формирует словарь для дальнейшего поиска
+         по полю "дополнительная информация" объявления,
+          формирует словарь для дальнейшей аннотации переменных
+           поля "дополнительная информация" объявления"""
+    field_for_search = {}
+    field_for_annotate = {}
     try:
-        for i in Field.objects.filter(id__in=cop.keys()):
-            if "от" not in i.search and cop.get(f'{i.id}') != ['undefined']:
-                if len(cop.get(f'{i.id}')) > 1 and i.title == 'Этаж':
-                    if cop.get(f'{i.id}') == ['undefined', 'undefined']:
-                        pass
-                    elif cop.get(f'{i.id}')[0] == 'undefined':
-                        search_kt[i.title] = ', '.join(cop.get(f'{i.id}')).replace('undefined,', ',')
-                    else:
-                        search_kt[i.title] = ', '.join(cop.get(f'{i.id}')).replace(', undefined', ',')
-                elif len(cop.get(f'{i.id}')) > 1:
-                    search_kt[i.title] = ', '.join(cop.get(f'{i.id}')).replace(', undefined', '')
-                else:
-                    search[i.title] = ', '.join(cop.get(f'{i.id}'))
-            elif cop.get(f'{i.id}') != ['undefined']:
-                search_kt[i.title] = cop.get(f'{i.id}')
-        return search, search_kt
+        fields = Field.objects.filter(id__in=copy_of_request_get.keys())
     except:
-        raise Http404()
+        Http404
+    else:
+        for field in fields:
+            field_value = copy_of_request_get.get(str(field.id), [])
+
+            if "от" in field.search or field_value == ['undefined']:
+                field_for_annotate[field.title] = field_value
+                continue
+
+            if len(field_value) > 1 and field.title == 'Этаж':
+                field_for_annotate[field.title] = _handle_floor_field(field_value)
+            elif len(field_value) > 1:
+                field_for_annotate[field.title] = ', '.join(filter(lambda x: x != 'undefined', field_value))
+            else:
+                field_for_search[field.title] = ', '.join(field_value)
+
+        return field_for_search, field_for_annotate
+
+
+def _handle_floor_field(field_value):
+    """Обработка значений для поля 'Этаж'."""
+    clean_values = [x for x in field_value if x != 'undefined']
+    return ', '.join(clean_values).strip(', ')
 
 
 def annotating_field(kt):
-    search_q = {}
-    search_annotate = {}
-    for i, item in enumerate(kt):
-        search_annotate[f"find{i}"] = f"additional_information__{item}"
-        if type(kt.get(item)) is not str:
-            for index, x in enumerate(kt.get(item)):
-                if x != 'undefined':
-                    if index == 0:
-                        search_q[f"find{i}__gte"] = x
-                    elif index == 1:
-                        search_q[f"find{i}__lte"] = x
-        else:
-            search_q[f"find{i}__icontains"] = kt.get(item)
+    # make_annotated_fields
+    """Формирует название полей для дальнейшей аннотации
+        и формирует lookup со значением для поиска по полю
+         additional_information модели Advertisement."""
+    search_lookup = {}
+    field_annotate = {}
 
-    return search_q, search_annotate
+    for index, item in enumerate(kt):
+        field_annotate[f"find{index}"] = f"additional_information__{item}"
+        values = kt.get(item)
+
+        if isinstance(values, list):
+            for sub_index, value in enumerate(values):
+                if value != 'undefined':
+                    if sub_index == 0:
+                        search_lookup[f"find{index}__gte"] = value
+                    elif sub_index == 1:
+                        search_lookup[f"find{index}__lte"] = value
+        elif isinstance(values, str):
+            if not values.startswith(','):
+                search_lookup[f"find{index}__startswith"] = values
+            else:
+                search_lookup[f"find{index}__endswith"] = values
+
+    return search_lookup, field_annotate
+
+
+def forming_fields_for_annotation_and_search(copy_of_request_get):
+    """Формирует поля для аннотации и поиска"""
+    field_for_search, field_for_annotate = search_additional_information(copy_of_request_get)
+    search_lookup, field_annotate = annotating_field(field_for_annotate)
+    return field_for_search, search_lookup, field_annotate

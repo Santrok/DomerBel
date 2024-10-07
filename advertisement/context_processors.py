@@ -19,6 +19,7 @@ def get_date_today(request):
     return context
 
 
+
 def get_data_category_and_region(request):
     category = cache.get('category')
     region = cache.get('region')
