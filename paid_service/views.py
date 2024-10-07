@@ -167,7 +167,7 @@ def get_bepaid(request):
     keys_date_of_deactivate = {"vip": "date_of_deactivate_vip",
                                "highlight_ad": "date_of_deactivate_highlight_ad",
                                "special_accommodation": "date_of_deactivate_special_accommodation",
-                               "raise_in_search": "date_of_deactivate_raise_in_search"}
+                               "raise_in_search": "search_boost_date "}
     accommodation = {}
     for service in services:
         if additional.get(service.key_word):

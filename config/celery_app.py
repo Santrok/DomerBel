@@ -39,10 +39,14 @@ app.conf.beat_schedule = {
         "task": "advertisement.tasks.list_shown_vip",
         "schedule": timedelta(seconds=15)
     },
-    "list_shown_vip_category": {
-        "task": "advertisement.tasks.list_shown_vip_category",
-        "schedule": timedelta(seconds=15)
-    }
+    # "list_shown_vip_category": {
+    #     "task": "advertisement.tasks.list_shown_vip_category",
+    #     "schedule": timedelta(seconds=250)
+    # },
+    # "1111": {
+    #     "task": "advertisement.tasks.deactivate_advertisement",
+    #     "schedule": timedelta(seconds=5)
+    # },
 }
 
 if __name__ == '__main__':

@@ -70,7 +70,7 @@ def publication_photo_delete(sender, instance, **kwargs):
 def notify_moderation_result(sender, instance, **kwargs):
     """Функция проверяет прошло ли письмо модерацию или нет и отправляем письмо пользователю с результатом"""
     # !!! Переписать на новую функцию отправки писем!!!
-    if 'moderated' in instance.get_dirty_fields() and instance.moderated == True:
+    if 'moderated' in instance.get_dirty_fields() and instance.moderated:
         html_content = render_to_string(
             "asend_notify_moderation_result.html",
             context={"activation_title": instance.title, "result": True, "url": env_keys.get("URL")},
@@ -81,7 +81,7 @@ def notify_moderation_result(sender, instance, **kwargs):
                         text_content=html_content,
                         html_content=html_content)
 
-    elif 'moderated' in instance.get_dirty_fields() and instance.moderated == False:
+    elif 'moderated' in instance.get_dirty_fields() and not instance.moderated:
         html_content = render_to_string(
             "asend_notify_moderation_result.html",
             context={"activation_title": instance.title, "result": False, "url": env_keys.get("URL")},
