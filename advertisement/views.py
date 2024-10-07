@@ -17,6 +17,7 @@ from main_page_domer.forms import ComplaintForm
 from main_page_domer.models import ReasonOfComplaint
 
 from .models import Advertisement, Category, Region, Spisok, Element, ElementTwo, Field, BadWords, ErrorFile
+from .tasks import update_schedule
 from .utils import sorted_by_number, variables_for_paginator, sorted_by_date_or_price, sorted_by, \
     get_region_variables, where_to_look, search_additional_information, annotating_field
 from .forms import UploadFileForm
@@ -39,7 +40,7 @@ def get_advertisement_page(request):
                                                           **region_filter).select_related(
         'category',
         'region'
-    ).order_by("date_of_deactivate_special_accommodation", order_by).defer(
+    ).order_by("search_boost_date", order_by).defer(
         'search_title_vector',
         'search_vector',
         'video_link',
@@ -408,7 +409,12 @@ def get_instructions_for_bulk_import_of_ads(request):
                   template_name='instructions_for_bulk_import_of_ads.html',
                   context=context)
 
-# def import_words(request):
+from datetime import datetime, timezone
+
+def import_words(request):
+    # update_schedule.delay()
+
+    update_schedule(datetime.now(timezone.utc))
 #     # with open('./advertisement/r_word.txt', "r") as file:
 #     #     for line in file:
 #     #         print(line, end='')
@@ -418,4 +424,4 @@ def get_instructions_for_bulk_import_of_ads(request):
 #     ad.title = "хуй"
 #     print(ad)
 #     ad.save()
-#     return render(request, template_name='import_words.html')
+    return render(request, template_name='import_words.html')

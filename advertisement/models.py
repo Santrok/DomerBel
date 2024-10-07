@@ -69,7 +69,7 @@ class Advertisement(DirtyFieldsMixin, models.Model):
     special_accommodation = models.BooleanField(default=False, verbose_name="Спецразмещение")
     date_of_deactivate_special_accommodation = models.DateTimeField(blank=True, null=True, verbose_name="Дата деактивации спецразмещения")
     raise_in_search = models.BooleanField(default=False, verbose_name="Поднять в поиске")
-    date_of_deactivate_raise_in_search = models.DateTimeField(blank=True, null=True, verbose_name="Дата поднятия в поиске")
+    search_boost_date = models.DateTimeField(blank=True, null=True, verbose_name="Дата поднятия в поиске")
     additional_information = models.JSONField()
     additional_information_view = ArrayField(ArrayField(models.CharField(max_length=500)), blank=True, null=True,
                                              editable=False)
@@ -112,7 +112,7 @@ class Advertisement(DirtyFieldsMixin, models.Model):
         if not self.date_of_deactivate and not self.date_of_delete:
             self.date_of_deactivate = datetime.now(timezone.utc) + timedelta(days=60)
             self.date_of_delete = datetime.now(timezone.utc) + timedelta(days=180)
-            self.date_of_deactivate_raise_in_search = datetime.now(timezone.utc)
+            self.search_boost_date = datetime.now(timezone.utc)
 
         if self.preview_image and not self.preview_image.url.lower().endswith('avif'):
             convert_image_to_avif(photo=self.preview_image)  # Конвертация изображения в формат AVIF

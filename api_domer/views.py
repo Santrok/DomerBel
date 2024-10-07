@@ -33,7 +33,7 @@ from config.settings import env_keys
 from main_page_domer.models import ReasonOfComplaint
 from users.models import User, UserFavorites, Chat, Message
 from advertisement.tasks import save_many_ads_from_zip_task, save_many_ads_from_excel_task
-from config.celery import app
+from config.celery_app import app
 from users.tasks import send_email_task
 
 

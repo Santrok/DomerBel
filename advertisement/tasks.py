@@ -1,15 +1,18 @@
 import os
 import shutil
 import pytz
-from celery import shared_task
+
+from datetime import timedelta
+from celery import shared_task, current_app
 from django.db import transaction
 from django.utils import timezone
-from datetime import datetime
 from django.db.models import F
 from advertisement.models import Advertisement, Store
-from advertisement.functions_for_bulk_import import save_many_ads_from_excel, \
-    save_many_ads_from_zip
+from advertisement.functions_for_bulk_import import (save_many_ads_from_excel, save_many_ads_from_zip)
 from advertisement.models import ErrorFile
+from celery.schedules import crontab
+
+from config.celery_app import app
 
 
 @shared_task()
@@ -143,3 +146,69 @@ def delete_error_file_beat():
     '''Таска удаляющая все экземпляры модели ErrorFile разы в сутки '''
     files = ErrorFile.objects.all()
     files.delete()
+
+
+@shared_task()
+def deactivate_advertisement():
+    print("Все сработало как надо")
+
+
+# @shared_task()
+def update_schedule(data):
+    """Функция обновляет задачи Celery согласно времени деактивации платных функций"""
+
+    print('-----------------------------------------')
+    print(app.conf.beat_schedule)
+    # Получаем текущую дату и время с информацией о часовом поясе
+    current_datetime = timezone.now()
+
+    # Преобразуем текущую дату и время в часовой пояс, который вам нужен
+    timezone_now = pytz.timezone("Europe/Minsk")
+    aware_datetime = current_datetime.astimezone(timezone_now)
+
+
+    list_advertisements_for_deactivate = Advertisement.objects.filter(search_boost_date__date=aware_datetime.date(),
+                                                                      is_active=True)
+    # print(list_advertisements_for_deactivate)
+    print('++++++++++++++++++++++++++++++++')
+    #
+    # for i in list_advertisements_for_deactivate:
+    #     print(i.search_boost_date.astimezone(timezone_now), i.search_boost_date.hour, i.search_boost_date.minute)
+
+    # Удаляем только задачи, относящиеся к `ads_deactivate_`
+    for task_name in list(app.conf.beat_schedule.keys()):
+        if task_name.startswith("ads_deactivate_"):
+            del app.conf.beat_schedule[task_name]
+
+    # if not list_advertisements_for_deactivate:
+    #     print('stop')
+    #     return
+
+    for i in list_advertisements_for_deactivate:
+        task_name = f'ads_deactivate_{i.id}'
+        app.conf.beat_schedule[task_name] = {
+                "task": "advertisement.tasks.deactivate_advertisement",
+                "schedule": crontab(hour=i.search_boost_date.hour+3, minute=i.search_boost_date.minute),
+        }
+
+    app.conf.beat_schedule['list_shown_vip'] = {
+        "task": "advertisement.tasks.list_shown_vip",
+        "schedule": timedelta(seconds=5),
+    }
+
+    # app.control.reload_task('list_shown_vip')
+    app.control.pool_restart()
+
+    app.conf.beat_schedule['111111'] = {
+        "task": "advertisement.tasks.deactivate_advertisement",
+        "schedule": timedelta(seconds=5)
+    }
+
+    # app.control.broadcast('pool_restart', arguments={'reload': True})
+    # current_app.Beat().scheduler.update(current_app.conf.beat_schedule)
+
+    # print("!!!", app.control.inspect().registered())
+    print(app.conf.beat_schedule)
+    print('-----------------------------------------')
+
+
