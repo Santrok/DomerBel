@@ -1,16 +1,19 @@
-# запуск селери - l ingo показывает список задач
+# запуск celery - l ingo показывает список задач
 celery -A config worker -l info
 
-запускает переодические задачи
+# запускает периодические задачи
 celery -A config beat -l info
 
-запускаем flower
+# запускаем flower
 celery -A config.celery_app flower
 
 
-# Под винду
-    # запуск селери
+# Под win
+    # запуск celery
     python -m celery -A config worker --pool=solo -l info
 
-    # поднять контенер
+    # запускает периодические задачи
+    celery -A config beat -l info
+
+    # поднять контейнер
     docker run -d -p 6379:6379 redis
