@@ -1,0 +1,387 @@
+{% extends "base.html" %} 
+{% load static %}
+{% load advertisement_tags %}
+
+{% block description %}
+<meta property="og:url" content="{{ url }}{{ advertisement.get_absolute_url }}" />
+<meta property="og:description" content="{{ advertisement.description|truncatechars:150 }}" />
+<meta property="og:image" content="{% if advertisement.preview_image %}{{url}}{{ advertisement.preview_image.url }}{% else %}{% static 'img/no_image.jpg' %}{% endif %}" />
+{% endblock description %}
+
+{% block css %}
+ <link rel="stylesheet" href="{% static 'css/details-min.css'%}">
+{% endblock css %}
+
+{% block crumbs %}
+<section class="crumbs">
+    <div class="crumbs__wrapper">
+      <ul class="crumbs__list">
+        <li class="crumbs__list-item">
+          <a href="{% url 'advertisement' %}"> Все объявления </a>
+        </li>
+        <li class="crumbs__list-item-dots">...</li>
+        <li class="crumbs__list-item">
+          <a href="{% url 'advertisement' %}?region={{ advertisement.region_id }}"> {{ advertisement.region }} </a>
+        </li>
+        <li class="crumbs__list-item-dots">...</li>
+        {% for category_crumb in category_crumbs %}
+          <li class="crumbs__list-item">
+          <a href="{% url 'advertisement_by_category' category_crumb.slug %}"> {{ category_crumb.title }} </a>
+        </li>
+            {% if not forloop.last %}
+        <li class="crumbs__list-item-dots">...</li>
+            {% endif %}
+          {% endfor %}
+      </ul>
+    </div>
+</section>
+{% endblock crumbs %}
+
+{% block modals %}
+<div class="magnifier__zoom">
+  <div class="magnifier__zoom-main">
+    {% if advertisement.video_link %}
+    <div>
+      <iframe width="100%" height="100%" src="https://www.youtube.com/embed/{{ advertisement.video_link|cut:'https://www.youtube.com/watch?v=' }}"
+          title="YouTube video player"
+          frameborder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          referrerpolicy="strict-origin-when-cross-origin"
+          allowfullscreen>
+      </iframe>
+    </div>
+    {% endif %}
+    <div>
+      <img src="{% if advertisement.preview_image %} {{ advertisement.preview_image.url }} {% else %}{% static 'img/no_image.jpg' %}{% endif %}"
+      alt="{% if advertisement.preview_image %} {{ advertisement.preview_image.url }} {% else %}{% static 'img/no_image.jpg' %}{% endif %}">
+    </div>
+    {% for photo in advertisement.photoadvertisement_set.all %}
+    {% if photo.photo.url != advertisement.preview_image.url %}
+      <div>
+      <img data-lazy="{{ photo.photo.url }}" alt="{{ photo.photo.url }}">
+    </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+  <div class="magnifier__zoom-second">
+    {% if advertisement.video_link %}
+    <div class="magnifier__zoom-second-item video">
+      <img data-lazy="https://i.ytimg.com/vi/{{ advertisement.video_link|cut:'https://www.youtube.com/watch?v=' }}/hqdefault.jpg" alt="">
+    </div>
+    {% endif %}
+    <div class="magnifier__zoom-second-item">
+      <img src="{% if advertisement.preview_image %} {{ advertisement.preview_image.url }} {% else %}{% static 'img/no_image.jpg' %}{% endif %}"
+                                 alt="{% if advertisement.preview_image %} {{ advertisement.preview_image.url }} {% else %}{% static 'img/no_image.jpg' %}{% endif %}">
+    </div>
+    {% for photo in advertisement.photoadvertisement_set.all %}
+      {% if photo.photo.url != advertisement.preview_image.url %}
+    <div class="magnifier__zoom-second-item">
+      <img data-lazy="{{ photo.photo.url }}" alt="{{ photo.photo.url }}">
+    </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+</div>
+<form aria-modal="true" class="modals__report-advertisement">
+  <div class="cross">
+      <svg width="20.000000" height="20.000000" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+          <desc>
+                  Created with Pixso.
+          </desc>
+          <defs>
+              <clipPath id="clip946_10111">
+                  <rect id="Dismiss" width="20.000000" height="20.000000" fill="white" fill-opacity="0"/>
+              </clipPath>
+          </defs>
+          <g clip-path="url(#clip946_10111)">
+              <path id="Shape" d="M3.89 4.05L3.96 3.96C4.23 3.7 4.65 3.67 4.94 3.89L5.03 3.96L10 8.93L14.96 3.96C15.23 3.7 15.65 3.67 15.94 3.89L16.03 3.96C16.29 4.23 16.32 4.65 16.1 4.94L16.03 5.03L11.06 10L16.03 14.96C16.29 15.23 16.32 15.65 16.1 15.94L16.03 16.03C15.76 16.29 15.34 16.32 15.05 16.1L14.96 16.03L10 11.06L5.03 16.03C4.76 16.29 4.34 16.32 4.05 16.1L3.96 16.03C3.7 15.76 3.67 15.34 3.89 15.05L3.96 14.96L8.93 10L3.96 5.03C3.7 4.76 3.67 4.34 3.89 4.05L3.96 3.96L3.89 4.05Z" fill="#212121" fill-opacity="1.000000" fill-rule="nonzero"/>
+          </g>
+      </svg>
+  </div>
+  <div class="modals__login-logo-wrap">
+      <div class="modals__login-logo">
+          <img src="{% static 'img/logo.png' %}" alt="">
+      </div>
+      <h2>
+          Жалоба на объявление
+      </h2>
+  </div>
+  <fieldset class="modals__report-advertisement-field">
+      {% for f in form %}
+      <div class="feedback__label-wrap">
+        <label for="{{ f.id_for_label }}" class="feedback__label {% if f.errors %}label__error{% endif %}">
+            {% if not f.name == "captcha" %}
+            <p class="form__text">
+                {% if f.field.required %}
+                    <span>*</span>
+                {% endif %}
+                {{ f.label }}:
+            </p>
+            {% endif %}
+                {{ f }}
+        </label>
+      </div>
+      {% endfor %}
+  </fieldset>
+  <div class="g-recaptcha"
+  data-sitekey="{{ public_key }}"
+  data-expired-callback="expiredCallbackResetRecaptcha"
+  data-callback="callbackResetRecaptcha"
+  ></div>
+  <button type='button' class="submit__btn" id="reportAdvertisement">
+      Отправить
+  </button>
+</form>
+<form aria-modal="true" class="send__message">
+  <div class="cross">
+    <svg width="20.000000" height="20.000000" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+        <desc>
+                Created with Pixso.
+        </desc>
+        <defs>
+            <clipPath id="clip946_10111">
+                <rect id="Dismiss" width="20.000000" height="20.000000" fill="white" fill-opacity="0"/>
+            </clipPath>
+        </defs>
+        <g clip-path="url(#clip946_10111)">
+            <path id="Shape" d="M3.89 4.05L3.96 3.96C4.23 3.7 4.65 3.67 4.94 3.89L5.03 3.96L10 8.93L14.96 3.96C15.23 3.7 15.65 3.67 15.94 3.89L16.03 3.96C16.29 4.23 16.32 4.65 16.1 4.94L16.03 5.03L11.06 10L16.03 14.96C16.29 15.23 16.32 15.65 16.1 15.94L16.03 16.03C15.76 16.29 15.34 16.32 15.05 16.1L14.96 16.03L10 11.06L5.03 16.03C4.76 16.29 4.34 16.32 4.05 16.1L3.96 16.03C3.7 15.76 3.67 15.34 3.89 15.05L3.96 14.96L8.93 10L3.96 5.03C3.7 4.76 3.67 4.34 3.89 4.05L3.96 3.96L3.89 4.05Z" fill="#212121" fill-opacity="1.000000" fill-rule="nonzero"/>
+        </g>
+    </svg>
+  </div>
+  <div class="modals__login-logo-wrap">
+    <div class="modals__login-logo">
+        <img src="{% static 'img/logo.png' %}" alt="">
+    </div>
+    <h2>
+        Написать сообщение
+    </h2>
+  </div>
+  <fieldset>
+    <label for="chatMessage">
+      <p>
+        <span>*</span>Сообщение
+      </p>
+      <textarea name="text_message" id="chatMessage" placeholder="Сообщение" cols="30" rows="10"></textarea>
+    </label>
+    <button type="button" class="submit__btn">
+      Отправить
+    </button>
+  </fieldset>
+</form>
+{% endblock modals %}
+
+
+{% block content %}
+<section class="details">
+    <div class="details__wrapper">
+      <h1 class="details__title">{{ advertisement.title }}</h1>
+      <div class="details__advertisement-info">
+        {% if advertisement.price %}
+        <p>Цена <span>{{ advertisement.price|floatformat }}</span> руб.</p>
+        {% endif %}
+        <p class="details__advertisement-id">ID:{{ advertisement.id }}</p>
+        <p>
+            {% if advertisement.date_of_create.date == date_today %}
+            Сегодня
+            {% elif advertisement.date_of_create.date == date_yesterday %}
+            Вчера
+            {% else %}
+            {{ advertisement.date_of_create|date:"d b. Y" }}
+            {% endif %}
+            {{ advertisement.date_of_create|date:"H:i" }}
+        </p>
+      </div>
+      <div class="details__advertisement-view-wrap">
+        <div class="details__advertisement-view">
+          <div class="details__advertisement-view-img-wrap">
+            <div class="details__advertisement-view-img">
+              {% if advertisement.video_link %}
+              <div>
+                <iframe width="100%" height="100%" src="https://www.youtube.com/embed/{{ advertisement.video_link|cut:'https://www.youtube.com/watch?v=' }}"
+                title="YouTube video player"
+                  frameborder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  referrerpolicy="strict-origin-when-cross-origin"
+                  allowfullscreen></iframe>
+              </div>
+              {% endif %}
+                <div>
+                    <img src="{% if advertisement.preview_image %} {{ advertisement.preview_image.url }} {% else %}{% static 'img/no_image.jpg' %}{% endif %}"
+                                 alt="{% if advertisement.preview_image %} {{ advertisement.preview_image.url }} {% else %}{% static 'img/no_image.jpg' %}{% endif %}">
+                </div>
+              {% for photo in advertisement.photoadvertisement_set.all %}
+                {% if photo.photo.url != advertisement.preview_image.url %}
+              <div>
+                <img data-lazy="{{ photo.photo.url }}" alt="{{ photo.photo.url }}">
+              </div>
+                {% endif %}
+              {% endfor %}
+            </div>
+            <div class="magnifier">
+              <img src="{% static 'img/icons/lupa.png' %}" alt="zoom">
+            </div>
+          </div>
+          <div class="details__advertisement-view-list-img">
+            {% if advertisement.video_link %}
+            <div class="details__advertisement-view-list-img-item video">
+              <img data-lazy="https://i.ytimg.com/vi/{{ advertisement.video_link|cut:'https://www.youtube.com/watch?v=' }}/hqdefault.jpg" alt="">
+            </div>
+            {% endif %}
+              <div class="details__advertisement-view-list-img-item">
+                    <img src="{% if advertisement.preview_image %} {{ advertisement.preview_image.url }} {% else %}{% static 'img/no_image.jpg' %}{% endif %}"
+                                 alt="{% if advertisement.preview_image %} {{ advertisement.preview_image.url }} {% else %}{% static 'img/no_image.jpg' %}{% endif %}">
+              </div>
+            {% for photo in advertisement.photoadvertisement_set.all %}
+              {% if photo.photo.url != advertisement.preview_image.url %}
+            <div class="details__advertisement-view-list-img-item">
+              <img data-lazy="{{ photo.photo.url }}" alt="{{ photo.photo.url }}">
+            </div>
+              {% endif %}
+            {% endfor %}
+          </div>
+        </div>
+        <div class="details__advertisement-options">
+          <p class="details__advertisement-options-view">
+            Просмотров: {{ advertisement.counter_views }}
+          </p>
+          <ul class="details__advertisement-options-list">
+            <li class="details__advertisement-options-list-item">
+              <a href="#">
+                Сделать VIP-объявлением
+              </a>
+            </li>
+            <li class="details__advertisement-options-list-item">
+              <a href="#">
+                Выделить объявление
+              </a>
+            </li>
+            <li class="details__advertisement-options-list-item">
+              <a href="#">
+                Спецразмещение
+              </a>
+            </li>
+            <li class="details__advertisement-options-list-item">
+              <a href="#">
+                Поднять в поиске
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="details__advertisement-about">
+        <ul class="details__advertisement-about-list">
+          <li class="details__advertisement-about-list-item">
+            <div class="details__advertisement-about-list-item-img">
+              <img src="{% static "img/icons/site.png" %}" alt="region">
+            </div>
+            <p>
+                {{ advertisement.region }}
+            </p>
+          </li>
+          <li class="details__advertisement-about-list-item">
+            <div class="details__advertisement-about-list-item-img">
+              <img src="{% static "img/icons/user.png" %}" alt="user">
+            </div>
+            <p>
+                {{ advertisement.contact_name }}
+            </p>
+          </li>
+          <li class="details__advertisement-about-list-item details__advertisement-about-list-item-action">
+            <div class="details__advertisement-about-list-item-img">
+              <img src="{% static "img/icons/telefon.gif" %}" alt="phone">
+            </div>
+            <p class="details__advertisement-about-list-item-phone">
+              <span>Показать номер телефона</span>
+              <span>{{ advertisement.phone_num }}</span>
+            </p>
+          </li>
+          <li class="details__advertisement-about-list-item details__advertisement-about-list-item-action">
+            <div class="details__advertisement-about-list-item-img">
+              <img src="{% static "img/icons/email.gif" %}" alt="email">
+            </div>
+            <p class="details__advertisement-send-message" data-id="{% if user.is_authenticated %}{{ advertisement.id }}{% endif %}">
+              Написать сообщение
+            </p>
+          </li>
+        </ul>
+        <ul class="details__advertisement-additional-description-list">
+          {% for title,item in advertisement.additional_information_view %}
+          {% if title and item %}
+          <li class="details__advertisement-additional-description-list-item">
+            <p class="details__advertisement-additional-description-list-item-title">
+              {% if title == 'Цена' or title == 'Арендная плата' or title == 'Зарплата' or title == 'Минимальная зарплата' %}
+                  {{ title }}, руб.:
+                  {% else %}
+                {{ title }}:
+                  {% endif %}
+            </p>
+            <p class="details__advertisement-additional-description-list-item-value
+            {% if title == 'Цена' or title == 'Арендная плата' or title == 'Зарплата' or title == 'Минимальная зарплата' %}details__advertisement-additional-description-list-item-value-price{% endif %}"
+            >
+              {% if title == "Этаж" %}
+                  {{item|split_item:", "|first}}/{{item|split_item:", "|last}}
+              {% else %}
+                  {{ item }}
+              {% endif %}
+            </p>
+          </li>
+            {% endif %}
+          {% endfor %}
+        </ul>
+        <p class="details__advertisement-about-description">
+          {{ advertisement.description }}
+        </p>
+        <div class="detials__advertisement-about-action">
+          <div class="details__advertisement-add-favorites" data-id="{% if user.is_authenticated %}{{ advertisement.id }}{% endif %}">
+            <div class="details__advertisement-add-favorites-img {% if advertisement.id in user.userfavorites.favorites %}advertisement__favorites-active{% endif %}">
+            </div>
+            <p>
+              Добавить в избранное
+            </p>
+          </div>
+          <a role="link" aria-disabled="true" class="details__advertisement-add-report">
+            Пожаловаться
+          </a>
+
+          <div class="ya-share2" data-url="{{ url }}{{ advertisement.get_absolute_url }}" data-curtain data-shape="round" data-limit="3" data-services="messenger,vkontakte,odnoklassniki,telegram,twitter,viber,whatsapp,moimir,pinterest,skype,tumblr,evernote,linkedin,lj,blogger,delicious,digg,reddit,pocket,qzone,renren,sinaWeibo,surfingbird,tencentWeibo"></div>
+      </div>
+    </div>
+</section>
+<section class="similar">
+  <h2 class="similar__title">
+    Похожие объявления
+  </h2>
+  <ul class="similar__list">
+      {% for advertisement in similar_advertisement %}
+    <li>
+      <article class="similar__list-item">
+        <a href="{% url 'advertisement_details' advertisement.slug %}">
+          <div class="similar__list-item-img">
+            <img src="{% if advertisement.preview_image %} {{ advertisement.preview_image.url }} {% else %}{% static 'img/no_image.jpg' %}{% endif %}" alt="{{ advertisement.description|truncatechars:150 }}">
+          </div>
+          <h3 class="similar__list-title">
+              {{ advertisement.title }}
+          </h3>
+        </a>
+          {% if advertisement.price %}
+        <p class="similar__list-price">
+            {{ advertisement.price }}
+        </p>
+          {% endif %}
+      </article>
+    </li>
+      {% endfor %}
+  </ul>
+</section>
+{% endblock content %}
+
+{% block js %}
+  <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+  <script src="{% static 'js/details/slick.min.js' %}"></script>
+  <script src="{% static 'js/details/slider.js' %}"></script>
+  <script src="{% static "js/details/reportAdvertisement.js" %}"></script>
+  <script src="{% static 'js/details/magnifier.js' %}"></script>
+  <script src="{% static "js/details/showPhone.js" %}"></script>
+  <script src="{% static "js/details/sendMessage.js" %}"></script>
+  <script src="https://yastatic.net/share2/share.js"></script>
+{% endblock js %}

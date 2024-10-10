@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<form action="" method="POST" style="display: flex; flex-direction: column; gap: 5px;">
+{% csrf_token %}
+{{ form.advertisement }}
+        {% for checkbox in form.services %}
+    <label for="{{ checkbox.id_for_label }}" style="display: flex; gap: 10px; align-items: center;">
+        <div style="display: flex; flex-direction: column;">
+        <span style="min-width: 200px;">{{ checkbox.choice_label }}</span>
+        <span style="min-width: 200px; font-size: 13px; color: #6e6d6d;">Срок действия услуги: {% if checkbox.get_validity_period != 0 %} {{ checkbox.get_validity_period }} дн. {% else %} один раз {% endif %}</span>
+        </div>
+        <span>{{ checkbox.tag }}</span>
+        <span>{{ checkbox.get_cost|floatformat }} руб</span>
+    </label>
+    {% endfor %}
+<p>
+    Сумма: 0 руб
+</p>
+<div class="">
+    <button>Оплатить</button>
+    </div>
+</form>
+</body>
+</html>
