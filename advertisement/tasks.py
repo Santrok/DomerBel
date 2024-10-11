@@ -220,57 +220,54 @@ def raise_or_deactivation_of_paid_services(ads_id, name_for_delete, **fild_updat
 def update_schedule(data):
     """Функция динамического обновления redbeat:schedule"""
     current_datetime = get_current_datetime()
-    list_advertisements_for_deactivate = Advertisement.objects.filter(is_active=True).filter(
+    advertisements_for_deactivate = Advertisement.objects.filter(is_active=True).filter(
         Q(date_of_deactivate_vip__date__lte=current_datetime.date(), vip=True) |
         Q(date_of_deactivate_highlight_ad__date__lte=current_datetime.date(), highlight_ad=True) |
         Q(special_accommodation=True))
 
-    if not list_advertisements_for_deactivate:
+    if not advertisements_for_deactivate:
         return
 
-    for ads_for_deactivate in list_advertisements_for_deactivate:
-        if ads_for_deactivate.vip and ads_for_deactivate.date_of_deactivate_vip.date() <= current_datetime.date():
-            name = f'deactivate_advertisement_vip_{ads_for_deactivate.id}'
-            schedule_ = crontab(hour=ads_for_deactivate.date_of_deactivate_vip.hour,
-                                minute=ads_for_deactivate.date_of_deactivate_vip.minute)
+    for ads in advertisements_for_deactivate:
+        if ads.vip and ads.date_of_deactivate_vip.date() <= current_datetime.date():
+            name = f'deactivate_advertisement_vip_{ads.id}'
+            schedule_ = crontab(hour=ads.date_of_deactivate_vip.hour, minute=ads.date_of_deactivate_vip.minute)
 
-            if ads_for_deactivate.date_of_deactivate_vip < current_datetime:
-                schedule_ = crontab(hour=current_datetime.hour,
-                                    minute=current_datetime.minute + 1)
+            if ads.date_of_deactivate_vip < current_datetime:
+                schedule_ = crontab(hour=current_datetime.hour, minute=current_datetime.minute + 1)
 
             create_tasks_from_schedule(name,
                                        "advertisement.tasks.deactivation_of_paid_services",
                                        schedule_,
-                                       [ads_for_deactivate.id, f'redbeat:{name}'],
+                                       [ads.id, f'redbeat:{name}'],
                                        {'vip': False})
 
-        if ads_for_deactivate.highlight_ad and ads_for_deactivate.date_of_deactivate_highlight_ad <= current_datetime:
-            name = f'deactivate_advertisement_highlight{ads_for_deactivate.id}'
-            schedule_ = crontab(hour=ads_for_deactivate.date_of_deactivate_highlight_ad.hour,
-                                minute=ads_for_deactivate.date_of_deactivate_highlight_ad.minute)
+        if ads.highlight_ad and ads.date_of_deactivate_highlight_ad <= current_datetime:
+            name = f'deactivate_advertisement_highlight{ads.id}'
+            schedule_ = crontab(hour=ads.date_of_deactivate_highlight_ad.hour,
+                                minute=ads.date_of_deactivate_highlight_ad.minute)
 
-            if ads_for_deactivate.date_of_deactivate_highlight_ad < current_datetime:
-                schedule_ = crontab(hour=current_datetime.hour,
-                                    minute=current_datetime.minute + 1)
+            if ads.date_of_deactivate_highlight_ad < current_datetime:
+                schedule_ = crontab(hour=current_datetime.hour, minute=current_datetime.minute + 1)
 
             create_tasks_from_schedule(name,
                                        "advertisement.tasks.deactivation_of_paid_services",
                                        schedule_,
-                                       [ads_for_deactivate.id, f'redbeat:{name}'],
+                                       [ads.id, f'redbeat:{name}'],
                                        {'highlight_ad': False})
 
-        if ads_for_deactivate.date_of_deactivate_special_accommodation:
-            name = f'raise_or_deactivate_advertisement_special_accommodation_{ads_for_deactivate.id}'
-            schedule_ = crontab(hour=ads_for_deactivate.date_of_deactivate_special_accommodation.hour + 3,
-                                minute=ads_for_deactivate.date_of_deactivate_special_accommodation.minute)
+        if ads.date_of_deactivate_special_accommodation:
+            name = f'raise_or_deactivate_advertisement_special_accommodation_{ads.id}'
+            schedule_ = crontab(hour=ads.date_of_deactivate_special_accommodation.hour,
+                                minute=ads.date_of_deactivate_special_accommodation.minute)
             task = "advertisement.tasks.raise_or_deactivation_of_paid_services"
 
-            if ads_for_deactivate.date_of_deactivate_special_accommodation < current_datetime:
-                schedule_ = crontab(hour=current_datetime.hour,
-                                    minute=current_datetime.minute + 1)
+            if ads.date_of_deactivate_special_accommodation < current_datetime:
+                schedule_ = crontab(hour=current_datetime.hour, minute=current_datetime.minute + 1)
                 task = "advertisement.tasks.deactivation_of_paid_services"
+
             create_tasks_from_schedule(name,
                                        task,
                                        schedule_,
-                                       [ads_for_deactivate.id, f'redbeat:{name}'],
+                                       [ads.id, f'redbeat:{name}'],
                                        {'special_accommodation': False})
