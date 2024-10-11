@@ -17,9 +17,11 @@ from utils.template_paginator import variables_for_paginator
 # Create your views here.
 @login_required
 def get_page_in_personal_account_with_active_advertisements(request):
-    """Сборка страницы с активными объявлениями пользователя в ЛК.
-        Модели: Advertisement.
-         Формы: PaidForm"""
+    """
+    Сборка страницы с активными объявлениями пользователя в ЛК.
+    Модели: Advertisement.
+    Формы: PaidForm
+    """
     advertisements = Advertisement.objects.filter(author=request.user,
                                                   is_active=True, moderated=True).select_related('category',
                                                                                                  'region').all().order_by(
@@ -56,9 +58,11 @@ def get_page_in_personal_account_with_active_advertisements(request):
 
 @login_required
 def get_page_in_personal_account_with_search_result_by_user_advertisement(request):
-    """Сборка страницы с результатами поиска по объявлениям пользователя в ЛК.
-        Модели: Advertisement, Region, Category.
-         Формы: PaidForm"""
+    """
+    Сборка страницы с результатами поиска по объявлениям пользователя в ЛК.
+    Модели: Advertisement, Region, Category.
+    Формы: PaidForm
+    """
     copy_of_request_get = dict.copy(request.GET)
 
     (category,
@@ -124,8 +128,10 @@ def get_page_in_personal_account_with_search_result_by_user_advertisement(reques
 
 @login_required
 def delete_or_archive_selected_ads(request):
-    """Переводит активные объявления в неактивные и наоборот.
-        Модели: Advertisement"""
+    """
+    Переводит активные объявления в неактивные и наоборот.
+    Модели: Advertisement
+    """
     if request.method == "POST":
         # Удаляет выбранные объявления из активных или архивных
         # if 'delete_ads' in request.POST:
@@ -150,13 +156,16 @@ def delete_or_archive_selected_ads(request):
                 messages.success(request, "Не все объявления удалось восстановить!")
             return redirect('inactive_adds')
         return redirect('personal_account')
+    return redirect('personal_account')
 
 
 @login_required
 def get_page_in_personal_account_with_inactive_advertisements(request):
-    """Сборка страницы с активными объявлениями пользователя в ЛК.
-        Модели: Advertisement.
-         Формы: PaidForm"""
+    """
+    Сборка страницы с активными объявлениями пользователя в ЛК.
+    Модели: Advertisement.
+    Формы: PaidForm
+    """
     advertisements = Advertisement.objects.filter(author=request.user,
                                                   is_active=False
                                                   ).select_related('category',
@@ -201,8 +210,10 @@ def get_page_in_personal_account_with_inactive_advertisements(request):
 @login_required
 @permission_required("advertisement.view_store", raise_exception=True)
 def get_page_in_personal_account_with_user_stores(request):
-    """Сборка страницы со всеми магазинами пользователя в ЛК.
-        Модели: Store."""
+    """
+    Сборка страницы со всеми магазинами пользователя в ЛК.
+    Модели: Store.
+    """
     stores = Store.objects.filter(user=request.user).order_by('id')
     context = {
         'stores': stores,
@@ -213,8 +224,10 @@ def get_page_in_personal_account_with_user_stores(request):
 
 @login_required
 def get_page_in_personal_account_all_user_publications(request):
-    """Сборка страницы со всеми публикациями пользователя в ЛК.
-        Модели: Publication."""
+    """
+    Сборка страницы со всеми публикациями пользователя в ЛК.
+    Модели: Publication.
+    """
     user_publications = Publication.objects.filter(user=request.user.id).order_by('-date_of_create')
     context = {
         "user_publications": user_publications,
@@ -225,8 +238,10 @@ def get_page_in_personal_account_all_user_publications(request):
 
 @login_required
 def get_user_favorites_page(request):
-    """Сборка страницы 'Избранное'пользователя в ЛК.
-        Модели: Advertisement."""
+    """
+    Сборка страницы 'Избранное'пользователя в ЛК.
+    Модели: Advertisement.
+    """
     favorites_list = Advertisement.objects.filter(id__in=request.user.userfavorites.favorites,
                                                   is_active=True,
                                                   moderated=True)

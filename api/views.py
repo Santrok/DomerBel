@@ -2,13 +2,9 @@ from datetime import datetime, timedelta
 
 import requests
 from django.contrib.auth import authenticate, login, logout, get_user_model
-from django.contrib.auth.tokens import default_token_generator
 from django.db import transaction
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
-from django.urls import reverse_lazy
-from django.utils.encoding import force_bytes
-from django.utils.http import urlsafe_base64_encode
 from requests.auth import HTTPBasicAuth
 from rest_framework import status, serializers
 from rest_framework.decorators import api_view
@@ -19,23 +15,27 @@ from chat.models import Chat, UserMessage
 from config import settings
 from config.settings import env_keys
 from custom_user.models import UserFavorites
+from custom_user.services import make_activation_url_for_reset_password
 from paid_service.models import Service
-from related_data.models import Region, Category, Field, ElementTwo
+from paid_service.services import send_payment_request
+from related_data.models import Region, Category, Field, ElementTwo, Element
 from services.email.message import run_send_email_task_celery
 from store.models import Store
 from .serializers import (AdvertisementSerializer, ComplaintSerializer, UserMessageSerializer, UserRegisterSerializer,
                           UserLoginSerializer, PasswordResetSerializer, FavoriteSerializer, PaidSerializer,
                           RegionSerializer, CategorySerializer, CategoryFieldsSerializer, FieldSerialier,
-                          ElementTwoSerializer, StoreSerializer)
-from .utils import validate_additional_information, save_temp_photos,get_chat_object
+                          ElementTwoSerializer, StoreSerializer, ElementSerializer)
+from .utils import validate_additional_information, save_temp_photos, get_chat_object
 from advertisement.tasks import save_advertisement_task, update_advertisement_task
 
 
 @api_view(['POST'])
 def save_advertisement(request):
-    """Принимает данные для создания нового объявления,
-        проверяет их и запускает задачу на Celery для сохранения объявления.
-         Сериализаторы: AdvertisementSerializer"""
+    """
+    Принимает данные для создания нового объявления,
+    проверяет их и запускает задачу на Celery для сохранения объявления.
+    Сериализаторы: AdvertisementSerializer
+    """
     additional_information = dict(request.data.copy())
     serializer = AdvertisementSerializer(data=request.data, context={"request": request})
     serializer.is_valid()
@@ -69,10 +69,12 @@ def save_advertisement(request):
 
 @api_view(['PATCH'])
 def update_advertisement(request):
-    """Принимает данные для изменения объявления пользователя,
-        проверяет их и запускает задачу на Celery для изменения объявления.
-         Модели: Advertisement.
-          Сериализаторы: AdvertisementSerializer"""
+    """
+    Принимает данные для изменения объявления пользователя,
+    проверяет их и запускает задачу на Celery для изменения объявления.
+    Модели: Advertisement.
+    Сериализаторы: AdvertisementSerializer
+    """
     try:
         advertisement = Advertisement.objects.get(id=request.data.get('advertisement'), author=request.user.id)
     except Advertisement.DoesNotExist:
@@ -126,9 +128,11 @@ def update_advertisement(request):
 
 @api_view(['POST'])
 def save_complaint_and_send_complaint_to_administration_email(request):
-    """Создает экземпляр модели Complaint
-        и отправляет жалобу администрации сайта.
-         Сериализаторы: ComplaintSerializer"""
+    """
+    Создает экземпляр модели Complaint
+    и отправляет жалобу администрации сайта.
+    Сериализаторы: ComplaintSerializer
+    """
     serializer = ComplaintSerializer(data=request.data, context={"request": request})
     if serializer.is_valid():
         serializer.save()
@@ -155,12 +159,12 @@ def save_complaint_and_send_complaint_to_administration_email(request):
 
 @api_view(['POST'])
 def create_new_chat_and_create_new_message(request):
-    """Определяет объект чата,
-        проверяет существование чата,
-         если его нет - создает новый чат,
-          создает новое сообщение в чате.
-           Модели: Chat, UserMessage.
-            Сериализаторы: UserMessageSerializer."""
+    """
+    Определяет объект чата, проверяет существование чата,
+    если его нет - создает новый чат, создает новое сообщение в чате.
+    Модели: Chat, UserMessage.
+    Сериализаторы: UserMessageSerializer.
+    """
     serializer = UserMessageSerializer(data=request.data, context={"request": request})
 
     if not serializer.is_valid():
@@ -213,8 +217,10 @@ def create_new_chat_and_create_new_message(request):
 
 @api_view(['GET'])
 def status_unread_message_user(request):
-    """Возвращает информацию о том, есть ли у пользователя непрочитанные сообщения.
-        Модели: Chat, UserMessage"""
+    """
+    Возвращает информацию о том, есть ли у пользователя непрочитанные сообщения.
+    Модели: Chat, UserMessage
+    """
     chats = Chat.objects.filter(members__in=[request.user.id])
     unread_chat = UserMessage.objects.filter(chat__in=chats, is_read=False).exclude(author=request.user).exists()
     return Response({"status": unread_chat})
@@ -222,8 +228,10 @@ def status_unread_message_user(request):
 
 @api_view(["POST"])
 def registration_user(request):
-    """Функция для регистрации нового пользователя.
-        Сериализаторы: UserRegisterSerializer"""
+    """
+    Функция для регистрации нового пользователя.
+    Сериализаторы: UserRegisterSerializer
+    """
     registration_serializer = UserRegisterSerializer(data=request.data, context={"request": request})
 
     if registration_serializer.is_valid():
@@ -231,15 +239,19 @@ def registration_user(request):
             registration_serializer.save()
             return Response({'success': 'Вы успешно зарегистрированы'}, status=status.HTTP_201_CREATED)
         except Exception as e:
-            raise serializers.ValidationError({"error": "Произошла ошибка при регистрации."})
+            raise serializers.ValidationError({"error": """Произошла ошибка при регистрации. 
+                                                            Пожалуйста, попробуйте позже"""
+                                               })
 
     raise serializers.ValidationError({"errors": registration_serializer.errors})
 
 
 @api_view(["POST"])
 def login_user(request):
-    """Функция для аутентификации и авторизации пользователя.
-        Сериализаторы: UserLoginSerializer"""
+    """
+    Функция для аутентификации и авторизации пользователя.
+    Сериализаторы: UserLoginSerializer
+    """
     login_serializer = UserLoginSerializer(data=request.data, context={"request": request})
 
     if not login_serializer.is_valid():
@@ -257,7 +269,9 @@ def login_user(request):
 
 @api_view(["POST"])
 def logout_user(request):
-    """Функция для выхода пользователя из системы."""
+    """
+    Функция для выхода пользователя из системы.
+    """
     try:
         logout(request)
         return Response(status=status.HTTP_205_RESET_CONTENT)
@@ -267,33 +281,49 @@ def logout_user(request):
 
 @api_view(["POST"])
 def password_reset(request):
-    """Функция для сброса пароля пользователя через Email.
-        Модели: User.
-         Сериализаторы: PasswordResetSerializer"""
+    """
+    Функция для сброса пароля пользователя через Email.
+    Модели: User.
+    Сериализаторы: PasswordResetSerializer
+    """
     password_reset_serializer = PasswordResetSerializer(data=request.data, context={"request": request})
+
     if password_reset_serializer.is_valid():
         email = password_reset_serializer.validated_data.get('email')
-        user = get_user_model().objects.get(email=email)
-        uid = urlsafe_base64_encode(force_bytes(user.pk))
-        token = default_token_generator.make_token(user)
-        activation_url = reverse_lazy('password_reset_confirm', kwargs={'uidb64': uid, 'token': token})
+        user = get_user_model()
 
-        run_send_email_task_celery('Восстановление пароля на сайте Домер.бел',
-                                   "asend_reset_password.html",
-                                   email,
-                                   activation_url=activation_url
-                                   )
-        return Response({'success': 'На ваш адрес электронной почты было отправлено письмо для восстановления '
-                                    'пароля. Если письмо не пришло, проверьте папку спам.'},
-                        status=status.HTTP_200_OK)
+        try:
+            user = user.objects.get(email=email)
+        except user.DoesNotExist:
+            # Не сообщаем пользователю, существует ли такой email
+            return Response({
+                'success': 'На ваш адрес электронной почты было отправлено письмо для восстановления '
+                           'пароля. Если письмо не пришло, проверьте папку спам.'
+            }, status=status.HTTP_200_OK)
+        else:
+            activation_url = make_activation_url_for_reset_password(user)
 
-    else:
-        raise serializers.ValidationError(
-            {"errors": password_reset_serializer.errors})
+            run_send_email_task_celery(subject='Восстановление пароля на сайте Домер.бел',
+                                       template='asend_reset_password.html',
+                                       email=email,
+                                       activation_url=activation_url
+                                       )
+
+            return Response({
+                'success': 'На ваш адрес электронной почты было отправлено письмо для восстановления '
+                           'пароля. Если письмо не пришло, проверьте папку спам.'
+            }, status=status.HTTP_200_OK)
+
+    raise serializers.ValidationError({"errors": password_reset_serializer.errors})
 
 
 @api_view(['POST'])
 def add_to_favorite(request):
+    """
+    Функция для добавления id объявления в избранное пользователя.
+    Модели: UserFavorites.
+    Сериализаторы: FavoriteSerializer
+    """
     serializer = FavoriteSerializer(data=request.data)
     if serializer.is_valid(raise_exception=True):
         user_favorites = get_object_or_404(UserFavorites, user=request.user)
@@ -305,6 +335,11 @@ def add_to_favorite(request):
 
 @api_view(['POST'])
 def delete_from_favorite(request):
+    """
+    Функция для удаления id объявления в избранное пользователя.
+    Модели: UserFavorites.
+    Сериализаторы: FavoriteSerializer
+    """
     serializer = FavoriteSerializer(data=request.data)
     if serializer.is_valid(raise_exception=True):
         user_favorites = get_object_or_404(UserFavorites, user=request.user)
@@ -316,66 +351,23 @@ def delete_from_favorite(request):
 
 @api_view(['POST'])
 def providing_a_payment_page(request):
-    """Формирует запрос в эквайринг на предоставление страницы оплаты,
-        в случае успеха перенаправляет пользователя на страницу оплаты.
-         Сериализаторы: PaidSerializer"""
+    """
+    Формирует запрос в эквайринг на предоставление страницы оплаты,
+    в случае успеха перенаправляет пользователя на страницу оплаты.
+    Сериализаторы: PaidSerializer
+    """
     serializer = PaidSerializer(data=request.data, context={"request": request})
     if serializer.is_valid():
         store_id = env_keys.get('PAID_SERVICE_STORE_ID')
         secret_key = env_keys.get('PAID_SERVICE_SECRET_KEY')
         url = env_keys.get('PAID_SERVICE_URL')
-        amount = 0
-        description = []
-        additional_data = {"advertisement": serializer.validated_data.get('advertisement').id}
-        for service in serializer.validated_data.get('services'):
-            amount += service.cost
-            description.append(service.service_name)
-            additional_data[service.key_word] = True
-        payload = {
-            "checkout": {
-                "test": True,
-                "transaction_type": "payment",
-                "attempts": 3,
-                "settings": {
-                    "return_url": "http://127.0.0.1:8000/paid/api/notification/",
-                    "success_url": "http://127.0.0.1:8000/paid/api/notification/",
-                    "decline_url": "http://127.0.0.1:8000/",
-                    "fail_url": "http://127.0.0.1:8000/",
-                    "cancel_url": "http://127.0.0.1:8000/",
-                    "notification_url": "http://127.0.0.1:8000/api/v1/notification/",
-                    "button_text": "Оплатить",
-                    "button_next_text": "Вернуться в магазин",
-                    "language": "ru",
-                    "card_notification_url": "https://your-card-notification-url.com",
-                    "customer_fields": {
-                        "visible": ["first_name", "last_name"],
-                        "read_only": ["email", "phone"],
-                    },
-                    "credit_card_fields": {
-                        "holder": "Rick Astley",
-                        "read_only": ["holder"]
-                    }
-                },
-                "payment_method": {
-                    "types": ["credit_card"]
-                },
-                "order": {
-                    "currency": "BYN",
-                    "amount": int(amount * 100),
-                    "description": f"Оплата услуг: {', '.join(description)}",
-                    "tracking_id": "1212",
-                    "additional_data": additional_data
-                },
-                "customer": {
-                    "address": "Baker street 221b",
-                    "country": "GB",
-                    "city": "London",
-                    "email": "jake@example.com",
-                    "phone": "1234567890",
-                }
-            }
-        }
-        response = requests.post(url, auth=HTTPBasicAuth(store_id, secret_key), json=payload)
+
+        response = send_payment_request(url, store_id, secret_key, serializer)
+
+        if response is None:
+            return Response({"errors": {"connect": "Ошибка связи с банком. Пожалуйста, попробуйте позже!"}},
+                            status=status.HTTP_503_SERVICE_UNAVAILABLE)
+
         if response.status_code == 201:
             return Response({"redirect": response.json().get('checkout').get('redirect_url')})
         else:
@@ -387,7 +379,10 @@ def providing_a_payment_page(request):
 
 @api_view(['GET', 'POST'])
 def processing_successful_payment_for_services(request):
-    """Webhook обрабатывающий успешную оплату услуг"""
+    """
+    Webhook обрабатывающий успешную оплату услуг
+    Модели: Service, Advertisement
+    """
     store_id = env_keys.get('PAID_SERVICE_STORE_ID')
     secret_key = env_keys.get('PAID_SERVICE_SECRET_KEY')
 
@@ -414,9 +409,11 @@ def processing_successful_payment_for_services(request):
 
 @api_view(['GET'])
 def get_region_list(request):
-    """Возвращает список экземпляров модели Region.
-        Модели: Region.
-         Сериализаторы: RegionSerializer"""
+    """
+    Возвращает список экземпляров модели Region.
+    Модели: Region.
+    Сериализаторы: RegionSerializer
+    """
     regions = Region.objects.all()
     serializer = RegionSerializer(regions, many=True)
     return Response(serializer.data)
@@ -424,9 +421,11 @@ def get_region_list(request):
 
 @api_view(["GET", "POST"])
 def get_list_of_cities(request, id):
-    """Возвращает список дочерних экземпляров модели Region.
-        Модели: Region.
-         Сериализаторы: RegionSerializer"""
+    """
+    Возвращает список дочерних экземпляров модели Region.
+    Модели: Region.
+    Сериализаторы: RegionSerializer
+    """
     cities = Region.objects.filter(parent_id=id)
     serializer = RegionSerializer(cities, many=True)
     return Response(serializer.data)
@@ -434,9 +433,11 @@ def get_list_of_cities(request, id):
 
 @api_view(['GET'])
 def get_category_list(request):
-    """Возвращает список экземпляров модели Category по родительскому id.
-        Модели: Category.
-         Сериализаторы: CategorySerializer"""
+    """
+    Возвращает список экземпляров модели Category по родительскому id.
+    Модели: Category.
+    Сериализаторы: CategorySerializer
+    """
     categories = Category.objects.filter(parent_id=request.query_params.get('id'))
     serializer = CategorySerializer(categories, many=True)
     return Response(serializer.data)
@@ -444,29 +445,26 @@ def get_category_list(request):
 
 @api_view(['GET'])
 def get_subcategory_list(request):
-    """Возвращает список экземпляров модели Category по родительскому id
-        и дополнительно данные из модели Field.
-         Модели: Category.
-          Сериализаторы: CategoryFieldsSerializer"""
+    """
+    Возвращает список экземпляров модели Category по родительскому id
+    и дополнительно данные из модели Field.
+    Модели: Category.
+    Сериализаторы: CategoryFieldsSerializer
+    """
     categories = Category.objects.filter(parent_id=request.query_params.get('id')).prefetch_related(
         'field_set__spisok__element_set__elementtwo_set')
     serializer = CategoryFieldsSerializer(categories, many=True)
     return Response(serializer.data)
 
 
-@api_view(["GET", "POST"])
-def get_categories_for_search(request, id):
-    categories = Category.objects.filter(parent_id=id)
-    serializer = CategorySerializer(categories, many=True)
-    return Response(serializer.data)
-
-
 @api_view(['GET'])
 def get_field_list(request):
-    """Возвращает список экземпляров модели Field по id экземпляра модели Category
-        и дополнительно данные из модели Spisok и Element.
-         Модели: Field.
-          Сериализаторы: FieldSerialier"""
+    """
+    Возвращает список экземпляров модели Field по id экземпляра модели Category
+    и дополнительно данные из модели Spisok и Element.
+    Модели: Field.
+    Сериализаторы: FieldSerialier
+    """
     fieldlist = Field.objects.filter(category_id=request.query_params.get('id')).select_related(
         'spisok').prefetch_related('spisok__element_set__elementtwo_set').order_by('id')
     serializer = FieldSerialier(fieldlist, many=True)
@@ -474,11 +472,25 @@ def get_field_list(request):
 
 
 @api_view(['GET'])
+def get_element_list(request):
+    """
+    Возвращает список экземпляров модели Element по id экземпляра модели Field
+    Модели: Element.
+    Сериализаторы: ElementSerializer
+    """
+    elements = Element.objects.filter(spisok_id__field=request.query_params.get('id'))
+    serializer = ElementSerializer(elements, many=True)
+    return Response(serializer.data)
+
+
+@api_view(['GET'])
 def get_elementtwo_list(request):
-    """Возвращает список экземпляров модели ElementTwo
-        по id экземпляра модели Element
-         Модели: ElementTwo.
-          Сериализаторы: ElementTwoSerializer"""
+    """
+    Возвращает список экземпляров модели ElementTwo
+    по id экземпляра модели Element
+    Модели: ElementTwo.
+    Сериализаторы: ElementTwoSerializer
+    """
     if request.query_params.get('slug') == 'undefined':
         return Response()
     else:
@@ -489,9 +501,11 @@ def get_elementtwo_list(request):
 
 @api_view(['GET'])
 def get_store_list_by_user(request):
-    """Возвращает список магазинов пользователя.
-        Модели: Store.
-         Сериализаторы: StoreSerializer"""
+    """
+    Возвращает список магазинов пользователя.
+    Модели: Store.
+    Сериализаторы: StoreSerializer
+    """
     stores = Store.objects.filter(user=request.user.id)
     serializer = StoreSerializer(stores, many=True)
     return Response(serializer.data)

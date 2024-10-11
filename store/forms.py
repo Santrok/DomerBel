@@ -12,7 +12,9 @@ from utils.validators import validate_phone
 
 
 class ImagePreviewWidget(forms.widgets.FileInput):
-    """Переопределение метода render для отображения загруженного изображения"""
+    """
+    Переопределение метода render для отображения загруженного изображения
+    """
     def render(self, name, value, attrs=None, **kwargs):
         input_html = super().render(name, value, attrs=None, **kwargs)
         if value:
@@ -26,8 +28,10 @@ class ImagePreviewWidget(forms.widgets.FileInput):
 
 
 class GroupedModelChoiceIterator(ModelChoiceIterator):
-    """Расширение базового класса и переопределение итератора для создания
-        сгруппированных значений optgroup селектора выбора"""
+    """
+    Расширение базового класса и переопределение итератора для создания
+    сгруппированных значений optgroup селектора выбора
+    """
     def __init__(self, field, group_by):
         self.group_by = group_by
         super().__init__(field)
@@ -43,8 +47,10 @@ class GroupedModelChoiceIterator(ModelChoiceIterator):
 
 
 class GroupedModelChoiceField(ModelChoiceField):
-    """Расширение базового класса для создания
-        селектора выбора с использованием расширенного итератора"""
+    """
+    Расширение базового класса для создания
+    селектора выбора с использованием расширенного итератора
+    """
     def __init__(self, *args, choices_group_by, **kwargs):
         if isinstance(choices_group_by, str):
             choices_group_by = attrgetter(choices_group_by)

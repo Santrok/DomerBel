@@ -17,8 +17,10 @@ from .utils import (setting_values_for_sorting_from_cookie_or_request_get, get_a
 
 
 def get_advertisement_page(request):
-    """Сборка страницы 'Объявления'.
-        Модели: Advertisement, Category"""
+    """
+    Сборка страницы 'Объявления'.
+    Модели: Advertisement, Category
+    """
     (order_by,
      sort_for_paginator,
      state_sort_by_date) = setting_values_for_sorting_from_cookie_or_request_get(request.COOKIES, request.GET)
@@ -76,8 +78,10 @@ def get_advertisement_page(request):
 
 
 def get_advertisement_by_category(request, category_slug):
-    """Сборка страницы с объявлениями по конкретной категории.
-        Модели: Advertisement, Category"""
+    """
+    Сборка страницы с объявлениями по конкретной категории.
+    Модели: Advertisement, Category
+    """
     (order_by,
      sort_for_paginator,
      state_sort_by_date) = setting_values_for_sorting_from_cookie_or_request_get(request.COOKIES, request.GET)
@@ -169,9 +173,11 @@ def get_advertisement_by_category(request, category_slug):
 
 
 def get_page_place_an_advertisement(request):
-    """Сборка страницы для создания нового объявления.
-        Сохранение объявления выполняется в функции save_advertisement.
-         Модели: Advertisement, Category, Region"""
+    """
+    Сборка страницы для создания нового объявления.
+    Сохранение объявления выполняется в функции save_advertisement.
+    Модели: Advertisement, Category, Region
+    """
     category_list = Category.objects.filter(level__lte=1)
     oblast = Region.objects.filter(level=0).order_by('id')
     categories = Category.objects.filter(level=0)
@@ -188,9 +194,11 @@ def get_page_place_an_advertisement(request):
 
 @login_required
 def get_page_editing_an_advertisement(request, id):
-    """Сборка страницы для редактирования объявления.
-        Изменение объявления выполняется в функции update_advertisement.
-         Модели: Advertisement, Category, Region, ElementTwo"""
+    """
+    Сборка страницы для редактирования объявления.
+    Изменение объявления выполняется в функции update_advertisement.
+    Модели: Advertisement, Category, Region, ElementTwo
+    """
     advertisement = get_object_or_404(Advertisement, id=id, author=request.user)
 
     region = Region.objects.all()
@@ -220,9 +228,11 @@ def get_page_editing_an_advertisement(request, id):
 
 
 def get_advertisement_details_page(request, slug):
-    """Сборка страницы с детальным описанием объявления.
-        Модели: Advertisement, ReasonOfComplaint.
-         Формы: ComplaintForm."""
+    """
+    Сборка страницы с детальным описанием объявления.
+    Модели: Advertisement, ReasonOfComplaint.
+    Формы: ComplaintForm.
+    """
     main_advertisement = get_object_or_404(Advertisement.objects.prefetch_related("photoadvertisement_set"), slug=slug)
     Advertisement.objects.filter(id=main_advertisement.id).update(counter_views=F("counter_views") + 1)
     category_crumbs = main_advertisement.category.get_ancestors(ascending=False, include_self=True)
@@ -242,8 +252,10 @@ def get_advertisement_details_page(request, slug):
 
 
 def get_page_search_result_by_advertisements(request):
-    """Сборка страницы с результатами поиска по объявлениям.
-         Модели: Advertisement, Category, Region"""
+    """
+    Сборка страницы с результатами поиска по объявлениям.
+    Модели: Advertisement, Category, Region
+    """
     categories = []
     copy_of_request_get = dict.copy(request.GET)
 
@@ -316,14 +328,17 @@ def get_page_search_result_by_advertisements(request):
 
 @login_required
 def get_page_for_bulk_import_of_advertisement(request):
-    """Сборка страницы массового импорта объявлений.
-        Модели: UploadFile"""
+    """
+    Сборка страницы массового импорта объявлений.
+    Модели: UploadFile
+    """
     files = UploadFile.objects.select_related('errorfile').filter(user=request.user).order_by('time_upload_file')
     url = env_keys.get('URL')
     context = {
         'files': files,
         'form': UploadFileForm(),
         'url': url,
+        'adaptive_navigation': 'Массовый импорт объявлений'
     }
     return render(request=request,
                   template_name='advertisement_bulk_import_ads.html',
@@ -331,8 +346,10 @@ def get_page_for_bulk_import_of_advertisement(request):
 
 
 def get_page_for_instructions_for_bulk_import_of_ads(request):
-    """Сборка страницы с инструкцией по массовому импорту объявлений.
-        Модели: Region, Category"""
+    """
+    Сборка страницы с инструкцией по массовому импорту объявлений.
+    Модели: Region, Category
+    """
     oblast = Region.objects.filter(level=0)
     categories = Category.objects.filter(level=0)
     url = env_keys.get('URL')
@@ -340,6 +357,7 @@ def get_page_for_instructions_for_bulk_import_of_ads(request):
         'oblast': oblast,
         'categories': categories,
         'url': url,
+        'adaptive_navigation': 'Массовый импорт объявлений'
     }
     return render(request=request,
                   template_name='advertisement_instructions_for_bulk_import_of_ads.html',

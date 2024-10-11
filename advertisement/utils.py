@@ -10,8 +10,10 @@ from related_data.models import ElementTwo
 
 
 def setting_values_for_sorting_from_cookie_or_request_get(cookie, parameters_from_request_get):
-    """Функция принимающая COOKIE и параметры GET запроса для
-        установки значений переменных для дальнейшей сортировки"""
+    """
+    Функция принимающая COOKIE и параметры GET запроса для
+    установки значений переменных для дальнейшей сортировки
+    """
     if parameters_from_request_get.get('sort'):
         sort_for_paginator = _sorted_by_number(parameters_from_request_get.get('sort'))
     else:
@@ -25,8 +27,9 @@ def setting_values_for_sorting_from_cookie_or_request_get(cookie, parameters_fro
 
 
 def _sorted_by_number(number):
-    """Возвращает число для сортировки количества
-        объявлений если оно разрешено"""
+    """
+    Возвращает число для сортировки количества объявлений если оно разрешено
+    """
     number_list = ["30", "60", "90"]
     if number in number_list:
         return int(number)
@@ -34,7 +37,9 @@ def _sorted_by_number(number):
 
 
 def _sorted_by_date_or_price(sort):
-    """Возвращает значения для установки значения сортировки"""
+    """
+    Возвращает значения для установки значения сортировки
+    """
     if sort.get('date'):
         if sort['date'] == '0':
             return 1, 'date_of_create'
@@ -48,8 +53,9 @@ def _sorted_by_date_or_price(sort):
 
 
 def _sorted_by(key):
-    """Возвращает вариант сортировки,
-        если он разрешен"""
+    """
+    Возвращает вариант сортировки, если он разрешен
+    """
     key_list = ["-date_of_create", "date_of_create", 'price', '-price']
     if key in key_list:
         return key
@@ -58,9 +64,10 @@ def _sorted_by(key):
 
 
 def get_similar_advertisement(advertisement):
-    """Возвращает схожие экземпляры модели
-        Advertisement созданные за последние 50 дней.
-         Модели: Advertisement"""
+    """
+    Возвращает схожие экземпляры модели Advertisement созданные за последние 50 дней.
+    Модели: Advertisement
+    """
     date = datetime.now(tz=get_current_timezone()) - timedelta(days=50)
     similar_advertisement = list(Advertisement.objects.filter(moderated=True,
                                                               is_active=True,
@@ -76,8 +83,10 @@ def get_similar_advertisement(advertisement):
 
 
 def get_additional_data_for_advertisement(advertisement):
-    """Возвращает дополнительные данные объявления.
-        Модели: Advertisement, Category, Field, ElementTwo"""
+    """
+    Возвращает дополнительные данные объявления.
+    Модели: Advertisement, Category, Field, ElementTwo
+    """
     additional_information = advertisement.category.field_set.all().prefetch_related("spisok")
 
     additional_values = {key: value for key, value in zip(advertisement.additional_information.keys(),
@@ -97,7 +106,9 @@ def get_additional_data_for_advertisement(advertisement):
 
 def setting_search_options(category=None, region=None, only_photo=None, only_video=None,
                            only_title=None, text_search=None, field_for_search=None, search_lookup=None, id=None):
-    """Возвращает словарь из параметров для дальнейшего поиска"""
+    """
+    Возвращает словарь из параметров для дальнейшего поиска
+    """
     search_parameters = {}
     if category:
         search_parameters['category__in'] = category
@@ -121,7 +132,9 @@ def setting_search_options(category=None, region=None, only_photo=None, only_vid
 
 
 def make_clear_query(query, copy_of_request_get):
-    """Возвращает копии query и request.GET без параметров сортировки"""
+    """
+    Возвращает копии query и request.GET без параметров сортировки
+    """
     key_delete = ['page', 'sort', 'date', 'price', 'text_search',
                   'only_photo', 'only_video', 'only_title', 'id', 'active']
     for key in key_delete:
@@ -132,7 +145,9 @@ def make_clear_query(query, copy_of_request_get):
 
 def get_result_for_filter_advertisement_query(search_parameters, field_annotate, search_lookup, is_active=True,
                                               moderated=True, order_by="-search_boost_date", **kwargs):
-    """Возвращает результат запроса поиска по объявлениям"""
+    """
+    Возвращает результат запроса поиска по объявлениям
+    """
     advertisements = Advertisement.objects.annotate(**{key: Func(KT(value), function='CAST',
                                                                  template='CAST(%(expressions)s AS numeric)',
                                                                  output_field=FloatField()) if search_lookup.get(

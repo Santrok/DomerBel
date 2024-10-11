@@ -4,9 +4,9 @@ from slugify import slugify
 
 
 def unique_slugify(instance, slug):
-    """Генерирует уникальный SLUG для
-        моделей, в случае существования
-         такого SLUG."""
+    """
+    Генерирует уникальный SLUG для моделей, в случае существования такого SLUG.
+    """
     model = instance.__class__
     unique_slug = slugify(slug)
     while model.objects.filter(slug=unique_slug).exists():

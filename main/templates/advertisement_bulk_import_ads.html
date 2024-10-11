@@ -1,9 +1,11 @@
-{% extends "base.html" %}
+{% extends "profile_user.html" %}
 {% load static %}
-{% block css %}
+{% block css2 %}
 <link rel="stylesheet" href="{% static 'css/bulk_import_ads.css' %}">
-{% endblock css %}
-{% block content %}
+{% endblock css2 %}
+{% block search %}
+{% endblock search %}
+{% block mainInfo %}
 <section class="upload__file">
     <p class="info__text">Описание полей и требования к загружаемым данным можно посмотреть <a
             href="{{ url }}{% url 'instructions' %}">здесь.</a></p>
@@ -46,7 +48,7 @@
         <p>Файл обрабатывается</p>
     </div>
 </section>
-{% endblock content %}
+{% endblock mainInfo %}
 
 {% block js %}
 <script src="{% static 'js/advertisement/bulkImportAds.js' %}"></script>

@@ -8,11 +8,12 @@ from .forms import EditContactDataForm, ChangePasswordForm
 
 @login_required
 def get_user_data_page_and_change_user_data(request):
-    """Сборка страницы для отображения данных в личном кабинете пользователя
-        и обрабатывает две формы на изменение контактных данных
-         и изменение пароля пользователя.
-          Модели: User.
-           Формы: ChangePasswordForm, EditContactDataForm"""
+    """
+    Сборка страницы для отображения данных в личном кабинете пользователя
+    и обрабатывает две формы на изменение контактных данных и изменение пароля пользователя.
+    Модели: User.
+    Формы: ChangePasswordForm, EditContactDataForm
+    """
     user = request.user
     edit_contact_data_form = EditContactDataForm(instance=user)
     change_password_form = ChangePasswordForm()

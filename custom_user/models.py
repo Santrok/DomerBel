@@ -136,4 +136,4 @@ class UserFavorites(models.Model):
         verbose_name_plural = "Избранное пользователя"
 
     def __str__(self):
-        return f'{self.user}'
+        return f'Избранное для {self.user}'

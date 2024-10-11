@@ -13,9 +13,10 @@ from services.files.uploaded_file import upload_to
 
 
 class Store(models.Model):
-    """Модель магазина, связь:
-        с User(FK), с Region(FK),
-         с Category(FK)"""
+    """
+    Модель магазина
+    связи: с User(FK), с Region(FK), с Category(FK)
+    """
     region = models.ForeignKey(Region, on_delete=models.CASCADE, verbose_name='Регион')
     title = models.CharField('Название магазина', max_length=60)
     slug = models.SlugField('URL', max_length=30, unique=True)
@@ -47,11 +48,11 @@ class Store(models.Model):
         return self.title
 
     def save(self, *args, **kwargs):
-        """Сохраняет экземпляр модели Store,
-            высчитывает дату деактивации магазина,
-             конвертирует логотип в формат AVIF,
-              выполняет индексацию по полям 'title'
-               и 'description' для полнотекстового поиска """
+        """
+        Сохраняет экземпляр модели Store, высчитывает дату деактивации магазина,
+        конвертирует логотип в формат AVIF,
+        выполняет индексацию по полям 'title' и 'description' для полнотекстового поиска
+        """
         day_now = datetime.now()
         if calendar.isleap(int(day_now.strftime('%Y'))) and int(day_now.strftime("%m")) <= 2:
             self.date_of_deactivate = day_now + timedelta(days=366)
@@ -64,10 +65,14 @@ class Store(models.Model):
         super(Store, self).save(*args, **kwargs)
 
     def get_days_till_expiration(self):
-        """Возвращает количество дней до истечения срока действия магазина"""
+        """
+        Возвращает количество дней до истечения срока действия магазина
+        """
         days_till_expiration = self.date_of_deactivate - datetime.now(timezone.utc)
         return days_till_expiration.days
 
     def get_absolute_url(self):
-        """Определяет URL-адрес, связанный с экземпляром модели."""
+        """
+        Определяет URL-адрес, связанный с экземпляром модели.
+        """
         return reverse('store_by_title', kwargs={"store_slug": self.slug})

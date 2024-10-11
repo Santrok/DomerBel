@@ -7,12 +7,17 @@ from main.models import BadWords
 
 
 def validate_phone(phone_number):
-    """Валидация белорусского номера телефона"""
+    """
+    Валидация белорусского номера телефона
+    """
     if not re.match(r'^(\+375|80)(29|25|44|33)(\d{3})(\d{2})(\d{2})$', phone_number):
         raise ValidationError('Введите корректный белорусский номер мобильного телефона в формате +375XXXXXXXXX.')
 
 
 def validate_words(text):
+    """
+    Валидация текста на содержание запрещенных слов
+    """
     bw = cache.get('bad_words')
     if bw is None:
         bw = BadWords.objects.all()

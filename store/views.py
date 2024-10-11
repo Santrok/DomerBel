@@ -18,8 +18,10 @@ from .models import Store
 
 
 def get_stores_page(request):
-    """Сборка страницы "Магазины".
-     Модели: Store, Category"""
+    """
+    Сборка страницы "Магазины".
+    Модели: Store, Category
+    """
     stores = Store.objects.filter(is_active=True).select_related('category', 'region')
     categories = Category.objects.add_related_count(Category.objects.root_nodes(),
                                                     Store,
@@ -42,8 +44,10 @@ def get_stores_page(request):
 
 
 def get_store_search_page(request):
-    """Сборка страницы с результатами поиска по магазинам.
-        Модели: Store, Category, Region"""
+    """
+    Сборка страницы с результатами поиска по магазинам.
+    Модели: Store, Category, Region
+    """
 
     category, category_bread_crumbs = create_variables_for_filter_and_bread_crumbs(request.GET.getlist("category"),
                                                                                    Category)
@@ -82,8 +86,10 @@ def get_store_search_page(request):
 
 
 def get_stores_by_category(request, category_slug):
-    """Сборка страницы с магазинами в выбранной категории.
-     Модели: Store, Category, Region"""
+    """
+    Сборка страницы с магазинами в выбранной категории.
+    Модели: Store, Category, Region
+    """
     region_filter, region_param, region_bread_crumbs = get_region_variables(request.GET.get('region'))
     category = get_object_or_404(Category, slug=category_slug)
     categories_annotate = Category.objects.add_related_count(category.get_descendants(),
@@ -114,8 +120,10 @@ def get_stores_by_category(request, category_slug):
 
 
 def get_store_by_title(request, store_slug):
-    """Сборка страницы с детальной информацией выбранного магазина и его объявлениями.
-        Модели: Store, Advertisement, Category, Region"""
+    """
+    Сборка страницы с детальной информацией выбранного магазина и его объявлениями.
+    Модели: Store, Advertisement, Category, Region
+    """
     (order_by,
      sort_for_paginator,
      state_sort_by_date) = setting_values_for_sorting_from_cookie_or_request_get(request.COOKIES, request.GET)
@@ -164,9 +172,11 @@ def get_store_by_title(request, store_slug):
 
 
 def get_store_by_title_and_category(request, store_slug, category_slug):
-    """Сборка страницы с детальной информацией выбранного магазина
-        и его объявлениями в выбранной категории.
-         Модели: Store, Advertisement, Category, Region"""
+    """
+    Сборка страницы с детальной информацией выбранного магазина
+    и его объявлениями в выбранной категории.
+    Модели: Store, Advertisement, Category, Region
+    """
     (order_by,
      sort_for_paginator,
      state_sort_by_date) = setting_values_for_sorting_from_cookie_or_request_get(request.COOKIES, request.GET)
@@ -221,9 +231,11 @@ def get_store_by_title_and_category(request, store_slug, category_slug):
 
 
 def get_page_search_result_for_advertisements_in_the_store(request, store_slug):
-    """Сборка страницы с детальной информацией выбранного магазина
-        и результатами поиска по объявлениям этого магазина.
-         Модели: Store, Advertisement, Category, Region"""
+    """
+    Сборка страницы с детальной информацией выбранного магазина
+    и результатами поиска по объявлениям этого магазина.
+    Модели: Store, Advertisement, Category, Region
+    """
     categories = []
     copy_of_request_get = dict.copy(request.GET)
 
@@ -301,9 +313,11 @@ def get_page_search_result_for_advertisements_in_the_store(request, store_slug):
 @login_required
 @permission_required("store.add_store", raise_exception=True)
 def get_page_for_add_new_store(request):
-    """Сборка страницы для создания нового магазина пользователя.
-        Модели: Store, Category, Region, User.
-         Формы: StoreForm."""
+    """
+    Сборка страницы для создания нового магазина пользователя.
+    Модели: Store, Category, Region, User.
+    Формы: StoreForm.
+    """
     if request.method == 'POST':
         store_form = StoreForm(request.POST, request.FILES)
         if store_form.is_valid():
@@ -331,9 +345,11 @@ def get_page_for_add_new_store(request):
 @login_required
 @permission_required("store.change_store", raise_exception=True)
 def get_page_for_edit_store(request, store_id):
-    """Сборка страницы для редактирования магазина пользователя.
-        Модели: Store, Category, Region.
-         Формы: StoreForm."""
+    """
+    Сборка страницы для редактирования магазина пользователя.
+    Модели: Store, Category, Region.
+    Формы: StoreForm.
+    """
     store = get_object_or_404(Store, user=request.user, id=store_id)
 
     if request.method == 'POST':
@@ -359,8 +375,10 @@ def get_page_for_edit_store(request, store_id):
 @login_required
 @permission_required("store.delete_store", raise_exception=True)
 def get_page_for_delete_store(request, store_id):
-    """Сборка страницы для подтверждения удаления магазина пользователя.
-        Модели: Store"""
+    """
+    Сборка страницы для подтверждения удаления магазина пользователя.
+    Модели: Store
+    """
     store = get_object_or_404(Store, user=request.user, id=store_id)
 
     if request.method == "POST":
@@ -377,3 +395,25 @@ def get_page_for_delete_store(request, store_id):
         "adaptive_navigation": "Удаление магазина"
     }
     return render(request, 'delete_store.html', context)
+
+
+@login_required
+@permission_required("store.edit_store", raise_exception=True)
+def activate_or_deactivate_selected_store(request):
+    """
+    Активирует либо деактивирует выбранный магазин.
+    Модели: Store
+    """
+    if request.method == "POST":
+        if 'activate' in request.POST and request.POST.get('store').isdigit():
+            updated = Store.objects.filter(user=request.user, id=request.POST.get('store')).update(is_active=True)
+            if updated:
+                messages.success(request, "Магазин успешно активирован!")
+            return redirect('my_store')
+        if 'deactivate' in request.POST and request.POST.get('store').isdigit():
+            updated = Store.objects.filter(user=request.user, id=request.POST.get('store')).update(is_active=False)
+            if updated:
+                messages.success(request, "Магазин успешно деактивирован!")
+            return redirect('my_store')
+        return redirect('my_store')
+    return redirect('my_store')

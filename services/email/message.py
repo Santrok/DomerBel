@@ -1,11 +1,13 @@
 from django.template.loader import render_to_string
 
 from config.settings import env_keys
-from .tasks import send_email_task
+from services.email.tasks import send_email_task
 
 
 def run_send_email_task_celery(title, html, recipient, **kwargs):
-    """Функция запускающая отправку Email средствами Celery"""
+    """
+    Функция запускающая отправку Email средствами Celery
+    """
     try:
         content = _build_content_to_message(html, **kwargs)
     except:
@@ -17,7 +19,9 @@ def run_send_email_task_celery(title, html, recipient, **kwargs):
 
 
 def _build_content_to_message(html, **kwargs):
-    """Функция формирующая контент для отправки Email"""
+    """
+    Функция формирующая контент для отправки Email
+    """
     html_content = render_to_string(html,
                                     context={"url": env_keys.get("URL"),
                                              **kwargs},

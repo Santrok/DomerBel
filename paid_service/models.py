@@ -4,7 +4,9 @@ from django.db import models
 
 
 class Service(models.Model):
-    """Модель платной услуги"""
+    """
+    Модель платной услуги
+    """
     service_name = models.CharField('Название услуги', max_length=300)
     cost = models.DecimalField('Стоимость услуги', max_digits=8, decimal_places=2)
     validity_period = models.PositiveIntegerField('Срок действия услуги (в днях)')

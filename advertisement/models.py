@@ -22,8 +22,10 @@ from utils.validators import validate_words, validate_phone
 
 
 class PhotoAdvertisement(models.Model):
-    """Модель дополнительного изображения объявления, связь:
-        с Advertisement(FK)"""
+    """
+    Модель дополнительного изображения объявления, связь:
+    с Advertisement(FK)
+    """
     photo = models.ImageField("Фото", upload_to=upload_to, blank=True, null=True)
     advertisement = models.ForeignKey('Advertisement', verbose_name="Фотография", on_delete=models.CASCADE)
 
@@ -35,9 +37,11 @@ class PhotoAdvertisement(models.Model):
         return f'Объявление {self.advertisement.id}-{self.id}'
 
     def save(self, *args, **kwargs):
-        """Конвертирует изображение в AVIF формат
-            и добавляет водяной знак на изображение,
-             и сохраняет экземпляр модели"""
+        """
+        Конвертирует изображение в AVIF формат
+        и добавляет водяной знак на изображение,
+        и сохраняет экземпляр модели
+        """
         if self.photo and not self.photo.url.lower().endswith('avif'):
             convert_image_to_avif(photo=self.photo)
         super().save(*args, **kwargs)
@@ -48,9 +52,11 @@ class PhotoAdvertisement(models.Model):
 
 
 class Advertisement(DirtyFieldsMixin, models.Model):
-    """Модель магазина, связь:
-        с User(FK), с Region(FK),
-         с Category(FK), Store(FK)"""
+    """
+    Модель магазина, связь:
+    с User(FK), с Region(FK),
+    с Category(FK), Store(FK)
+    """
     author = models.ForeignKey(get_user_model(), verbose_name="Автор", on_delete=models.CASCADE, blank=True, null=True)
     article = models.CharField("Артикул", max_length=255, blank=True, null=True)
     title = models.CharField("Заголовок", max_length=255, db_index=True, validators=[validate_words])
@@ -113,7 +119,9 @@ class Advertisement(DirtyFieldsMixin, models.Model):
         return self.title
 
     def get_days_till_expiration(self):
-        """Возвращает количество дней до деактивации объявления"""
+        """
+        Возвращает количество дней до деактивации объявления
+        """
         days_till_expiration = self.date_of_deactivate - datetime.now(timezone.utc)
         return days_till_expiration.days
 
@@ -121,11 +129,11 @@ class Advertisement(DirtyFieldsMixin, models.Model):
         return reverse('advertisement_details', kwargs={"slug": self.slug})
 
     def save(self, *args, **kwargs):
-        """Конвертирует изображение в AVIF формат,
-            добавляет водяной знак на изображение,
-             заполняет поля даты деактивации, удаления, и последнего поднятия объявления,
-              заполняет поля slug, и additional_information_view
-               и сохраняет экземпляр модели"""
+        """
+        Конвертирует изображение в AVIF формат, добавляет водяной знак на изображение,
+        заполняет поля даты деактивации, удаления, и последнего поднятия объявления,
+        заполняет поля slug, и additional_information_view и сохраняет экземпляр модели
+        """
         if "additional_information" in self.get_dirty_fields():
             self.additional_information_view = list(self.additional_information.items())
 
@@ -152,11 +160,15 @@ class Advertisement(DirtyFieldsMixin, models.Model):
 
 
 class UploadFile(models.Model):
-    """Модель для сохранения файла для массового импорта объявлений,
-        связи: с User(FK)"""
+    """
+    Модель для сохранения файла для массового импорта объявлений,
+    связи: с User(FK)
+    """
 
     def get(instance, filename):
-        """Возвращает путь, по которому храниться файл с объявлениями для массового импорта"""
+        """
+        Возвращает путь, по которому храниться файл с объявлениями для массового импорта
+        """
         return f'files_for_bulk_import_of_ads/{instance.user.email}/{filename}'
 
     time_upload_file = models.DateTimeField("Время загрузки файла", auto_now_add=True)
@@ -173,9 +185,11 @@ class UploadFile(models.Model):
 
 
 class ErrorFile(models.Model):
-    """Модель, хранящая путь, по которому храниться
-        файл с ошибками после массового импорта объявлений,
-         связи: с User(FK), UploadFile(O2O)"""
+    """
+    Модель, хранящая путь, по которому храниться
+    файл с ошибками после массового импорта объявлений,
+    связи: с User(FK), UploadFile(O2O)
+    """
     time_upload_file = models.DateTimeField("Время создания файла", auto_now_add=True)
     file = models.CharField("Путь к файлу с объявлениями с ошибками", max_length=255)
     user = models.ForeignKey(get_user_model(), verbose_name="Пользователь", on_delete=models.CASCADE)
@@ -194,8 +208,10 @@ class ErrorFile(models.Model):
 
 
 class Complaint(models.Model):
-    """Модель, хранящая жалобы на объявления,
-        связи: с Advertisement(FK), ReasonOfComplaint(FK)"""
+    """
+    Модель, хранящая жалобы на объявления,
+    связи: с Advertisement(FK), ReasonOfComplaint(FK)
+    """
     reason = models.ForeignKey('ReasonOfComplaint', verbose_name="Причина жалобы", on_delete=models.CASCADE)
     text = models.TextField("Обоснование жалобы")
     date = models.DateTimeField("Дата создания жалобы", auto_now_add=True)
@@ -213,7 +229,9 @@ class Complaint(models.Model):
 
 
 class ReasonOfComplaint(models.Model):
-    """Модель, хранящая причины жалобы"""
+    """
+    Модель, хранящая причины жалобы
+    """
     reason = models.CharField("Причина жалобы", max_length=1000)
 
     class Meta:

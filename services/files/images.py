@@ -6,7 +6,9 @@ from django.core.files.base import ContentFile
 
 
 def add_watermark_to_image(photo):
-    """Добавляет водяной знак на изображение"""
+    """
+    Добавляет водяной знак на изображение
+    """
     photo = Image.open(photo)
     draw = ImageDraw.Draw(photo)
     width, height = photo.size
@@ -23,7 +25,9 @@ def add_watermark_to_image(photo):
 
 
 def convert_image_to_avif(photo):
-    """ Конвертирует все форматы фото в avif """
+    """
+    Конвертирует все форматы фото в avif
+    """
 
     # Открываем загруженный файл с помощью Pillow
     img = Image.open(photo)

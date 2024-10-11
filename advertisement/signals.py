@@ -12,7 +12,9 @@ from .models import Advertisement, PhotoAdvertisement
 
 @receiver(pre_delete, sender=Advertisement)
 def publication_photo_delete(sender, instance, **kwargs):
-    """Удаление файлов и папок, перед удалением экземпляра объявления """
+    """
+    Удаление файлов и папок, перед удалением экземпляра объявления
+    """
     image_folder = os.path.dirname(instance.preview_image.path) if instance.preview_image else None
     instance.preview_image.delete(False)
     if image_folder and os.path.exists(image_folder) and os.path.isdir(image_folder):
@@ -22,14 +24,17 @@ def publication_photo_delete(sender, instance, **kwargs):
 
 @receiver(pre_delete, sender=PhotoAdvertisement)
 def publication_photo_delete(sender, instance, **kwargs):
-    """ Удаление файлов перед удалением экземпляра
-    дополнительного изображения объявления """
+    """
+    Удаление файлов перед удалением экземпляра дополнительного изображения объявления
+    """
     instance.photo.delete(False)
 
 
 @receiver(post_save, sender=Advertisement)
 def notify_moderation_result(sender, instance, **kwargs):
-    """Функция проверяет прошло ли письмо модерацию или нет и отправляем письмо пользователю с результатом"""
+    """
+    Функция проверяет прошло ли письмо модерацию или нет и отправляем письмо пользователю с результатом
+    """
     if 'moderated' in instance.get_dirty_fields() and instance.moderated:
         run_send_email_task_celery('Объявление прошло модерацию',
                                    "asend_notify_moderation_result.html",
@@ -46,7 +51,9 @@ def notify_moderation_result(sender, instance, **kwargs):
 
 @receiver(post_save, sender=Advertisement)
 def create_fild_for_search_adv(sender, instance, **kwargs):
-    """Функция заполняет поля для полнотекстового поиска"""
+    """
+    Функция заполняет поля для полнотекстового поиска
+    """
     dirty_fields = instance.get_dirty_fields()
     if (not instance.search_vector or not instance.search_title_vector or
             'title' in dirty_fields or 'description' in dirty_fields):
@@ -63,8 +70,10 @@ def min_count_shown_vip_advertisement(advertisements_for_sort, instance_id, fild
 
 @receiver(post_save, sender=Advertisement)
 def reset_all_shown_vip_and_count(sender, instance, **kwargs):
-    """Функция устанавливает актуальное количество показанных объявлений новому VIP и
-    обнуляет счетчик после отключения VIP."""
+    """
+    Функция устанавливает актуальное количество показанных объявлений новому VIP и
+    обнуляет счетчик после отключения VIP.
+    """
     if 'vip' not in instance.get_dirty_fields():
         return
 

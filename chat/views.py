@@ -8,8 +8,10 @@ from chat.models import Chat, UserMessage
 
 @login_required
 def get_all_user_dialogs(request):
-    """Сборка страницы которая отображает все диалоги пользователя в ЛК.
-        Модели: Chat, UserMessage"""
+    """
+    Сборка страницы которая отображает все диалоги пользователя в ЛК.
+    Модели: Chat, UserMessage
+    """
     chats = Chat.objects.filter(members__in=[request.user.id]
                                 ).annotate(last_message=Max('usermessage__pub_date')
                                            ).order_by("-last_message"
@@ -28,8 +30,10 @@ def get_all_user_dialogs(request):
 
 @login_required
 def view_message_in_dialog(request, chat_id, chat_name):
-    """Сборка страницы которая отображает все сообщения внутри выбранного диалога.
-        Модели: Chat, UserMessage"""
+    """
+    Сборка страницы которая отображает все сообщения внутри выбранного диалога.
+    Модели: Chat, UserMessage
+    """
     chat = get_object_or_404(Chat, id=chat_id, members=request.user)
     UserMessage.objects.filter(chat=chat, is_read=False).exclude(author=request.user).update(is_read=True)
     context = {
@@ -40,8 +44,10 @@ def view_message_in_dialog(request, chat_id, chat_name):
 
 @login_required
 def delete_user_dialog(request):
-    """Удаляет выбранный диалог в ЛК
-        Модели: Chat, UserMessage"""
+    """
+    Удаляет выбранный диалог в ЛК
+    Модели: Chat, UserMessage
+    """
     if request.method == "POST":
         if 'dialog' in request.POST:
             dialog = get_object_or_404(Chat, id=request.POST.get('dialog'), members=request.user)

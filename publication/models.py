@@ -14,8 +14,10 @@ from utils.slug_generator import unique_slugify
 
 
 class Publication(models.Model):
-    """Модель публикации, связь:
-        с пользователем(FK)"""
+    """
+    Модель публикации
+    связь: с пользователем(FK)
+    """
     user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, verbose_name="Пользователь")
     title = models.CharField("Заголовок", max_length=255)
     slug = models.SlugField("URL", max_length=255, unique=True)
@@ -43,6 +45,10 @@ class Publication(models.Model):
         return reverse('publication_by_slug', kwargs={"slug": self.slug})
 
     def save(self, *args, **kwargs):
+        """
+        Сохраняет экземпляр модели Publication, конвертирует логотип в формат AVIF, формирует поле slug,
+        выполняет индексацию по полям 'title' и 'description' для полнотекстового поиска
+        """
         if self.preview_image and not self.preview_image.url.lower().endswith('avif'):
             convert_image_to_avif(photo=self.preview_image)  # Конвертация изображения в формат AVIF
         self.slug = unique_slugify(self, self.title)

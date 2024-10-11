@@ -70,6 +70,8 @@ class UserRegisterSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         validated_data.pop('password2')
         validated_data.pop('recaptcha')
+        if validated_data.get('entity'):
+            validated_data['is_active'] = False
         return get_user_model().objects.create_user(**validated_data)
 
     def validate(self, data):
@@ -96,13 +98,6 @@ class UserLoginSerializer(serializers.Serializer):
 class PasswordResetSerializer(serializers.Serializer):
     email = serializers.EmailField(write_only=True, error_messages={'blank': 'Обязательное поле'})
     recaptcha = ReCaptchaV2Field(write_only=True)
-
-    def validate_email(self, email):
-        email = email.lower()
-        if not get_user_model().objects.filter(email=email).exists():
-            raise serializers.ValidationError("Пользователь с таким Email не найден")
-        else:
-            return email
 
 
 class FavoriteSerializer(serializers.Serializer):

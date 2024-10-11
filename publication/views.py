@@ -11,8 +11,10 @@ from utils.template_paginator import variables_for_paginator
 
 
 def get_publications_page(request):
-    """Сборка страницы со всеми публикациями.
-        Модели: Publication"""
+    """
+    Сборка страницы со всеми публикациями.
+    Модели: Publication
+    """
     publications = Publication.objects.exclude(moderated=False).order_by('date_of_create')
 
     page_obj = variables_for_paginator(publications,
@@ -28,8 +30,10 @@ def get_publications_page(request):
 
 
 def get_publication_page_by_slug(request, slug):
-    """Сборка страницы с детальной информацией выбранной публикации.
-        Модели: Publication"""
+    """
+    Сборка страницы с детальной информацией выбранной публикации.
+    Модели: Publication
+    """
     Publication.objects.filter(slug=slug).update(counter_views=F('counter_views')+1)
     publication = get_object_or_404(Publication, slug=slug, moderated=True)
     context = {
@@ -40,8 +44,10 @@ def get_publication_page_by_slug(request, slug):
 
 
 def get_search_result_page_by_publication(request):
-    """Сборка страницы с результатами поиска по публикациям.
-        Модели: Publication"""
+    """
+    Сборка страницы с результатами поиска по публикациям.
+    Модели: Publication
+    """
     search_parameters = {}
 
     if request.GET.get('only_title') and request.GET.get('text_search'):
@@ -70,8 +76,10 @@ def get_search_result_page_by_publication(request):
 
 @login_required
 def get_page_for_add_new_publication(request):
-    """Сборка страницы с для создания новой публикации.
-        Модели: Publication"""
+    """
+    Сборка страницы с для создания новой публикации.
+    Модели: Publication
+    """
     form_publication = PublicationForm()
     if request.method == 'POST':
         form_publication = PublicationForm(request.POST, request.FILES)
@@ -89,8 +97,10 @@ def get_page_for_add_new_publication(request):
 
 @login_required
 def delete_publication(request):
-    """Функция для удаления выбранных публикаций пользователя.
-        Модели: Publication"""
+    """
+    Функция для удаления выбранных публикаций пользователя.
+    Модели: Publication
+    """
     if request.method == "POST":
         if 'delete_publication' in request.POST:
             selected_publications = request.POST.getlist('publication_checkbox')
@@ -101,9 +111,10 @@ def delete_publication(request):
 
 @login_required
 def get_page_for_edit_publication(request, publication_slug):
-    """Сборка страницы редактирования
-        выбранной публикации пользователя.
-         Модели: Publication"""
+    """
+    Сборка страницы редактирования выбранной публикации пользователя.
+    Модели: Publication
+    """
     publication = get_object_or_404(Publication, user=request.user, slug=publication_slug)
 
     if request.method == 'POST':

@@ -8,7 +8,9 @@ from config import settings
 
 
 class CkeditorCustomStorage(FileSystemStorage):
-    """Кастомное расположение для медиа файлов редактора CKEditor5"""
+    """
+    Кастомное расположение для медиа файлов редактора CKEditor5
+    """
 
     def get_folder_name(self):
         return datetime.now().strftime('%Y/%m/%d')

@@ -4,7 +4,9 @@ from django_ckeditor_5.fields import CKEditor5Field
 
 
 class AboutOrganization(models.Model):
-    """Модель для хранения установочных данных об организации ДОМЕР.бел"""
+    """
+    Модель для хранения установочных данных об организации ДОМЕР.бел
+    """
     name_organization = models.CharField('Название организации', max_length=255)
     unp = models.CharField('УНП', max_length=9)
     legal_address = models.CharField('Юридический адрес', max_length=255)
@@ -21,7 +23,9 @@ class AboutOrganization(models.Model):
 
 
 class Help(models.Model):
-    """Модель для хранения информации о правилах пользования ресурсом"""
+    """
+    Модель для хранения информации о правилах пользования ресурсом
+    """
     announcement = CKEditor5Field('Текст помощи', config_name='extends')
 
     class Meta:
@@ -33,7 +37,9 @@ class Help(models.Model):
 
 
 class BadWords(models.Model):
-    """Модель для хранения слов для валидатора нецензурных слов"""
+    """
+    Модель для хранения слов для валидатора нецензурных слов
+    """
     word = models.CharField("Слово", max_length=255)
 
     class Meta:

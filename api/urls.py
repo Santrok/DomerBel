@@ -5,7 +5,7 @@ from .views import (save_advertisement, update_advertisement, registration_user,
                     create_new_chat_and_create_new_message, status_unread_message_user, add_to_favorite,
                     delete_from_favorite, providing_a_payment_page, processing_successful_payment_for_services,
                     get_region_list, get_category_list, get_subcategory_list, get_field_list, get_elementtwo_list,
-                    get_store_list_by_user, get_categories_for_search, get_list_of_cities)
+                    get_store_list_by_user, get_list_of_cities, get_element_list)
 
 urlpatterns = [
     path('save_advertisement/', save_advertisement),
@@ -25,8 +25,8 @@ urlpatterns = [
     path('get_city_list/<int:id>', get_list_of_cities),
     path('get_category_list/', get_category_list),
     path('get_subcategory_list/', get_subcategory_list),
-    path('categories_for_search/<int:id>', get_categories_for_search),
     path('get_field_list/', get_field_list),
+    path('get_element_list/', get_element_list),
     path('get_elementtwo_list/', get_elementtwo_list),
     path('get_store_for_advertisement/', get_store_list_by_user),
 ]

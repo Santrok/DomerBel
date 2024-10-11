@@ -4,8 +4,10 @@ from .models import Category, Region
 
 
 def get_data_category_and_region(request):
-    """Добавляет данные моделей Category и Region в контекст шаблона,
-        и при необходимости кэширует эти данные"""
+    """
+    Добавляет данные моделей Category и Region в контекст шаблона,
+    и при необходимости кэширует эти данные
+    """
     category = cache.get('category')
     region = cache.get('region')
 

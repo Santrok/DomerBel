@@ -8,8 +8,10 @@ from mptt.models import MPTTModel
 
 
 class Region(MPTTModel):
-    """Модель областей и городов связи:
-        дерево связи в самой таблице MPТT(FK)"""
+    """
+    Модель областей и городов
+    связи: дерево связи в самой таблице MPТT(FK)
+    """
     area = models.CharField(max_length=255, verbose_name='Область, город')
     type = models.CharField(max_length=255, choices=[('Область', 'Область'), ('Город', 'Город')],
                             verbose_name='Тип местонахождения')
@@ -28,8 +30,10 @@ class Region(MPTTModel):
 
 
 class Category(MPTTModel):
-    """Модель категорий объявлений и магазинов связи:
-        дерево связи в самой таблице MPТT(FK)"""
+    """
+    Модель категорий объявлений и магазинов
+    связи: дерево связи в самой таблице MPТT(FK)
+    """
     title = models.CharField(max_length=255, verbose_name='Категория')
     type = models.CharField(max_length=255,
                             choices=[('category_1', 'category_1'), ('category_2', 'category_2'),
@@ -51,8 +55,10 @@ class Category(MPTTModel):
 
 
 class Field(models.Model):
-    """Модель хранения полей для дополнительной информации объявления по категории
-        связи: Category(FK)"""
+    """
+    Модель хранения полей для дополнительной информации объявления по категории
+    связи: Category(FK)
+    """
     title = models.CharField('Заголовок поля', max_length=500, blank=True, null=True)
     title_ad = models.CharField("Заголовок для администратора", max_length=500, blank=True, null=True)
     error = models.CharField('Текст ошибки при неверно введенных данных', max_length=500, blank=True, null=True)
@@ -76,7 +82,9 @@ class Field(models.Model):
 
 
 class Spisok(models.Model):
-    """Модель хранения списка значений для модели Field"""
+    """
+    Модель хранения списка значений для модели Field
+    """
     title = models.CharField('Заголовок списка', max_length=255)
 
     class Meta:
@@ -88,8 +96,10 @@ class Spisok(models.Model):
 
 
 class Element(models.Model):
-    """Модель хранения значения элемента для модели Spisok.
-        связи: Spisok(FK)"""
+    """
+    Модель хранения значения элемента для модели Spisok.
+    связи: Spisok(FK)
+    """
     title = models.CharField('Заголовок элемента', max_length=255)
     spisok = models.ForeignKey('Spisok', verbose_name='Связь со списком', on_delete=models.CASCADE)
 
@@ -102,8 +112,10 @@ class Element(models.Model):
 
 
 class ElementTwo(models.Model):
-    """Модель хранения расширенного значения элемента для модели Element.
-        связи: Element(FK)"""
+    """
+    Модель хранения расширенного значения элемента для модели Element
+    связи: Element(FK)
+    """
     title = models.CharField('Загловок второго элемента', max_length=255)
     element = models.ForeignKey('Element', verbose_name='Связь с элементом', on_delete=models.CASCADE)
 

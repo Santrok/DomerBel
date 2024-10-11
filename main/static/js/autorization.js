@@ -53,7 +53,15 @@ function registration() {
       if (data.errors) {
         throw new Error(JSON.stringify(data.errors))
       }
+      if (data.error || data.success) {
+        if (data.error) {
+          document.querySelector(".modals__notification-success").style.display = 'none'
+          document.querySelector(".modals__notification-error").style.display = 'flex'
+      }
       if (data.success) {
+          document.querySelector(".modals__notification-success").style.display = 'flex'
+          document.querySelector(".modals__notification-error").style.display = 'none'
+      }
         const notificationModal = document.querySelector(
           ".modals__notification"
         )
@@ -62,7 +70,8 @@ function registration() {
         const notificationText = document.querySelector(
           ".modals__notification-text"
         )
-        notificationText.innerText = data.success
+        notificationText.innerText = data.success ? data.success : data.error
+        registrationForm.reset()
       }
     })
     .catch((err) => {

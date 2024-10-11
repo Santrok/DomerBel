@@ -8,7 +8,9 @@ from .models import UserMessage
 
 class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
-        """Присоединение к группе чата"""
+        """
+        Присоединение к группе чата
+        """
         self.room_name = self.scope["url_route"]["kwargs"]["room_name"]
         self.room_group_name = f"chat_{self.room_name}"
 
@@ -16,11 +18,15 @@ class ChatConsumer(AsyncWebsocketConsumer):
         await self.accept()
 
     async def disconnect(self, close_code):
-        """Отключение от группы чата"""
+        """
+        Отключение от группы чата
+        """
         await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
 
     async def receive(self, text_data):
-        """Отправка сообщения всем участникам комнаты"""
+        """
+        Отправка сообщения всем участникам комнаты
+        """
         try:
             text_data_json = json.loads(text_data)
             message = text_data_json.get("message")
@@ -49,7 +55,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
             print(f"Error processing message: {str(e)}")
 
     async def chat_message(self, event):
-        """Отправка сообщения обратно клиенту"""
+        """
+        Отправка сообщения обратно клиенту
+        """
         message = event["message"]
         user_id = event["userId"]
         time = event["time"]

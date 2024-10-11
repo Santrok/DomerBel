@@ -9,8 +9,10 @@ from related_data.models import Field
 
 
 def validate_additional_information(keys_to_delete, additional_information):
-    """Выполняет валидацию по полям дополнительной информации объявления.
-        Модели: Field"""
+    """
+    Выполняет валидацию по полям дополнительной информации объявления.
+    Модели: Field
+    """
     for key in keys_to_delete:
         if key in additional_information:
             del additional_information[key]
@@ -25,9 +27,11 @@ def validate_additional_information(keys_to_delete, additional_information):
 
 
 def save_temp_photos(photo_list, preview_img=None):
-    """Сохраняет фотографии во временную директорию.
-        Возвращает список адресов фотографий.
-         Используется для сохранения и редактирования объявлений"""
+    """
+    Сохраняет фотографии во временную директорию.
+    Возвращает список адресов фотографий.
+    Используется для сохранения и редактирования объявлений
+    """
     processed_photo = {'preview_img': None, 'other_img': []}
 
     if photo_list:
@@ -56,10 +60,10 @@ def save_temp_photos(photo_list, preview_img=None):
 
 
 def get_chat_object(chat_object, model, author_field, user):
-    """Определяет объект чата и возвращает его либо
-        возвращает ошибку если объект не найден или
-         объект чата является объектом созданным
-          текущим пользователем"""
+    """
+    Определяет объект чата и возвращает его либо возвращает ошибку если объект не найден или
+    объект чата является объектом созданным текущим пользователем
+    """
     try:
         obj = model.objects.get(id=chat_object)
         if getattr(obj, author_field) == user:

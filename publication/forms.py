@@ -7,7 +7,9 @@ from publication.models import Publication
 
 
 class ImagePreviewWidget(forms.widgets.FileInput):
-    """Переопределение метода render для отображения загруженного изображения"""
+    """
+    Переопределение метода render для отображения загруженного изображения
+    """
     def render(self, name, value, attrs=None, **kwargs):
         input_html = super().render(name, value, attrs=None, **kwargs)
         if value:

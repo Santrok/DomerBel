@@ -543,10 +543,6 @@ function removeImg(event) {
     let target = event.target
     if (target.classList.contains("delete_img")) {
         target.parentElement.remove()
-        // removeImages = document.getElementsByName(target.dataset.name)
-        // removeImages.forEach((item) => {
-        //     item.parentElement.remove()
-        // })
         if (target.parentElement.children[1].classList.contains("main_img")) {
             if (document.querySelector(".photo_preview").childElementCount !== 0) {
                 document

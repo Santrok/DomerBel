@@ -8,8 +8,10 @@ from .models import Service
 
 
 class CustomBoundWidget(BoundWidget):
-    """Добавляет к базовому виджету два метода
-        которые возвращают стоимость и период действия"""
+    """
+    Добавляет к базовому виджету два метода
+    которые возвращают стоимость и период действия
+    """
     @property
     def get_cost(self):
         return self.data["cost"]
@@ -20,7 +22,9 @@ class CustomBoundWidget(BoundWidget):
 
 
 class CustomBoundField(BoundField):
-    """Переопределен для использования кастомного виджета вместо базового"""
+    """
+    Переопределен для использования кастомного виджета вместо базового
+    """
     @cached_property
     def subwidgets(self):
         id_ = self.field.widget.attrs.get("id") or self.auto_id
@@ -35,8 +39,9 @@ class CustomBoundField(BoundField):
 
 
 class PaidMultipleCheckbox(forms.CheckboxSelectMultiple):
-    """Добавляет значения стоимости и срока действия
-        в дополнение к базовым атрибутам"""
+    """
+    Добавляет значения стоимости и срока действия в дополнение к базовым атрибутам
+    """
     def create_option(
         self, name, value, label, selected, index, subindex=None, attrs=None
     ):
@@ -67,7 +72,9 @@ class PaidMultipleCheckbox(forms.CheckboxSelectMultiple):
 
 
 class CustomModelMultipleChoiceField(forms.ModelMultipleChoiceField):
-    """Переопределен для использования кастомного поля вместо базового"""
+    """
+    Переопределен для использования кастомного поля вместо базового
+    """
     def get_bound_field(self, form, field_name):
         return CustomBoundField(form, self, field_name)
 

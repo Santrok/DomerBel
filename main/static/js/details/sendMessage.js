@@ -53,6 +53,10 @@ function sendMessage() {
                     document.querySelector(".modals__notification-success").style.display = 'none'
                     document.querySelector(".modals__notification-error").style.display = 'flex'
                 }
+                if (data.success) {
+                    document.querySelector(".modals__notification-success").style.display = 'flex'
+                    document.querySelector(".modals__notification-error").style.display = 'none'
+                }
                 document
                     .querySelector(".modals__notification")
                     .classList.add("modal__active")

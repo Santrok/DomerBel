@@ -10,8 +10,10 @@ from store.models import Store
 
 # Create your models here.
 class Chat(models.Model):
-    """Модель чата для диалогов между пользователями.
-        Модели: User(M2M), Advertisement(FK), Store(FK)"""
+    """
+    Модель чата для диалогов между пользователями.
+    Модели: User(M2M), Advertisement(FK), Store(FK)
+    """
     chat_name = models.UUIDField("Идентификатор чата", default=uuid.uuid4, unique=True, editable=False)
     members = models.ManyToManyField(get_user_model(), verbose_name='Участник')
     advertisement = models.ForeignKey(Advertisement, verbose_name="Объявление", on_delete=models.SET_NULL, null=True)
@@ -29,8 +31,10 @@ class Chat(models.Model):
 
 
 class UserMessage(models.Model):
-    """Модель сообщения пользователя в диалоге.
-        Модели: User(M2M), Chat(FK)"""
+    """
+    Модель сообщения пользователя в диалоге.
+    Модели: User(M2M), Chat(FK)
+    """
     chat = models.ForeignKey(Chat, verbose_name='Чат', on_delete=models.SET_NULL, null=True)
     author = models.ForeignKey(get_user_model(), verbose_name='Пользователь', on_delete=models.CASCADE)
     message = models.TextField('Сообщение')

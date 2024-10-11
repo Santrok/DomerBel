@@ -17,7 +17,9 @@ from .utils_for_bulk_import import save_many_ads_from_excel, save_many_ads_from_
 
 
 def update_additional_information(additional_information):
-    """Обновляем дополнительную информацию для объявления."""
+    """
+    Обновляет дополнительную информацию для объявления.
+    """
     fields = Field.objects.filter(id__in=additional_information).order_by('id')
     for field in fields:
         additional_information[field.title] = ', '.join(additional_information.pop(f'{field.id}'))
@@ -25,7 +27,9 @@ def update_additional_information(additional_information):
 
 
 def swap_preview_images(advertisement, new_preview_photo):
-    """Меняем местами главное изображение с другим."""
+    """
+    Меняет местами главное изображение с другим.
+    """
     old_preview_image = advertisement.preview_image
     old_photo = PhotoAdvertisement.objects.get(photo=new_preview_photo, advertisement=advertisement)
 
@@ -38,7 +42,9 @@ def swap_preview_images(advertisement, new_preview_photo):
 
 
 def add_new_photos(advertisement, temporarily_saving_photos):
-    """Добавляем новые фотографии к объявлению."""
+    """
+    Добавляет новые фотографии к объявлению.
+    """
     preview_img = temporarily_saving_photos.get('preview_img')
     other_images = temporarily_saving_photos.get('other_img', None)
     if preview_img:
@@ -60,7 +66,9 @@ def add_new_photos(advertisement, temporarily_saving_photos):
 
 
 def delete_photos(advertisement, photos_to_delete):
-    """Удаляем фотографии."""
+    """
+    Удаляет фотографии.
+    """
     PhotoAdvertisement.objects.filter(photo__in=photos_to_delete, advertisement=advertisement).delete()
 
     if advertisement.preview_image in photos_to_delete:
@@ -78,13 +86,17 @@ def delete_photos(advertisement, photos_to_delete):
 
 
 def remove_file(file_path):
-    """Удаляет файл, если он существует, и выводит сообщение об ошибке в случае неудачи."""
+    """
+    Удаляет файл, если он существует, и выводит сообщение об ошибке в случае неудачи.
+    """
     with contextlib.suppress(OSError):
         os.remove(file_path)
 
 
 def delete_files(temporarily_saving_photos):
-    """Удаляем временные файлы и пустые папки."""
+    """
+    Удаляет временные файлы и пустые папки.
+    """
     preview_img = temporarily_saving_photos.get('preview_img')
     other_images = temporarily_saving_photos.get('other_img', [])
 
@@ -107,7 +119,9 @@ def delete_files(temporarily_saving_photos):
 
 @shared_task()
 def save_advertisement_task(user, data, additional_information, temporarily_saving_photos):
-    """Сохранение объявлений."""
+    """
+    Сохраняет объявление.
+    """
     additional_information = update_additional_information(additional_information)
 
     try:
@@ -143,7 +157,9 @@ def save_advertisement_task(user, data, additional_information, temporarily_savi
 @shared_task()
 def update_advertisement_task(user, advertisement_id, data, additional_information, temporarily_saving_photos,
                               new_preview_photo_from_old_ones, delete_photo):
-    """Редактирование объявления."""
+    """
+    Редактирует объявление.
+    """
     additional_information = update_additional_information(additional_information)
 
     editing_advertisement = Advertisement.objects.get(author=user, id=advertisement_id)
@@ -179,7 +195,9 @@ def update_advertisement_task(user, advertisement_id, data, additional_informati
 
 @shared_task()
 def deactivate_advertisement():
-    """Функция деактивации объявлений по истечению времени публикации"""
+    """
+    Функция деактивации объявлений по истечению времени публикации
+    """
     # Получаем текущую дату и время с информацией о часовом поясе
     current_datetime = timezone.now()
 
@@ -193,7 +211,9 @@ def deactivate_advertisement():
 
 @shared_task()
 def delete_advertisement():
-    """Функция удаления объявлений по истечению времени"""
+    """
+    Функция удаления объявлений по истечению времени
+    """
     # Получаем текущую дату и время с информацией о часовом поясе
     current_datetime = timezone.now()
 
@@ -206,13 +226,17 @@ def delete_advertisement():
 
 
 def reset_shown_count(ad_filter, field, min_shown_count, max_shown_number):
-    """Сбрасывает счетчик показов для объявлений."""
+    """
+    Сбрасывает счетчик показов для объявлений.
+    """
     if min_shown_count > max_shown_number:
         ad_filter.update(**{field: 0})
 
 
 def update_vip_advertisements(ad_filter, field_shown, field_count):
-    """Обновляет показанные VIP объявления на основе минимальных показов."""
+    """
+    Обновляет показанные VIP объявления на основе минимальных показов.
+    """
     total_count = ad_filter.count()
     total_shown_count = ad_filter.filter(**{field_shown: True}).count()
     first_ad = ad_filter.order_by(field_count).first()
@@ -239,7 +263,9 @@ def update_vip_advertisements(ad_filter, field_shown, field_count):
 
 @shared_task()
 def list_shown_vip():
-    """Ротация VIP объявлений."""
+    """
+    Ротация VIP объявлений.
+    """
     with transaction.atomic():
         all_ads_vip = Advertisement.objects.filter(moderated=True, is_active=True, vip=True)
         if not all_ads_vip.exists():
@@ -250,7 +276,9 @@ def list_shown_vip():
 
 @shared_task()
 def list_shown_vip_category():
-    """Ротация VIP объявлений по категориям."""
+    """
+    Ротация VIP объявлений по категориям.
+    """
     with transaction.atomic():
         categories = Advertisement.objects.filter(moderated=True,
                                                   is_active=True,
@@ -268,8 +296,10 @@ def list_shown_vip_category():
 
 @shared_task()
 def delete_everything_in_folder_beat():
-    """Удаляет все файлы из папки для "files_for_bulk_import_of_ads"
-        Задача отрабатывает раз в сутки в 00.00"""
+    """
+    Удаляет все файлы из папки для "files_for_bulk_import_of_ads"
+    Задача отрабатывает раз в сутки в 00.00
+    """
     path = './media/files_for_bulk_import_of_ads'
     shutil.rmtree(path)
     os.mkdir(path)
@@ -277,21 +307,27 @@ def delete_everything_in_folder_beat():
 
 @shared_task()
 def save_many_ads_from_excel_task(uploud_file, id, first_name, phone_number, email):
-    """Сохраняет объявления из экселя"""
+    """
+    Сохраняет объявления из экселя
+    """
     result = save_many_ads_from_excel(uploud_file, id, first_name, phone_number, email)
     return result
 
 
 @shared_task()
 def save_many_ads_from_zip_task(uploud_zip, id, first_name, phone_number, email):
-    """Cохраняет объявления из zip-архива"""
+    """
+    Cохраняет объявления из zip-архива
+    """
     result = save_many_ads_from_zip(uploud_zip, id, first_name, phone_number, email)
     return result
 
 
 @shared_task()
 def delete_error_file_beat():
-    """Удаляет все экземпляры модели ErrorFile раз в сутки"""
+    """
+    Удаляет все экземпляры модели ErrorFile раз в сутки
+    """
     files = ErrorFile.objects.all()
     files.delete()
 
@@ -303,7 +339,9 @@ def deactivate_advertisement():
 
 # @shared_task()
 def update_schedule(data):
-    """Функция обновляет задачи Celery согласно времени деактивации платных функций"""
+    """
+    Функция обновляет задачи Celery согласно времени деактивации платных функций
+    """
 
     print('-----------------------------------------')
     print(app.conf.beat_schedule)

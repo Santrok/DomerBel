@@ -12,8 +12,10 @@ from services.email.message import run_send_email_task_celery
 # Create your views here.
 
 def get_main_page(request):
-    """Сборка главной базовой страницы с последними поданными объявлениями.
-    Модели: Advertisement"""
+    """
+    Сборка главной базовой страницы с последними поданными объявлениями.
+    Модели: Advertisement
+    """
 
     advertisement_queryset = Advertisement.objects.filter(is_active=True,
                                                           moderated=True).select_related(
@@ -41,8 +43,10 @@ def get_main_page(request):
 
 
 def get_site_map_page(request):
-    """Сборка страницы "Карта сайта".
-    Модели: Category"""
+    """
+    Сборка страницы "Карта сайта".
+    Модели: Category
+    """
 
     category_list = Category.objects.prefetch_related('field_set__spisok__element_set',
                                                       'field_set')
@@ -55,8 +59,10 @@ def get_site_map_page(request):
 
 
 def get_feedback_page_and_send_feedback_to_administration_email(request):
-    """Сборка страницы "Обратная связь".
-        Отправка письма администрации сайта"""
+    """
+    Сборка страницы "Обратная связь".
+    Отправка письма администрации сайта
+    """
 
     if request.method == "POST":
         new_feedback_form = FeedbackForm(request.POST)
@@ -92,8 +98,10 @@ def get_feedback_page_and_send_feedback_to_administration_email(request):
 
 
 def get_help_page(request):
-    """Сборка страницы помощь.
-    Модель: Help"""
+    """
+    Сборка страницы помощь.
+    Модель: Help
+    """
 
     context = {
         "help": Help.objects.first(),
@@ -102,5 +110,7 @@ def get_help_page(request):
 
 
 def get_page_not_found(request):
-    """Возвращает страницу ошибки 404"""
+    """
+    Возвращает кастомную страницу ошибки 404
+    """
     return render(request, '404.html', status=404)

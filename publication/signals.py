@@ -6,5 +6,7 @@ from publication.models import Publication
 
 @receiver(pre_delete, sender=Publication)
 def publication_photo_delete(sender, instance, **kwargs):
-    """ Удаление файла перед удалением экземпляра публикаций """
+    """
+    Удаление файла перед удалением экземпляра публикаций
+    """
     instance.preview_image.delete(False)

@@ -20,14 +20,14 @@ function getCity(event) {
     point.classList.toggle('pointer__active');
     if (cities.childNodes.length == 0) {
         const regionId = region.id;
-        fetch(`${localStorage.getItem("url")}/api/v1/get_city_list/${regionId}`)
+        fetch(`${window.location.origin}/api/v1/get_city_list/${regionId}`)
             .then((response) => response.json())
             .then((data) => {
                 for (let city of data) {
                     cities.innerHTML += `<li class="city_title item_title">
                 <p>${city.area}</p>
                 <div class="copy">
-                <img class="icon_copy" src="${localStorage.getItem("url")}/media/images/icon_copy.png" alt="${localStorage.getItem("url")}/media/images/icon_copy.png">
+                    <img class="icon_copy" src="${window.location.origin}/static/img/icons/icon_copy.png" alt="${window.location.origin}/static/img/icons/icon_copy.png">
                 </div>
                 </li>`
                 }
@@ -64,8 +64,8 @@ function getCategory(event) {
         subcategoriesList.className = 'subcategories_list title__list'
         category.after(subcategoriesList)
         const categoryId = category.id;
-        // fetch(`${localStorage.getItem("url")}/api/v1/get_subcategory_list/?id=${categoryId}`)
-        fetch(`${localStorage.getItem("url")}/api/v1/get_category_list/?id=${categoryId}`)
+        // fetch(`${window.location.origin}/api/v1/get_subcategory_list/?id=${categoryId}`)
+        fetch(`${window.location.origin}/api/v1/get_category_list/?id=${categoryId}`)
             .then((response) => response.json())
             .then((data) => {
                 for (let subcategory of data) {
@@ -74,7 +74,7 @@ function getCategory(event) {
                         <div class="pointer"></div>
                         <p>${subcategory.title}</p>
                         <div class="copy">
-                            <img class="icon_copy" src="${localStorage.getItem("url")}/media/images/icon_copy.png" alt="${localStorage.getItem("url")}/media/images/icon_copy.png">
+                            <img class="icon_copy" src="${window.location.origin}/static/img/icons/icon_copy.png" alt="${window.location.origin}/static/img/icons/icon_copy.png">
                         </div>
                     </div>
                     </li>`
@@ -86,7 +86,6 @@ function getCategory(event) {
 }
 
 
-
 function getCategoryTwo(event) {
     const category = event.target.parentElement;
     const point = category.querySelector('.pointer')
@@ -94,21 +93,20 @@ function getCategoryTwo(event) {
     const check = category.nextElementSibling;
     if (check == null) {
         const categoryId = category.id;
-        fetch(`${localStorage.getItem("url")}/api/v1/get_subcategory_list/?id=${categoryId}`)
+        fetch(`${window.location.origin}/api/v1/get_subcategory_list/?id=${categoryId}`)
             .then((response) => response.json())
             .then((data) => {
                 if (data.length != 0) {
                     let subcategoriesListTwo = document.createElement('ol');
                     subcategoriesListTwo.className = 'subcategories_list title__list'
                     category.after(subcategoriesListTwo)
-                    for (let subcategory of data){
+                    for (let subcategory of data) {
                         if (subcategory.field_set.length == 0) {
                             subcategoriesListTwo.innerHTML += `<li class="subcategory">
                             <div class="subcategory_title item_title" id=${subcategory.id}>
                                 <p>${subcategory.title}</p>
                                 <div class="copy">
-                                    <img class="icon_copy" src="${localStorage.getItem("url")}/media/images/icon_copy.png" alt="${localStorage.getItem("url")}/media/images/icon_copy.png">
-                                </div>
+                                    <img class="icon_copy" src="${window.location.origin}/static/img/icons/icon_copy.png" alt="${window.location.origin}/static/img/icons/icon_copy.png">                                </div>
                             </div>
                             </li>`
                         } else {
@@ -117,8 +115,7 @@ function getCategoryTwo(event) {
                                 <div class="pointer"></div>
                                 <p>${subcategory.title}</p>
                                 <div class="copy">
-                                    <img class="icon_copy" src="${localStorage.getItem("url")}/media/images/icon_copy.png" alt="${localStorage.getItem("url")}/media/images/icon_copy.png">
-                                </div>
+                                    <img class="icon_copy" src="${window.location.origin}/static/img/icons/icon_copy.png" alt="${window.location.origin}/static/img/icons/icon_copy.png">                                </div>
                             </div>
                             </li>`
                         }
@@ -145,7 +142,7 @@ function getField(event, point_chek = 0) {
         fieldsList.className = 'fields_list title__list'
         subcategory.after(fieldsList)
         const subcategoryId = subcategory.id
-        fetch(`${localStorage.getItem("url")}/api/v1/get_field_list/?id=${subcategoryId}`)
+        fetch(`${window.location.origin}/api/v1/get_field_list/?id=${subcategoryId}`)
             .then((response) => response.json())
             .then((data) => {
                 for (let field of data) {
@@ -156,8 +153,7 @@ function getField(event, point_chek = 0) {
                             <div class="pointer"></div>
                             <p>${field.title_ad}</p>
                             <div class="copy">
-                                <img class="icon_copy" src="${localStorage.getItem("url")}/media/images/icon_copy.png" alt="${localStorage.getItem("url")}/media/images/icon_copy.png">
-                            </div>
+                                <img class="icon_copy" src="${window.location.origin}/static/img/icons/icon_copy.png" alt="${window.location.origin}/static/img/icons/icon_copy.png">                            </div>
                         </div>
                         </li>`
                         } else {
@@ -166,8 +162,7 @@ function getField(event, point_chek = 0) {
                             <div class="pointer"></div>
                             <p>${field.title}</p>
                             <div class="copy">
-                                <img class="icon_copy" src="${localStorage.getItem("url")}/media/images/icon_copy.png" alt="${localStorage.getItem("url")}/media/images/icon_copy.png">
-                            </div>
+                                <img class="icon_copy" src="${window.location.origin}/static/img/icons/icon_copy.png" alt="${window.location.origin}/static/img/icons/icon_copy.png">                            </div>
                         </div>
                         </li>`
                         }
@@ -176,8 +171,7 @@ function getField(event, point_chek = 0) {
                         <div class="field_title item_title">
                             <p>${field.title}</p>
                             <div class="copy">
-                                <img class="icon_copy" src="${localStorage.getItem("url")}/media/images/icon_copy.png" alt="${localStorage.getItem("url")}/media/images/icon_copy.png">
-                            </div>
+                                <img class="icon_copy" src="${window.location.origin}/static/img/icons/icon_copy.png" alt="${window.location.origin}/static/img/icons/icon_copy.png">                            </div>
                         </div>
                         </li>`
                     }
@@ -202,7 +196,7 @@ function getElement(event) {
             let elementsList = document.createElement('ol');
             elementsList.className = 'elements_list title__list'
             field.after(elementsList)
-            fetch(`${localStorage.getItem("url")}/api/v1/get_element_list/?id=${fieldId}`)
+            fetch(`${window.location.origin}/api/v1/get_element_list/?id=${fieldId}`)
                 .then((response) => response.json())
                 .then((data) => {
                     for (let element of data) {
@@ -212,8 +206,7 @@ function getElement(event) {
                                 <div class="pointer"></div>
                                 <p>${element.title}</p>
                                 <div class="copy">
-                                    <img class="icon_copy" src="${localStorage.getItem("url")}/media/images/icon_copy.png" alt="${localStorage.getItem("url")}/media/images/icon_copy.png">
-                                </div>
+                                    <img class="icon_copy" src="${window.location.origin}/static/img/icons/icon_copy.png" alt="${window.location.origin}/static/img/icons/icon_copy.png">                                </div>
                             </div>
                         </li>`
                         } else {
@@ -221,8 +214,7 @@ function getElement(event) {
                             <div class="element_title item_title" id=${element.id}>
                                 <p>${element.title}</p>
                                 <div class="copy">
-                                    <img class="icon_copy" src="${localStorage.getItem("url")}/media/images/icon_copy.png" alt="${localStorage.getItem("url")}/media/images/icon_copy.png">
-                                </div>
+                                    <img class="icon_copy" src="${window.location.origin}/static/img/icons/icon_copy.png" alt="${window.location.origin}/static/img/icons/icon_copy.png">                                </div>
                             </div>
                         </li>`
                         }
@@ -244,10 +236,10 @@ function getElementTwo(event) {
     const check = element.nextElementSibling
     if (check == null) {
         const elementId = element.id
-        fetch(`${localStorage.getItem("url")}/api/v1/get_elementtwo_list/?slug=${elementId}`)
+        fetch(`${window.location.origin}/api/v1/get_elementtwo_list/?slug=${elementId}`)
             .then((response) => response.json())
             .then((data) => {
-                if (data.length != 0){
+                if (data.length != 0) {
                     let elementsTwoList = document.createElement('ol');
                     elementsTwoList.className = 'elementstwo_list title__list'
                     element.after(elementsTwoList)
@@ -256,8 +248,7 @@ function getElementTwo(event) {
                         <div class="elementtwo_title item_title" id=${element.id}>
                             <p>${element.title} ${elementtwo.title}</p>
                             <div class="copy">
-                                <img class="icon_copy" src="${localStorage.getItem("url")}/media/images/icon_copy.png" alt="${localStorage.getItem("url")}/media/images/icon_copy.png">
-                            </div>
+                                <img class="icon_copy" src="${window.location.origin}/static/img/icons/icon_copy.png" alt="${window.location.origin}/static/img/icons/icon_copy.png">                            </div>
                         </div>
                     </li>`
                     }
