@@ -203,8 +203,12 @@ RECAPTCHA_PRIVATE_KEY = env_keys.get('RECAPTCHA_PRIVATE_KEY')
 DRF_RECAPTCHA_SECRET_KEY = env_keys.get('RECAPTCHA_PRIVATE_KEY')
 
 # настройки CELERY
-CELERY_BROKER_URL = "redis://localhost:6379"
-CELERY_RESULT_BACKEND = "redis://localhost:6379"
+CELERY_BROKER_URL = "redis://localhost:6379/0"
+CELERY_RESULT_BACKEND = "redis://localhost:6379/1"
+# Используем redbeat для планирования задач CELERY BEAT
+CELERY_REDBEAT_REDIS_URL = "redis://localhost:6379/2"
+RED_BEAT_REDIS_URL = "redis://localhost:6379/2"
+CELERY_BEAT_SCHEDULER = 'redbeat.RedBeatScheduler'
 
 # CKEditor==============
 customColorPalette = [

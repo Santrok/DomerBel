@@ -9,6 +9,14 @@ app = Celery("config")
 app.config_from_object("django.conf:settings", namespace="CELERY")
 app.autodiscover_tasks()
 
+# Используем redbeat для планирования задач
+# app.conf.update(
+#     redbeat_lock_timeout=5
+# )
+
+# Время жизни ключей результатов задач в Redis в секундах.
+app.conf.result_expires = 15
+
 '''плановые задачи'''
 app.conf.beat_schedule = {
     # "deactivate_advertisement": {
@@ -39,14 +47,10 @@ app.conf.beat_schedule = {
         "task": "advertisement.tasks.list_shown_vip",
         "schedule": timedelta(seconds=15)
     },
-    # "list_shown_vip_category": {
-    #     "task": "advertisement.tasks.list_shown_vip_category",
-    #     "schedule": timedelta(seconds=250)
-    # },
-    # "1111": {
-    #     "task": "advertisement.tasks.deactivate_advertisement",
-    #     "schedule": timedelta(seconds=5)
-    # },
+    "list_shown_vip_category": {
+        "task": "advertisement.tasks.list_shown_vip_category",
+        "schedule": timedelta(seconds=25)
+    },
 }
 
 if __name__ == '__main__':
