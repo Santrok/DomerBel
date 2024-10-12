@@ -21,14 +21,13 @@ def _create_payment_payload(data):
     """
     amount, description, additional_data = _calculate_payment_details(data)
     payload = {
-        {
             "checkout": {
                 "test": True,
                 "transaction_type": "payment",
                 "attempts": 3,
                 "settings": {
-                    "return_url": "http://127.0.0.1:8000/paid/api/notification/",
-                    "success_url": "http://127.0.0.1:8000/paid/api/notification/",
+                    "return_url": "http://127.0.0.1:8000/api/v1/notification/",
+                    "success_url": "http://127.0.0.1:8000/api/v1/notification/",
                     "decline_url": "http://127.0.0.1:8000/",
                     "fail_url": "http://127.0.0.1:8000/",
                     "cancel_url": "http://127.0.0.1:8000/",
@@ -65,7 +64,6 @@ def _create_payment_payload(data):
                 }
             }
         }
-    }
     return payload
 
 

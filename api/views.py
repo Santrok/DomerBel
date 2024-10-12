@@ -394,13 +394,22 @@ def processing_successful_payment_for_services(request):
     keys_date_of_deactivate = {"vip": "date_of_deactivate_vip",
                                "highlight_ad": "date_of_deactivate_highlight_ad",
                                "special_accommodation": "date_of_deactivate_special_accommodation",
-                               "raise_in_search": "search_boost_date "}
+                               "raise_in_search": "search_boost_date",
+                               "date_of_last_activation": "date_of_last_activation"}
     accommodation = {}
     for service in services:
         if additional.get(service.key_word):
-            accommodation[service.key_word] = additional.get(service.key_word)
-            accommodation[keys_date_of_deactivate.get(service.key_word)] = datetime.now() + timedelta(
-                days=service.validity_period)
+            if service.key_word == "date_of_last_activation":
+                accommodation[service.key_word] = additional.get(service.key_word)
+                accommodation[keys_date_of_deactivate.get(service.key_word)] = datetime.now() + timedelta(
+                    days=service.validity_period)
+                accommodation["date_of_deactivate"] = datetime.now() + timedelta(days=60)
+                accommodation["date_of_delete"] = datetime.now() + timedelta(days=180)
+                accommodation["search_boost_date"] = datetime.now()
+            else:
+                accommodation[service.key_word] = additional.get(service.key_word)
+                accommodation[keys_date_of_deactivate.get(service.key_word)] = datetime.now() + timedelta(
+                    days=service.validity_period)
 
     Advertisement.objects.filter(id=additional.get('advertisement')).update(**accommodation)
 

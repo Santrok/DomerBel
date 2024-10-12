@@ -1,3 +1,4 @@
+from django.contrib import admin
 from django.db import models
 from django_ckeditor_5.fields import CKEditor5Field
 # Create your models here.
@@ -22,6 +23,13 @@ class AboutOrganization(models.Model):
         return self.name_organization
 
 
+class AboutOrganizationAdmin(admin.ModelAdmin):
+    """
+    Класс управления отображения в админ панели сущности: AboutOrganization
+    """
+    pass
+
+
 class Help(models.Model):
     """
     Модель для хранения информации о правилах пользования ресурсом
@@ -36,6 +44,13 @@ class Help(models.Model):
         return f'Текст страницы помощь'
 
 
+class HelpAdmin(admin.ModelAdmin):
+    """
+    Класс управления отображения в админ панели сущности: Help
+    """
+    pass
+
+
 class BadWords(models.Model):
     """
     Модель для хранения слов для валидатора нецензурных слов
@@ -48,3 +63,11 @@ class BadWords(models.Model):
 
     def __str__(self):
         return self.word[0:2] + '*' * (len(self.word) - 3) + self.word[-1]
+
+
+class BadWordsAdmin(admin.ModelAdmin):
+    """
+    Класс управления отображения в админ панели сущности: BadWords
+    """
+    pass
+

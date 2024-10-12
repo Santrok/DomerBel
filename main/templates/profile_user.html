@@ -229,12 +229,12 @@
                                                 модерации{% endif %}
                                         </p>
                                             <p class="main__info-advertisement-list-item-about-date">
-                                                {% if advertisement.date_of_create.date == date_today %}
+                                                {% if advertisement.date_of_last_activation.date == date_today %}
                                                     Сегодня
-                                                {% elif advertisement.date_of_create.date == date_yesterday %}
+                                                {% elif advertisement.date_of_last_activation.date == date_yesterday %}
                                                     Вчера
                                                 {% else %}
-                                                    {{ advertisement.date_of_create|date:"d b. Y" }}
+                                                    {{ advertisement.date_of_last_activation|date:"d b. Y" }}
                                                 {% endif %}
                                             </p>
                                             <p class="main__info-advertisement-list-item-about-time">

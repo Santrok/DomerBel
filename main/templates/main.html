@@ -23,14 +23,14 @@
       <li class="recent-announcements__list-item">
         <article class="recent-announcements__list-item-article">
           <div class="recent-announcements__list-item-article-date">
-            {% if card.date_of_create.date == date_today %}
+            {% if card.date_of_last_activation.date == date_today %}
             <p>Сегодня</p>
-            {% elif card.date_of_create.date == date_yesterday %}
+            {% elif card.date_of_last_activation.date == date_yesterday %}
             <p>Вчера</p>
             {% else %}
-            <p>{{ card.date_of_create|date:"d b. Y" }}</p>
+            <p>{{ card.date_of_last_activation|date:"d b. Y" }}</p>
             {% endif %}
-            <p>{{ card.date_of_create|date:"H:i" }}</p>
+            <p>{{ card.date_of_last_activation|date:"H:i" }}</p>
           </div>
           <a href="{% url 'advertisement_details' card.slug %}" class="recent-announcements__list-item-article-img">
             <img src="{% if card.preview_image %} {{ card.preview_image.url }} {% else %}{% static 'img/no_image.jpg' %}{% endif %}" alt="{{ card.category }}" />

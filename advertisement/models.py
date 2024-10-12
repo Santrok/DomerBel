@@ -2,6 +2,7 @@ from datetime import datetime, timedelta, timezone
 
 import PIL
 from dirtyfields import DirtyFieldsMixin
+from django.contrib import admin
 from django.contrib.auth import get_user_model
 from django.contrib.postgres.fields import ArrayField
 from django.contrib.postgres.indexes import GinIndex, OpClass, BrinIndex
@@ -9,6 +10,7 @@ from django.contrib.postgres.search import SearchVectorField
 from django.db import models
 from django.db.models.functions import Upper
 from django.urls import reverse
+from django.utils.safestring import mark_safe
 
 from related_data.models import Category, Region
 from services.files.images import convert_image_to_avif, add_watermark_to_image
@@ -23,11 +25,11 @@ from utils.validators import validate_words, validate_phone
 
 class PhotoAdvertisement(models.Model):
     """
-    Модель дополнительного изображения объявления, связь:
-    с Advertisement(FK)
+    Модель дополнительного изображения объявления
+    связи: с Advertisement(FK)
     """
-    photo = models.ImageField("Фото", upload_to=upload_to, blank=True, null=True)
-    advertisement = models.ForeignKey('Advertisement', verbose_name="Фотография", on_delete=models.CASCADE)
+    photo = models.ImageField("Фотография", upload_to=upload_to, blank=True, null=True)
+    advertisement = models.ForeignKey('Advertisement', verbose_name="Объявление", on_delete=models.CASCADE)
 
     class Meta:
         verbose_name = "Фото объявления"
@@ -51,11 +53,23 @@ class PhotoAdvertisement(models.Model):
         photo.save(self.photo.path, "avif")
 
 
+class PhotoAdvertisementAdmin(admin.ModelAdmin):
+    """
+    Класс управления отображения в админ панели сущности: PhotoAdvertisement
+    """
+
+    @admin.display(description='')
+    def get_html_photo(self, object):
+        return mark_safe(f"<img src='{object.photo.url}' style='width=100px; height: 100px;'>")
+
+    readonly_fields = ['get_html_photo']
+    fields = [("photo", "get_html_photo")]
+
+
 class Advertisement(DirtyFieldsMixin, models.Model):
     """
-    Модель магазина, связь:
-    с User(FK), с Region(FK),
-    с Category(FK), Store(FK)
+    Модель хранения информации об объявлении
+    связи: с User(FK), с Region(FK), с Category(FK), Store(FK)
     """
     author = models.ForeignKey(get_user_model(), verbose_name="Автор", on_delete=models.CASCADE, blank=True, null=True)
     article = models.CharField("Артикул", max_length=255, blank=True, null=True)
@@ -69,7 +83,7 @@ class Advertisement(DirtyFieldsMixin, models.Model):
     region = models.ForeignKey(Region, verbose_name='Регион, город, район', on_delete=models.CASCADE)
     preview_image = models.ImageField("Главная фотография", upload_to=upload_to,
                                       blank=True, null=True, default=None)
-    additional_information = models.JSONField()
+    additional_information = models.JSONField("Дополнительная информация")
     contact_name = models.CharField("Контактное лицо", max_length=255, validators=[validate_words])
     phone_num = models.CharField("Телефон", max_length=255, validators=[validate_phone])
     email = models.EmailField("E-Mail")
@@ -79,6 +93,9 @@ class Advertisement(DirtyFieldsMixin, models.Model):
     counter_views = models.IntegerField("Счетчик просмотров", default=0)
     slug = models.SlugField("URL", unique=True, blank=True, max_length=500)
     date_of_create = models.DateTimeField("Дата создания объявления", auto_now_add=True)
+    date_of_last_activation = models.DateTimeField("Дата последней активации объявления",
+                                                   blank=True,
+                                                   null=True)
     date_of_delete = models.DateTimeField("Дата удаления объявления", blank=True, null=True)
     date_of_deactivate = models.DateTimeField("Дата деактивации объявления", blank=True, null=True)
     vip = models.BooleanField("Сделать VIP-объявлением", default=False)
@@ -143,6 +160,7 @@ class Advertisement(DirtyFieldsMixin, models.Model):
             self.date_of_deactivate = datetime.now(timezone.utc) + timedelta(days=60)
             self.date_of_delete = datetime.now(timezone.utc) + timedelta(days=180)
             self.search_boost_date = datetime.now(timezone.utc)
+            self.date_of_last_activation = datetime.now(timezone.utc)
 
         if self.preview_image and not self.preview_image.url.lower().endswith('avif'):
             convert_image_to_avif(photo=self.preview_image)  # Конвертация изображения в формат AVIF
@@ -157,6 +175,81 @@ class Advertisement(DirtyFieldsMixin, models.Model):
                 self.preview_image = None
 
         super().save(*args, **kwargs)
+
+
+class PhotoAdvertisementInlines(admin.StackedInline):
+    """
+    Класс управления отображения PhotoAdvertisement в админ панели редактирования сущности Advertisement
+    """
+
+    @admin.display(description='')
+    def get_html_photo(self, object):
+        return mark_safe(f"<img src='{object.photo.url}' style='width=150px; height: 150px;'>")
+
+    readonly_fields = ['get_html_photo']
+    fields = [("photo", "get_html_photo")]
+    model = PhotoAdvertisement
+    max_num = 30
+    extra = 1
+
+
+class AdvertisementAdmin(admin.ModelAdmin):
+    """
+    Класс управления отображения в админ панели сущности: Advertisement
+    """
+
+    @admin.display(description='')
+    def get_html_photo(self, object):
+        return mark_safe(f"<img src='{object.preview_image.url}' style='width=150px; height: 150px;'")
+
+    readonly_fields = ["date_of_create", "get_html_photo"]
+    fields = ["title",
+              "region",
+              "category",
+              "author",
+              "price",
+              "additional_information",
+              "description",
+              "bearer",
+              "article",
+              "store",
+              "slug",
+              "video_link",
+              "counter_views",
+              ("contact_name", "phone_num", "email"),
+              ("date_of_create", "date_of_last_activation", "date_of_deactivate", "date_of_delete"),
+              ("vip", "date_of_deactivate_vip"),
+              ("highlight_ad", "date_of_deactivate_highlight_ad"),
+              ("special_accommodation", "date_of_deactivate_special_accommodation"),
+              ("raise_in_search", "search_boost_date"),
+              ("is_active", "moderated"),
+              ("preview_image", "get_html_photo"),
+              ]
+
+    prepopulated_fields = {"slug": ("title",)}
+    list_display = ('id',
+                    'title',
+                    'moderated',
+                    'is_active',
+                    'vip',
+                    'highlight_ad',
+                    'special_accommodation',
+                    'raise_in_search',
+                    )
+    list_display_links = ('title',)
+    search_fields = ('title', 'author__email', 'id')
+    list_filter = ('moderated',
+                   'is_active',
+                   'vip',
+                   'highlight_ad',
+                   'special_accommodation',
+                   'raise_in_search',
+                   )
+    list_editable = ['moderated',
+                     'is_active',
+                     ]
+    list_per_page = 50
+    inlines = [PhotoAdvertisementInlines]
 
 
 class UploadFile(models.Model):
@@ -177,11 +270,18 @@ class UploadFile(models.Model):
     status = models.BooleanField("Статус обработки файла", default=False)
 
     class Meta:
-        verbose_name = "Загруженный файл"
-        verbose_name_plural = "Загруженные файлы"
+        verbose_name = "Загруженный файл с объявлениями для массового импорта"
+        verbose_name_plural = "Загруженные файлы с объявлениями для массового импорта"
 
     def __str__(self):
         return f'{self.user}_{self.time_upload_file}'
+
+
+class UploadFileAdmin(admin.ModelAdmin):
+    """
+    Класс управления отображения в админ панели сущности: UploadFile
+    """
+    pass
 
 
 class ErrorFile(models.Model):
@@ -200,11 +300,18 @@ class ErrorFile(models.Model):
                                        null=True)
 
     class Meta:
-        verbose_name = "Файл с объявлениями с ошибками"
-        verbose_name_plural = "Файлы с объявлениями с ошибками"
+        verbose_name = "Файл с ошибками объявлений при массовом импорте"
+        verbose_name_plural = "Файлы с ошибками объявлений при массовом импорте"
 
     def __str__(self):
         return f'{self.user}_{self.time_upload_file}'
+
+
+class ErrorFileAdmin(admin.ModelAdmin):
+    """
+    Класс управления отображения в админ панели сущности: ErrorFile
+    """
+    pass
 
 
 class Complaint(models.Model):
@@ -221,11 +328,18 @@ class Complaint(models.Model):
                                       on_delete=models.CASCADE)
 
     class Meta:
-        verbose_name = "Жалоба"
-        verbose_name_plural = "Жалобы"
+        verbose_name = "Жалоба на объявление"
+        verbose_name_plural = "Жалобы на объявления"
 
     def __str__(self):
         return self.reason
+
+
+class ComplaintAdmin(admin.ModelAdmin):
+    """
+    Класс управления отображения в админ панели сущности: Complaint
+    """
+    pass
 
 
 class ReasonOfComplaint(models.Model):
@@ -241,3 +355,11 @@ class ReasonOfComplaint(models.Model):
 
     def __str__(self):
         return self.reason
+
+
+class ReasonOfComplaintAdmin(admin.ModelAdmin):
+    """
+    Класс управления отображения в админ панели сущности: ReasonOfComplaint
+    """
+    pass
+

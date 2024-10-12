@@ -31,9 +31,9 @@ def publication_photo_delete(sender, instance, **kwargs):
 
 
 @receiver(post_save, sender=Advertisement)
-def notify_moderation_result(sender, instance, **kwargs):
+def notify_advertisement_moderation_result(sender, instance, **kwargs):
     """
-    Функция проверяет прошло ли письмо модерацию или нет и отправляем письмо пользователю с результатом
+    Функция проверяет прошло ли объявление модерацию или нет и отправляет письмо пользователю с результатом
     """
     if 'moderated' in instance.get_dirty_fields() and instance.moderated:
         run_send_email_task_celery('Объявление прошло модерацию',

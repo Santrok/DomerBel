@@ -1,11 +1,13 @@
 import calendar
 from datetime import datetime, timedelta, timezone
 
+from django.contrib import admin
 from django.contrib.auth import get_user_model
 from django.contrib.postgres.indexes import GinIndex
 from django.contrib.postgres.search import SearchVectorField, SearchVector
 from django.db import models
 from django.urls import reverse
+from django.utils.safestring import mark_safe
 
 from related_data.models import Region, Category
 from services.files.images import convert_image_to_avif
@@ -76,3 +78,38 @@ class Store(models.Model):
         Определяет URL-адрес, связанный с экземпляром модели.
         """
         return reverse('store_by_title', kwargs={"store_slug": self.slug})
+
+
+class StoreAdmin(admin.ModelAdmin):
+    """
+    Класс управления отображения в админ панели сущности: Publication
+    """
+
+    @admin.display(description='')
+    def get_html_photo(self, object):
+        return mark_safe(f"<img src='{object.logo_image.url}' style='width=150px; height: 150px;'")
+
+    readonly_fields = ["date_of_create", "get_html_photo"]
+    fields = ["title",
+              "region",
+              "address",
+              "category",
+              "user",
+              "description",
+              "url",
+              "slug",
+              "video_link",
+              "counter_views",
+              ("contact_name", "phone_num", "email"),
+              ("date_of_create", "date_of_deactivate"),
+              "is_active",
+              ("logo_image", "get_html_photo"),
+              ]
+
+    prepopulated_fields = {"slug": ("title",)}
+    list_display = ('title', 'is_active')
+    list_display_links = ('title',)
+    search_fields = ('title', 'user__email')
+    list_filter = ['is_active']
+    list_editable = ['is_active']
+    list_per_page = 50

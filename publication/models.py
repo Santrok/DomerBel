@@ -1,8 +1,10 @@
+from django.contrib import admin
 from django.contrib.auth import get_user_model
 from django.contrib.postgres.indexes import GinIndex
 from django.contrib.postgres.search import SearchVectorField, SearchVector
 from django.db import models
 from django.urls import reverse
+from django.utils.safestring import mark_safe
 from django_ckeditor_5.fields import CKEditor5Field
 
 from services.files.images import convert_image_to_avif
@@ -16,7 +18,7 @@ from utils.slug_generator import unique_slugify
 class Publication(models.Model):
     """
     Модель публикации
-    связь: с пользователем(FK)
+    связи: с User(FK)
     """
     user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, verbose_name="Пользователь")
     title = models.CharField("Заголовок", max_length=255)
@@ -56,3 +58,33 @@ class Publication(models.Model):
         self.search_vector = SearchVector('title', 'description', 'announcement')
         self.search_title_vector = SearchVector('title')
         super(Publication, self).save(*args, **kwargs)
+
+
+class PublicationAdmin(admin.ModelAdmin):
+    """
+    Класс управления отображения в админ панели сущности: Publication
+    """
+
+    @admin.display(description='')
+    def get_html_photo(self, object):
+        return mark_safe(f"<img src='{object.preview_image.url}' style='width=150px; height: 150px;'")
+
+    readonly_fields = ["date_of_create", "get_html_photo"]
+    fields = ["user",
+              "title",
+              "announcement",
+              "description",
+              "slug",
+              "counter_views",
+              "date_of_create",
+              "moderated",
+              ("preview_image", "get_html_photo"),
+              ]
+
+    prepopulated_fields = {"slug": ("title",)}
+    list_display = ('title', 'moderated')
+    list_display_links = ('title',)
+    search_fields = ('title', 'user__email')
+    list_filter = ['moderated']
+    list_editable = ['moderated']
+    list_per_page = 50

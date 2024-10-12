@@ -15,7 +15,7 @@ def get_publications_page(request):
     Сборка страницы со всеми публикациями.
     Модели: Publication
     """
-    publications = Publication.objects.exclude(moderated=False).order_by('date_of_create')
+    publications = Publication.objects.exclude(moderated=False).order_by('-date_of_create')
 
     page_obj = variables_for_paginator(publications,
                                        request.GET.get('page'),
@@ -59,7 +59,7 @@ def get_search_result_page_by_publication(request):
 
     publications = Publication.objects.filter(moderated=True,
                                               **search_parameters
-                                              ).order_by('date_of_create')
+                                              ).order_by('-date_of_create')
 
     page_obj = variables_for_paginator(publications,
                                        request.GET.get('page'),

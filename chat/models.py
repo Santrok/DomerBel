@@ -1,5 +1,6 @@
 import uuid
 
+from django.contrib import admin
 from django.contrib.auth import get_user_model
 from django.db import models
 from django.urls import reverse
@@ -30,6 +31,13 @@ class Chat(models.Model):
         return reverse('messages', kwargs={'chat_name': self.chat_name,'chat_id': self.pk})
 
 
+class ChatAdmin(admin.ModelAdmin):
+    """
+    Класс управления отображения в админ панели сущности: Chat
+    """
+    pass
+
+
 class UserMessage(models.Model):
     """
     Модель сообщения пользователя в диалоге.
@@ -48,3 +56,10 @@ class UserMessage(models.Model):
 
     def __str__(self):
         return f'Чат_id: {self.chat.id}, автор: {self.author.first_name}.'
+
+
+class UserMessageAdmin(admin.ModelAdmin):
+    """
+    Класс управления отображения в админ панели сущности: UserMessage
+    """
+    pass

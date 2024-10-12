@@ -1,3 +1,4 @@
+from django.contrib import admin
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from mptt.fields import TreeForeignKey
@@ -29,6 +30,22 @@ class Region(MPTTModel):
         return self.area
 
 
+class RegionAdmin(admin.ModelAdmin):
+    """
+    Класс управления отображения в админ панели сущности: Region
+    """
+    prepopulated_fields = {"slug": ("area",)}
+    mptt_level_indent = 30
+    max_level_indent = 1
+
+    def get_queryset(self, request):
+        """
+        Ограничивает уровень вложенности каждого региона
+        """
+        qs = super().get_queryset(request)
+        return qs.filter(level__lte=self.max_level_indent)
+
+
 class Category(MPTTModel):
     """
     Модель категорий объявлений и магазинов
@@ -52,6 +69,22 @@ class Category(MPTTModel):
 
     def __str__(self):
         return self.title
+
+
+class CategoryAdmin(admin.ModelAdmin):
+    """
+    Класс управления отображения в админ панели сущности: Category
+    """
+    prepopulated_fields = {"slug": ("title",)}
+    mptt_level_indent = 30
+    max_level_indent = 3
+
+    def get_queryset(self, request):
+        """
+        Ограничивает уровень вложенности каждой категории
+        """
+        qs = super().get_queryset(request)
+        return qs.filter(level__lte=self.max_level_indent)
 
 
 class Field(models.Model):
@@ -81,6 +114,13 @@ class Field(models.Model):
         return f"{self.title}---{self.search}"
 
 
+class FieldAdmin(admin.ModelAdmin):
+    """
+    Класс управления отображения в админ панели сущности: Field
+    """
+    pass
+
+
 class Spisok(models.Model):
     """
     Модель хранения списка значений для модели Field
@@ -93,6 +133,13 @@ class Spisok(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class SpisokAdmin(admin.ModelAdmin):
+    """
+    Класс управления отображения в админ панели сущности: Spisok
+    """
+    pass
 
 
 class Element(models.Model):
@@ -111,6 +158,13 @@ class Element(models.Model):
         return self.title
 
 
+class ElementAdmin(admin.ModelAdmin):
+    """
+    Класс управления отображения в админ панели сущности: Element
+    """
+    pass
+
+
 class ElementTwo(models.Model):
     """
     Модель хранения расширенного значения элемента для модели Element
@@ -125,3 +179,10 @@ class ElementTwo(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class ElementTwoAdmin(admin.ModelAdmin):
+    """
+    Класс управления отображения в админ панели сущности: ElementTwo
+    """
+    pass

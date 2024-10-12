@@ -16,7 +16,7 @@ paidBtn.addEventListener('click', sendPaid)
 
 function sendPaid() {
     const data = new FormData(document.getElementById("paid_form"))
-    fetch(`${window.location.origin}/paid/api/send_paid/`,
+    fetch(`${window.location.origin}/api/v1/send_paid/`,
         {
             method: "POST",
             headers: {

@@ -137,3 +137,10 @@ class UserFavorites(models.Model):
 
     def __str__(self):
         return f'Избранное для {self.user}'
+
+
+class UserFavoritesAdmin(admin.ModelAdmin):
+    """
+    Класс управления отображения в админ панели сущности: UserFavorites
+    """
+    pass

@@ -33,7 +33,7 @@ def get_advertisement_page(request):
                                                   **region_filter).select_related(
         'category',
         'region'
-    ).order_by("search_boost_date", order_by).defer(
+    ).order_by(order_by).defer(
         'search_title_vector',
         'search_vector',
         'video_link',
@@ -44,6 +44,7 @@ def get_advertisement_page(request):
         'contact_name',
         'counter_views',
         'phone_num')
+    print(advertisements[0])
     vip_advertisements = advertisements.filter(vip=True, shown_vip=True, is_active=True, moderated=True)
     categories = Category.objects.add_related_count(Category.objects.root_nodes(),
                                                     Advertisement,

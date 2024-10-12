@@ -50,9 +50,9 @@ function setSortedOutput(sort) {1
 
 setSortedOutput(getCookie('sort'))
 
-const sortBy = ['date_of_create', 'price']
+const sortBy = ['search_boost_date', 'price']
 function setSortBy(sort) {
-    if(sort === '-date_of_create') {
+    if(sort === '-search_boost_date') {
         sortedBy[0].style.transform = 'rotate(0deg)'
     }else if (sort === '-price') {
         sortedBy[1].style.transform = 'rotate(0deg)' 

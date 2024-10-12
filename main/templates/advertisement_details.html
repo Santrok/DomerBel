@@ -181,14 +181,14 @@
         {% endif %}
         <p class="details__advertisement-id">ID:{{ advertisement.id }}</p>
         <p>
-            {% if advertisement.date_of_create.date == date_today %}
+            {% if advertisement.date_of_last_activation.date == date_today %}
             Сегодня
-            {% elif advertisement.date_of_create.date == date_yesterday %}
+            {% elif advertisement.date_of_last_activation.date == date_yesterday %}
             Вчера
             {% else %}
-            {{ advertisement.date_of_create|date:"d b. Y" }}
+            {{ advertisement.date_of_last_activation|date:"d b. Y" }}
             {% endif %}
-            {{ advertisement.date_of_create|date:"H:i" }}
+            {{ advertisement.date_of_last_activation|date:"H:i" }}
         </p>
       </div>
       <div class="details__advertisement-view-wrap">

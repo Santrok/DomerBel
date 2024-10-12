@@ -25,7 +25,7 @@ def get_page_in_personal_account_with_active_advertisements(request):
     advertisements = Advertisement.objects.filter(author=request.user,
                                                   is_active=True, moderated=True).select_related('category',
                                                                                                  'region').all().order_by(
-        '-date_of_create').defer(
+        '-date_of_last_activation').defer(
         'search_title_vector',
         'search_vector',
         'video_link',
@@ -170,7 +170,7 @@ def get_page_in_personal_account_with_inactive_advertisements(request):
                                                   is_active=False
                                                   ).select_related('category',
                                                                    'region').all().order_by(
-        '-date_of_create').defer(
+        '-date_of_last_activation').defer(
         'search_title_vector',
         'search_vector',
         'video_link',

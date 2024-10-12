@@ -247,7 +247,7 @@
 {% endblock sort %}
 <section class="advertisement">
   <ul class="advertisement__list">
-      {% for card in page_obj|dictsortreversed:"raise_in_search" %}
+      {% for card in page_obj %}
           <li>
               <article class="advertisement__list-item {% if card.highlight_ad %} active__item {% endif %}">
                   <a href="{% url 'advertisement_details' card.slug %}" class="advertisement__list-item-img">
@@ -277,12 +277,12 @@
                               {{ card.region }}
                           </li>
                           <li>
-                              {% if card.date_of_create.date == date_today %}
+                              {% if card.date_of_last_activation.date == date_today %}
                                   Сегодня
-                              {% elif card.date_of_create.date == date_yesterday %}
+                              {% elif card.date_of_last_activation.date == date_yesterday %}
                                   Вчера
                               {% else %}
-                                  {{ card.date_of_create|date:"d b. Y H:i" }}
+                                  {{ card.date_of_last_activation|date:"d b. Y H:i" }}
                               {% endif %}
                           </li>
                       </ul>

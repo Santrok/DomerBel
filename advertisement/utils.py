@@ -42,25 +42,26 @@ def _sorted_by_date_or_price(sort):
     """
     if sort.get('date'):
         if sort['date'] == '0':
-            return 1, 'date_of_create'
+            return 1, 'search_boost_date'
         else:
-            return 0, "-date_of_create"
+            return 0, "-search_boost_date"
     elif sort.get('price'):
         if sort['price'] == '0':
             return 1, 'price'
         else:
             return 0, '-price'
+    return 0, "-search_boost_date"
 
 
 def _sorted_by(key):
     """
     Возвращает вариант сортировки, если он разрешен
     """
-    key_list = ["-date_of_create", "date_of_create", 'price', '-price']
+    key_list = ["-search_boost_date", "search_boost_date", 'price', '-price']
     if key in key_list:
         return key
     else:
-        return "-date_of_create"
+        return "-search_boost_date"
 
 
 def get_similar_advertisement(advertisement):
@@ -72,7 +73,7 @@ def get_similar_advertisement(advertisement):
     similar_advertisement = list(Advertisement.objects.filter(moderated=True,
                                                               is_active=True,
                                                               category_id=advertisement.category,
-                                                              date_of_create__date__gte=date
+                                                              date_of_last_activation__date__gte=date
                                                               ).exclude(id=advertisement.id).values_list('id',
                                                                                                          flat=True))
 
