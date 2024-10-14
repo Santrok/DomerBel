@@ -120,8 +120,8 @@ class Advertisement(DirtyFieldsMixin, models.Model):
     search_title_vector = SearchVectorField(null=True, editable=False)
 
     class Meta:
-        verbose_name = "Объявление"
-        verbose_name_plural = "Объявления"
+        verbose_name = "Oбъявление"
+        verbose_name_plural = "Oбъявления"
         indexes = [
             GinIndex(fields=["search_vector"]),
             GinIndex(fields=["search_title_vector"]),

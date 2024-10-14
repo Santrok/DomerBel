@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
+from mptt.admin import DraggableMPTTAdmin
 from mptt.fields import TreeForeignKey
 from mptt.models import MPTTModel
 
@@ -16,21 +17,22 @@ class Region(MPTTModel):
     area = models.CharField(max_length=255, verbose_name='Область, город')
     type = models.CharField(max_length=255, choices=[('Область', 'Область'), ('Город', 'Город')],
                             verbose_name='Тип местонахождения')
-    parent = TreeForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, verbose_name='Отношение')
+    parent = TreeForeignKey('self', on_delete=models.CASCADE, null=True, blank=True,
+                            verbose_name='Отношение к области')
     slug = models.SlugField(unique=True, verbose_name='URL')
 
     class MPTTMeta:
         order_insertion_by = ('area',)
 
     class Meta:
-        verbose_name = 'Регион'
-        verbose_name_plural = 'Регионы'
+        verbose_name = 'Pегион'
+        verbose_name_plural = 'Pегионы'
 
     def __str__(self):
         return self.area
 
 
-class RegionAdmin(admin.ModelAdmin):
+class RegionAdmin(DraggableMPTTAdmin):
     """
     Класс управления отображения в админ панели сущности: Region
     """
@@ -41,47 +43,6 @@ class RegionAdmin(admin.ModelAdmin):
     def get_queryset(self, request):
         """
         Ограничивает уровень вложенности каждого региона
-        """
-        qs = super().get_queryset(request)
-        return qs.filter(level__lte=self.max_level_indent)
-
-
-class Category(MPTTModel):
-    """
-    Модель категорий объявлений и магазинов
-    связи: дерево связи в самой таблице MPТT(FK)
-    """
-    title = models.CharField(max_length=255, verbose_name='Категория')
-    type = models.CharField(max_length=255,
-                            choices=[('category_1', 'category_1'), ('category_2', 'category_2'),
-                                     ('category_3', 'category_3'), ('category_4', 'category_4')],
-                            verbose_name='Уровень категории')
-    parent = TreeForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, verbose_name='Отношение')
-    fav_title = models.CharField(max_length=1000, verbose_name="Заголовок на вкладке", blank=True, null=True)
-    keywords = models.CharField(max_length=3000, verbose_name="Ключевые слова", blank=True, null=True)
-    keywords_description = models.CharField(max_length=3000, verbose_name="Meta описание", blank=True, null=True)
-    main_title = models.CharField(max_length=1000, verbose_name="Главный заголовок", blank=True, null=True)
-    slug = models.SlugField(unique=True, verbose_name='URL')
-
-    class Meta:
-        verbose_name = 'Категория'
-        verbose_name_plural = 'Категории'
-
-    def __str__(self):
-        return self.title
-
-
-class CategoryAdmin(admin.ModelAdmin):
-    """
-    Класс управления отображения в админ панели сущности: Category
-    """
-    prepopulated_fields = {"slug": ("title",)}
-    mptt_level_indent = 30
-    max_level_indent = 3
-
-    def get_queryset(self, request):
-        """
-        Ограничивает уровень вложенности каждой категории
         """
         qs = super().get_queryset(request)
         return qs.filter(level__lte=self.max_level_indent)
@@ -148,6 +109,7 @@ class ElementInlines(admin.StackedInline):
     """
     model = Element
     extra = 0
+    show_change_link = True
 
 
 class Field(models.Model):
@@ -162,16 +124,17 @@ class Field(models.Model):
                                null=True)
     category = models.ForeignKey('Category', verbose_name='Связь с категорией', on_delete=models.CASCADE, blank=True,
                                  null=True)
-    int_val_list = ArrayField(models.CharField('Список числовых значений для задания диапазонов фильтрации',
-                                               max_length=1000, blank=True, null=True),
-                              blank=True, null=True, default=list)
+    int_val_list = ArrayField(models.CharField(max_length=1000, blank=True, null=True),
+                              verbose_name='Список числовых значений для задания диапазонов фильтрации',
+                              blank=True, null=True, default=list,
+                              help_text="Укажите значения через запятую, прим. 100,200,300")
     min_val_interval_date = models.IntegerField('Минимально возможный год для выбора', blank=True, null=True)
-    max_val_interval_date = models.IntegerField('Максимально возможный год для выбора', blank=True,null=True)
+    max_val_interval_date = models.IntegerField('Максимально возможный год для выбора', blank=True, null=True)
     search = models.CharField('Поле для поиска', max_length=500, blank=True, null=True)
 
     class Meta:
-        verbose_name = 'Поле'
-        verbose_name_plural = 'Поля'
+        verbose_name = 'Поле дополнительной информации объявления по категории'
+        verbose_name_plural = 'Поля дополнительной информации объявления по категории'
 
     def __str__(self):
         return f"{self.title if self.title else self.title_ad}"
@@ -181,21 +144,10 @@ class FieldAdmin(admin.ModelAdmin):
     """
     Класс управления отображения в админ панели сущности: Field
     """
-    fieldsets = [
-        (
-            None,
-            {
-                "fields": ["title", "title_ad", "error", "category", "int_val_list", "min_val_interval_date", "max_val_interval_date", "search"],
-            },
-        ),
-        (
-            "Advanced options",
-            {
-                "classes": ["collapse"],
-                "fields": ["spisok"],
-            },
-        ),
-    ]
+
+    list_display = ['__str__', 'spisok']
+    list_display_links = ['__str__']
+    ordering = ['title_ad']
     search_fields = ["title", "title_ad"]
 
 
@@ -206,6 +158,8 @@ class FieldInlines(admin.StackedInline):
     model = Field
     max_num = 30
     extra = 0
+    show_change_link = True
+    fields = ['title']
 
 
 class Spisok(models.Model):
@@ -226,14 +180,49 @@ class SpisokAdmin(admin.ModelAdmin):
     """
     Класс управления отображения в админ панели сущности: Spisok
     """
-    inlines = [FieldInlines, ElementInlines]
-    search_fields = ['field__title__icontains']
+    inlines = [ElementInlines]
+    search_fields = ['field__title', 'title']
 
 
-class SpisokInlines(admin.StackedInline):
+class Category(MPTTModel):
     """
-    Класс управления отображения модели Spisok в админ панели редактирования сущности Field
+    Модель категорий объявлений и магазинов
+    связи: дерево связи в самой таблице MPТT(FK)
     """
-    model = Spisok
-    max_num = 30
-    extra = 0
+    title = models.CharField(max_length=255, verbose_name='Категория')
+    type = models.CharField(max_length=255,
+                            choices=[('category_1', 'Уровень 1'), ('category_2', 'Уровень 2'),
+                                     ('category_3', 'Уровень 3'), ('category_4', 'Уровень 4')],
+                            verbose_name='Уровень категории')
+    parent = TreeForeignKey('self', on_delete=models.CASCADE, null=True, blank=True,
+                            verbose_name='Отношение к категории')
+    fav_title = models.CharField(max_length=1000, verbose_name="Заголовок на вкладке", blank=True, null=True)
+    keywords = models.CharField(max_length=3000, verbose_name="Ключевые слова", blank=True, null=True)
+    keywords_description = models.CharField(max_length=3000, verbose_name="Meta описание", blank=True, null=True)
+    main_title = models.CharField(max_length=1000, verbose_name="Главный заголовок", blank=True, null=True)
+    slug = models.SlugField(unique=True, verbose_name='URL')
+
+    class Meta:
+        verbose_name = 'Kатегория'
+        verbose_name_plural = 'Kатегории'
+
+    def __str__(self):
+        return self.title
+
+
+class CategoryAdmin(DraggableMPTTAdmin):
+    """
+    Класс управления отображения в админ панели сущности: Category
+    """
+    inlines = [FieldInlines]
+    prepopulated_fields = {"slug": ("title",)}
+    mptt_level_indent = 30
+    max_level_indent = 3
+
+    def get_queryset(self, request):
+        """
+        Ограничивает уровень вложенности каждой категории
+        """
+        qs = super().get_queryset(request)
+        return qs.filter(level__lte=self.max_level_indent)
+

@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+from django.core.validators import FileExtensionValidator
 from drf_recaptcha.fields import ReCaptchaV2Field
 from rest_framework import serializers
 
@@ -179,3 +180,7 @@ class StoreSerializer(serializers.ModelSerializer):
     class Meta:
         model = Store
         fields = ['id', 'title']
+
+
+class UploadFileSerializer(serializers.Serializer):
+    file = serializers.FileField(validators=[FileExtensionValidator(allowed_extensions=['xlsx', 'zip'])])

@@ -4,7 +4,7 @@ from django.apps import AppConfig
 class AdvertisementConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
     name = 'advertisement'
-    verbose_name = 'Объявления'
+    verbose_name = 'Oбъявления'
 
     def ready(self):
         import advertisement.signals

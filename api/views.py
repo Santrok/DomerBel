@@ -1,5 +1,7 @@
 from datetime import datetime, timedelta
+from zipfile import ZipFile
 
+import openpyxl
 import requests
 from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.db import transaction
@@ -10,7 +12,7 @@ from rest_framework import status, serializers
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-from advertisement.models import Advertisement
+from advertisement.models import Advertisement, UploadFile
 from chat.models import Chat, UserMessage
 from config import settings
 from config.celery_app import app
@@ -25,9 +27,10 @@ from store.models import Store
 from .serializers import (AdvertisementSerializer, ComplaintSerializer, UserMessageSerializer, UserRegisterSerializer,
                           UserLoginSerializer, PasswordResetSerializer, FavoriteSerializer, PaidSerializer,
                           RegionSerializer, CategorySerializer, CategoryFieldsSerializer, FieldSerialier,
-                          ElementTwoSerializer, StoreSerializer, ElementSerializer)
+                          ElementTwoSerializer, StoreSerializer, ElementSerializer, UploadFileSerializer)
 from .utils import validate_additional_information, save_temp_photos, get_chat_object
-from advertisement.tasks import save_advertisement_task, update_advertisement_task
+from advertisement.tasks import save_advertisement_task, update_advertisement_task, save_many_ads_from_excel_task, \
+    save_many_ads_from_zip_task
 
 
 @api_view(['POST'])
@@ -519,6 +522,52 @@ def get_store_list_by_user(request):
     stores = Store.objects.filter(user=request.user.id)
     serializer = StoreSerializer(stores, many=True)
     return Response(serializer.data)
+
+
+@api_view(['POST'])
+def get_bulk_import_of_ads(request):
+    serializer = UploadFileSerializer(data=request.data)
+    if serializer.is_valid():
+        if serializer.validated_data.get("file").name.endswith('xlsx'):
+            '''Работа с электронной таблицей'''
+            try:
+                upload_file = serializer.validated_data.get("file")
+                book = openpyxl.open(upload_file, read_only=True)
+                save_file = UploadFile(file=upload_file, user=request.user)
+                save_file.save()
+                ads = save_many_ads_from_excel_task.delay(uploud_file=f'./media/{save_file.file.name}',
+                                                          id=request.user.id,
+                                                          first_name=request.user.first_name,
+                                                          phone_number=request.user.phone_number,
+                                                          email=request.user.email)
+                return Response({'task_id': f'{ads.task_id}'})
+            except:
+                # логируем ошибку
+                # logger.warning(f'user: {request.user}, action:bulk ads from file, error: incorrect file format')
+                return Response({'error': 'Невозможно прочитать файл.'})
+
+        elif serializer.validated_data.get("file").name.endswith('zip'):
+            '''Работа с электронным архивом'''
+            try:
+                upload_zip = serializer.validated_data.get("file")
+                with ZipFile(upload_zip, 'r') as zip:
+                    files_from_zip = zip.namelist()
+                save_zip = UploadFile(file=upload_zip, user=request.user)
+                save_zip.save()
+                ads = save_many_ads_from_zip_task.delay(uploud_zip=f'./media/{save_zip.file.name}',
+                                                        id=request.user.id,
+                                                        first_name=request.user.first_name,
+                                                        phone_number=request.user.phone_number,
+                                                        email=request.user.email)
+                return Response({'task_id': f'{ads.task_id}'})
+            except:
+                # логируем ошибку
+                # logger.warning(f'user: {request.user}, action:bulk ads from file, error: unable to open file')
+                return Response({'error': 'Невозможно прочитать файл.'})
+    else:
+        # логируем ошибку
+        logger.warning(f'user: {request.user}, action:bulk ads from file, error: incorrect file format')
+        return Response({'error': 'Ошибка при загрузке файла. Убедитесь, что загружаемый файл необходимого расширения'})
 
 
 @api_view(["GET"])
