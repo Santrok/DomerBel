@@ -1,6 +1,7 @@
 import os
-from io import BytesIO
+import pillow_avif  # Необходимо для преобразования изображений в avif
 
+from io import BytesIO
 from PIL import Image, ImageDraw, ImageFont
 from django.core.files.base import ContentFile
 

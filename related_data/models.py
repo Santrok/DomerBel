@@ -87,6 +87,69 @@ class CategoryAdmin(admin.ModelAdmin):
         return qs.filter(level__lte=self.max_level_indent)
 
 
+class ElementTwo(models.Model):
+    """
+    Модель хранения расширенного значения элемента для модели Element
+    связи: Element(FK)
+    """
+    title = models.CharField('Загловок второго элемента', max_length=255)
+    element = models.ForeignKey('Element', verbose_name='Связь с элементом', on_delete=models.CASCADE)
+
+    class Meta:
+        verbose_name = 'Дополнительное значение элемента для списка'
+        verbose_name_plural = 'Дополнительные значения элементов для списка'
+
+    def __str__(self):
+        return self.title
+
+
+class ElementTwoAdmin(admin.ModelAdmin):
+    """
+    Класс управления отображения в админ панели сущности: ElementTwo
+    """
+    pass
+
+
+class ElementTwoInlines(admin.StackedInline):
+    """
+    Класс управления отображения модели ElementTwo в админ панели редактирования сущности Element
+    """
+    model = ElementTwo
+    extra = 0
+
+
+class Element(models.Model):
+    """
+    Модель хранения значения элемента для модели Spisok.
+    связи: Spisok(FK)
+    """
+    title = models.CharField('Заголовок элемента', max_length=255)
+    spisok = models.ForeignKey('Spisok', verbose_name='Связь со списком', on_delete=models.CASCADE)
+
+    class Meta:
+        verbose_name = 'Элемент для списка'
+        verbose_name_plural = 'Элементы для списка'
+
+    def __str__(self):
+        return self.title
+
+
+class ElementAdmin(admin.ModelAdmin):
+    """
+    Класс управления отображения в админ панели сущности: Element
+    """
+    inlines = [ElementTwoInlines]
+    search_fields = ['title']
+
+
+class ElementInlines(admin.StackedInline):
+    """
+    Класс управления отображения модели Element в админ панели редактирования сущности Spisok
+    """
+    model = Element
+    extra = 0
+
+
 class Field(models.Model):
     """
     Модель хранения полей для дополнительной информации объявления по категории
@@ -111,14 +174,38 @@ class Field(models.Model):
         verbose_name_plural = 'Поля'
 
     def __str__(self):
-        return f"{self.title}---{self.search}"
+        return f"{self.title if self.title else self.title_ad}"
 
 
 class FieldAdmin(admin.ModelAdmin):
     """
     Класс управления отображения в админ панели сущности: Field
     """
-    pass
+    fieldsets = [
+        (
+            None,
+            {
+                "fields": ["title", "title_ad", "error", "category", "int_val_list", "min_val_interval_date", "max_val_interval_date", "search"],
+            },
+        ),
+        (
+            "Advanced options",
+            {
+                "classes": ["collapse"],
+                "fields": ["spisok"],
+            },
+        ),
+    ]
+    search_fields = ["title", "title_ad"]
+
+
+class FieldInlines(admin.StackedInline):
+    """
+    Класс управления отображения модели Field в админ панели редактирования сущности Spisok
+    """
+    model = Field
+    max_num = 30
+    extra = 0
 
 
 class Spisok(models.Model):
@@ -139,50 +226,14 @@ class SpisokAdmin(admin.ModelAdmin):
     """
     Класс управления отображения в админ панели сущности: Spisok
     """
-    pass
+    inlines = [FieldInlines, ElementInlines]
+    search_fields = ['field__title__icontains']
 
 
-class Element(models.Model):
+class SpisokInlines(admin.StackedInline):
     """
-    Модель хранения значения элемента для модели Spisok.
-    связи: Spisok(FK)
+    Класс управления отображения модели Spisok в админ панели редактирования сущности Field
     """
-    title = models.CharField('Заголовок элемента', max_length=255)
-    spisok = models.ForeignKey('Spisok', verbose_name='Связь со списком', on_delete=models.CASCADE)
-
-    class Meta:
-        verbose_name = 'Элемент для списка'
-        verbose_name_plural = 'Элементы для списка'
-
-    def __str__(self):
-        return self.title
-
-
-class ElementAdmin(admin.ModelAdmin):
-    """
-    Класс управления отображения в админ панели сущности: Element
-    """
-    pass
-
-
-class ElementTwo(models.Model):
-    """
-    Модель хранения расширенного значения элемента для модели Element
-    связи: Element(FK)
-    """
-    title = models.CharField('Загловок второго элемента', max_length=255)
-    element = models.ForeignKey('Element', verbose_name='Связь с элементом', on_delete=models.CASCADE)
-
-    class Meta:
-        verbose_name = 'Дополнительный элемент для списка'
-        verbose_name_plural = 'Дополнительные элементы для списка'
-
-    def __str__(self):
-        return self.title
-
-
-class ElementTwoAdmin(admin.ModelAdmin):
-    """
-    Класс управления отображения в админ панели сущности: ElementTwo
-    """
-    pass
+    model = Spisok
+    max_num = 30
+    extra = 0
