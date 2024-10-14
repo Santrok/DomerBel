@@ -10,6 +10,8 @@ from django.core.files import File
 from django.db import transaction
 
 from config.celery_app import app
+from django.db.models import F
+
 from related_data.models import Field
 from services.email.message import run_send_email_task_celery
 from .models import PhotoAdvertisement, Advertisement, ErrorFile
@@ -149,6 +151,7 @@ def save_advertisement_task(user, data, additional_information, temporarily_savi
                                    "asend_create_advertisement_error.html",
                                    data['email'],
                                    activation_title=data['title'],)
+        print(e)
 
     if temporarily_saving_photos:
         delete_files(temporarily_saving_photos)
@@ -163,7 +166,7 @@ def update_advertisement_task(user, advertisement_id, data, additional_informati
     additional_information = update_additional_information(additional_information)
 
     editing_advertisement = Advertisement.objects.get(author=user, id=advertisement_id)
-    data['moderated'] = ''
+    data['moderated'] = None
     data['additional_information'] = additional_information
     data['is_active'] = False
 

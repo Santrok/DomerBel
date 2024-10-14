@@ -238,11 +238,17 @@
                                                 {% endif %}
                                             </p>
                                             <p class="main__info-advertisement-list-item-about-time">
-                                                {{ advertisement.date_of_create|date:"H:i" }}
+                                                {{ advertisement.date_of_last_activation|date:"H:i" }}
                                             </p>
+                                            {% if advertisement.get_days_till_expiration > 0 %}
                                             <p class="main__info-advertisement-list-item-about-remained">
                                                 Осталось {{ advertisement.get_days_till_expiration }} дн.
                                             </p>
+                                            {% else %}
+                                            <p class="main__info-advertisement-list-item-about-remained-deactivate">
+                                                Срок размещения истек
+                                            </p>
+                                                {% endif %}
                                             <a href="{% url 'editing_an_ad' advertisement.id %}"
                                                class="main__info-advertisement-list-item-about-edit">
                                                 Редактировать

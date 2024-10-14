@@ -15,7 +15,7 @@ def send_email_task(chat_title, recipient, text_content, html_content):
             None,
             [recipient],
         )
-        path = Path('main_page_domer/static/img/logo.png')
+        path = Path('main/static/img/logo.png')
         with path.open("rb") as file:
             content = MIMEImage(file.read())
             content.add_header("Content-ID", "<logo.png>")

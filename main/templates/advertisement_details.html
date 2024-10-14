@@ -180,6 +180,9 @@
         <p>Цена <span>{{ advertisement.price|floatformat }}</span> руб.</p>
         {% endif %}
         <p class="details__advertisement-id">ID:{{ advertisement.id }}</p>
+        <p class="details__advertisement-options-view">
+            Просмотров: {{ advertisement.counter_views }}
+        </p>
         <p>
             {% if advertisement.date_of_last_activation.date == date_today %}
             Сегодня
@@ -240,33 +243,33 @@
             {% endfor %}
           </div>
         </div>
-        <div class="details__advertisement-options">
-          <p class="details__advertisement-options-view">
-            Просмотров: {{ advertisement.counter_views }}
-          </p>
-          <ul class="details__advertisement-options-list">
-            <li class="details__advertisement-options-list-item">
-              <a href="#">
-                Сделать VIP-объявлением
-              </a>
-            </li>
-            <li class="details__advertisement-options-list-item">
-              <a href="#">
-                Выделить объявление
-              </a>
-            </li>
-            <li class="details__advertisement-options-list-item">
-              <a href="#">
-                Спецразмещение
-              </a>
-            </li>
-            <li class="details__advertisement-options-list-item">
-              <a href="#">
-                Поднять в поиске
-              </a>
-            </li>
-          </ul>
-        </div>
+{#        <div class="details__advertisement-options">#}
+{#          <p class="details__advertisement-options-view">#}
+{#            Просмотров: {{ advertisement.counter_views }}#}
+{#          </p>#}
+{#          <ul class="details__advertisement-options-list">#}
+{#            <li class="details__advertisement-options-list-item">#}
+{#              <a href="#">#}
+{#                Сделать VIP-объявлением#}
+{#              </a>#}
+{#            </li>#}
+{#            <li class="details__advertisement-options-list-item">#}
+{#              <a href="#">#}
+{#                Выделить объявление#}
+{#              </a>#}
+{#            </li>#}
+{#            <li class="details__advertisement-options-list-item">#}
+{#              <a href="#">#}
+{#                Спецразмещение#}
+{#              </a>#}
+{#            </li>#}
+{#            <li class="details__advertisement-options-list-item">#}
+{#              <a href="#">#}
+{#                Поднять в поиске#}
+{#              </a>#}
+{#            </li>#}
+{#          </ul>#}
+{#        </div>#}
       </div>
       <div class="details__advertisement-about">
         <ul class="details__advertisement-about-list">
@@ -347,6 +350,7 @@
       </div>
     </div>
 </section>
+{% if similar_advertisement %}
 <section class="similar">
   <h2 class="similar__title">
     Похожие объявления
@@ -373,6 +377,7 @@
       {% endfor %}
   </ul>
 </section>
+{% endif %}
 {% endblock content %}
 
 {% block js %}

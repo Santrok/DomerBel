@@ -44,7 +44,6 @@ def get_advertisement_page(request):
         'contact_name',
         'counter_views',
         'phone_num')
-    print(advertisements[0])
     vip_advertisements = advertisements.filter(vip=True, shown_vip=True, is_active=True, moderated=True)
     categories = Category.objects.add_related_count(Category.objects.root_nodes(),
                                                     Advertisement,
@@ -270,7 +269,7 @@ def get_page_search_result_by_advertisements(request):
                                                                                                        None),
                                                                                Region)
 
-    query, copy_of_request_get = make_clear_query(request.META.get('QUERY_STRING'), copy_of_request_get)
+    query, copy_of_request_get = make_clear_query(request.META.get('QUERY_STRING'), copy_of_request_get, request.GET)
     field_for_search, search_lookup, field_annotate = forming_fields_for_annotation_and_search(copy_of_request_get)
 
     search_parameters = setting_search_options(category=category,
@@ -299,7 +298,6 @@ def get_page_search_result_by_advertisements(request):
     except Exception as e:
         # Логирование
         print(f"Error fetching categories: {e}")
-
     advertisements = get_result_for_filter_advertisement_query(search_parameters,
                                                                field_annotate,
                                                                search_lookup,

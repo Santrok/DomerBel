@@ -66,6 +66,14 @@ class PhotoAdvertisementAdmin(admin.ModelAdmin):
     fields = [("photo", "get_html_photo")]
 
 
+class CustomImageField(models.ImageField):
+    empty_strings_allowed = False
+
+
+class CustomURLField(models.URLField):
+    empty_strings_allowed = False
+
+
 class Advertisement(DirtyFieldsMixin, models.Model):
     """
     Модель хранения информации об объявлении
@@ -162,10 +170,13 @@ class Advertisement(DirtyFieldsMixin, models.Model):
             self.search_boost_date = datetime.now(timezone.utc)
             self.date_of_last_activation = datetime.now(timezone.utc)
 
+        if self.video_link == "":
+            self.video_link = None
+
         if self.preview_image and not self.preview_image.url.lower().endswith('avif'):
             convert_image_to_avif(photo=self.preview_image)  # Конвертация изображения в формат AVIF
 
-        if self.preview_image and not "preview_image" in self.get_dirty_fields():
+        if self.preview_image and "preview_image" not in self.get_dirty_fields():
             try:
                 photo = add_watermark_to_image(self.preview_image.path)
                 photo.save(self.preview_image.path, "avif", save=False)
@@ -173,6 +184,8 @@ class Advertisement(DirtyFieldsMixin, models.Model):
                 self.preview_image = None
             except PIL.UnidentifiedImageError:
                 self.preview_image = None
+            except:
+                print('Логи')
 
         super().save(*args, **kwargs)
 
@@ -248,6 +261,7 @@ class AdvertisementAdmin(admin.ModelAdmin):
     list_editable = ['moderated',
                      'is_active',
                      ]
+    ordering = ['-date_of_last_activation']
     list_per_page = 50
     inlines = [PhotoAdvertisementInlines]
 
@@ -362,4 +376,3 @@ class ReasonOfComplaintAdmin(admin.ModelAdmin):
     Класс управления отображения в админ панели сущности: ReasonOfComplaint
     """
     pass
-

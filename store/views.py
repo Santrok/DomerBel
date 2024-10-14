@@ -249,7 +249,7 @@ def get_page_search_result_for_advertisements_in_the_store(request, store_slug):
      region_bread_crumbs) = create_variables_for_filter_and_bread_crumbs(copy_of_request_get.pop('region',
                                                                                                  None), Region)
 
-    query, copy_of_request_get = make_clear_query(request.META.get('QUERY_STRING'), copy_of_request_get)
+    query, copy_of_request_get = make_clear_query(request.META.get('QUERY_STRING'), copy_of_request_get, request.GET)
     field_for_search, search_lookup, field_annotate = forming_fields_for_annotation_and_search(copy_of_request_get)
 
     search_parameters = setting_search_options(category=category,

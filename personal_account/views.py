@@ -74,7 +74,7 @@ def get_page_in_personal_account_with_search_result_by_user_advertisement(reques
                                                                                                  None),
                                                                          Region)
 
-    query, copy_of_request_get = make_clear_query(request.META.get('QUERY_STRING'), copy_of_request_get)
+    query, copy_of_request_get = make_clear_query(request.META.get('QUERY_STRING'), copy_of_request_get, request.GET)
     field_for_search, search_lookup, field_annotate = forming_fields_for_annotation_and_search(copy_of_request_get)
 
     search_parameters = setting_search_options(category=category,

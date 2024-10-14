@@ -75,6 +75,10 @@
   @include fonts($asideExitColor, 14px, 400);
 }
 
+.main__info-advertisement-list-item-about-remained-deactivate {
+  @include fonts($colorHover, 14px, 400);
+}
+
 
 .main__info-advertisement-list-item {
   display: flex;

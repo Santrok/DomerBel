@@ -35,14 +35,14 @@ def notify_advertisement_moderation_result(sender, instance, **kwargs):
     """
     Функция проверяет прошло ли объявление модерацию или нет и отправляет письмо пользователю с результатом
     """
-    if 'moderated' in instance.get_dirty_fields() and instance.moderated:
+    if 'moderated' in instance.get_dirty_fields() and instance.moderated is True:
         run_send_email_task_celery('Объявление прошло модерацию',
                                    "asend_notify_moderation_result.html",
                                    instance.email,
                                    activation_title=instance.title,
                                    result=True)
-    elif 'moderated' in instance.get_dirty_fields() and not instance.moderated:
-        run_send_email_task_celery('Объявление прошло модерацию',
+    elif 'moderated' in instance.get_dirty_fields() and instance.moderated is False:
+        run_send_email_task_celery('Объявление не прошло модерацию',
                                    "asend_notify_moderation_result.html",
                                    instance.email,
                                    activation_title=instance.title,

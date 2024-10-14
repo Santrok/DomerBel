@@ -152,10 +152,8 @@
 .main__info-advertisement-list-item-achive a img {
   width: 100%;
   height: 100%;
-  -o-object-fit: cover;
-     object-fit: cover;
-  -o-object-position: center;
-     object-position: center;
+  object-fit: cover;
+  object-position: center;
 }
 
 .advertisement__status {
@@ -171,6 +169,14 @@
   font-weight: 400;
   font-style: normal;
   color: rgb(0, 128, 0);
+  font-size: 14px;
+}
+
+.main__info-advertisement-list-item-about-remained-deactivate {
+  font-family: "Trebuchet MS", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  color: red;
   font-size: 14px;
 }
 
@@ -227,10 +233,8 @@
   max-height: 140px;
   width: 100%;
   height: 100%;
-  -o-object-fit: cover;
-     object-fit: cover;
-  -o-object-position: center;
-     object-position: center;
+  object-fit: cover;
+  object-position: center;
 }
 
 .main__info-advertisement-list-item-title-wrap {
@@ -389,4 +393,6 @@
   .ck-editor-container {
     max-width: none;
   }
-}/*# sourceMappingURL=profile.css.map */
+}
+
+/*# sourceMappingURL=profile.css.map */

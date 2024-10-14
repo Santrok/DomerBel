@@ -26,7 +26,6 @@ def create_variables_for_filter_and_bread_crumbs(parameter, model):
     """
     result = []
     bread_crumbs = []
-    print(parameter)
     if parameter and parameter != ['']:
         if type(parameter) is not str:
             while '' in parameter:

@@ -15,7 +15,6 @@ def add_user_in_permission_group(sender, instance, **kwargs):
     group = Group.objects.get_or_create(name='Юридические лица')
     try:
         if instance.entity:
-            print('johan')
             transaction.on_commit(lambda: instance.groups.add(group[0]))
         else:
             transaction.on_commit(lambda: instance.groups.remove(group[0]))

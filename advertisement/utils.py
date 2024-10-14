@@ -116,7 +116,7 @@ def setting_search_options(category=None, region=None, only_photo=None, only_vid
     if region:
         search_parameters['region__in'] = region
     if only_photo:
-        search_parameters['preview_image__isnull'] = False
+        search_parameters['preview_image__gt'] = ''
     if only_video:
         search_parameters['video_link__isnull'] = False
     if only_title and text_search:
@@ -132,14 +132,14 @@ def setting_search_options(category=None, region=None, only_photo=None, only_vid
     return search_parameters
 
 
-def make_clear_query(query, copy_of_request_get):
+def make_clear_query(query, copy_of_request_get, request_get):
     """
     Возвращает копии query и request.GET без параметров сортировки
     """
     key_delete = ['page', 'sort', 'date', 'price', 'text_search',
                   'only_photo', 'only_video', 'only_title', 'id', 'active']
     for key in key_delete:
-        query = query.replace(f'{key}={copy_of_request_get.get(key)}&', '')
+        query = query.replace(f'{key}={request_get.get(key)}&', '')
         copy_of_request_get.pop(key, None)
     return query, copy_of_request_get
 
