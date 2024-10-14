@@ -1,13 +1,14 @@
 import contextlib
 import os
 import shutil
-from datetime import timezone, timedelta
+from datetime import timedelta
 
 import pytz
 from celery import shared_task
 from celery.schedules import crontab
 from django.core.files import File
 from django.db import transaction
+from django.utils import timezone
 
 from config.celery_app import app
 from django.db.models import F
