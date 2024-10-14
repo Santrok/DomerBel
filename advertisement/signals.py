@@ -11,9 +11,9 @@ from .models import Advertisement, PhotoAdvertisement
 
 
 @receiver(pre_delete, sender=Advertisement)
-def publication_photo_delete(sender, instance, **kwargs):
+def advertisement_photo_delete(sender, instance, **kwargs):
     """
-    Удаление файлов и папок, перед удалением экземпляра объявления
+    Удаление файлов и папок, перед удалением экземпляра объявления.
     """
     image_folder = os.path.dirname(instance.preview_image.path) if instance.preview_image else None
     instance.preview_image.delete(False)
@@ -23,9 +23,9 @@ def publication_photo_delete(sender, instance, **kwargs):
 
 
 @receiver(pre_delete, sender=PhotoAdvertisement)
-def publication_photo_delete(sender, instance, **kwargs):
+def advertisement_photo_delete(sender, instance, **kwargs):
     """
-    Удаление файлов перед удалением экземпляра дополнительного изображения объявления
+    Удаление файлов перед удалением экземпляра дополнительного изображения объявления.
     """
     instance.photo.delete(False)
 
@@ -33,7 +33,7 @@ def publication_photo_delete(sender, instance, **kwargs):
 @receiver(post_save, sender=Advertisement)
 def notify_advertisement_moderation_result(sender, instance, **kwargs):
     """
-    Функция проверяет прошло ли объявление модерацию или нет и отправляет письмо пользователю с результатом
+    Функция проверяет прошло ли объявление модерацию или нет и отправляет письмо пользователю с результатом.
     """
     if 'moderated' in instance.get_dirty_fields() and instance.moderated is True:
         run_send_email_task_celery('Объявление прошло модерацию',
@@ -52,7 +52,7 @@ def notify_advertisement_moderation_result(sender, instance, **kwargs):
 @receiver(post_save, sender=Advertisement)
 def create_fild_for_search_adv(sender, instance, **kwargs):
     """
-    Функция заполняет поля для полнотекстового поиска
+    Функция заполняет поля для полнотекстового поиска.
     """
     dirty_fields = instance.get_dirty_fields()
     if (not instance.search_vector or not instance.search_title_vector or
@@ -62,6 +62,9 @@ def create_fild_for_search_adv(sender, instance, **kwargs):
 
 
 def min_count_shown_vip_advertisement(advertisements_for_sort, instance_id, fild_for_sort):
+    """
+    Функция устанавливает минимальное количество уже показанных vip объявлений.
+    """
     min_shown_count = advertisements_for_sort.exclude(id=instance_id).aggregate(
         min_count=Min(fild_for_sort))['min_count']
     shown_count = min_shown_count if min_shown_count is not None else 0

@@ -176,7 +176,7 @@ class Advertisement(DirtyFieldsMixin, models.Model):
         if self.preview_image and not self.preview_image.url.lower().endswith('avif'):
             convert_image_to_avif(photo=self.preview_image)  # Конвертация изображения в формат AVIF
 
-        if self.preview_image and "preview_image" not in self.get_dirty_fields():
+        if self.preview_image and "preview_image" in self.get_dirty_fields():
             try:
                 photo = add_watermark_to_image(self.preview_image.path)
                 photo.save(self.preview_image.path, "avif", save=False)
