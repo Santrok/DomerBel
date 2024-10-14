@@ -319,20 +319,20 @@ def delete_everything_in_folder_beat():
 
 
 @shared_task()
-def save_many_ads_from_excel_task(uploud_file, id, first_name, phone_number, email):
+def save_many_ads_from_excel_task(uploud_file, id_, first_name, phone_number, email):
     """
     Сохраняет объявления из экселя.
     """
-    result = save_many_ads_from_excel(uploud_file, id, first_name, phone_number, email)
+    result = save_many_ads_from_excel(uploud_file, id_, first_name, phone_number, email)
     return result
 
 
 @shared_task()
-def save_many_ads_from_zip_task(uploud_zip, id, first_name, phone_number, email):
+def save_many_ads_from_zip_task(uploud_zip, id_, first_name, phone_number, email):
     """
     Сохраняет объявления из zip-архива.
     """
-    result = save_many_ads_from_zip(uploud_zip, id, first_name, phone_number, email)
+    result = save_many_ads_from_zip(uploud_zip, id_, first_name, phone_number, email)
     return result
 
 
