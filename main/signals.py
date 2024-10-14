@@ -5,7 +5,7 @@ from django.dispatch import receiver
 from .models import AboutOrganization
 
 
-@receiver(post_delete, sender=(AboutOrganization))
+@receiver(post_delete, sender=AboutOrganization)
 def object_post_delete_handler(sender, **kwargs):
     """
     Удаление из кэша информации об организации если был удален экземпляр модели AboutOrganization

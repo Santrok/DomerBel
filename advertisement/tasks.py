@@ -1,22 +1,36 @@
-import contextlib
 import os
 import shutil
-from datetime import timedelta
-
 import pytz
+import redis
+import contextlib
+
 from celery import shared_task
 from celery.schedules import crontab
-from django.core.files import File
+from redbeat import RedBeatSchedulerEntry
 from django.db import transaction
 from django.utils import timezone
+from django.core.files import File
+from django.db.models import F, Q
 
 from config.celery_app import app
-from django.db.models import F
-
-from related_data.models import Field
+from config.settings import RED_BEAT_REDIS_URL, TIME_ZONE
 from services.email.message import run_send_email_task_celery
-from .models import PhotoAdvertisement, Advertisement, ErrorFile
+from related_data.models import Field
+from .models import PhotoAdvertisement, Advertisement, ErrorFile, Store
 from .utils_for_bulk_import import save_many_ads_from_excel, save_many_ads_from_zip
+
+
+def get_current_datetime(timezone_=TIME_ZONE):
+    """
+    Функция возвращает текущее время в часовом поясе.
+    """
+    # Получаем текущую дату и время с информацией о часовом поясе
+    current_datetime = timezone.now()
+
+    # Преобразуем текущую дату и время в часовой пояс, который вам нужен
+    timezone_now = pytz.timezone(timezone_)
+    datetime_by_timezone = current_datetime.astimezone(timezone_now)
+    return datetime_by_timezone
 
 
 def update_additional_information(additional_information):
@@ -58,14 +72,12 @@ def add_new_photos(advertisement, temporarily_saving_photos):
         with open(preview_img, 'rb') as f:
             advertisement.preview_image = File(f)
             advertisement.save()
-        # files_to_delete.append(preview_img)
     # Добавляем другие изображения
     if other_images:
         for photo in other_images:
             with open(photo, 'rb') as f:
                 additional_photo = PhotoAdvertisement(photo=File(f), advertisement=advertisement)
                 additional_photo.save()
-            # files_to_delete.append(photo)
 
 
 def delete_photos(advertisement, photos_to_delete):
@@ -197,35 +209,21 @@ def update_advertisement_task(user, advertisement_id, data, additional_informati
         delete_files(temporarily_saving_photos)
 
 
-@shared_task()
+@shared_task(result_expires=100)
 def deactivate_advertisement():
-    """
-    Функция деактивации объявлений по истечению времени публикации
-    """
-    # Получаем текущую дату и время с информацией о часовом поясе
-    current_datetime = timezone.now()
-
-    # Преобразуем текущую дату и время в часовой пояс, который вам нужен
-    timezone_now = pytz.timezone("Europe/Minsk")
-    aware_datetime = current_datetime.astimezone(timezone_now)
-
-    deactivate_advertisements = Advertisement.objects.filter(date_of_deactivate__lt=aware_datetime, is_active=True)
-    deactivate_advertisements.update(is_active=False)
+    """ Функция деактивации объявлений по истечению времени публикации """
+    current_datetime = get_current_datetime()
+    # deactivate_advertisements = Advertisement.objects.filter(date_of_deactivate__lt=current_datetime, is_active=True)
+    # deactivate_advertisements.update(is_active=False)
+    print('deactivate_advertisement')
 
 
 @shared_task()
 def delete_advertisement():
-    """
-    Функция удаления объявлений по истечению времени
-    """
+    """ Функция удаления объявлений по истечению времени """
     # Получаем текущую дату и время с информацией о часовом поясе
-    current_datetime = timezone.now()
-
-    # Преобразуем текущую дату и время в часовой пояс, который вам нужен
-    timezone_now = pytz.timezone("Europe/Minsk")
-    aware_datetime = current_datetime.astimezone(timezone_now)
-
-    delete_advertisements = Advertisement.objects.filter(date_of_delete__lt=aware_datetime, is_active=False)
+    current_datetime = get_current_datetime()
+    delete_advertisements = Advertisement.objects.filter(date_of_delete__lt=current_datetime, is_active=False)
     delete_advertisements.delete()
 
 
@@ -278,7 +276,7 @@ def list_shown_vip():
         update_vip_advertisements(all_ads_vip, 'shown_vip', 'shown_vip_count')
 
 
-@shared_task()
+@shared_task(result_expires=5)
 def list_shown_vip_category():
     """
     Ротация VIP объявлений по категориям.
@@ -299,6 +297,17 @@ def list_shown_vip_category():
 
 
 @shared_task()
+def deactivate_store():
+    """
+    Функция деактивации магазина по истечению времени публикации.
+    """
+    # Получаем текущую дату и время с информацией о часовом поясе
+    current_datetime = get_current_datetime()
+    deactivate_stores = Store.objects.filter(date_of_deactivate__lt=current_datetime, is_active=True)
+    deactivate_stores.update(is_active=False)
+
+
+@shared_task()
 def delete_everything_in_folder_beat():
     """
     Удаляет все файлы из папки для "files_for_bulk_import_of_ads"
@@ -310,94 +319,163 @@ def delete_everything_in_folder_beat():
 
 
 @shared_task()
-def save_many_ads_from_excel_task(uploud_file, id, first_name, phone_number, email):
+def save_many_ads_from_excel_task(uploud_file, id_, first_name, phone_number, email):
     """
-    Сохраняет объявления из экселя
+    Сохраняет объявления из экселя.
     """
-    result = save_many_ads_from_excel(uploud_file, id, first_name, phone_number, email)
+    result = save_many_ads_from_excel(uploud_file, id_, first_name, phone_number, email)
     return result
 
 
 @shared_task()
-def save_many_ads_from_zip_task(uploud_zip, id, first_name, phone_number, email):
+def save_many_ads_from_zip_task(uploud_zip, id_, first_name, phone_number, email):
     """
-    Cохраняет объявления из zip-архива
+    Сохраняет объявления из zip-архива.
     """
-    result = save_many_ads_from_zip(uploud_zip, id, first_name, phone_number, email)
+    result = save_many_ads_from_zip(uploud_zip, id_, first_name, phone_number, email)
     return result
 
 
 @shared_task()
 def delete_error_file_beat():
     """
-    Удаляет все экземпляры модели ErrorFile раз в сутки
+    Удаляет все экземпляры модели ErrorFile раз в сутки.
     """
     files = ErrorFile.objects.all()
     files.delete()
 
 
+def create_tasks_from_schedule(name, task, schedule_, args=None, kwargs=None):
+    """
+    Функция добавляет периодическую задачи в celery.
+    """
+    entry = RedBeatSchedulerEntry(
+        name=name,
+        task=task,
+        schedule=schedule_,
+        args=args or [],
+        kwargs=kwargs or {},
+        app=app
+    )
+    entry.save()
+    print(f"Added periodic task: {name}, {schedule_}")
+
+
+def delete_task(task_id):
+    """
+    Функция удаляет периодическую задачи в celery.
+    """
+    try:
+        entry = RedBeatSchedulerEntry.from_key(task_id, app=app)
+        if entry:
+            try:
+                entry.delete()  # Пробуем удалить
+                print(f"Задача {task_id} успешно удалена.")
+            except Exception as e:
+                print(f"Ошибка при удалении задачи: {str(e)}")
+    except KeyError:
+        print(f"Задача {task_id} не найдена.")
+
+
+def get_list_tasks():
+    """
+    Функция получает все периодические задачи который
+    сейчас загружены в redis.
+    """
+    r = redis.StrictRedis.from_url(RED_BEAT_REDIS_URL)
+
+    # Получаем все ключи RedBeat с префиксом 'redbeat:'
+    tasks = r.keys('redbeat:*')
+    list_tasks = []
+
+    # Декодируем каждый ключ из байтового формата в строковый формат
+    for task in tasks:
+        task_name = task.decode('utf-8')
+        if task_name.startswith('redbeat:') and '::' not in task_name:
+            list_tasks.append(task_name)
+            print(task_name)
+
+    return list_tasks
+
+
 @shared_task()
-def deactivate_advertisement():
-    print("Все сработало как надо")
-
-
-# @shared_task()
-def update_schedule(data):
+def deactivation_of_paid_services(ads_id, name_for_delete, **fild_update):
     """
-    Функция обновляет задачи Celery согласно времени деактивации платных функций
+    Функция отключает выбранную платную услугу и удаляет эту
+    задачу из redbeat:schedule.
     """
-
-    print('-----------------------------------------')
-    print(app.conf.beat_schedule)
-    # Получаем текущую дату и время с информацией о часовом поясе
-    current_datetime = timezone.now()
-
-    # Преобразуем текущую дату и время в часовой пояс, который вам нужен
-    timezone_now = pytz.timezone("Europe/Minsk")
-    aware_datetime = current_datetime.astimezone(timezone_now)
+    Advertisement.objects.filter(id=ads_id).update(**fild_update)
+    delete_task(name_for_delete)
 
 
-    list_advertisements_for_deactivate = Advertisement.objects.filter(search_boost_date__date=aware_datetime.date(),
-                                                                      is_active=True)
-    # print(list_advertisements_for_deactivate)
-    print('++++++++++++++++++++++++++++++++')
-    #
-    # for i in list_advertisements_for_deactivate:
-    #     print(i.search_boost_date.astimezone(timezone_now), i.search_boost_date.hour, i.search_boost_date.minute)
+@shared_task()
+def raise_or_deactivation_of_paid_services(ads_id, name_for_delete, **fild_update):
+    """
+    Функция поднимает объявления в поиске,
+    также отключает платную услугу поднять в поиске и удаляет
+    эту задачу из redbeat:schedule.
+    """
+    current_datetime = get_current_datetime()
+    ads = Advertisement.objects.filter(id=ads_id)
+    ads.update(search_boost_date=current_datetime)
+    if ads.first().date_of_deactivate_special_accommodation.date() == current_datetime.date():
+        deactivation_of_paid_services(ads_id, name_for_delete, **fild_update)
 
-    # Удаляем только задачи, относящиеся к `ads_deactivate_`
-    for task_name in list(app.conf.beat_schedule.keys()):
-        if task_name.startswith("ads_deactivate_"):
-            del app.conf.beat_schedule[task_name]
 
-    # if not list_advertisements_for_deactivate:
-    #     print('stop')
-    #     return
+@shared_task()
+def update_schedule():
+    """
+    Функция динамического обновления redbeat:schedule.
+    """
+    current_datetime = get_current_datetime()
+    advertisements_for_deactivate = Advertisement.objects.filter(is_active=True).filter(
+        Q(date_of_deactivate_vip__date__lte=current_datetime.date(), vip=True) |
+        Q(date_of_deactivate_highlight_ad__date__lte=current_datetime.date(), highlight_ad=True) |
+        Q(special_accommodation=True))
 
-    for i in list_advertisements_for_deactivate:
-        task_name = f'ads_deactivate_{i.id}'
-        app.conf.beat_schedule[task_name] = {
-                "task": "advertisement.tasks.deactivate_advertisement",
-                "schedule": crontab(hour=i.search_boost_date.hour+3, minute=i.search_boost_date.minute),
-        }
+    if not advertisements_for_deactivate:
+        return
 
-    app.conf.beat_schedule['list_shown_vip'] = {
-        "task": "advertisement.tasks.list_shown_vip",
-        "schedule": timedelta(seconds=5),
-    }
+    for ads in advertisements_for_deactivate:
+        if ads.vip and ads.date_of_deactivate_vip.date() <= current_datetime.date():
+            name = f'deactivate_advertisement_vip_{ads.id}'
+            schedule_ = crontab(hour=ads.date_of_deactivate_vip.hour + 3, minute=ads.date_of_deactivate_vip.minute)
 
-    # app.control.reload_task('list_shown_vip')
-    app.control.pool_restart()
+            if ads.date_of_deactivate_vip < current_datetime:
+                schedule_ = crontab(hour=current_datetime.hour, minute=current_datetime.minute + 1)
 
-    app.conf.beat_schedule['111111'] = {
-        "task": "advertisement.tasks.deactivate_advertisement",
-        "schedule": timedelta(seconds=5)
-    }
+            create_tasks_from_schedule(name,
+                                       "advertisement.tasks.deactivation_of_paid_services",
+                                       schedule_,
+                                       [ads.id, f'redbeat:{name}'],
+                                       {'vip': False})
 
-    # app.control.broadcast('pool_restart', arguments={'reload': True})
-    # current_app.Beat().scheduler.update(current_app.conf.beat_schedule)
+        if ads.highlight_ad and ads.date_of_deactivate_highlight_ad <= current_datetime:
+            name = f'deactivate_advertisement_highlight{ads.id}'
+            schedule_ = crontab(hour=ads.date_of_deactivate_highlight_ad.hour + 3,
+                                minute=ads.date_of_deactivate_highlight_ad.minute)
 
-    # print("!!!", app.control.inspect().registered())
-    print(app.conf.beat_schedule)
-    print('-----------------------------------------')
+            if ads.date_of_deactivate_highlight_ad < current_datetime:
+                schedule_ = crontab(hour=current_datetime.hour, minute=current_datetime.minute + 1)
 
+            create_tasks_from_schedule(name,
+                                       "advertisement.tasks.deactivation_of_paid_services",
+                                       schedule_,
+                                       [ads.id, f'redbeat:{name}'],
+                                       {'highlight_ad': False})
+
+        if ads.date_of_deactivate_special_accommodation:
+            name = f'raise_or_deactivate_advertisement_special_accommodation_{ads.id}'
+            schedule_ = crontab(hour=ads.date_of_deactivate_special_accommodation.hour + 3,
+                                minute=ads.date_of_deactivate_special_accommodation.minute)
+            task = "advertisement.tasks.raise_or_deactivation_of_paid_services"
+
+            if ads.date_of_deactivate_special_accommodation < current_datetime:
+                schedule_ = crontab(hour=current_datetime.hour, minute=current_datetime.minute + 1)
+                task = "advertisement.tasks.deactivation_of_paid_services"
+
+            create_tasks_from_schedule(name,
+                                       task,
+                                       schedule_,
+                                       [ads.id, f'redbeat:{name}'],
+                                       {'special_accommodation': False})

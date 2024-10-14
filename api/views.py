@@ -459,7 +459,7 @@ def get_category_list(request):
 @api_view(['GET'])
 def get_subcategory_list(request):
     """
-    Возвращает список экземпляров модели Category по родительскому id
+    Возвращает список экземпляров модели Category по-родительскому id
     и дополнительно данные из модели Field.
     Модели: Category.
     Сериализаторы: CategoryFieldsSerializer
@@ -571,11 +571,11 @@ def get_bulk_import_of_ads(request):
 
 
 @api_view(["GET"])
-def get_result_task(request,id):
+def get_result_task(request, id_):
     """
     Возвращает прогресс выполнения задачи массового импорта объявлений и её результат
     """
-    task = app.AsyncResult(id=id)
+    task = app.AsyncResult(id=id_)
     if task.state == "SUCCESS":
         return JsonResponse({'state': task.state, 'result': task.result})
     else:
