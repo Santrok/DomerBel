@@ -1,0 +1,21 @@
+# запуск celery - l ingo показывает список задач
+celery -A config worker -l info
+
+# запускает периодические задачи
+celery -A config beat -l info
+ celery -A config beat --scheduler redbeat.RedBeatScheduler -l info
+
+
+# запускаем flower
+celery -A config.celery_app flower
+
+
+# Под win
+    # запуск celery
+    python -m celery -A config worker --pool=solo -l info
+
+    # запускает периодические задачи
+    celery -A config beat -l info
+
+    # поднять контейнер
+    docker run -d -p 6379:6379 redis
