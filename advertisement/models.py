@@ -66,14 +66,6 @@ class PhotoAdvertisementAdmin(admin.ModelAdmin):
     fields = [("photo", "get_html_photo")]
 
 
-class CustomImageField(models.ImageField):
-    empty_strings_allowed = False
-
-
-class CustomURLField(models.URLField):
-    empty_strings_allowed = False
-
-
 class Advertisement(DirtyFieldsMixin, models.Model):
     """
     Модель хранения информации об объявлении
