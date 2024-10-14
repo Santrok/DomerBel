@@ -209,13 +209,13 @@ def update_advertisement_task(user, advertisement_id, data, additional_informati
         delete_files(temporarily_saving_photos)
 
 
-@shared_task()
-def delete_advertisement():
-    """ Функция удаления объявлений по истечению времени """
-    # Получаем текущую дату и время с информацией о часовом поясе
+@shared_task(result_expires=100)
+def deactivate_advertisement():
+    """ Функция деактивации объявлений по истечению времени публикации """
     current_datetime = get_current_datetime()
-    delete_advertisements = Advertisement.objects.filter(date_of_delete__lt=current_datetime, is_active=False)
-    delete_advertisements.delete()
+    # deactivate_advertisements = Advertisement.objects.filter(date_of_deactivate__lt=current_datetime, is_active=True)
+    # deactivate_advertisements.update(is_active=False)
+    print('deactivate_advertisement')
 
 
 @shared_task()
@@ -276,7 +276,7 @@ def list_shown_vip():
         update_vip_advertisements(all_ads_vip, 'shown_vip', 'shown_vip_count')
 
 
-@shared_task()
+@shared_task(result_expires=5)
 def list_shown_vip_category():
     """
     Ротация VIP объявлений по категориям.

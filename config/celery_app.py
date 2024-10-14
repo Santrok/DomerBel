@@ -10,13 +10,13 @@ app.config_from_object("django.conf:settings", namespace="CELERY")
 app.autodiscover_tasks()
 
 # Время жизни ключей результатов задач в Redis в секундах.
-app.conf.result_expires = 15
+app.conf.result_expires = 1800
 
 """плановые задачи"""
 app.conf.beat_schedule = {
     "deactivate_advertisement": {
         "task": 'advertisement.tasks.deactivate_advertisement',
-        # "schedule": timedelta(seconds=10)
+        # "schedule": timedelta(seconds=10),
         "schedule": crontab(hour=0, minute=1)
     },
     "delete_advertisement": {
@@ -40,7 +40,10 @@ app.conf.beat_schedule = {
     },
     "list_shown_vip": {
         "task": "advertisement.tasks.list_shown_vip",
-        "schedule": timedelta(seconds=60)
+        "schedule": timedelta(seconds=60),
+        "options": {
+            "expires": 180,
+        },
     },
     "list_shown_vip_category": {
         "task": "advertisement.tasks.list_shown_vip_category",
