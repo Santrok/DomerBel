@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 import requests
 from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.db import transaction
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404
 from requests.auth import HTTPBasicAuth
 from rest_framework import status, serializers
@@ -13,6 +13,7 @@ from rest_framework.response import Response
 from advertisement.models import Advertisement
 from chat.models import Chat, UserMessage
 from config import settings
+from config.celery_app import app
 from config.settings import env_keys
 from custom_user.models import UserFavorites
 from custom_user.services import make_activation_url_for_reset_password
@@ -518,3 +519,15 @@ def get_store_list_by_user(request):
     stores = Store.objects.filter(user=request.user.id)
     serializer = StoreSerializer(stores, many=True)
     return Response(serializer.data)
+
+
+@api_view(["GET"])
+def get_result_task(request,id):
+    """
+    Возвращает прогресс выполнения задачи массового импорта объявлений и её результат
+    """
+    task = app.AsyncResult(id=id)
+    if task.state == "SUCCESS":
+        return JsonResponse({'state': task.state, 'result': task.result})
+    else:
+        return JsonResponse({'state': task.state})
