@@ -62,7 +62,7 @@
     <section class="main__info">
         <ul class="chat__list">
             {% for chat in chats %}
-        {% with message=chat.message_set.last %}
+        {% with message=chat.usermessage_set.last %}
                 <li class="chat__list-item-wrap">
                     <div class="chat__list-item {% if message.author != user and not message.is_read %}unread{% endif %}">
                         <a href="{{ chat.get_absolute_url }}" class="chat__list-img">

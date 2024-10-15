@@ -94,8 +94,8 @@
     <section class="message__list" id="id_chat_item_container">
         {% if chat %}
                 {{ chat.id|json_script:"room-name" }}
-                {% with date=chat.message_set.all|first %}
-                    {% for message in chat.message_set.all %}
+                {% with date=chat.usermessage_set.all|first %}
+                    {% for message in chat.usermessage_set.all %}
                         {% ifchanged %}
                             {% if message.pub_date.date == date_today %}
                                 <div class="messages__item-date">

@@ -205,8 +205,9 @@ def create_new_chat_and_create_new_message(request):
         chat_exists = Chat.objects.filter(members=request.user).filter(**chat_object).exists()
         with transaction.atomic():
             if not chat_exists:
+                member = chat_object.pop('members')
                 chat = Chat.objects.create(**chat_object)
-                chat.members.set([request.user.id, chat_object['members']])
+                chat.members.set([request.user.id, member])
             else:
                 chat = Chat.objects.filter(members=request.user).filter(**chat_object).first()
 
