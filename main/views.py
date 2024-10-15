@@ -19,7 +19,7 @@ def get_main_page(request):
 
     advertisement_queryset = Advertisement.objects.filter(is_active=True,
                                                           moderated=True).select_related(
-        'category', 'region').order_by("-date_of_last_activation")[:10].defer(
+        'category', 'region').order_by("-search_boost_date")[:10].defer(
         'search_title_vector',
         'search_vector',
         'video_link',

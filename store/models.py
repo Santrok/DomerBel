@@ -32,6 +32,7 @@ class Store(models.Model):
     date_of_deactivate = models.DateTimeField('Дата деактивации', blank=True, null=True)
     user = models.ForeignKey(get_user_model(),
                              on_delete=models.CASCADE, verbose_name='Пользователь, создавший магазин')
+    moderated = models.BooleanField("Прошло модерацию", null=True, blank=True)
     is_active = models.BooleanField('Активный магазин', default=False)
     category = models.ForeignKey(Category, on_delete=models.CASCADE, verbose_name='Категория')
     url = models.URLField('Ссылка на сайт магазина', blank=True, null=True)
@@ -102,14 +103,15 @@ class StoreAdmin(admin.ModelAdmin):
               "counter_views",
               ("contact_name", "phone_num", "email"),
               ("date_of_create", "date_of_deactivate"),
-              "is_active",
+              ("is_active", "moderated"),
               ("logo_image", "get_html_photo"),
               ]
 
     prepopulated_fields = {"slug": ("title",)}
-    list_display = ('title', 'is_active')
+    list_display = ('title', 'is_active', "moderated")
     list_display_links = ('title',)
-    search_fields = ('title', 'user__email')
+    search_fields = ("id", 'title', 'user__email')
     list_filter = ['is_active']
-    list_editable = ['is_active']
+    list_editable = ['is_active', "moderated"]
     list_per_page = 50
+    ordering = ["-date_of_create"]

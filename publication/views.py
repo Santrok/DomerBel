@@ -2,8 +2,10 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404, redirect
 
+from config import settings
 from publication.forms import PublicationForm
 from publication.models import Publication
+from services.email.message import run_send_email_task_celery
 from utils.template_paginator import variables_for_paginator
 
 
@@ -78,6 +80,7 @@ def get_search_result_page_by_publication(request):
 def get_page_for_add_new_publication(request):
     """
     Сборка страницы с для создания новой публикации.
+    Отправка уведомления о создании публикации администрации сайта.
     Модели: Publication
     """
     form_publication = PublicationForm()
@@ -87,6 +90,15 @@ def get_page_for_add_new_publication(request):
             publication = form_publication.save(commit=False)
             publication.user = request.user
             publication.save()
+            messages.success(request, f"""Публикация "{publication}" успешно создано
+                                                                и отправлена на модерацию.""")
+            run_send_email_task_celery('Добавлена новая публикация',
+                                       'asend_notification.html',
+                                       settings.EMAIL_HOST_USER,
+                                       subject="Добавлена публикация",
+                                       message=f'Новая публикация требует модерации на сайте Домер.бел',
+                                       link=f"/admin/publication/publication/{publication.id}/change/",
+                                       )
             return redirect('user_all_publications')
     context = {
         "form_publication": form_publication,
@@ -113,6 +125,7 @@ def delete_publication(request):
 def get_page_for_edit_publication(request, publication_slug):
     """
     Сборка страницы редактирования выбранной публикации пользователя.
+    Отправка уведомления о редактировании публикации администрации сайта.
     Модели: Publication
     """
     publication = get_object_or_404(Publication, user=request.user, slug=publication_slug)
@@ -125,6 +138,13 @@ def get_page_for_edit_publication(request, publication_slug):
             publication.save()
             messages.success(request, f"""Публикация "{publication}" успешно изменена
                                                     и отправлена на модерацию.""")
+            run_send_email_task_celery('Изменена публикация',
+                                       'asend_notification.html',
+                                       settings.EMAIL_HOST_USER,
+                                       subject="Изменена публикация",
+                                       message=f'Публикация {publication.id} требует модерации на сайте Домер.бел',
+                                       link=f"/admin/publication/publication/{publication.id}/change/"
+                                       )
             return redirect('user_all_publications')
     else:
         form_publication = PublicationForm(instance=publication)

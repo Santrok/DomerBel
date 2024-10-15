@@ -88,3 +88,4 @@ class PublicationAdmin(admin.ModelAdmin):
     list_filter = ['moderated']
     list_editable = ['moderated']
     list_per_page = 50
+    ordering = ["-date_of_create"]

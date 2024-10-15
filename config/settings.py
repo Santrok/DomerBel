@@ -230,8 +230,8 @@ customColorPalette = [
 ]
 
 CKEDITOR_5_CUSTOM_CSS = 'django_ckeditor_5/admin_dark_mode_fix.css'  # optional
-CKEDITOR_5_FILE_STORAGE = "../utils/utils_for_CKEditor5/CkeditorCustomStorage"  # optional
-CKEDITOR_5_UPLOAD_FILE_TYPES = ['jpeg', 'png', 'jpg', "gif", "bmp", "webp", "tiff"]
+CKEDITOR_5_FILE_STORAGE = "utils.utils_for_CKEditor5.CkeditorCustomStorage"  # optional
+CKEDITOR_5_UPLOAD_FILE_TYPES = ['jpeg', 'png', 'jpg', "gif", "bmp", "webp", "tiff", "avif"]
 CKEDITOR_5_IMAGE_BACKEND = "pillow"
 CKEDITOR_5_CONFIGS = {
     'default': {

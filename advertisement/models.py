@@ -116,6 +116,9 @@ class Advertisement(DirtyFieldsMixin, models.Model):
     is_active = models.BooleanField("Объявление активно", default=False)
     additional_information_view = ArrayField(ArrayField(models.CharField(max_length=500)), blank=True, null=True,
                                              editable=False)
+    moderation_error_message = models.TextField("Текст причины отказа в модерации",
+                                                help_text="Отправиться пользователю на Email",
+                                                blank=True, null=True)
     search_vector = SearchVectorField(null=True, editable=False)
     search_title_vector = SearchVectorField(null=True, editable=False)
 

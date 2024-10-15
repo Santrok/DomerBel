@@ -71,8 +71,6 @@ class UserRegisterSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         validated_data.pop('password2')
         validated_data.pop('recaptcha')
-        if validated_data.get('entity'):
-            validated_data['is_active'] = False
         return get_user_model().objects.create_user(**validated_data)
 
     def validate(self, data):

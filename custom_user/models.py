@@ -124,10 +124,19 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         """Send an email to this user."""
         send_mail(subject, message, from_email, [self.email], **kwargs)
 
+    def check_user_permission_in_group(self):
+        """
+        Проверяет, принадлежит ли пользователь к группе юридических лиц
+        """
+        permission = self.groups.filter(name='Юридические лица').exists()
+        return permission
+
 
 class UserFavorites(models.Model):
-    """Модель хранения избранного пользователя.
-        Модели: User(O2O)"""
+    """
+    Модель хранения избранного пользователя.
+    Модели: User(O2O)
+    """
     user = models.OneToOneField(get_user_model(), verbose_name="Пользователь", on_delete=models.CASCADE)
     favorites = ArrayField(models.IntegerField(), verbose_name="Список избранного", default=list)
 

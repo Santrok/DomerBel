@@ -117,7 +117,7 @@
                                 Мои объявления
                             </a>
                         </li>
-                        {% if user.entity %}
+                        {% if user.check_user_permission_in_group %}
                             <li class="profile__aside-nav-list-item priority">
                                 <a href="{% url 'add_store' %}">
                                     Добавить магазин
@@ -141,7 +141,7 @@
                                 Написать администратору
                             </a>
                         </li>
-                        {% if user.entity %}
+                        {% if user.check_user_permission_in_group %}
                             <li class="profile__aside-nav-list-item">
                                 <a href="{% url 'user_all_publications' %}">
                                     Мои публикации
@@ -153,7 +153,7 @@
                                 Избранное
                             </a>
                         </li>
-                    {% if user.entity %}
+                    {% if user.check_user_permission_in_group %}
                         <li class="profile__aside-nav-list-item">
                             <a href="{% url 'bulk_import' %}">
                                 Массовый импорт объявлений

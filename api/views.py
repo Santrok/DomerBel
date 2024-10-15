@@ -121,8 +121,9 @@ def update_advertisement(request):
                                         deleted_photo)
 
         return Response({
-            "success": "<p>Ваше объявление отправлено на модерацию.</p><p>После модерации оно появится в списке объявлений.</p>",
-            "link": f"{env_keys.get('URL')}/personal_account/", "link_text": "В мой кабинет"},
+            "success": "<p>Ваше объявление отправлено на модерацию.</p>"
+                       "<p>После модерации оно появится в списке объявлений.</p>",
+            "link": f"{env_keys.get('URL')}/personal_account/archived_adds/", "link_text": "В мой кабинет"},
             status=status.HTTP_201_CREATED)
 
     else:
@@ -242,7 +243,19 @@ def registration_user(request):
     if registration_serializer.is_valid():
         try:
             registration_serializer.save()
-            return Response({'success': 'Вы успешно зарегистрированы'}, status=status.HTTP_201_CREATED)
+            if registration_serializer.validated_data.get('entity'):
+                run_send_email_task_celery('Зарегистрировано юридическое лицо на сайте ДОМЕР.бел',
+                                           'asend_notification_new_user.html',
+                                           settings.EMAIL_HOST_USER,
+                                           first_name=registration_serializer.validated_data.get('first_name'),
+                                           email=registration_serializer.validated_data.get('email'),
+                                           phone=registration_serializer.validated_data.get('phone_number'),
+                                           )
+                return Response({'success': 'Вы успешно зарегистрированы. '
+                                            'В ближайшее время с вами свяжутся для заключения договора'},
+                                status=status.HTTP_201_CREATED)
+            else:
+                return Response({'success': 'Вы успешно зарегистрированы'}, status=status.HTTP_201_CREATED)
         except Exception as e:
             raise serializers.ValidationError({"error": """Произошла ошибка при регистрации. 
                                                             Пожалуйста, попробуйте позже"""

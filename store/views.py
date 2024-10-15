@@ -6,9 +6,11 @@ from django.shortcuts import render, get_object_or_404, redirect
 from advertisement.models import Advertisement
 from advertisement.utils import setting_search_options, setting_values_for_sorting_from_cookie_or_request_get, \
     make_clear_query, get_result_for_filter_advertisement_query
+from config import settings
 from related_data.models import Category, Region
 from related_data.utils import create_variables_for_filter_and_bread_crumbs, get_region_variables, \
     forming_fields_for_annotation_and_search
+from services.email.message import run_send_email_task_celery
 from utils.template_paginator import variables_for_paginator
 from .forms import StoreForm
 from .models import Store
@@ -315,6 +317,7 @@ def get_page_search_result_for_advertisements_in_the_store(request, store_slug):
 def get_page_for_add_new_store(request):
     """
     Сборка страницы для создания нового магазина пользователя.
+    Отправка уведомления о создании магазина администрации сайта
     Модели: Store, Category, Region, User.
     Формы: StoreForm.
     """
@@ -325,6 +328,13 @@ def get_page_for_add_new_store(request):
             store.user = request.user
             store.save()
             messages.success(request, f"Новый магазин {store} успешно создан!")
+            run_send_email_task_celery('Добавлен новый магазин',
+                                       'asend_notification.html',
+                                       settings.EMAIL_HOST_USER,
+                                       subject="Добавлен магазин",
+                                       message=f'Новый магазин требует модерации на сайте Домер.бел',
+                                       link=f"/admin/store/store/{store.id}/change/",
+                                       )
             return redirect('my_store')
         else:
             messages.error(request, "Пожалуйста, исправьте ошибки в форме.")
@@ -347,6 +357,7 @@ def get_page_for_add_new_store(request):
 def get_page_for_edit_store(request, store_id):
     """
     Сборка страницы для редактирования магазина пользователя.
+    Отправка уведомления о редактировании магазина администрации сайта
     Модели: Store, Category, Region.
     Формы: StoreForm.
     """
@@ -358,6 +369,13 @@ def get_page_for_edit_store(request, store_id):
         if edit_selected_store_form.is_valid():
             edit_selected_store_form.save()
             messages.success(request, f"Магазин {store} успешно изменён!")
+            run_send_email_task_celery('Изменен магазин',
+                                       'asend_notification.html',
+                                       settings.EMAIL_HOST_USER,
+                                       subject="Изменен магазин",
+                                       message=f'Магазин id={store.id} требует модерации на сайте Домер.бел',
+                                       link=f"/admin/store/store/{store.id}/change/"
+                                       )
             return redirect('my_store')
         else:
             messages.error(request, "Пожалуйста, исправьте ошибки в форме.")
@@ -387,7 +405,7 @@ def get_page_for_delete_store(request, store_id):
             messages.success(request, f"Магазин {store} успешно удален!")
         except Exception as e:
             # logger.error(f"Ошибка при удалении магазина: {str(e)}")
-            messages.error(request, f"Ошибка при удалении магазина, попробуйте позже")
+            messages.error(request, f"Ошибка при удалении магазина, пожалуйста попробуйте позже")
         return redirect('my_store')
 
     context = {

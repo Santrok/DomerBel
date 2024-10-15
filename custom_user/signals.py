@@ -11,19 +11,19 @@ from store.models import Store
 from .models import UserFavorites
 
 
-@receiver(post_save, sender=get_user_model())
-def add_user_in_permission_group(sender, instance, **kwargs):
-    """
-    Добавление пользователя в группу с правами доступными только юр. лицам
-    """
-    group = Group.objects.get_or_create(name='Юридические лица')
-    try:
-        if instance.entity:
-            transaction.on_commit(lambda: instance.groups.add(group[0]))
-        else:
-            transaction.on_commit(lambda: instance.groups.remove(group[0]))
-    except Exception:
-        pass
+# @receiver(post_save, sender=get_user_model())
+# def add_user_in_permission_group(sender, instance, **kwargs):
+#     """
+#     Добавление пользователя в группу с правами доступными только юр. лицам
+#     """
+#     group = Group.objects.get_or_create(name='Юридические лица')
+#     try:
+#         if instance.entity:
+#             transaction.on_commit(lambda: instance.groups.add(group[0]))
+#         else:
+#             transaction.on_commit(lambda: instance.groups.remove(group[0]))
+#     except Exception:
+#         pass
 
 
 @receiver(post_save, sender=get_user_model())
@@ -39,28 +39,26 @@ def create_user_favorites(sender, instance, created, **kwargs):
 def sending_notification_about_new_message(sender, instance, **kwargs):
     """
     Проверяет количество участников чата, если участников не достаточно пытается найти второго участника,
-    в случае успеха отправляет уведомление о новом сообщении на почту
+    в случае успеха отправляет уведомление о новом сообщении на почту адресата
     """
     members = instance.chat.members.all()
     recipient = None
 
     if len(members) < 2:
         chat = instance.chat
-        messages_exists = UserMessage.objects.filter(chat=chat).exclude(author=instance.author).exists()
+        messages_exists = UserMessage.objects.filter(chat=chat).exclude(author=instance.author)
         if messages_exists:
-            recipient = UserMessage.objects.filter(chat=chat
-                                               ).exclude(author=instance.author
-                                                         ).first().author
+            recipient = messages_exists[0].author
             instance.chat.members.add(recipient)
         else:
-            advertisement_exists = Advertisement.objects.filter(id=instance.chat.advertisement_id).exists()
+            advertisement_exists = Advertisement.objects.filter(id=instance.chat.advertisement_id)
             if advertisement_exists:
-                recipient = Advertisement.objects.get(id=instance.chat.advertisement_id).author
+                recipient = advertisement_exists[0].author
                 instance.chat.members.add(recipient)
             else:
-                store_exists = Store.objects.filter(id=instance.chat.store_id).exists()
+                store_exists = Store.objects.filter(id=instance.chat.store_id)
                 if store_exists:
-                    recipient = Store.objects.get(id=instance.chat.store_id).user
+                    recipient = store_exists[0].user
                     instance.chat.members.add(recipient)
     else:
         recipient = next((member for member in members if member != instance.author), None)

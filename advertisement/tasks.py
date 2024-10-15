@@ -12,6 +12,7 @@ from django.utils import timezone
 from django.core.files import File
 from django.db.models import F, Q
 
+from config import settings
 from config.celery_app import app
 from config.settings import RED_BEAT_REDIS_URL, TIME_ZONE
 from services.email.message import run_send_email_task_celery
@@ -136,6 +137,7 @@ def delete_files(temporarily_saving_photos):
 def save_advertisement_task(user, data, additional_information, temporarily_saving_photos):
     """
     Сохраняет объявление.
+    Отправка уведомления о создании объявления администрации сайта
     """
     additional_information = update_additional_information(additional_information)
 
@@ -145,26 +147,32 @@ def save_advertisement_task(user, data, additional_information, temporarily_savi
 
             if not temporarily_saving_photos:
                 new_advertisement.save()
-                return
+            else:
+                preview_img = temporarily_saving_photos.get('preview_img')
+                other_images = temporarily_saving_photos.get('other_img', [])
+                with open(preview_img, 'rb') as f:
+                    new_advertisement.preview_image = File(f)
+                    new_advertisement.save()
 
-            preview_img = temporarily_saving_photos.get('preview_img')
-            other_images = temporarily_saving_photos.get('other_img', [])
-            with open(preview_img, 'rb') as f:
-                new_advertisement.preview_image = File(f)
-                new_advertisement.save()
+                if other_images:
+                    for photo in other_images:
+                        with open(photo, 'rb') as f:
+                            additional_photo = PhotoAdvertisement(photo=File(f), advertisement=new_advertisement)
+                            additional_photo.save()
 
-            if other_images:
-                for photo in other_images:
-                    with open(photo, 'rb') as f:
-                        additional_photo = PhotoAdvertisement(photo=File(f), advertisement=new_advertisement)
-                        additional_photo.save()
+            run_send_email_task_celery('Новое объявление',
+                                       'asend_notification.html',
+                                       settings.EMAIL_HOST_USER,
+                                       subject="Добавлено новое объявление",
+                                       message='Новое объявление требует модерации на сайте Домер.бел',
+                                       link=f"/admin/advertisement/advertisement/{new_advertisement.id}/change/"
+                                       )
 
     except Exception as e:
         run_send_email_task_celery("Ошибка при создании объявления",
                                    "asend_create_advertisement_error.html",
                                    data['email'],
                                    activation_title=data['title'],)
-        print(e)
 
     if temporarily_saving_photos:
         delete_files(temporarily_saving_photos)
@@ -175,6 +183,7 @@ def update_advertisement_task(user, advertisement_id, data, additional_informati
                               new_preview_photo_from_old_ones, delete_photo):
     """
     Редактирует объявление.
+    Отправка уведомления о редактировании объявления администрации сайта
     """
     additional_information = update_additional_information(additional_information)
 
@@ -191,16 +200,23 @@ def update_advertisement_task(user, advertisement_id, data, additional_informati
         with transaction.atomic():
             if not new_preview_photo_from_old_ones and not temporarily_saving_photos and not delete_photo:
                 editing_advertisement.save()
-                return
+            else:
+                if new_preview_photo_from_old_ones:
+                    swap_preview_images(editing_advertisement, new_preview_photo_from_old_ones)
 
-            if new_preview_photo_from_old_ones:
-                swap_preview_images(editing_advertisement, new_preview_photo_from_old_ones)
+                if temporarily_saving_photos:
+                    add_new_photos(editing_advertisement, temporarily_saving_photos)
 
-            if temporarily_saving_photos:
-                add_new_photos(editing_advertisement, temporarily_saving_photos)
+                if delete_photo:
+                    delete_photos(editing_advertisement, delete_photo)
 
-            if delete_photo:
-                delete_photos(editing_advertisement, delete_photo)
+            run_send_email_task_celery('Объявление было изменено',
+                                       'asend_notification.html',
+                                       settings.EMAIL_HOST_USER,
+                                       subject="Объявление изменено",
+                                       message=f'Объявление id={advertisement_id} требует модерации на сайте Домер.бел',
+                                       link=f"/admin/advertisement/advertisement/{advertisement_id}/change/",
+                                       )
 
     except Exception as e:
         print(f"Ошибка при обновлении объявления: {e}")
