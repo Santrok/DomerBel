@@ -308,9 +308,9 @@ def password_reset(request):
         else:
             activation_url = make_activation_url_for_reset_password(user)
 
-            run_send_email_task_celery(subject='Восстановление пароля на сайте Домер.бел',
-                                       template='asend_reset_password.html',
-                                       email=email,
+            run_send_email_task_celery('Восстановление пароля на сайте Домер.бел',
+                                       'asend_reset_password.html',
+                                       email,
                                        activation_url=activation_url
                                        )
 
