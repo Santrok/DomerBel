@@ -38,6 +38,7 @@ def view_message_in_dialog(request, chat_id, chat_name):
     UserMessage.objects.filter(chat=chat, is_read=False).exclude(author=request.user).update(is_read=True)
     context = {
         "chat": chat,
+        "adaptive_navigation": "Мои сообщения"
     }
     return render(request, 'profile_dialog.html', context)
 

@@ -28,7 +28,7 @@ class Chat(models.Model):
         return f'{self.chat_name}'
 
     def get_absolute_url(self):
-        return reverse('messages', kwargs={'chat_name': self.chat_name,'chat_id': self.pk})
+        return reverse('messages', kwargs={'chat_name': self.chat_name, 'chat_id': self.pk})
 
 
 class ChatAdmin(admin.ModelAdmin):

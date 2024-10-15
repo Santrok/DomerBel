@@ -200,28 +200,34 @@
                                         <li>
                                             <input type="checkbox" name="ads_checkbox" value="{{ advertisement.id }}">
                                         </li>
+                                        {% if advertisement.vip %}
                                         <li>
                                             <a href="#">
                                                 <img src="{% static 'img/VIP.png' %}" alt="vip"
-                                                     title="Сделать VIP-объявлением">
+                                                     title="VIP-объявление">
                                             </a>
                                         </li>
+                                        {% endif %}
+                                        {% if advertisement.highlight %}
                                         <li>
                                             <a href="#">
                                                 <img src="{% static 'img/highlight.png' %}" alt=""
-                                                     title="Выделить объявление">
+                                                     title="Объявление выделено">
                                             </a>
                                         </li>
+                                        {% endif %}
+                                        {% if advertisement.special_accommodation %}
                                         <li>
                                             <a href="#">
                                                 <img src="{% static 'img/special.png' %}" alt="" title="Спецразмещение">
                                             </a>
                                         </li>
-                                        <li>
-                                            <a href="#">
-                                                <img src="{% static 'img/up.png' %}" alt="" title="Поднять в поиске">
-                                            </a>
-                                        </li>
+                                        {% endif %}
+{#                                        <li>#}
+{#                                            <a href="#">#}
+{#                                                <img src="{% static 'img/up.png' %}" alt="" title="Поднять в поиске">#}
+{#                                            </a>#}
+{#                                        </li>#}
                                     </ul>
                                     <div class="main__info-advertisement-list-item-about">
                                         <p class="advertisement__status {% if advertisement.moderated %}moderated{% endif %}">

@@ -4,8 +4,10 @@ from django.db import transaction
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
+from advertisement.models import Advertisement
 from chat.models import UserMessage
 from services.email.message import run_send_email_task_celery
+from store.models import Store
 from .models import UserFavorites
 
 
@@ -35,23 +37,38 @@ def create_user_favorites(sender, instance, created, **kwargs):
 
 @receiver(post_save, sender=UserMessage)
 def sending_notification_about_new_message(sender, instance, **kwargs):
+    """
+    Проверяет количество участников чата, если участников не достаточно пытается найти второго участника,
+    в случае успеха отправляет уведомление о новом сообщении на почту
+    """
     members = instance.chat.members.all()
     recipient = None
 
     if len(members) < 2:
         chat = instance.chat
-        messages = UserMessage.objects.filter(chat=chat).exclude(author=instance.author).exists()
-        if messages:
+        messages_exists = UserMessage.objects.filter(chat=chat).exclude(author=instance.author).exists()
+        if messages_exists:
             recipient = UserMessage.objects.filter(chat=chat
                                                ).exclude(author=instance.author
                                                          ).first().author
             instance.chat.members.add(recipient)
+        else:
+            advertisement_exists = Advertisement.objects.filter(id=instance.chat.advertisement_id).exists()
+            if advertisement_exists:
+                recipient = Advertisement.objects.get(id=instance.chat.advertisement_id).author
+                instance.chat.members.add(recipient)
+            else:
+                store_exists = Store.objects.filter(id=instance.chat.store_id).exists()
+                if store_exists:
+                    recipient = Store.objects.get(id=instance.chat.store_id).user
+                    instance.chat.members.add(recipient)
     else:
-        for member in members:
-            if member != instance.author:
-                recipient = member
+        recipient = next((member for member in members if member != instance.author), None)
 
-    chat_title = instance.chat.advertisement.title if instance.chat.advertisement else instance.chat.store.title
+    try:
+        chat_title = instance.chat.advertisement.title if instance.chat.advertisement else instance.chat.store.title
+    except:
+        chat_title = "Объект недоступен"
 
     if recipient:
         run_send_email_task_celery(chat_title,
