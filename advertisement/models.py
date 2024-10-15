@@ -231,6 +231,7 @@ class AdvertisementAdmin(admin.ModelAdmin):
               ("special_accommodation", "date_of_deactivate_special_accommodation"),
               ("raise_in_search", "search_boost_date"),
               ("is_active", "moderated"),
+              "moderation_error_message",
               ("preview_image", "get_html_photo"),
               ]
 
