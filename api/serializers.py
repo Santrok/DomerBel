@@ -100,6 +100,10 @@ class PasswordResetSerializer(serializers.Serializer):
     email = serializers.EmailField(write_only=True, error_messages={'blank': 'Обязательное поле'})
     recaptcha = ReCaptchaV2Field(write_only=True)
 
+    def validate(self, data):
+        data['email'] = data.get('email').lower()
+        return data
+
 
 class FavoriteSerializer(serializers.Serializer):
     id = serializers.IntegerField()
