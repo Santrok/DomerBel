@@ -21,6 +21,10 @@
              <p class="store__status {% if store.is_active %}store__active{% endif %}">
                  {% if store.is_active %}Активен{% else %}Не активен{% endif %}
              </p>
+          <p class="store__status {% if store.moderated %}store__active{% endif %}">
+                                            {% if store.moderated %}Прошло модерацию{% else %}На
+                                                модерации{% endif %}
+          </p>
           </div>
 
           <div class="main__shop-list-item-edit">

@@ -38,6 +38,9 @@ class Store(models.Model):
     url = models.URLField('Ссылка на сайт магазина', blank=True, null=True)
     address = models.CharField('Адрес', max_length=255, blank=True, null=True)
     counter_views = models.IntegerField('Счетчик просмотров', default=0)
+    moderation_error_message = models.TextField("Текст причины отказа в модерации",
+                                                help_text="Отправиться пользователю на Email",
+                                                blank=True, null=True)
     search_vector = SearchVectorField(null=True, editable=False)
 
     class Meta:
@@ -104,6 +107,7 @@ class StoreAdmin(admin.ModelAdmin):
               ("contact_name", "phone_num", "email"),
               ("date_of_create", "date_of_deactivate"),
               ("is_active", "moderated"),
+              "moderation_error_message",
               ("logo_image", "get_html_photo"),
               ]
 

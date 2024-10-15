@@ -29,6 +29,9 @@ class Publication(models.Model):
     date_of_create = models.DateTimeField("Дата создания", auto_now_add=True)
     counter_views = models.IntegerField("Счетчик просмотров", default=0)
     moderated = models.BooleanField("Прошло модерацию", default=False)
+    moderation_error_message = models.TextField("Текст причины отказа в модерации",
+                                                help_text="Отправиться пользователю на Email",
+                                                blank=True, null=True)
     search_vector = SearchVectorField(null=True, editable=False)
     search_title_vector = SearchVectorField(null=True, editable=False)
 
@@ -78,6 +81,7 @@ class PublicationAdmin(admin.ModelAdmin):
               "counter_views",
               "date_of_create",
               "moderated",
+              "moderation_error_message",
               ("preview_image", "get_html_photo"),
               ]
 
