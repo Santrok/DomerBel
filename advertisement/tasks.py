@@ -160,19 +160,19 @@ def save_advertisement_task(user, data, additional_information, temporarily_savi
                             additional_photo = PhotoAdvertisement(photo=File(f), advertisement=new_advertisement)
                             additional_photo.save()
 
-            run_send_email_task_celery('Новое объявление',
-                                       'asend_notification.html',
-                                       settings.EMAIL_HOST_USER,
-                                       subject="Добавлено новое объявление",
-                                       message='Новое объявление требует модерации на сайте Домер.бел',
-                                       link=f"/admin/advertisement/advertisement/{new_advertisement.id}/change/"
-                                       )
-
     except Exception as e:
         run_send_email_task_celery("Ошибка при создании объявления",
                                    "asend_create_advertisement_error.html",
                                    data['email'],
                                    activation_title=data['title'],)
+    else:
+        run_send_email_task_celery('Новое объявление',
+                                   'asend_notification.html',
+                                   settings.EMAIL_HOST_USER,
+                                   subject="Добавлено новое объявление",
+                                   message='Новое объявление требует модерации на сайте Домер.бел',
+                                   link=f"/admin/advertisement/advertisement/{new_advertisement.id}/change/"
+                                   )
 
     if temporarily_saving_photos:
         delete_files(temporarily_saving_photos)
@@ -210,16 +210,16 @@ def update_advertisement_task(user, advertisement_id, data, additional_informati
                 if delete_photo:
                     delete_photos(editing_advertisement, delete_photo)
 
-            run_send_email_task_celery('Объявление было изменено',
-                                       'asend_notification.html',
-                                       settings.EMAIL_HOST_USER,
-                                       subject="Объявление изменено",
-                                       message=f'Объявление id={advertisement_id} требует модерации на сайте Домер.бел',
-                                       link=f"/admin/advertisement/advertisement/{advertisement_id}/change/",
-                                       )
-
     except Exception as e:
         print(f"Ошибка при обновлении объявления: {e}")
+    else:
+        run_send_email_task_celery('Объявление было изменено',
+                                   'asend_notification.html',
+                                   settings.EMAIL_HOST_USER,
+                                   subject="Объявление изменено",
+                                   message=f'Объявление id={advertisement_id} требует модерации на сайте Домер.бел',
+                                   link=f"/admin/advertisement/advertisement/{advertisement_id}/change/",
+                                   )
 
     if temporarily_saving_photos:
         delete_files(temporarily_saving_photos)
