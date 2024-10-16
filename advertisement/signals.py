@@ -7,7 +7,7 @@ from django.db.models.signals import pre_delete, post_save
 from django.dispatch import receiver
 
 from services.email.message import run_send_email_task_celery
-from .models import Advertisement, PhotoAdvertisement
+from .models import Advertisement, PhotoAdvertisement, UploadFile, ErrorFile
 
 
 @receiver(pre_delete, sender=Advertisement)
@@ -114,3 +114,33 @@ def reset_all_shown_vip_and_count(sender, instance, **kwargs):
 
         advertisement.update(shown_vip_count=shown_count,
                              shown_vip_category_count=shown_category_count, )
+
+
+@receiver(pre_delete, sender=UploadFile)
+def upload_file_delete(sender, instance, **kwargs):
+    """
+    Удаление файлов и папок, перед удалением экземпляра загруженного файла
+    с объявлениями для массового импорта.
+    """
+    print(3)
+    file_folder = os.path.dirname(instance.file.path) if instance.file else None
+    instance.file.delete(False)
+    if file_folder and os.path.exists(file_folder) and os.path.isdir(file_folder):
+        if not os.listdir(file_folder):
+            os.rmdir(file_folder)
+    print(4)
+
+
+@receiver(pre_delete, sender=ErrorFile)
+def error_file_delete(sender, instance, **kwargs):
+    print(5)
+    """
+    Удаление файлов и папок, перед удалением экземпляра файла с ошибками объявлений
+     при массовом импорте для изменения.
+    """
+    if instance.file and os.path.isfile(instance.file):
+        os.remove(instance.file)
+    file_folder = os.path.dirname(instance.file)
+    if not os.listdir(file_folder):
+        os.rmdir(file_folder)
+    print(6)
