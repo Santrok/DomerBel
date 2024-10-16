@@ -35,3 +35,5 @@ def notify_publication_moderation_result(sender, instance, **kwargs):
                                    activation_title=instance.title,
                                    result=False,
                                    moderation_error_message=instance.moderation_error_message)
+    if instance.moderation_error_message:
+        sender.objects.filter(id=instance.id).update(moderation_error_message=None)
