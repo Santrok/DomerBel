@@ -190,9 +190,9 @@ function getCategoryFunc(event, func) {
   if(event.target.value === undefined || event.target.value === "") {
     return
   }
-  if (!func(`${window.location.protocol}//${window.location.host}/api/v1/categories_for_search/${id}`)) {
+  if (!func(`${window.location.protocol}//${window.location.host}/api/v1/get_category_list/?id=${id}`)) {
     func(`${window.location.protocol}//${window.location.host}/api/v1/get_field_list/?id=${id}`)
   }else{
-    func(`${window.location.protocol}//${window.location.host}/api/v1/categories_for_search/${id}`)
+    func(`${window.location.protocol}//${window.location.host}/api/v1/get_category_list/?id=${id}`)
   }
 }

@@ -88,7 +88,7 @@ function savePublication() {
     })
     .then(response => {
         if (response.ok) {
-            document.location.href = `${window.location.protocol}//${window.location.host}/users/user_all_publications/`;
+            document.location.href = `${window.location.protocol}//${window.location.host}/personal_account/user_all_publications/`;
         }
         return response.json()
     })
