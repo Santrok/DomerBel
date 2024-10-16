@@ -30,7 +30,8 @@ def get_stores_page(request):
                                                     'category',
                                                     'store_counts',
                                                     cumulative=True,
-                                                    extra_filters={"is_active": True})
+                                                    extra_filters={"is_active": True,
+                                                                   "moderated": True})
 
     page_obj = variables_for_paginator(stores,
                                        request.GET.get('page'),
@@ -72,6 +73,7 @@ def get_store_search_page(request):
                                                     'store_counts',
                                                     cumulative=True,
                                                     extra_filters={"is_active": True,
+                                                                   "moderated": True,
                                                                    **search_parameters})
 
     page_obj = variables_for_paginator(stores,
@@ -102,6 +104,7 @@ def get_stores_by_category(request, category_slug):
                                                              'store_counts',
                                                              cumulative=True,
                                                              extra_filters={"is_active": True,
+                                                                            "moderated": True,
                                                                             **region_filter})
     stores = (Store.objects.filter(Q(category__in=categories_annotate) |
                                    Q(category__slug=category.slug),

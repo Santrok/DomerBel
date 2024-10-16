@@ -167,5 +167,6 @@ media/foto
 
 celerybeat-schedule.db
 
-.prod_env
+
+.env_prod
 

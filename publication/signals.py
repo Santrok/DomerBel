@@ -20,7 +20,7 @@ def notify_publication_moderation_result(sender, instance, **kwargs):
     """
     Функция проверяет, прошла ли публикацию модерацию или нет и отправляет письмо пользователю с результатом.
     """
-    if instance.moderated is True:
+    if 'moderated' in instance.get_dirty_fields() and instance.moderated is True:
         run_send_email_task_celery('Ваша публикация успешно прошла модерацию',
                                    "asend_notify_moderation_result.html",
                                    instance.user.email,
@@ -28,7 +28,7 @@ def notify_publication_moderation_result(sender, instance, **kwargs):
                                    activation_title=instance.title,
                                    result=True,
                                    moderation_error_message=instance.moderation_error_message)
-    elif instance.moderated is False:
+    elif 'moderated' in instance.get_dirty_fields() and instance.moderated is False:
         run_send_email_task_celery('Ваша публикация не прошла модерацию',
                                    "asend_notify_moderation_result.html",
                                    instance.user.email,
