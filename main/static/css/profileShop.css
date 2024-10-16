@@ -132,48 +132,4 @@
   color: red;
 }
 
-.store__status {
-  font-family: "Trebuchet MS", sans-serif;
-  font-weight: 400;
-  font-style: normal;
-  color: red;
-  font-size: 14px;
-  margin-bottom: 15px;
-}
-
-.store__active {
-  font-family: "Trebuchet MS", sans-serif;
-  font-weight: 400;
-  font-style: normal;
-  color: rgb(0, 128, 0);
-  font-size: 14px;
-  margin-bottom: 15px;
-}
-
-.main__shop-list-item-title {
-  display: flex;
-  gap: 20px;
-  align-items: center;
-}
-
-.store__status-btn {
-  font-family: "Trebuchet MS", sans-serif;
-  font-weight: 400;
-  font-style: normal;
-  color: #3077a0;
-  font-size: 14px;
-  display: inline-block;
-  box-shadow: none;
-  background-color: transparent;
-  background: none;
-  border: none;
-  cursor: pointer;
-}
-.store__status-btn:hover {
-  color: red;
-}
-.store__status-btn:focus {
-  border: none !important;
-}
-
 /*# sourceMappingURL=profileShop.css.map */

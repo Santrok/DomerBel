@@ -169,3 +169,5 @@ celerybeat-schedule.db
 
 .prod_env
 
+.prod_env
+

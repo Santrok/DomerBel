@@ -15,7 +15,6 @@
   display: block;
   max-width: 180px;
   max-height: 140px;
-  flex: 0 1 140px;
 }
 .default__item .advertisement__list-item-img img {
   width: 100%;
@@ -39,12 +38,6 @@
   position: absolute;
   bottom: 0;
   right: 0;
-}
-.default__item .advertisement__list-item:has(.advertisement__list-item-action) .advertisement__list-item-about-favorites {
-  bottom: 25px;
-}
-.default__item .advertisement__list-item-title {
-  align-self: flex-start;
 }
 .default__item .advertisement__list-item-title a {
   font-family: "Trebuchet MS", sans-serif;
@@ -71,7 +64,7 @@
   font-family: "Trebuchet MS", sans-serif;
   font-weight: 400;
   font-style: normal;
-  color: #545454;
+  color: gray;
   font-size: 16px;
 }
 .default__item .advertisement__list-item-action {
@@ -143,7 +136,7 @@
   font-family: "Trebuchet MS", sans-serif;
   font-weight: 400;
   font-style: normal;
-  color: #545454;
+  color: gray;
   font-size: 14px;
   margin: 5px 0;
 }
@@ -156,7 +149,7 @@
   font-family: "Trebuchet MS", sans-serif;
   font-weight: 400;
   font-style: normal;
-  color: #545454;
+  color: gray;
   font-size: 14px;
 }
 .second__item .advertisement__list-item-about-text-list li:nth-child(1) {
@@ -199,7 +192,6 @@
   .default__item .advertisement__list-item-img {
     max-width: none;
     max-height: none;
-    flex: initial;
   }
   .default__item .advertisement__list-item-img img {
     max-height: 400px;

@@ -50,11 +50,6 @@ form,
   color: black;
   font-size: 14px;
 }
-.item_input input:focus,
-.item_input select:focus,
-.item_input textarea:focus {
-  border: 1px solid #3779eb;
-}
 .item_input input[type=radio] {
   width: initial;
 }
@@ -117,10 +112,8 @@ form,
   max-height: 85px;
   width: 100%;
   height: 100%;
-  -o-object-fit: cover;
-     object-fit: cover;
-  -o-object-position: center;
-     object-position: center;
+  object-fit: cover;
+  object-position: center;
   border-radius: 3px;
 }
 .photo_img:hover .delete_img {
@@ -230,11 +223,6 @@ form,
   .item_input textarea {
     max-width: none;
   }
-  .item_input input:focus,
-  .item_input select:focus,
-  .item_input textarea:focus {
-    border: 1px solid #3779eb;
-  }
   .label_fields {
     flex: initial;
   }
@@ -252,4 +240,6 @@ form,
   .advertisement_notification-success {
     margin: 100px auto;
   }
-}/*# sourceMappingURL=place_an_ad.css.map */
+}
+
+/*# sourceMappingURL=place_an_ad.css.map */

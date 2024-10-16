@@ -1,1 +1,1 @@
-{"version":3,"sourceRoot":"","sources":["../scss/helpPage.scss","../scss/_mixins.scss","../scss/_variables.scss"],"names":[],"mappings":"AAIA;EACE;EACA;;AACA;ECNE;EACA,aDMoC;ECLpC;EACA,OCHW;EDIX,WDG8B;;AAGhC;EACE;EACA;EACA;;AAGF;EACE","file":"helpPage.css"}
+{"version":3,"sourceRoot":"","sources":["../../../static/scss/helpPage.scss","../../../static/scss/_mixins.scss","../../../static/scss/_variables.scss"],"names":[],"mappings":"AAIA;EACE;EACA;;AACA;ECNE;EACA,aDMoC;ECLpC;EACA,OCHW;EDIX,WDG8B;;AAGhC;EACE;EACA;EACA;;AAGF;EACE","file":"helpPage.css"}

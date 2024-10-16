@@ -5,7 +5,7 @@
 {% endblock %}
 
 {% block modals %}
-    <form aria-modal="true" class="remove__modal" method="POST" action="{% url 'users:delete_dialogs' %}">
+    <form aria-modal="true" class="remove__modal" method="POST" action="{% url 'delete_dialogs' %}">
         {% csrf_token %}
         <div class="cross">
             <svg width="20.000000" height="20.000000" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"
@@ -62,8 +62,10 @@
     <section class="main__info">
         <ul class="chat__list">
             {% for chat in chats %}
-                <li class="chat__list-item">
-                    <a href="{{ chat.get_absolute_url }}" class="chat__list-img">
+        {% with message=chat.usermessage_set.last %}
+                <li class="chat__list-item-wrap">
+                    <div class="chat__list-item {% if message.author != user and not message.is_read %}unread{% endif %}">
+                        <a href="{{ chat.get_absolute_url }}" class="chat__list-img">
                         <img src="{% if chat.advertisement and chat.advertisement.preview_image %} {{ chat.advertisement.preview_image.url }} {% elif chat.store and chat.store.logo_image %} {{ chat.store.logo_image.url }} {% else %}{% static 'img/no_image.jpg' %}{% endif %}"
                              alt="{% if chat.advertisement %}{{ chat.advertisement.category }} {% elif chat.store %} {{ chat.store.category }} {% endif %}">
                     </a>
@@ -71,11 +73,9 @@
                         <p class="chat__list-text-title">
                             {% if chat.advertisement %}{{ chat.advertisement.title }} {% elif chat.store %} {{ chat.store.title }} {% else %}Объявление недоступно{% endif %}
                         </p>
-                        <p class="chat__list-text-last-message">
-                            {% with message=chat.message_set.last %}
+                            <p class="chat__list-text-last-message">
                                 {{ message.message }}
-                            {% endwith %}
-                        </p>
+                            </p>
                     </a>
                     <div class="cross__dialog" data-id="{{ chat.id }}">
                         <svg width="20.000000" height="20.000000" viewBox="0 0 20 20" fill="none"
@@ -96,13 +96,14 @@
                             </g>
                         </svg>
                     </div>
+                    </div>
                 </li>
-
+{% endwith %}
             {% endfor %}
         </ul>
     </section>
 {% endblock %}
 
 {% block js2 %}
-    <script src="{% static 'js/profile/modal_remove.js' %}"></script>
+    <script src="{% static 'js/profile/modalRemove.js' %}"></script>
 {% endblock %}

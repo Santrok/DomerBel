@@ -99,10 +99,10 @@
   flex-direction: initial;
 }
 .magnifier__zoom-main img {
-  max-height: 800px;
+  max-height: 500px;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   object-position: center;
   border: 1px solid #D4D4D4;
   border-radius: 8px;
@@ -354,13 +354,6 @@
   word-break: break-word;
 }
 
-.modals__active-resetPassword {
-  display: flex;
-}
-.modals__active-resetPassword .modals__notification-signIn {
-  display: none;
-}
-
 .modals__more {
   width: 100%;
   max-width: 920px;
@@ -428,14 +421,14 @@
   flex-direction: column;
   gap: 5px;
 }
-.modals__report-advertisement p {
+.modals__report-advertisement label p {
   font-family: "Trebuchet MS", sans-serif;
   font-weight: 400;
   font-style: normal;
   color: black;
   font-size: 14px;
 }
-.modals__report-advertisement p span {
+.modals__report-advertisement label p span {
   color: red;
 }
 .modals__report-advertisement input, .modals__report-advertisement select, .modals__report-advertisement textarea {
@@ -890,7 +883,7 @@ header {
 }
 
 .form__notifications-access {
-  position: absolute;
+  position: fixed;
   bottom: 10px;
   right: 10px;
   padding: 50px 25px;
@@ -1118,6 +1111,31 @@ a:hover {
 
 .modal__active {
   display: flex;
+}
+
+.unread__message-link {
+  display: flex;
+  padding: 2px 3px 0 0;
+  position: relative;
+}
+
+.unread__message-link-img {
+  max-width: 15px;
+  max-height: 15px;
+}
+.unread__message-link-img::after {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: #ff3b4c;
+  position: absolute;
+  top: 1px;
+  right: 0;
+}
+
+.modals__notification-error {
+  display: none;
 }
 
 input:focus,

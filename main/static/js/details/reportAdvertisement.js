@@ -8,16 +8,17 @@ reportBtn.addEventListener("click", () => {
 
 
 requestReportBtn.addEventListener("click", () => {
-  const form = new FormData(document.querySelector(".modals__report-advertisement"))
+  const form = document.querySelector(".modals__report-advertisement")
+  const formData = new FormData(form)
   const id = document.querySelector('.details__advertisement-id').textContent
-  form.append("advertisement", id.split(":")[1])
-  form.append("recaptcha", form.get("g-recaptcha-response"));
+  formData.append("advertisement", id.split(":")[1])
+  // formData.append("recaptcha", formData.get("g-recaptcha-response"));
   fetch(`${window.location.protocol}//${window.location.host}/api/v1/save_complaint/`, {
   method: "POST",
     headers: {
         "X-CSRFToken": getCookie("csrftoken"),
       },
-  body: form
+  body: formData
   })
   .then((resp) => resp.json())
   .then((data) => {
@@ -30,6 +31,7 @@ requestReportBtn.addEventListener("click", () => {
       notificationModal.classList.add("modal__active");
       const notificationText = document.querySelector(".modals__notification-text");
       notificationText.innerText = data.success;
+      form.reset()
     }
   })
   .catch((err) => {
@@ -38,9 +40,8 @@ requestReportBtn.addEventListener("click", () => {
       registrationButton.removeEventListener("click", registration);
     }
     delete data["recaptcha"];
-    // reseting recaptcha field
     grecaptcha.reset();
-    generatingErrorSField(data, ".modals__signIn");
+    generatingErrorSField(data, ".modals__report-advertisement");
   });
 })
 
