@@ -18,7 +18,8 @@
                     {% if result  %}
                         Объявление "<b>{{ activation_title }}</b>" прошло модерацию.
                     {% else %}
-                        Объявление "<b>{{ activation_title }}</b>" не прошло модерацию.
+                        <p>Объявление "<b>{{ activation_title }}</b>" не прошло модерацию.</p>
+                        <p>{{ moderation_error_message }}</p>
                     {% endif %}
                 </p>
             </div>

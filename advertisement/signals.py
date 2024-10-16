@@ -23,7 +23,7 @@ def advertisement_photo_delete(sender, instance, **kwargs):
 
 
 @receiver(pre_delete, sender=PhotoAdvertisement)
-def advertisement_photo_delete(sender, instance, **kwargs):
+def photoadvertisement_photo_delete(sender, instance, **kwargs):
     """
     Удаление файлов перед удалением экземпляра дополнительного изображения объявления.
     """
@@ -42,11 +42,13 @@ def notify_advertisement_moderation_result(sender, instance, **kwargs):
                                    activation_title=instance.title,
                                    result=True)
     elif 'moderated' in instance.get_dirty_fields() and instance.moderated is False:
+        advertisement = Advertisement.objects.get(id=instance.id)
         run_send_email_task_celery('Объявление не прошло модерацию',
                                    "asend_notify_moderation_result.html",
                                    instance.email,
                                    activation_title=instance.title,
-                                   result=False)
+                                   result=False,
+                                   moderation_error_message=advertisement.moderation_error_message)
 
 
 @receiver(post_save, sender=Advertisement)

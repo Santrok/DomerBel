@@ -231,8 +231,13 @@
                                     </ul>
                                     <div class="main__info-advertisement-list-item-about">
                                         <p class="advertisement__status {% if advertisement.moderated %}moderated{% endif %}">
-                                            {% if advertisement.moderated %}Прошло модерацию{% else %}На
-                                                модерации{% endif %}
+                                            {% if advertisement.moderated %}
+                                                Прошло модерацию
+                                            {% elif advertisement.moderated is None %}
+                                                На модерации
+                                            {% else %}
+                                                Отклонено
+                                            {% endif %}
                                         </p>
                                             <p class="main__info-advertisement-list-item-about-date">
                                                 {% if advertisement.date_of_last_activation.date == date_today %}
