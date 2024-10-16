@@ -1,0 +1,132 @@
+{% extends 'base.html' %} 
+{% load static %}
+{% block css %} 
+<link rel="stylesheet" href="{% static 'css/stores-min.css' %}">
+{% endblock css %} 
+{% block search %}
+<search class="main__search search__profile">
+    <form class="main__search-form" action="{% url 'stores_search_results' %}" method="GET">
+    <fieldset class="main__search-form-item region">
+        <select name="category" class="main__search-form-item-category">
+            <option value="">
+                Все разделы
+            </option>
+        {% for category in category_list %}
+            {% if category.level == 0 %}
+                <option value="{{ category.id }}" data-fetchid="{{ category.id }}">
+                    {{ category }}
+                </option>
+            {% endif %}
+        {% endfor %}
+        </select>
+        <input type="text" name="text_search" placeholder="Поиск по тексту" />
+        <select name="region" class="main__search-form-item-region">
+            <option value="">
+                Любое расположение
+            </option>
+        {% for region in region_list %}
+            {% if region.level == 0 %}
+            <option value="{{ region.id }}" data-fetchid="{{ region.id }}">
+                {{ region.area }}
+            </option>
+            {% endif %}
+        {% endfor %}
+        </select>
+    </fieldset>
+    <fieldset class="main__search-form-item labels">
+        <div class="main__search-form-item-label-wrap">
+        </div>
+        <button>Искать</button>
+    </fieldset>
+    <fieldset class="main__search-form-item fields">
+    </fieldset>
+    </form>
+</search>
+{% endblock search %}
+{% block content %}
+<div class="category_navigation_bar">
+  <div class="category_wrapper">
+  {% if category %}
+      <ul class="category_list">
+          {% for cat in category %}
+              {% if cat %}
+                  {% if cat.store_counts != 0 %}
+                  <li>
+                    <a href="{% url 'stores_by_category' cat.slug %}{% if region_param.id %}?region={{ region_param.id }}{% endif %}" class="category">
+                        {{ cat.title }}, {{ cat.store_counts }}
+                    </a>
+                  </li>
+                  {% endif %}
+              {% endif %}
+          {% endfor %}
+      </ul>
+  {% endif %}
+  </div>
+</div>
+<div class="number_of_advertisements">
+  Найдено записей: {{ stores_found }}
+</div>
+  <section class="stores">
+    <ul class="stores__list">
+      {% for store in page_obj %}
+      <li class="stores__list-item">
+        <a href="{% url 'store_by_title' store.slug  %}" class="stores__list-item-img">
+          <img src="{% if store.logo_image %}{{ store.logo_image.url }}{% else %}{% static 'img/no_image.jpg' %}{% endif %}" alt="{{ store.title }}">
+        </a>
+        <div class="stores__list-item-about">
+          <h3>
+            <a href="{% url 'store_by_title' store.slug  %}">
+              {{ store.title }}
+            </a>
+        </h3>
+          <p class="stores__list-item-district">
+              {{ store.region }}
+          </p>
+            {% if store.address %}
+            <p>{{ store.address }}</p>
+            {% endif %}
+            {% if store.phone_num %}
+            <p>тел. {{ store.phone_num }}</p>
+            {% endif %}
+        </div>
+        <p class="stores__list-item-category">
+          {{ store.category }}
+        </p>
+      </li>
+      {% endfor %}
+    </ul>
+  </section>
+{% block paginator %}
+    <div class="paginator">
+        <div class="paginator_wrapper">
+            <nav class="list_pages">
+                <ul>
+                    {% if page_obj.has_previous %}
+                        <li class="">
+                            <a href="?page={{ page_obj.previous_page_number }}{% if region_param.id %}&region={{ region_param.id }}{% endif %}"><</a>
+                        </li>
+                    {% endif %}
+                    {% if page_obj.has_other_pages %}
+                        {% for page in page_obj.paginator.page_range %}
+                            {% if page_obj.number == page %}
+                                <li class="page_num page_num_selected">{{ page }}</li>
+                            {% elif page >= page_obj.number|add:-2 and page <= page_obj.number|add:2 %}
+                                <li class="page_num">
+                                    <a href="?page={{ page }}{% if region_param.id %}&region={{ region_param.id }}{% endif %}">{{ page }}</a>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                    {% if page_obj.has_next %}
+                        <li class="">
+                            <a href="?page={{ page_obj.next_page_number }}{% if region_param.id %}&region={{ region_param.id }}{% endif %}">></a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    </div>
+    {% endblock paginator %}
+{% endblock content %} 
+{% block js %}
+{% endblock js %}

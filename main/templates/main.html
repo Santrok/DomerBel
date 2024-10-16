@@ -1,0 +1,93 @@
+{% extends 'base.html' %} 
+{% load static %}
+{% block css %} 
+<link rel="stylesheet" href="{% static 'css/main-min.css' %}">
+{% endblock css %} 
+{% block content %}
+<section class="region">
+  <ul class="region__list">
+    {% for region in region_list %}
+    {% if region.level == 0 %}
+    <li class="region__list-item">
+      <a href="{% url 'advertisement' %}?region={{ region.id }}"> {{ region|upper }} </a>
+    </li>
+    {% endif %}
+    {% endfor %}
+  </ul>
+</section>
+<section class="recent-announcements">
+  <h1 class="recent-announcements__title">Последние объявления</h1>
+  <div class="recent-announcements-wrap">
+    <ul class="recent-announcements__list">
+      {% for card in advertisement %}
+      <li class="recent-announcements__list-item">
+        <article class="recent-announcements__list-item-article">
+          <div class="recent-announcements__list-item-article-date">
+            {% if card.date_of_last_activation.date == date_today %}
+            <p>Сегодня</p>
+            {% elif card.date_of_last_activation.date == date_yesterday %}
+            <p>Вчера</p>
+            {% else %}
+            <p>{{ card.date_of_last_activation|date:"d b. Y" }}</p>
+            {% endif %}
+            <p>{{ card.date_of_last_activation|date:"H:i" }}</p>
+          </div>
+          <a href="{% url 'advertisement_details' card.slug %}" class="recent-announcements__list-item-article-img">
+            <img src="{% if card.preview_image %} {{ card.preview_image.url }} {% else %}{% static 'img/no_image.jpg' %}{% endif %}" alt="{{ card.category }}" />
+          </a>
+          <div class="recent-announcements__list-item-article-info">
+            <a href="{% url 'advertisement_details' card.slug %}" class="recent-announcements__list-item-article-info-link">
+                {{ card.title }}
+            </a>
+            <p class="recent-announcements__list-item-article-info-price">
+              {% if card.price %}
+                {{ card.price|floatformat }} руб. 
+                {% else %} Договорная
+              {% endif %}
+            </p>
+            <p class="recent-announcements__list-item-article-info-category">
+                {{ card.category }}
+            </p>
+            <p class="recent-announcements__list-item-article-info-company">
+                {{ card.bearer }}
+            </p>
+            <p class="recent-announcements__list-item-article-info-region">
+                {{ card.region }}
+            </p>
+          </div>
+        </article>
+      </li>
+      {% endfor %}
+    </ul>
+    {% if vip_advertisement %}
+    <div class="recent__announcement-list-vip-wrap vip__wrap">
+      <ul class="recent__announcement-list-vip vip__list">
+          {% for vip in vip_advertisement %}
+        <li>
+          <h2 class="vip__title">
+            VIP объявления
+          </h2>
+          <article class="recent__announcement-list-vip-item vip__list-item">
+            <a href="{% url 'advertisement_details' vip.slug %}">
+              <div class="recent__announcement-list-vip-item-img vip__list-item-img">
+                <img src="{% if vip.preview_image %} {{ vip.preview_image.url }} {% else %}{% static 'img/no_image.jpg' %}{% endif %}"
+                                 alt="{% if vip.preview_image %} {{ vip.preview_image.url }} {% else %}{% static 'img/no_image.jpg' %}{% endif %}">
+              </div>
+              <h3 class="recent__announcement-list-vip-item-title vip__list-item-title">
+                {{ vip.title }}
+              </h3>
+              <p class="recent__announcement-list-vip-item-district vip__list-item-district">
+                {{ vip.region }}
+              </p>
+            </a>
+          </article>
+        </li>
+          {% endfor %}
+      </ul>
+    </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %} 
+{% block js %}
+{% endblock js %}

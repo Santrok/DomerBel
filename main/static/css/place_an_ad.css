@@ -50,6 +50,11 @@ form,
   color: black;
   font-size: 14px;
 }
+.item_input input:focus,
+.item_input select:focus,
+.item_input textarea:focus {
+  border: 1px solid #3779eb;
+}
 .item_input input[type=radio] {
   width: initial;
 }
@@ -63,13 +68,20 @@ form,
 .photo_file {
   max-width: 320px;
   width: 100%;
+  border-radius: 8px;
+  font-family: "Trebuchet MS", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  color: #000;
+  font-size: 14px;
+  border: 1px solid #d4d4d4;
 }
 
 .photo_preview {
-  margin-top: 15px;
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  gap: 15px;
+  gap: 5px;
+  margin: 5px;
 }
 
 .photo_preview {
@@ -131,8 +143,9 @@ form,
   right: 0;
   width: 15px;
   height: 15px;
-  background: url(../img/icons/krestik.svg) no-repeat 100% 100%/100% 100%, rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.5);
   cursor: pointer;
+  z-index: 2;
 }
 .delete_img::after, .delete_img::before {
   content: "";
@@ -151,6 +164,10 @@ form,
 }
 .delete_img:hover ~ .img_preview {
   opacity: 0.5;
+}
+.delete_img:hover::after, .delete_img:hover::before {
+  background: #FFA07A;
+  transition: 0.3s ease-out;
 }
 
 .main_img {
@@ -176,6 +193,31 @@ form,
   transition: 0.3s ease;
 }
 
+.advertisement_notification-success {
+  display: flex;
+  margin: 200px auto;
+  flex-direction: column;
+  gap: 15px;
+  align-items: center;
+  justify-content: center;
+  font-family: "Trebuchet MS", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  color: black;
+  font-size: 20px;
+}
+
+.continue__link {
+  text-align: center;
+  font-family: "Trebuchet MS", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  color: black;
+  font-size: 14px;
+  max-width: 200px;
+  background: #F5F5F5;
+}
+
 .error {
   font-family: "Trebuchet MS", sans-serif;
   font-weight: 400;
@@ -198,6 +240,11 @@ form,
   .item_input textarea {
     max-width: none;
   }
+  .item_input input:focus,
+  .item_input select:focus,
+  .item_input textarea:focus {
+    border: 1px solid #3779eb;
+  }
   .label_fields {
     flex: initial;
   }
@@ -212,6 +259,12 @@ form,
   .add_adv {
     max-width: none;
   }
+  .advertisement_notification-success {
+    margin: 100px auto;
+  }
+}
+.file_input {
+  padding: 5px;
 }
 
 /*# sourceMappingURL=place_an_ad.css.map */

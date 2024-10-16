@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+{% load static %}
+{% load mptt_tags %}
+{% block css %}
+    <link rel="stylesheet" href="{% static 'css/instructions_for_bulk_import_of_ads.css' %}">
+{% endblock css %}
+{% block search %}
+{% endblock search %}
+{% block content %}
+    <section class="instruction" style="color:black;">
+        <p class="instruction__text">
+            Пользователь доски объявлений Домер.бел имеет возможность массово добавлять объявления. Обращаем внимание,
+            что
+            услуга является платной.
+            Массовый импорт объявлений возможно осуществить при помощи:
+        </p>
+        <ul class="instruction__list instruction__text">
+            <li>XLSX- файла;</li>
+            <li>ZIP- архива, содержащего XLSX- файл и изображение для объявлений.</li>
+        </ul>
+        <p class="instruction__text">Пример файла для массового импорта объявлений:</p>
+        <ul class="instruction__list instruction__text">
+            <li>
+                XLSX-файла:
+                <a class="example__file" href="{{ url }}/media/example/example.xlsx">Скачать пример XLSX- файла </a>
+            </li>
+            <li>
+                ZIP-архив:
+                <a class="example__file" href="{{ url }}/media/example/example.zip">Скачать пример ZIP- архива</a>
+            </li>
+        </ul>
+        <h2 class="instruction__title instruction__text">Требование к полям для объявлений:</h2>
+        <ul class="instruction__list instruction__text">
+            <li>
+                <h3>Артикул:</h3>
+                <ol class="instruction__sublist instruction__text">
+                    <li>Является необязательным для заполнения полем;</li>
+                    <li>Не должен превышать 255 символов;</li>
+                    <li>Должен быть уникальным для всех объявлений загруженных одним пользователем.</li>
+                </ol>
+            </li>
+            <li>
+                <h3>Заголовок:</h3>
+                <ol class="instruction__sublist instruction__text">
+                    <li>Является обязательным для заполнения;</li>
+                    <li>Не должен превышать 255 символов;</li>
+                    <li>Не должен содержать только цифры.</li>
+                </ol>
+            </li>
+            <li><h3>Цена:</h3>
+                <ol class="instruction__sublist instruction__text">
+                    <li>Является не обязательным для заполнения;</li>
+                    <li>Числовое значение, разделяемое точкой дробную и целую часть числа;</li>
+                    <li>Цена указывается в белорусских рублях.</li>
+                </ol>
+            </li>
+            <li>
+                <h3>Категория:</h3>
+                <ol class="instruction__sublist instruction__text">
+                    <li>Является обязательным для заполнения;</li>
+                    <li>Значение поля берется из установленного списка.</li>
+                </ol>
+            </li>
+            <li>
+                <h3>Регион:</h3>
+                <ol class="instruction__sublist instruction__text">
+                    <li>Является обязательным для заполнения;</li>
+                    <li>Значение поля берется из установленного списка.</li>
+                </ol>
+            </li>
+            <li>
+                <h3>Описание:</h3>
+                <ol class="instruction__sublist instruction__text">
+                    <li>Является обязательным для заполнения.</li>
+                </ol>
+            </li>
+            <li>
+                <h3>Фото:</h3>
+                <ol class="instruction__sublist instruction__text">
+                    <li>Является необязательным для заполнения полем;</li>
+                    <li>В поле в XLSX- файле указывается полное название файла с расширением;</li>
+                    <li>Не более 30 изображений для одного объявления.</li>
+                </ol>
+            </li>
+        </ul>
+        <h2 class="instruction__title instruction__text">Импорт объявлений и изображений с локального компьютера: </h2>
+        <ul class="instruction__list instruction__text">
+            <li>Шаг 1: заполните XLSX- файл в соответствии с требованиями указанными выше</li>
+            <li>Шаг 2: Создайте ZIP-архив, который будет содержать XLSX-файл и все изображения, которые вы указали в
+                XLSX-файле.
+                <img class="example__screen" src="{{ url }}/media/example/screen_2.png"
+                     alt="{{ url }}/media/example/screen_2.png">
+            </li>
+            <li>Шаг 3: Файл готов к загрузки.</li>
+        </ul>
+
+        <h2 class="instruction__title instruction__text">Импорт объявлений:</h2>
+        <ul class="instruction__sublist instruction__text">
+            <li>Перейдите в личный кабинет.</li>
+            <li>Нажмите кнопку “Массовый импорт”.</li>
+            <li>Нажмите кнопку"Выбрать файл". Выберите файл на локальном компьютере (XLSX- файл, ZIP-архив),
+                подготовленный вами ранее для подачи объявлений.
+            </li>
+            <li>Нажмите кнопку “Отправить”.</li>
+            <li>Файл начнет обрабатываться. Время обработки файла зависит от количества подаваемых объявлений и
+                изображений.
+            </li>
+            <li>По факту завершения обработки файла вы получите информацию о результате импорта объявлений.</li>
+            <li>Если в объявление будет некорректно заполнено одно из полей, вам будет предложено скачать XLSX-файл,
+                содержащий объявления с ошибками.
+            </li>
+            <li>Исправьте найденные ошибки и заново загрузите файл. При загрузке ZIP-архива необходимо заново создавать
+                архив откорректированным XLSX-файл и изображениями.
+            </li>
+        </ul>
+    </section>
+    <section class="reference_informations">
+        <h2 class="instruction__title instruction__text">Ниже приведены установленные на сайте значение для полей в
+            объявлениях:</h2>
+        <div class="areas">
+            <h3 class="instruction__text">Регион:</h3>
+            <ul class="areas_list title__list">
+                {% for area in oblast %}
+                    <li class="area">
+                        <div class="area_title item_title" id={{ area.id }}>
+                            <div class="pointer"></div>
+                            <p>{{ area.area }}</p>
+                        </div>
+                        <ol class="cities title__list"></ol>
+                    </li>
+                {% endfor %}
+            </ul>
+            <h3 class="instruction__text">Категории:</h3>
+            <ul class="categories_list title__list">
+                {% for category in categories %}
+                    <li class="category">
+                        <div class="category_title item_title" id={{ category.id }} name={{ category.type }}>
+                            <div class="pointer"></div>
+                            <p>{{ category.title }}</p>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </section>
+{% endblock content %}
+
+{% block js %}
+    <script src="{% static 'js/instructionsForBulkImportOfAds.js' %}"></script>
+{% endblock %}
+
+
+
+

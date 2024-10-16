@@ -32,6 +32,8 @@
 }
 
 .filter__list-item a {
+  display: inline-block;
+  text-align: center;
   font-family: "Trebuchet MS", sans-serif;
   font-weight: 400;
   font-style: normal;
@@ -42,7 +44,7 @@
   color: red;
 }
 .filter__list-item a span {
-  color: gray;
+  color: #545454;
 }
 
 .sort {
@@ -180,6 +182,7 @@
   display: block;
   max-width: 180px;
   max-height: 140px;
+  flex: 0 1 140px;
 }
 .default__item .advertisement__list-item-img img {
   width: 100%;
@@ -203,6 +206,12 @@
   position: absolute;
   bottom: 0;
   right: 0;
+}
+.default__item .advertisement__list-item:has(.advertisement__list-item-action) .advertisement__list-item-about-favorites {
+  bottom: 25px;
+}
+.default__item .advertisement__list-item-title {
+  align-self: flex-start;
 }
 .default__item .advertisement__list-item-title a {
   font-family: "Trebuchet MS", sans-serif;
@@ -229,7 +238,7 @@
   font-family: "Trebuchet MS", sans-serif;
   font-weight: 400;
   font-style: normal;
-  color: gray;
+  color: #545454;
   font-size: 16px;
 }
 .default__item .advertisement__list-item-action {
@@ -301,7 +310,7 @@
   font-family: "Trebuchet MS", sans-serif;
   font-weight: 400;
   font-style: normal;
-  color: gray;
+  color: #545454;
   font-size: 14px;
   margin: 5px 0;
 }
@@ -314,7 +323,7 @@
   font-family: "Trebuchet MS", sans-serif;
   font-weight: 400;
   font-style: normal;
-  color: gray;
+  color: #545454;
   font-size: 14px;
 }
 .second__item .advertisement__list-item-about-text-list li:nth-child(1) {
@@ -357,6 +366,7 @@
   .default__item .advertisement__list-item-img {
     max-width: none;
     max-height: none;
+    flex: initial;
   }
   .default__item .advertisement__list-item-img img {
     max-height: 400px;
@@ -511,6 +521,15 @@
   flex-wrap: wrap-reverse;
 }
 
+.advertisement__not-found {
+  font-family: "Trebuchet MS", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  color: black;
+  font-size: 24px;
+  margin: 100px auto;
+}
+
 .recent-announcements__list-item-article {
   display: flex;
   gap: 10px;
@@ -536,6 +555,7 @@
 .recent-announcements__list-item-article-img {
   max-width: 140px;
   max-height: 90px;
+  flex: 0 0 140px;
 }
 .recent-announcements__list-item-article-img img {
   width: 100%;
@@ -569,7 +589,7 @@
   font-family: "Trebuchet MS", sans-serif;
   font-weight: 400;
   font-style: normal;
-  color: gray;
+  color: #545454;
   font-size: 16px;
 }
 .recent-announcements__list-item-article-info p:nth-child(2) {
