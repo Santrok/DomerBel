@@ -1,3 +1,4 @@
+from django.contrib.postgres.search import SearchVector
 from django.db.models.signals import pre_delete, post_save
 from django.dispatch import receiver
 
@@ -35,3 +36,17 @@ def notify_publication_moderation_result(sender, instance, **kwargs):
                                    activation_title=instance.title,
                                    result=False,
                                    moderation_error_message=instance.moderation_error_message)
+
+
+@receiver(post_save, sender=Publication)
+def create_fild_for_search_adv(sender, instance, **kwargs):
+    """
+    Функция заполняет поля для полнотекстового поиска.
+    """
+    dirty_fields = instance.get_dirty_fields()
+    if (not instance.search_vector or not instance.search_title_vector or
+            'title' in dirty_fields or 'description' in dirty_fields or 'announcement' in dirty_fields):
+        sender.objects.filter(id=instance.id).update(search_vector=SearchVector('title',
+                                                                                'description',
+                                                                                'announcement'),
+                                                     search_title_vector=SearchVector('title'))
