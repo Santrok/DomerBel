@@ -31,12 +31,16 @@
   font-size: 14px;
   width: 100%;
 }
+.modals .modals__fields-error {
+  border-color: red;
+}
 .modals a {
   font-family: "Trebuchet MS", sans-serif;
   font-weight: 400;
   font-style: normal;
   color: #3077a0;
   font-size: 14px;
+  cursor: pointer;
 }
 .modals a:hover {
   color: red;
@@ -95,10 +99,10 @@
   flex-direction: initial;
 }
 .magnifier__zoom-main img {
-  max-height: 800px;
+  max-height: 500px;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   object-position: center;
   border: 1px solid #D4D4D4;
   border-radius: 8px;
@@ -166,7 +170,7 @@
   display: flex;
 }
 
-.modals__signIn-field {
+.modals__signIn-field-wrap {
   position: relative;
 }
 
@@ -347,13 +351,6 @@
   word-break: break-word;
 }
 
-.modals__active-resetPassword {
-  display: flex;
-}
-.modals__active-resetPassword .modals__notification-signIn {
-  display: none;
-}
-
 .modals__more {
   width: 100%;
   max-width: 920px;
@@ -404,6 +401,237 @@
 }
 .modals__more-close::after {
   transform: rotate(-45deg);
+}
+
+.modals__report-advertisement {
+  width: 100%;
+  max-width: 450px;
+  display: none;
+  flex-direction: column;
+  gap: 20px;
+  background: white;
+  padding: 40px;
+  border-radius: 8px;
+}
+.modals__report-advertisement label {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.modals__report-advertisement label p {
+  font-family: "Trebuchet MS", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  color: black;
+  font-size: 14px;
+}
+.modals__report-advertisement label p span {
+  color: red;
+}
+.modals__report-advertisement input, .modals__report-advertisement select, .modals__report-advertisement textarea {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid black;
+  width: 100%;
+}
+.modals__report-advertisement input::placeholder, .modals__report-advertisement select::placeholder, .modals__report-advertisement textarea::placeholder {
+  font-family: "Trebuchet MS", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  color: rgb(110, 109, 109);
+  font-size: 14px;
+}
+
+.modals__report-advertisement-field {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.send__message {
+  position: relative;
+  width: 100%;
+  max-width: 450px;
+  display: none;
+  flex-direction: column;
+  gap: 20px;
+  background: white;
+  padding: 40px;
+  border-radius: 8px;
+}
+.send__message button {
+  margin-top: 10px;
+}
+.send__message label {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.send__message p {
+  font-family: "Trebuchet MS", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  color: black;
+  font-size: 14px;
+}
+.send__message p span {
+  color: red;
+}
+.send__message textarea {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid black;
+  max-width: 370px;
+}
+.send__message textarea:focus {
+  border: 1px solid #3779eb;
+}
+.send__message textarea::placeholder {
+  font-family: "Trebuchet MS", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  color: rgb(110, 109, 109);
+  font-size: 14px;
+}
+
+.remove__modal {
+  position: relative;
+  width: 100%;
+  max-width: 450px;
+  display: none;
+  flex-direction: column;
+  gap: 20px;
+  background: white;
+  padding: 40px;
+  border-radius: 8px;
+}
+.remove__modal button {
+  margin-top: 10px;
+}
+.remove__modal p {
+  font-family: "Trebuchet MS", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  color: black;
+  font-size: 16px;
+  white-space: pre-line;
+  text-align: center;
+}
+.remove__modal p span {
+  color: red;
+}
+.remove__modal::placeholder {
+  font-family: "Trebuchet MS", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  color: rgb(110, 109, 109);
+  font-size: 14px;
+}
+
+.remove__modal-btn {
+  display: flex;
+  gap: 10px;
+}
+
+.paid__modal {
+  position: relative;
+  width: 100%;
+  max-width: 450px;
+  display: none;
+  flex-direction: column;
+  gap: 10px;
+  background: white;
+  padding: 40px;
+  border-radius: 8px;
+}
+.paid__modal input {
+  width: initial;
+}
+.paid__modal button {
+  margin-top: 10px;
+}
+
+.remove__modal-btn {
+  display: flex;
+  gap: 10px;
+}
+
+.paid__form {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 2px;
+}
+.paid__form label {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: space-between;
+}
+.paid__form label span {
+  font-family: "Trebuchet MS", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  color: black;
+  font-size: 16px;
+  white-space: pre-line;
+}
+
+.paid__form-title {
+  display: flex;
+  flex-direction: column;
+  min-width: 200px;
+}
+
+.paid__form-title-label {
+  font-family: "Trebuchet MS", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  color: black;
+  font-size: 16px;
+  white-space: pre-line;
+}
+
+.paid__form-title-period {
+  font-family: "Trebuchet MS", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  color: #6e6d6d;
+  font-size: 13px;
+  white-space: pre-line;
+}
+
+.paid__form-cost {
+  font-family: "Trebuchet MS", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  color: black;
+  font-size: 16px;
+  white-space: nowrap;
+  flex: 0 1 100px;
+  text-align: end;
+}
+
+.paid__form-total {
+  font-family: "Trebuchet MS", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  color: black;
+  font-size: 16px;
+  align-self: flex-end;
+}
+
+.paid__form-error {
+  border: 1px solid red;
+  border-radius: 8px;
+}
+
+.error__text {
+  font-family: "Trebuchet MS", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  color: red;
+  font-size: 14px;
 }
 
 .modals__active-grid {
@@ -620,7 +848,7 @@ header {
   gap: 5px;
 }
 .main__search-form-item input {
-  flex: 1 1 350px;
+  flex: 1 1 400px;
   padding: 6px;
   border: 1px solid #D4D4D4;
   border-radius: 5px;
@@ -634,7 +862,7 @@ header {
   font-family: "Trebuchet MS", sans-serif;
   font-weight: 400;
   font-style: normal;
-  color: gray;
+  color: #545454;
   font-size: 14px;
 }
 .main__search-form-item select {
@@ -713,6 +941,15 @@ header {
   .main__search-form-item button {
     flex: 1 1 200px;
   }
+  .region {
+    order: 1;
+  }
+  .labels {
+    order: 3;
+  }
+  .fields {
+    order: 2;
+  }
 }
 .paginator {
   width: 100%;
@@ -744,10 +981,11 @@ header {
 }
 
 .form__notifications-access {
-  position: absolute;
+  position: fixed;
   bottom: 10px;
   right: 10px;
-  padding: 10px;
+  padding: 50px 25px;
+  border-radius: 7px;
   background: rgb(28, 161, 28);
   font-family: "Trebuchet MS", sans-serif;
   font-weight: 400;
@@ -756,13 +994,16 @@ header {
   font-size: 16px;
   opacity: 0;
   user-select: none;
+  z-index: 5;
+  white-space: pre-line;
+  text-align: center;
 }
 
 .access__active {
   animation-name: notifications;
-  animation-duration: 3s;
+  animation-duration: 5s;
   animation-iteration-count: 1;
-  animation-timing-function: ease-in;
+  animation-timing-function: cubic-bezier(0.97, 0, 0, 0.99);
   animation-direction: alternate;
 }
 
@@ -771,7 +1012,7 @@ header {
     transform: rotate(1deg);
   }
   50% {
-    opacity: 1;
+    opacity: 0.7;
     transform: rotate(-1deg);
   }
   75% {
@@ -851,10 +1092,13 @@ footer {
   font-family: "Trebuchet MS", sans-serif;
   font-weight: 400;
   font-style: normal;
-  color: gray;
+  color: #545454;
   font-size: 14px;
   word-break: break-word;
   line-height: 1.3;
+}
+.footer__info-organization-list li a {
+  line-height: 1.8;
 }
 
 .footer__payment-info {
@@ -910,11 +1154,49 @@ a:hover {
   color: white;
 }
 .submit__btn:hover::before {
-  z-index: -12;
+  z-index: -1;
   height: 100%;
   transition: 0.3s ease;
 }
 .submit__btn:active {
+  top: 1px;
+}
+
+.remove__btn {
+  padding: 10px;
+  border: 1px solid black;
+  border-radius: 8px;
+  font-family: "Trebuchet MS", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  color: black;
+  font-size: 14px;
+  transition: 0.3s ease;
+  position: relative;
+  z-index: 1;
+  width: 100%;
+}
+.remove__btn::before {
+  content: "";
+  display: block;
+  width: 100%;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 0;
+  background: red;
+  border-radius: 8px;
+}
+.remove__btn:hover {
+  transition: 0.3s ease;
+  color: white;
+}
+.remove__btn:hover::before {
+  z-index: -1;
+  height: 100%;
+  transition: 0.3s ease;
+}
+.remove__btn:active {
   top: 1px;
 }
 
@@ -929,12 +1211,53 @@ a:hover {
   display: flex;
 }
 
-input:focus, select:focus, textarea:focus {
+.unread__message-link {
+  display: flex;
+  padding: 2px 3px 0 0;
+  position: relative;
+}
+
+.unread__message-link-img {
+  max-width: 15px;
+  max-height: 15px;
+}
+.unread__message-link-img::after {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: #ff3b4c;
+  position: absolute;
+  top: 1px;
+  right: 0;
+}
+
+.modals__notification-error {
+  display: none;
+}
+
+input:focus,
+select:focus {
   border: 1px solid hsl(218, 81.8%, 56.9%) !important;
 }
 
 img {
   border-radius: 7px;
+}
+
+::-webkit-scrollbar {
+  width: 15px;
+  border-radius: 20px;
+}
+
+::-webkit-scrollbar-track {
+  background: none;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #3077a0;
+  border-radius: 20px;
+  border: 3px solid #D4D4D4;
 }
 
 /*# sourceMappingURL=base.css.map */

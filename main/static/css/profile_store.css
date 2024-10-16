@@ -28,6 +28,9 @@
   color: black;
   font-size: 14px;
 }
+.main__info select:focus, .main__info input:focus, .main__info textarea:focus {
+  border: 1px solid #3779eb;
+}
 .main__info option {
   padding-left: 15px;
 }
@@ -41,6 +44,9 @@
   color: black;
   font-size: 14px;
   flex: 0 1 200px;
+}
+.main__info p span {
+  color: red;
 }
 
 .photo_img {
@@ -97,6 +103,9 @@
   .main__info select, .main__info input, .main__info textarea {
     width: 100%;
     max-width: none;
+  }
+  .main__info select:focus, .main__info input:focus, .main__info textarea:focus {
+    border: 1px solid #3779eb;
   }
   .main__info label {
     justify-content: flex-start;

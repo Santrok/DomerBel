@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block css %}
+    <link rel="stylesheet" href="{% static 'css/publicationSlug-min.css' %}"/>
+    <script async charset="utf-8" src="//cdn.embedly.com/widgets/platform.js"></script>
+{% endblock css %}
+
+{% block title %} Пубикации {% endblock title %}
+
+{% block nav_title %}
+    <div class="nav_category_title">
+        <p>Доска объявлений</p>
+    </div>
+{% endblock nav_title %}
+
+{% block find %}
+    <section class="search_table_stores">
+        <nav class="table_topics_search_location">
+            <input type="text" placeholder="Поиск" class="table_search">
+            <div class="checkbox_button">
+                <input type="image" name="submit" src="{% static 'img/poisk.png' %}">
+            </div>
+        </nav>
+    </section>
+{% endblock find %}
+
+{% block content %}
+    <section class="section_publications">
+        <h2 class="publication_text_title"> {{ publication.title }} </h2>
+        <p class="publication_data">{{ publication.date_of_create }}</p>
+        <div class="publication_link_wrap">
+            <div class="publication_img">
+                <img src="{{ publication.preview_image.url }}" alt="Publication Photo">
+                {% for photo in publication.photopublication_set.all %}
+                    <img src="{{ photo.photo.url }}" alt="Publication Photo">
+                {% endfor %}
+            </div>
+            <div class="publication_text">
+                {{ publication.description|safe }}
+            </div>
+            <div class="ya-share2" data-url="{{ url }}{{ publication.get_absolute_url }}" data-curtain data-shape="round" data-limit="3" data-services="messenger,vkontakte,odnoklassniki,telegram,twitter,viber,whatsapp,moimir,pinterest,skype,tumblr,evernote,linkedin,lj,blogger,delicious,digg,reddit,pocket,qzone,renren,sinaWeibo,surfingbird,tencentWeibo"></div>
+        </div>
+        <p class="publication_views">Просмотров: {{ publication.counter_views }}</p>
+    </section>
+{% endblock content %}
+
+{% block js %}
+<script src="https://yastatic.net/share2/share.js"></script>
+    <script>
+    document.querySelectorAll( 'oembed[url]' ).forEach( element => {
+        // Create the <a href="..." class="embedly-card"></a> element that Embedly uses
+        // to discover the media.
+        const anchor = document.createElement( 'a' );
+
+        anchor.setAttribute( 'href', element.getAttribute( 'url' ) );
+        anchor.className = 'embedly-card';
+
+        element.appendChild( anchor );
+    } );
+</script>
+{% endblock %}
