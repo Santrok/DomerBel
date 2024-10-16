@@ -68,20 +68,13 @@ form,
 .photo_file {
   max-width: 320px;
   width: 100%;
-  border-radius: 8px;
-  font-family: "Trebuchet MS", sans-serif;
-  font-weight: 400;
-  font-style: normal;
-  color: #000;
-  font-size: 14px;
-  border: 1px solid #d4d4d4;
 }
 
 .photo_preview {
+  margin-top: 15px;
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  gap: 5px;
-  margin: 5px;
+  gap: 15px;
 }
 
 .photo_preview {
@@ -124,8 +117,10 @@ form,
   max-height: 85px;
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  object-position: center;
+  -o-object-fit: cover;
+     object-fit: cover;
+  -o-object-position: center;
+     object-position: center;
   border-radius: 3px;
 }
 .photo_img:hover .delete_img {
@@ -143,9 +138,8 @@ form,
   right: 0;
   width: 15px;
   height: 15px;
-  background: rgba(0, 0, 0, 0.5);
+  background: url(../img/icons/krestik.svg) no-repeat 100% 100%/100% 100%, rgba(0, 0, 0, 0.5);
   cursor: pointer;
-  z-index: 2;
 }
 .delete_img::after, .delete_img::before {
   content: "";
@@ -164,10 +158,6 @@ form,
 }
 .delete_img:hover ~ .img_preview {
   opacity: 0.5;
-}
-.delete_img:hover::after, .delete_img:hover::before {
-  background: #FFA07A;
-  transition: 0.3s ease-out;
 }
 
 .main_img {
@@ -262,9 +252,4 @@ form,
   .advertisement_notification-success {
     margin: 100px auto;
   }
-}
-.file_input {
-  padding: 5px;
-}
-
-/*# sourceMappingURL=place_an_ad.css.map */
+}/*# sourceMappingURL=place_an_ad.css.map */

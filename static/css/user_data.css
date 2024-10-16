@@ -1,0 +1,73 @@
+.page_user_data {
+    display: flex;
+    margin-top: 5px;
+    padding-left: 10px;
+}
+
+.user_data {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.title {
+    display: flex;
+    font-family: "Trebuchet MS";
+    font-size: 18px;
+    font-weight: bold;
+    color: #333333;
+}
+
+.user_data_form {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.form_field {
+    display: flex;
+}
+
+.form_label {
+    display: flex;
+    min-width: 160px;
+    font-family: "Trebuchet MS";
+    font-size: 13px;
+}
+
+.change_button {
+    padding: 5px;
+    border-radius: 5px;
+    border: 1px solid #AAA;
+    background: #DADADA;
+    align-items: center;
+    justify-content: center;
+    font-family: "Trebuchet MS";
+    font-size: 13px;
+    cursor: pointer;
+    color: #333333;
+    width: 100px;
+    height: auto;
+}
+
+.success-message {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px 0;
+    font-family: "Trebuchet MS";
+    font-size: 13px;
+    background: rgba(0, 128, 0, 0.322);
+    color: green;
+}
+
+.errorlist {
+    display: flex;
+    text-align: justify;
+    padding-left: 5px;
+    max-width: 175px;
+    width: 100%;
+    font-family: "Trebuchet MS";
+    font-size: 13px;
+    color: red;
+}

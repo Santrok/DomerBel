@@ -5,25 +5,20 @@
   border-top: 1px solid $gray;
 }
 
-
-
 .chat__list {
   overflow-y: auto;
   max-height: 550px;
-  padding-top: 10px;
-  gap: 5px;
+  gap: 10px;
   display: flex;
   flex-direction: column;
 }
 
-.chat__list-item-wrap {
-  padding: 5px 0 10px 0;
-  border-bottom: 1px solid $gray;
-}
 
 .chat__list-item {
   display: flex;
+  gap: 20px;
   align-items: center;
+  border-bottom: 1px solid $gray;
   position: relative;
 
   &:hover {
@@ -71,7 +66,6 @@
   cursor: pointer;
 }
 
-.unread {
-  background-color: #F0F8FF;
-  border-radius: 7px;
+.remove__dialog {
+
 }

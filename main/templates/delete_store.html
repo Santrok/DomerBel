@@ -4,8 +4,7 @@
 {% block css2 %}
 <link rel="stylesheet" href="{% static "css/profile_remove_store-min.css" %}">
 {% endblock css2 %}
-{% block search %}
-{% endblock search %}
+
 
 {% block mainInfo %}
 <div class="main__info">
@@ -14,7 +13,7 @@
         {% csrf_token %}
         <div class="buttons_for_delete">
             <button class="remove__btn">Удалить</button>
-            <a href="{% url 'my_store' %}" class="submit__btn">
+            <a href="{% url 'users:my_store' %}" class="submit__btn">
                 Отмена
             </a>
         </div>

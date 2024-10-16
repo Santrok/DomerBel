@@ -8,15 +8,16 @@ env_keys = dotenv_values()
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
+# See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = env_keys.get('DJANGO_TOKEN')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env_keys.get('DEBUG')
+DEBUG = True
+# DEBUG = False
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'Домер.бел']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '217.197.116.151']
 
 # Application definition
 
@@ -28,34 +29,35 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
+    'django.contrib.sitemaps',
     'django.contrib.postgres',
 
     'drf_yasg',
     'drf_recaptcha',
     'debug_toolbar',
     'rest_framework',
-    'django_ckeditor_5',
     'corsheaders',
     'django_dump_load_utf8',
+    'django_ckeditor_5',
+
     'channels',
+
     'mptt',
     'django_recaptcha',
+    'django_filters',
 
-    'custom_user',
-    'api',
+    'main_page_domer',
+    'users',
     'advertisement',
+    'api_domer',
     'chat',
-    'main',
-    'paid_service',
-    'personal_account',
-    'publication',
-    'related_data',
-    'store',
 ]
 
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
+    "corsheaders.middleware.CorsMiddleware",
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
+
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -78,26 +80,32 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'main.context_processor.get_data_about_organization',
-                'related_data.context_processors.get_data_category_and_region',
-                'advertisement.context_processors.get_today_and_yesterday_date',
-                'config.context_processors.get_context_data',
+                'advertisement.context_processors.get_date_today',
+                'advertisement.context_processors.get_data_category_and_region',
+                'config.context_processor.get_context_data',
+                'main_page_domer.context_processor.get_data_about_organization',
             ],
         },
     },
 ]
 
+SITE_ID = 2
+
 WSGI_APPLICATION = 'config.wsgi.application'
 
-ASGI_APPLICATION = "config.asgi.application"
+# Настройка для пагинатора
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 10,  # Лимит на количество элементов на странице
+}
 
 # Database
-# https://docs.djangoproject.com/en/5.1/ref/settings/#databases
+# https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 DATABASES = {
     'default': {
-        'ENGINE': env_keys.get('DB_ENGINE'),
-        'NAME': env_keys.get('DB_NAME'),
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': env_keys.get('POSTGRES_DB_NAME'),
         'USER': env_keys.get('DB_USERNAME'),
         'PASSWORD': env_keys.get('DB_PASSWORD'),
         'HOST': env_keys.get('DB_HOST'),
@@ -105,8 +113,19 @@ DATABASES = {
     }
 }
 
+# CACHES = {
+#     'default': {
+#         'BACKEND': 'django_redis.cache.RedisCache',
+#         'LOCATION': 'redis://127.0.0.1:6379/1',
+#         'OPTIONS': {
+#             'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+#         }
+#     }
+# }
+
+
 # Password validation
-# https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
+# https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -124,7 +143,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 # Internationalization
-# https://docs.djangoproject.com/en/5.1/topics/i18n/
+# https://docs.djangoproject.com/en/5.0/topics/i18n/
 
 LANGUAGE_CODE = 'ru'
 
@@ -135,48 +154,33 @@ USE_I18N = True
 USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.1/howto/static-files/
+# https://docs.djangoproject.com/en/5.0/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 # STATIC_ROOT = os.path.join(BASE_DIR, 'static')  # используется при деплое
 
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 MEDIA_URL = "/media/"
 
 # Default primary key field type
-# https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
+# https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-AUTH_USER_MODEL = 'custom_user.CustomUser'
+INTERNAL_IPS = [
+    "127.0.0.1",
 
-CORS_ALLOW_ALL_ORIGINS = True
+]
 
-LOGIN_REDIRECT_URL = 'personal_account/personal_account/'
+CORS_ORIGIN_ALLOW_ALL = True
+
+AUTH_USER_MODEL = 'users.User'
+
+LOGIN_REDIRECT_URL = 'users/personal_account/'
 LOGIN_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 
-INTERNAL_IPS = [
-    "127.0.0.1",
-]
-
-# Настройки кэша
-# CACHES = {
-#     'default': {
-#         'BACKEND': 'django_redis.cache.RedisCache',
-#         'LOCATION': 'redis://127.0.0.1:6379/1',
-#         'OPTIONS': {
-#             'CLIENT_CLASS': 'django_redis.client.DefaultClient',
-#         }
-#     }
-# }
-
-REST_FRAMEWORK = {
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
-    'PAGE_SIZE': 10,  # Лимит на количество элементов на странице
-}
-
-# Настройки smtp
+# EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"  # Для отображения писем в консоли
 EMAIL_BACKEND = env_keys.get("EMAIL_BACKEND")
 EMAIL_HOST_PASSWORD = env_keys.get("EMAIL_HOST_PASSWORD")
 EMAIL_HOST = env_keys.get("EMAIL_HOST")
@@ -188,20 +192,20 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 SERVER_EMAIL = EMAIL_HOST_USER
 EMAIL_ADMIN = EMAIL_HOST_USER
 
-# Настройки captcha
+# Настройки капчи
+CAPTCHA_FONT_SIZE = 40
+CAPTCHA_FONT_PATH = 'main_page_domer/static/fonts/arial/arial.ttf'
+CAPTCHA_CHALLENGE_FUNCT = 'users.captcha.random_digit_challenge'  # Функция для генерации CAPTCHA на русском языке
+
 RECAPTCHA_PUBLIC_KEY = env_keys.get('RECAPTCHA_PUBLIC_KEY')
 RECAPTCHA_PRIVATE_KEY = env_keys.get('RECAPTCHA_PRIVATE_KEY')
 DRF_RECAPTCHA_SECRET_KEY = env_keys.get('RECAPTCHA_PRIVATE_KEY')
 
-# Настройки CELERY
-CELERY_BROKER_URL = "redis://localhost:6379/0"
-CELERY_RESULT_BACKEND = "redis://localhost:6379/1"
-# Используем redbeat для планирования задач CELERY BEAT
-CELERY_REDBEAT_REDIS_URL = "redis://localhost:6379/2"
-RED_BEAT_REDIS_URL = "redis://localhost:6379/2"
-CELERY_BEAT_SCHEDULER = 'redbeat.RedBeatScheduler'
+# настройки CELERY
+CELERY_BROKER_URL = "redis://localhost:6379"
+CELERY_RESULT_BACKEND = "redis://localhost:6379"
 
-# Настройки CKEditor
+# CKEditor==============
 customColorPalette = [
     {
         'color': 'hsl(4, 90%, 58%)',
@@ -230,8 +234,8 @@ customColorPalette = [
 ]
 
 CKEDITOR_5_CUSTOM_CSS = 'django_ckeditor_5/admin_dark_mode_fix.css'  # optional
-CKEDITOR_5_FILE_STORAGE = "utils.utils_for_CKEditor5.CkeditorCustomStorage"  # optional
-CKEDITOR_5_UPLOAD_FILE_TYPES = ['jpeg', 'png', 'jpg', "gif", "bmp", "webp", "tiff", "avif"]
+CKEDITOR_5_FILE_STORAGE = "main_page_domer.functions.CkeditorCustomStorage"  # optional
+CKEDITOR_5_UPLOAD_FILE_TYPES = ['jpeg', 'png', 'jpg', "gif", "bmp", "webp", "tiff"]
 CKEDITOR_5_IMAGE_BACKEND = "pillow"
 CKEDITOR_5_CONFIGS = {
     'default': {
@@ -318,8 +322,12 @@ CKEDITOR_5_CONFIGS = {
         }
     }
 }
+# Celery settings
+CELERY_BROKER_URL = "redis://localhost:6379"
+CELERY_RESULT_BACKEND = "redis://localhost:6379"
 
-# Настройки Channels
+ASGI_APPLICATION = "config.asgi.application"
+
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": env_keys.get('CHANNEL_LAYERS_BACKEND'),
@@ -328,7 +336,3 @@ CHANNEL_LAYERS = {
         # },
     }
 }
-
-# Настройка буфера памяти для загрузки файлов
-FILE_UPLOAD_MAX_MEMORY_SIZE = 20 * 1024 * 1024
-DATA_UPLOAD_MAX_NUMBER_FILES = 30

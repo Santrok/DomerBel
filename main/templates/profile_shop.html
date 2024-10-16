@@ -1,7 +1,7 @@
 {% extends "profile_user.html" %} 
 {% load static %} 
 {% block css2 %}
-<link rel="stylesheet" href="{% static 'css/profileShop-min.css' %}">
+<link rel="stylesheet" href="{% static 'css/profileShop-main__advertisement.css' %}">
 {% endblock css2 %}
 {% block title %}
 {% endblock title %}
@@ -14,55 +14,31 @@
       <li>
         <article class="main__shop-list-item">
          <div class="main__shop-list-item-text">
-          <div class="main__shop-list-item-title">
-             <h3>
-                {{ store.title }}
-             </h3>
-             <p class="store__status {% if store.is_active %}store__active{% endif %}">
-                 {% if store.is_active %}Активен{% else %}Не активен{% endif %}
-             </p>
-          <p class="store__status {% if store.moderated %}store__active{% endif %}">
-                                            {% if store.moderated %}
-                                                Прошло модерацию
-                                            {% elif store.moderated is None %}
-                                                На модерации
-                                            {% else %}
-                                                Отклонено
-                                            {% endif %}
-          </p>
-          </div>
-
+          <h3>
+            {{ store.title }}
+          </h3>
           <div class="main__shop-list-item-edit">
-            <a href="{% url 'edit_store' store.id %}">
+            <a href="{% url 'users:edit_store' store.id %}">
               Редактировать магазин
             </a>
-            <a href="{% url 'delete_store' store.id %}">
+            <a href="{% url 'users:delete_store' store.id %}">
               Удалить магазин
             </a>
-              <form action="{% url 'change_store_status' %}" method="POST">
-              {% csrf_token %}
-                  <input type="hidden" name="store" value="{{ store.id }}">
-                {% if store.is_active %}
-                    <input class="store__status-btn" type="submit" name="deactivate" value="Деактивировать магазин">
-                {% else %}
-                    <input class="store__status-btn" type="submit" name="activate" value="Активировать магазин">
-                {% endif %}
-              </form>
           </div>
           <p class="main__shop-list-item-registration">
             Дата регистрации: <span>{{ store.date_of_create }}</span>
           </p>
-{#          <p class="main__shop-list-item-active">#}
-{#            Магазин активен до:#}
-{#            <span>#}
-{#              {{ store.date_of_deactivate }}#}
-{#              <span>#}
-{#                (Осталось {{ store.get_days_till_expiration }} дн.)#}
-{#              </span>#}
-{#            </span>#}
-{#          </p>#}
+          <p class="main__shop-list-item-active">
+            Магазин активен до:
+            <span>
+              {{ store.date_of_deactivate }}
+              <span>
+                (Осталось {{ store.get_days_till_expiration }} дн.)
+              </span>
+            </span>
+          </p>
           <a href="{% url 'store_by_title' store.slug  %}" class="main__shop-list-item-shop-link">
-            Страница магазина на сайте
+            Страница магазина
           </a>
           <ul class="main__shop-list-item-about">
             <li>

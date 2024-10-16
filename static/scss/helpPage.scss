@@ -1,0 +1,21 @@
+@import "./variables";
+@import "./mixins";
+
+
+.help {
+  border-top: 1px solid $gray;
+  padding-top: 15px;
+  & p,li {
+    @include fonts($defaultColor, 15px, 400)
+  }
+
+  ul, ol {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  li {
+    padding-left: 10px;
+  }
+}

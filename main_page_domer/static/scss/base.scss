@@ -1,0 +1,131 @@
+.container {
+  max-width: 1000px;
+  padding: 0 10px;
+  margin: 0 auto;
+}
+
+@import "./variables";
+@import "./mixins";
+@import "./modals";
+@import "./header";
+@import "./mainSearch";
+@import "./paginator";
+@import "./formNotifications";
+@import "./views";
+@import "./footer";
+
+a {
+  @include fonts($mainColor, 14px, 400);
+  &:hover {
+    color: $colorHover;
+  }
+}
+
+.submit__btn {
+  padding: 10px;
+  border: 1px solid $defaultColor;
+  border-radius: 8px;
+  @include fonts($defaultColor, 14px, 400);
+  transition: 0.3s ease;
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  &::before {
+    content: "";
+    display: block;
+    width: 100%;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 0;
+    background: $mainColor;
+    border-radius: 8px;
+  }
+
+  &:hover {
+    transition: 0.3s ease;
+    color: white;
+    &::before {
+      z-index: -1;
+      height: 100%;
+      transition: 0.3s ease;
+    }
+  }
+
+  &:active {
+    top: 1px;
+  }
+}
+
+.remove__btn {
+  padding: 10px;
+  border: 1px solid $defaultColor;
+  border-radius: 8px;
+  @include fonts($defaultColor, 14px, 400);
+  transition: 0.3s ease;
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  &::before {
+    content: "";
+    display: block;
+    width: 100%;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 0;
+    background: red;
+    border-radius: 8px;
+  }
+
+  &:hover {
+    transition: 0.3s ease;
+    color: white;
+    &::before {
+      z-index: -1;
+      height: 100%;
+      transition: 0.3s ease;
+    }
+  }
+
+  &:active {
+    top: 1px;
+  }
+}
+
+.g-recaptcha {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+}
+
+.modal__active {
+  display: flex;
+}
+
+input,
+select {
+  &:focus {
+    border: 1px solid hsl(218, 81.8%, 56.9%) !important;
+  }
+}
+
+img {
+  border-radius: 7px;
+}
+
+::-webkit-scrollbar {
+  width: 15px;
+  border-radius: 20px;
+}
+
+::-webkit-scrollbar-track {
+  background: none;
+}
+
+::-webkit-scrollbar-thumb {
+  background: $mainColor;
+  border-radius: 20px;
+  border: 3px solid $gray;
+}
