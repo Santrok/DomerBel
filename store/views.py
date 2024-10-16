@@ -1,6 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.db.models import Q
+from django.http import Http404
 from django.shortcuts import render, get_object_or_404, redirect
 
 from advertisement.models import Advertisement
@@ -137,46 +138,50 @@ def get_store_by_title(request, store_slug):
      state_sort_by_date) = setting_values_for_sorting_from_cookie_or_request_get(request.COOKIES, request.GET)
     region_filter, region_param, region_bread_crumbs = get_region_variables(request.GET.get('region'))
 
-    store = get_object_or_404(Store, slug=store_slug, is_active=True, moderated=True)
-    advertisements = Advertisement.objects.filter(store=store,
-                                                  is_active=True,
-                                                  moderated=True,
-                                                  **region_filter
-                                                  ).select_related('category',
-                                                                   'region').order_by(order_by)
-    categories_annotate = Category.objects.add_related_count(Category.objects.root_nodes(),
-                                                             Advertisement,
-                                                             'category',
-                                                             'advertisement_counts',
-                                                             cumulative=True,
-                                                             extra_filters={**region_filter,
-                                                                            "store": store,
-                                                                            "is_active": True,
-                                                                            "moderated": True
-                                                                            })
+    store = get_object_or_404(Store, slug=store_slug, is_active=True)
 
-    page_obj = variables_for_paginator(advertisements,
-                                       request.GET.get('page'),
-                                       sort_for_paginator)
+    if store.moderated or store.user == request.user or request.user.is_staff:
+        advertisements = Advertisement.objects.filter(store=store,
+                                                      is_active=True,
+                                                      moderated=True,
+                                                      **region_filter
+                                                      ).select_related('category',
+                                                                       'region').order_by(order_by)
+        categories_annotate = Category.objects.add_related_count(Category.objects.root_nodes(),
+                                                                 Advertisement,
+                                                                 'category',
+                                                                 'advertisement_counts',
+                                                                 cumulative=True,
+                                                                 extra_filters={**region_filter,
+                                                                                "store": store,
+                                                                                "is_active": True,
+                                                                                "moderated": True
+                                                                                })
 
-    context = {
-        'store': store,
-        "ads_found": advertisements.count(),
-        "category": categories_annotate,
-        "region_bread_crumbs": region_bread_crumbs,
-        "region_param": region_param,
-        "page_obj": page_obj,
-        'date': state_sort_by_date,
-        'adaptive_navigation': f'{store.title}. Беларусь'
+        page_obj = variables_for_paginator(advertisements,
+                                           request.GET.get('page'),
+                                           sort_for_paginator)
 
-    }
-    response = render(request, 'store_details.html', context)
-    response.set_cookie('sort', sort_for_paginator)
-    response.set_cookie('date', state_sort_by_date)
-    response.set_cookie('sorted_by', order_by)
-    response.set_cookie('user_auth', request.user.id)
+        context = {
+            'store': store,
+            "ads_found": advertisements.count(),
+            "category": categories_annotate,
+            "region_bread_crumbs": region_bread_crumbs,
+            "region_param": region_param,
+            "page_obj": page_obj,
+            'date': state_sort_by_date,
+            'adaptive_navigation': f'{store.title}. Беларусь'
 
-    return response
+        }
+        response = render(request, 'store_details.html', context)
+        response.set_cookie('sort', sort_for_paginator)
+        response.set_cookie('date', state_sort_by_date)
+        response.set_cookie('sorted_by', order_by)
+        response.set_cookie('user_auth', request.user.id)
+
+        return response
+    else:
+        raise Http404
 
 
 def get_store_by_title_and_category(request, store_slug, category_slug):
