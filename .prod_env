@@ -1,0 +1,26 @@
+DJANGO_TOKEN = 'django-insecure-dg9ahqq8e))1sfb6-tuc+2mmz!-ny2ej4voe*rbwt5lyys9ti0'
+DEBUG = True
+
+DB_ENGINE = 'django.db.backends.postgresql_psycopg2'
+DB_NAME = 'domerdb'
+DB_USERNAME = 'domeruser'
+DB_PASSWORD = 'admin'
+DB_HOST = 'localhost'
+DB_PORT = 5432
+
+EMAIL_HOST_PASSWORD = 'pfyjdhfzzfraayog'
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = "smtp.yandex.ru"
+EMAIL_PORT = "465"
+EMAIL_HOST_USER = "domer.bel@yandex.by"
+EMAIL_USE_SSL = True
+
+RECAPTCHA_PUBLIC_KEY = '6LfeYyUqAAAAAAJuXObWVbDMFfwSP78phvRduVqA'
+RECAPTCHA_PRIVATE_KEY = '6LfeYyUqAAAAAErLcSUF4dS9bIf90lH4AsRNoO0C'
+URL = 'http://127.0.0.1:8000'
+
+CHANNEL_LAYERS_BACKEND = "channels_redis.core.RedisChannelLayer"
+
+PAID_SERVICE_STORE_ID = '28723'
+PAID_SERVICE_SECRET_KEY = 'b08c17bc466d5cd391fc49cd77b6910e19c78b133dfceda65fcc4057af32b0af'
+PAID_SERVICE_URL = 'https://checkout.bepaid.by/ctp/api/checkouts/'

@@ -1,3 +1,4 @@
+from django.contrib.postgres.search import SearchVector
 from django.db.models.signals import pre_delete, post_save
 from django.dispatch import receiver
 
@@ -34,3 +35,11 @@ def notify_store_moderation_result(sender, instance, **kwargs):
                                    activation_title=instance.title,
                                    result=False,
                                    moderation_error_message=instance.moderation_error_message)
+
+
+@receiver(post_save, sender=Store)
+def create_fild_for_search_adv(sender, instance, **kwargs):
+    """
+    Функция заполняет поля для полнотекстового поиска.
+    """
+    sender.objects.filter(id=instance.id).update(search_vector=SearchVector('title', 'description'))

@@ -1,6 +1,7 @@
 import calendar
 from datetime import datetime, timedelta, timezone
 
+from dirtyfields import DirtyFieldsMixin
 from django.contrib import admin
 from django.contrib.auth import get_user_model
 from django.contrib.postgres.indexes import GinIndex
@@ -14,7 +15,7 @@ from services.files.images import convert_image_to_avif
 from services.files.uploaded_file import upload_to
 
 
-class Store(models.Model):
+class Store(DirtyFieldsMixin, models.Model):
     """
     Модель магазина
     связи: с User(FK), с Region(FK), с Category(FK)
@@ -56,8 +57,7 @@ class Store(models.Model):
     def save(self, *args, **kwargs):
         """
         Сохраняет экземпляр модели Store, высчитывает дату деактивации магазина,
-        конвертирует логотип в формат AVIF,
-        выполняет индексацию по полям 'title' и 'description' для полнотекстового поиска
+        конвертирует логотип в формат AVIF
         """
         day_now = datetime.now()
         if calendar.isleap(int(day_now.strftime('%Y'))) and int(day_now.strftime("%m")) <= 2:
@@ -66,8 +66,6 @@ class Store(models.Model):
             self.date_of_deactivate = day_now + timedelta(days=365)
         if self.logo_image and not self.logo_image.url.lower().endswith('avif'):
             convert_image_to_avif(photo=self.logo_image)  # Конвертация изображения в формат AVIF
-        super().save(*args, **kwargs)
-        self.search_vector = SearchVector('title', 'description')
         super(Store, self).save(*args, **kwargs)
 
     def get_days_till_expiration(self):
