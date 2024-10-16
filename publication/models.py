@@ -28,7 +28,7 @@ class Publication(models.Model):
     preview_image = models.ImageField("Фото", upload_to=upload_to)
     date_of_create = models.DateTimeField("Дата создания", auto_now_add=True)
     counter_views = models.IntegerField("Счетчик просмотров", default=0)
-    moderated = models.BooleanField("Прошло модерацию", default=False)
+    moderated = models.BooleanField("Прошло модерацию", blank=True, null=True)
     moderation_error_message = models.TextField("Текст причины отказа в модерации",
                                                 help_text="Отправиться пользователю на Email",
                                                 blank=True, null=True)

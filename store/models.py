@@ -119,3 +119,4 @@ class StoreAdmin(admin.ModelAdmin):
     list_editable = ['is_active', "moderated"]
     list_per_page = 50
     ordering = ["-date_of_create"]
+
