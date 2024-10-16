@@ -1,0 +1,21 @@
+.help {
+  border-top: 1px solid #D4D4D4;
+  padding-top: 15px;
+}
+.help p, .help li {
+  font-family: "Trebuchet MS", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  color: black;
+  font-size: 15px;
+}
+.help ul, .help ol {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.help li {
+  padding-left: 10px;
+}
+
+/*# sourceMappingURL=helpPage.css.map */
