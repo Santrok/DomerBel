@@ -1,109 +1,164 @@
-from django.core.paginator import Paginator
-from django.shortcuts import get_object_or_404
+import random
+from datetime import datetime, timedelta
 
-from .models import Region
+from django.db.models import Func, FloatField
+from django.db.models.fields.json import KT
+from django.utils.timezone import get_current_timezone
+
+from advertisement.models import Advertisement
+from related_data.models import ElementTwo
 
 
-def sorted_by_number(number):
-    if (number == '30'
-            or number == '60'
-            or number == '90'):
-        sort_for_paginator = int(number)
-        return sort_for_paginator
+def setting_values_for_sorting_from_cookie_or_request_get(cookie, parameters_from_request_get):
+    """
+    Функция принимающая COOKIE и параметры GET запроса для
+    установки значений переменных для дальнейшей сортировки
+    """
+    if parameters_from_request_get.get('sort'):
+        sort_for_paginator = _sorted_by_number(parameters_from_request_get.get('sort'))
     else:
-        return 30
+        sort_for_paginator = _sorted_by_number(cookie.get('sort'))
+    if parameters_from_request_get.get('date') or parameters_from_request_get.get('price'):
+        state_sort_by_date, order_by = _sorted_by_date_or_price(parameters_from_request_get)
+    else:
+        state_sort_by_date = cookie.get('date', 0)
+        order_by = _sorted_by(cookie.get('sorted_by'))
+    return order_by, sort_for_paginator, state_sort_by_date
 
 
-def variables_for_paginator(queryset, page=1, elements=30):
-    paginator = Paginator(queryset, elements)
-    page_number = page
-    page_obj = paginator.get_page(page_number)
-    return page_obj
+def _sorted_by_number(number):
+    """
+    Возвращает число для сортировки количества объявлений если оно разрешено
+    """
+    number_list = ["30", "60", "90"]
+    if number in number_list:
+        return int(number)
+    return 30
 
 
-def sorted_by_date_or_price(sort):
+def _sorted_by_date_or_price(sort):
+    """
+    Возвращает значения для установки значения сортировки
+    """
     if sort.get('date'):
         if sort['date'] == '0':
-            return 1, 'date_of_create'
+            return 1, 'search_boost_date'
         else:
-            return 0, '-date_of_create'
+            return 0, "-search_boost_date"
     elif sort.get('price'):
         if sort['price'] == '0':
             return 1, 'price'
         else:
             return 0, '-price'
+    return 0, "-search_boost_date"
 
 
-def sorted_by(key):
-    if key == '-date_of_create' or key == 'date_of_create' or key == 'price' or key == '-price':
+def _sorted_by(key):
+    """
+    Возвращает вариант сортировки, если он разрешен
+    """
+    key_list = ["-search_boost_date", "search_boost_date", 'price', '-price']
+    if key in key_list:
         return key
     else:
-        return '-date_of_create'
+        return "-search_boost_date"
 
 
-def get_region_variables(region_request):
-    if region_request:
-        region_filter = dict(
-            region__in=Region.objects.filter(id=region_request).get_descendants(include_self=True))
-        region_param = get_object_or_404(Region, id=region_request)
-        region_bread_crumbs = region_param.get_ancestors(ascending=False, include_self=True)
-        return region_filter, region_param, region_bread_crumbs
-    else:
-        region_filter = dict(region__in=Region.objects.all())
-        region_bread_crumbs = ''
-        region_param = ''
-        return region_filter, region_param, region_bread_crumbs
+def get_similar_advertisement(advertisement):
+    """
+    Возвращает схожие экземпляры модели Advertisement созданные за последние 50 дней.
+    Модели: Advertisement
+    """
+    date = datetime.now(tz=get_current_timezone()) - timedelta(days=50)
+    similar_advertisement = list(Advertisement.objects.filter(moderated=True,
+                                                              is_active=True,
+                                                              category_id=advertisement.category,
+                                                              date_of_last_activation__date__gte=date
+                                                              ).exclude(id=advertisement.id).values_list('id',
+                                                                                                         flat=True))
+
+    similar_advertisement = random.sample(similar_advertisement,
+                                          4 if len(similar_advertisement) >= 4 else len(similar_advertisement))
+    similar_advertisement = Advertisement.objects.filter(id__in=similar_advertisement)
+    return similar_advertisement
 
 
-def where_to_look(parameter, model):
-    result = []
-    bread_crumbs = []
-    if parameter:
-        if parameter == ['']:
-            pass
-        else:
-            while '' in parameter:
-                parameter.remove('')
-            result = get_object_or_404(model, id=parameter[-1]).get_descendants(include_self=True)
-            bread_crumbs = get_object_or_404(model, id=parameter[-1]).get_ancestors(ascending=False, include_self=True)
-    return result, bread_crumbs
+def get_additional_data_for_advertisement(advertisement):
+    """
+    Возвращает дополнительные данные объявления.
+    Модели: Advertisement, Category, Field, ElementTwo
+    """
+    additional_information = advertisement.category.field_set.all().prefetch_related("spisok")
+
+    additional_values = {key: value for key, value in zip(advertisement.additional_information.keys(),
+                                                          map(lambda i: i.split(", "),
+                                                              advertisement.additional_information.values()))}
+
+    additional_values_two = {}
+    for i in additional_values.items():
+        if len(i[1]) > 1:
+            additional_values_two[i[0]] = [i[1][0], ElementTwo.objects.filter(element__title=i[1][0])]
+    for i in additional_information:
+        if i.min_val_interval_date:
+            additional_values_two[i.title] = [str(date) for date in
+                                              range(i.min_val_interval_date, i.max_val_interval_date + 1)]
+    return additional_information, additional_values, additional_values_two
 
 
-def search_additional_information(fild, cop):
-    search = {}
-    search_kt = {}
-    for i in fild:
-        if "от" not in i.search and cop.get(f'{i.id}') != ['undefined']:
-            print(cop.get(f'{i.id}'))
-            if len(cop.get(f'{i.id}')) > 1 and i.title == 'Этаж':
-                if cop.get(f'{i.id}') == ['undefined', 'undefined']:
-                    pass
-                elif cop.get(f'{i.id}')[0] == 'undefined':
-                    search_kt[i.title] = ', '.join(cop.get(f'{i.id}')).replace('undefined,', ',')
-                else:
-                    search_kt[i.title] = ', '.join(cop.get(f'{i.id}')).replace(', undefined', ',')
-            elif len(cop.get(f'{i.id}')) > 1:
-                search_kt[i.title] = ', '.join(cop.get(f'{i.id}')).replace(', undefined', '')
-            else:
-                search[i.title] = ', '.join(cop.get(f'{i.id}'))
-        elif cop.get(f'{i.id}') != ['undefined']:
-            search_kt[i.title] = cop.get(f'{i.id}')
-    return search, search_kt
+def setting_search_options(category=None, region=None, only_photo=None, only_video=None,
+                           only_title=None, text_search=None, field_for_search=None, search_lookup=None, id=None):
+    """
+    Возвращает словарь из параметров для дальнейшего поиска
+    """
+    search_parameters = {}
+    if category:
+        search_parameters['category__in'] = category
+    if region:
+        search_parameters['region__in'] = region
+    if only_photo:
+        search_parameters['preview_image__gt'] = ''
+    if only_video:
+        search_parameters['video_link__isnull'] = False
+    if only_title and text_search:
+        search_parameters['search_title_vector'] = text_search
+    elif text_search:
+        search_parameters['search_vector'] = text_search
+    if field_for_search:
+        search_parameters['additional_information__contains'] = field_for_search
+    if search_lookup:
+        search_parameters.update(search_lookup)
+    if id:
+        search_parameters['id'] = id
+    return search_parameters
 
 
-def annotating_field(kt):
-    search_q = {}
-    search_annotate = {}
-    for i, item in enumerate(kt):
-        search_annotate[f"find{i}"] = f"additional_information__{item}"
-        if type(kt.get(item)) is not str:
-            for index, x in enumerate(kt.get(item)):
-                if x != 'undefined':
-                    if index == 0:
-                        search_q[f"find{i}__gte"] = x
-                    elif index == 1:
-                        search_q[f"find{i}__lte"] = x
-        else:
-            search_q[f"find{i}__icontains"] = kt.get(item)
+def make_clear_query(query, copy_of_request_get, request_get):
+    """
+    Возвращает копии query и request.GET без параметров сортировки
+    """
+    key_delete = ['page', 'sort', 'date', 'price', 'text_search',
+                  'only_photo', 'only_video', 'only_title', 'id', 'active']
+    for key in key_delete:
+        query = query.replace(f'{key}={request_get.get(key)}&', '')
+        copy_of_request_get.pop(key, None)
+    return query, copy_of_request_get
 
-    return search_q, search_annotate
+
+def get_result_for_filter_advertisement_query(search_parameters, field_annotate, search_lookup, is_active=True,
+                                              moderated=True, order_by="-search_boost_date", **kwargs):
+    """
+    Возвращает результат запроса поиска по объявлениям
+    """
+    advertisements = Advertisement.objects.annotate(**{key: Func(KT(value), function='CAST',
+                                                                 template='CAST(%(expressions)s AS numeric)',
+                                                                 output_field=FloatField()) if search_lookup.get(
+        f'{key}__lte') or search_lookup.get(f'{key}__gte') else KT(value) for key, value in field_annotate.items()}
+                                                    ).filter(is_active=is_active,
+                                                             moderated=moderated,
+                                                             **search_parameters,
+                                                             **kwargs
+                                                             ).select_related('category',
+                                                                              'region'
+                                                                              ).order_by(order_by)
+
+    return advertisements

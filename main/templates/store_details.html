@@ -1,0 +1,384 @@
+{% extends "base.html" %}
+{% load static %}
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/advertisement-min.css' %}">
+<link rel="stylesheet" href="{% static 'css/storeDetail-min.css' %}">
+{% endblock css %}
+{% block title %}
+{% endblock title %}
+{% block modals %}
+<form aria-modal="true" class="send__message">
+    <div class="cross">
+      <svg width="20.000000" height="20.000000" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+          <desc>
+                  Created with Pixso.
+          </desc>
+          <defs>
+              <clipPath id="clip946_10111">
+                  <rect id="Dismiss" width="20.000000" height="20.000000" fill="white" fill-opacity="0"/>
+              </clipPath>
+          </defs>
+          <g clip-path="url(#clip946_10111)">
+              <path id="Shape" d="M3.89 4.05L3.96 3.96C4.23 3.7 4.65 3.67 4.94 3.89L5.03 3.96L10 8.93L14.96 3.96C15.23 3.7 15.65 3.67 15.94 3.89L16.03 3.96C16.29 4.23 16.32 4.65 16.1 4.94L16.03 5.03L11.06 10L16.03 14.96C16.29 15.23 16.32 15.65 16.1 15.94L16.03 16.03C15.76 16.29 15.34 16.32 15.05 16.1L14.96 16.03L10 11.06L5.03 16.03C4.76 16.29 4.34 16.32 4.05 16.1L3.96 16.03C3.7 15.76 3.67 15.34 3.89 15.05L3.96 14.96L8.93 10L3.96 5.03C3.7 4.76 3.67 4.34 3.89 4.05L3.96 3.96L3.89 4.05Z" fill="#212121" fill-opacity="1.000000" fill-rule="nonzero"/>
+          </g>
+      </svg>
+    </div>
+    <div class="modals__login-logo-wrap">
+      <div class="modals__login-logo">
+          <img src="{% static 'img/logo.png' %}" alt="">
+      </div>
+      <h2>
+          Написать сообщение
+      </h2>
+    </div>
+    <fieldset>
+      <label for="chatMessage">
+        <p>
+          <span>*</span>Сообщение
+        </p>
+        <textarea name="text_message" id="chatMessage" placeholder="Сообщение" cols="30" rows="10"></textarea>
+      </label>
+      <button type="button" class="submit__btn">
+        Отправить
+      </button>
+    </fieldset>
+  </form>
+{% endblock modals %}
+{% block search %}
+<section class="store">
+  <div class="store__about">
+    <h2>
+      {{ store.title }} 
+    </h2>
+    <p>
+      {{ store.description }}
+    </p>
+  </div>
+  <div class="store__info">
+    <div class="store__info-img">
+      <img src="{% if store.logo_image %}{{ store.logo_image.url }}{% else %}{% static 'img/no_image.jpg' %}{% endif %}" alt="">
+    </div>
+    {% if store.region %}
+      <p class="store__info-district">
+        {{ store.region }}
+      </p>
+    {% endif %}
+    {% if store.address %}
+      <div class="store__info-text">
+        {{ store.address }}
+      </div>
+    {% endif %}
+    {% if store.phone_num %}
+      <a href="tel:{{ store.phone_num }}" class="store__info-phone">
+        {{ store.phone_num }}
+      </a>
+    {% endif %}
+    <p class="store__send-email" data-id="{% if user.is_authenticated %}{{ store.id }}{% endif %}">
+      Написать сообщение
+    </p>
+    <a href="{{ store.url }}" class="store__info-site">
+      Сайт магазина
+    </a>
+  </div>
+</section>
+<search class="main__search">
+  <form class="main__search-form" action="{% url 'search_for_advertisements_in_the_store' store.slug %}" method="GET">
+  <fieldset class="main__search-form-item region">
+      <select name="category" class="main__search-form-item-category">
+          <option value="">
+              Все разделы
+          </option>
+      {% for category in category_list %}
+          {% if category.level == 0 %}
+              <option value="{{ category.id }}" data-fetchid="{{ category.id }}">
+                  {{ category }}
+              </option>
+          {% endif %}
+      {% endfor %}
+      </select>
+      <input type="text" name="text_search" placeholder="Поиск по тексту" />
+      <select name="region" class="main__search-form-item-region">
+          <option value="">
+              Любое расположение
+          </option>
+      {% for region in region_list %}
+          {% if region.level == 0 %}
+          <option value="{{ region.id }}" data-fetchid="{{ region.id }}">
+              {{ region.area }}
+          </option>
+          {% endif %}
+      {% endfor %}
+      </select>
+  </fieldset>
+  <fieldset class="main__search-form-item labels">
+      <div class="main__search-form-item-label-wrap">
+      <label for="heading">
+          <input type="checkbox" name="only_title" id="heading" />
+          <p>Только в заголовках</p>
+      </label>
+      <label for="photos">
+          <input type="checkbox" name="only_photo" id="photos" />
+          <p>С фото</p>
+      </label>
+      <label for="videos">
+          <input type="checkbox" name="only_video" id="videos" />
+          <p>С видео</p>
+      </label>
+      </div>
+      <button>Искать</button>
+  </fieldset>
+  <fieldset class="main__search-form-item fields">
+  </fieldset>
+  </form>
+</search>
+{% endblock search %}
+{% block crumbs %}
+    {% if category_bread_crumbs or region_bread_crumbs %}
+        <section class="crumbs">
+            <div class="crumbs__wrapper">
+                <ul class="crumbs__list">
+                    <li class="crumbs__list-item">
+                        <a href="{% url 'store_by_title' store.slug %}">Все объявления</a>
+                    </li>
+                    <li class="crumbs__list-item-dots">...</li>
+                    {% if region_bread_crumbs %}
+                        {% for bread_crumbs in region_bread_crumbs %}
+                            <li class="crumbs__list-item">
+                                <a href="{% url 'store_by_title' store.slug %}?region={{ bread_crumbs.id }}">{{ bread_crumbs.area }}</a>
+                            </li>
+                            {% if not forloop.last %}
+                            <li class="crumbs__list-item-dots">...</li>
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                    {% if category_bread_crumbs %}
+                        {% for bread_crumbs in category_bread_crumbs %}
+                            {% if region_bread_crumbs %}
+                            <li class="crumbs__list-item-dots">...</li>
+                            {% endif %}
+                            <li class="crumbs__list-item">
+                                <a href="{% url 'store_by_title_and_category' store_slug=store.slug category_slug=bread_crumbs.slug %}{% if region_param.id %}?region={{ region_param.id }}{% endif %}">{{ bread_crumbs.title }}</a>
+                            </li>
+                            {% if not forloop.last %}
+                            <li class="crumbs__list-item-dots">...</li>
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                </ul>
+            </div>
+        </section>
+    {% endif %}
+{% endblock %}
+{% block content %}
+{% block category_filter %}
+<section class="filter">
+  <ul class="filter__list">
+      {% for category in category %}
+      {% if category.advertisement_counts != 0 %}
+          <li class="filter__list-item">
+              <a href="{% url 'store_by_title_and_category' store_slug=store.slug category_slug=category.slug %}{% if region_param.id %}?region={{ region_param.id }}{% endif %}" class="category">
+                  {{ category.title }}, <span>{{ category.advertisement_counts }}</span>
+              </a>
+          </li>
+      {% endif %}
+      {% endfor %}
+  </ul>
+</section>
+{% endblock category_filter %}
+{% block sort %}
+<section class="sort">
+  <div class="sort__ads">
+      Найдено: <span>{{ ads_found }}</span>
+  </div>
+  <ul class="sort__type-list">
+      <li class="sort__type-list-item">
+          <img src="{% static 'img/sort1.png' %}" alt="{% static 'img/sort1.png' %}">
+      </li>
+      <li class="sort__type-list-item">
+          <img src="{% static 'img/sort2.png' %}" alt="{% static 'img/sort2.png' %}">
+      </li>
+  </ul>
+  <div class="sorted__output">
+      <p>
+          Выводить по:
+      </p>
+      <ul class="sorted__output-list">
+          <li class="sorted__output-list-item">
+              <a href="?sort=30{% if region_param.id %}&region={{ region_param.id }}{% endif %}">
+                  30
+              </a>
+          </li>
+          <li class="sorted__output-list-item">
+              <a href="?sort=60{% if region_param.id %}&region={{ region_param.id }}{% endif %}">
+                  60
+              </a>
+          </li>
+          <li class="sorted__output-list-item">
+              <a href="?sort=90{% if region_param.id %}&region={{ region_param.id }}{% endif %}">
+                  90
+              </a>
+          </li>
+      </ul>
+  </div>
+  <div class="sorted__by">
+      <p>
+          Сортировать:
+      </p>
+      <ul class="sorted__by-list">
+          <li class="sorted__by-list-item">
+              <a href="?date={{ date }}{% if region_param.id %}&region={{ region_param.id }}{% endif %}">
+                  Дата
+              </a>
+              <div class="sorted__by-list-item-img">
+                  <img src="{% static 'img/icons/arrowDown.svg' %}" alt="">
+              </div>
+          </li>
+          <li class="sorted__by-list-item">
+              <a href="?price={{ date }}{% if region_param.id %}&region={{ region_param.id }}{% endif %}">
+                  Цена
+              </a>
+              <div class="sorted__by-list-item-img">
+                  <img src="{% static 'img/icons/arrowDown.svg' %}" alt="">
+              </div>
+          </li>
+      </ul>
+  </div>
+</section>
+{% endblock sort %}
+<section class="advertisement">
+  <ul class="advertisement__list">
+      {% for card in page_obj %}
+          <li>
+              <article class="advertisement__list-item {% if card.highlight_ad %} active__item {% endif %}">
+                  <a href="{% url 'advertisement_details' card.slug %}" class="advertisement__list-item-img">
+                      <img src="{% if card.preview_image %} {{ card.preview_image.url }} {% else %}{% static 'img/no_image.jpg' %}{% endif %}"
+                           alt="{% if card.preview_image %} {{ card.preview_image.url }} {% else %}{% static 'img/no_image.jpg' %}{% endif %}">
+                  </a>
+                  <div class="advertisement__list-item-about">
+                      <h3 class="advertisement__list-item-title">
+                          <a href="{% url 'advertisement_details' card.slug %}">
+                              {{ card.title }}
+                          </a>
+                      </h3>
+                      <p class="advertisement__list-item-price">
+                          {% if card.price %}
+                              {{ card.price|floatformat }} руб.
+                              {% else %} Договорная
+                          {% endif %}
+                      </p>
+                      <ul class="advertisement__list-item-about-text-list">
+                          <li>
+                              {{ card.category }}
+                          </li>
+                          <li>
+                              {{ card.bearer }}
+                          </li>
+                          <li>
+                              {{ card.region }}
+                          </li>
+                          <li>
+                              {% if card.date_of_last_activation.date == date_today %}
+                                  Сегодня
+                              {% elif card.date_of_last_activation.date == date_yesterday %}
+                                  Вчера
+                              {% else %}
+                                  {{ card.date_of_last_activation|date:"d b. Y H:i" }}
+                              {% endif %}
+                          </li>
+                      </ul>
+                      {% if card.vip or card.special_accommodation or card.highlight_ad or card.raise_in_search %}
+                      <ul class="advertisement__list-item-action">
+                          {% if card.special_accommodation %}
+                              <li class="advertisement__list-item-action-item">
+                                  <img src="{% static 'img/special.png' %}" alt="">
+                              </li>
+                          {% endif %}
+                          {% if card.vip %}
+                              <li class="advertisement__list-item-action-item">
+                                  <img src="{% static 'img/VIP.png' %}" alt="">
+                              </li>
+                          {% endif %}
+                          {% if card.highlight_ad %}
+                              <li class="advertisement__list-item-action-item">
+                                  <img src="{% static 'img/highlight.png' %}" alt="">
+                              </li>
+                          {% endif %}
+                          {% if card.raise_in_search %}
+                              <li class="advertisement__list-item-action-item">
+                                  <img src="{% static 'img/up.png' %}" alt="">
+                              </li>
+                          {% endif %}
+                      </ul>
+                      {% endif %}
+                  </div>
+              </article>
+          </li>
+      {% endfor %}
+  </ul>
+  {% if vip_advertisement %}
+  <div class="vip__wrap">
+      <ul class="vip__list">
+          {% for vip in vip_advertisement %}
+              <li>
+                  <h2 class="vip__title">
+                      VIP объявления
+                  </h2>
+                  <article class="vip__list-item">
+                      <a href="{% url 'advertisement_details' vip.slug %}">
+                          <div class="vip__list-item-img">
+                              <img src="{% if vip.preview_image %} {{ vip.preview_image.url }} {% else %}{% static 'img/no_image.jpg' %}{% endif %}"
+                                   alt="{% if vip.preview_image %} {{ vip.preview_image.url }} {% else %}{% static 'img/no_image.jpg' %}{% endif %}">
+                          </div>
+                          <h3 class="vip__list-item-title">
+                              {{ vip.title }}
+                          </h3>
+                          <p class="vip__list-item-district">
+                              {{ vip.region }}
+                          </p>
+                      </a>
+                  </article>
+              </li>
+          {% endfor %}
+      </ul>
+  </div>
+  {% endif %}
+</section>
+{% block paginator %}
+<div class="paginator">
+  <div class="paginator_wrapper">
+      <nav class="list_pages">
+          <ul>
+              {% if page_obj.has_previous %}
+                  <li class="">
+                      <a href="?page={{ page_obj.previous_page_number }}{% if region_param.id %}&region={{ region_param.id }}{% endif %}"><</a>
+                  </li>
+              {% endif %}
+              {% if page_obj.has_other_pages %}
+                  {% for page in page_obj.paginator.page_range %}
+                      {% if page_obj.number == page %}
+                          <li class="page_num page_num_selected">{{ page }}</li>
+                      {% elif page >= page_obj.number|add:-2 and page <= page_obj.number|add:2 %}
+                          <li class="page_num">
+                              <a href="?page={{ page }}{% if region_param.id %}&region={{ region_param.id }}{% endif %}">{{ page }}</a>
+                          </li>
+                      {% endif %}
+                  {% endfor %}
+              {% endif %}
+              {% if page_obj.has_next %}
+                  <li class="">
+                      <a href="?page={{ page_obj.next_page_number }}{% if region_param.id %}&region={{ region_param.id }}{% endif %}">></a>
+                  </li>
+              {% endif %}
+          </ul>
+      </nav>
+  </div>
+</div>
+{% endblock paginator %}
+
+{% endblock content %}
+{% block js %}
+<script src="{% static 'js/profile/selectAdvertisement.js' %}"></script>
+<script src="{% static 'js/profile/errors.js' %}"></script>
+<script src="{% static 'js/advertisement/advertisementAdd.js' %}"></script>
+<script src="{% static "js/details/sendMessage.js" %}"></script>
+{% endblock js %}

@@ -1,0 +1,354 @@
+{% extends "base.html" %}
+{% load static %}
+{% block css %}
+    {% block css2 %}
+    {% endblock css2 %}
+    <link rel="stylesheet" href="{% static 'css/profile-min.css' %}">
+{% endblock css %}
+{% block title %}
+{% endblock title %}
+{% block modals %}
+    <form aria-modal="true" class="paid__modal" id="paid_form" method="POST">
+{% csrf_token %}
+    <div class="cross">
+            <svg width="20.000000" height="20.000000" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"
+                 xmlns:xlink="http://www.w3.org/1999/xlink">
+                <desc>
+                    Created with Pixso.
+                </desc>
+                <defs>
+                    <clipPath id="clip946_10111">
+                        <rect id="Dismiss" width="20.000000" height="20.000000" fill="white" fill-opacity="0"/>
+                    </clipPath>
+                </defs>
+                <g clip-path="url(#clip946_10111)">
+                    <path id="Shape"
+                          d="M3.89 4.05L3.96 3.96C4.23 3.7 4.65 3.67 4.94 3.89L5.03 3.96L10 8.93L14.96 3.96C15.23 3.7 15.65 3.67 15.94 3.89L16.03 3.96C16.29 4.23 16.32 4.65 16.1 4.94L16.03 5.03L11.06 10L16.03 14.96C16.29 15.23 16.32 15.65 16.1 15.94L16.03 16.03C15.76 16.29 15.34 16.32 15.05 16.1L14.96 16.03L10 11.06L5.03 16.03C4.76 16.29 4.34 16.32 4.05 16.1L3.96 16.03C3.7 15.76 3.67 15.34 3.89 15.05L3.96 14.96L8.93 10L3.96 5.03C3.7 4.76 3.67 4.34 3.89 4.05L3.96 3.96L3.89 4.05Z"
+                          fill="#212121" fill-opacity="1.000000" fill-rule="nonzero"/>
+                </g>
+            </svg>
+        </div>
+        <div class="modals__login-logo-wrap">
+            <div class="modals__login-logo">
+                <img src="{% static 'img/logo.png' %}" alt="">
+            </div>
+            <h2>
+                Услуги продвижения
+            </h2>
+        </div>
+    <div class="paid__modal-errors">
+
+    </div>
+    <fieldset class="paid__form">
+    {{ form.advertisement }}
+        {% for checkbox in form.services %}
+    <label for="{{ checkbox.id_for_label }}">
+        <div class="paid__form-title">
+        <p class="paid__form-title-label">{{ checkbox.choice_label }}</p>
+        <p class="paid__form-title-period">Срок действия услуги: {% if checkbox.get_validity_period != 0 %} {{ checkbox.get_validity_period }} дн. {% else %} один раз {% endif %}</p>
+        </div>
+        {{ checkbox.tag }}
+        <p class="paid__form-cost">{{ checkbox.get_cost|floatformat }} руб</p>
+    </label>
+    {% endfor %}
+
+    </fieldset>
+    <p class="paid__form-total">Сумма: <span>0 руб</span></p>
+        <button class="submit__btn" type="button" id="paid_button">Оплатить</button>
+    </form>
+{% endblock modals %}
+{% block search %}
+    <search class="main__search search__profile">
+        <form class="main__search-form" action="{% url 'personal_account_search_results' %}" method="GET">
+            <fieldset class="main__search-form-item region">
+                <select name="category" class="main__search-form-item-category">
+                    <option value="">Все разделы</option>
+                    {% for category in category_list %} {% if category.level == 0 %}
+                        <option value="{{ category.id }}" data-fetchid="{{ category.id }}">
+                            {{ category }}
+                        </option>
+                    {% endif %} {% endfor %}
+                </select>
+                <input type="text" name="" placeholder="Поиск по тексту"/>
+                <select name="" class="main__search-form-item-area">
+                    <option value=""></option>
+                </select>
+                <select name="region" class="main__search-form-item-region">
+                    <option value="">Любое расположение</option>
+                    {% for region in region_list %} {% if region.level == 0 %}
+                        <option value="{{ region.id }}" data-fetchid="{{ region.id }}">
+                            {{ region.area }}
+                        </option>
+                    {% endif %} {% endfor %}
+                </select>
+            </fieldset>
+            <fieldset class="main__search-form-item labels">
+                <div class="main__search-form-item-label-wrap">
+                    <input type="text" name="id" placeholder="№ объявления">
+                    <label for="heading">
+                        <input type="checkbox" name="only_title" id="heading"/>
+                        <p>в заголовках</p>
+                    </label>
+                </div>
+                <button>Искать</button>
+            </fieldset>
+            <fieldset class="main__search-form-item fields"></fieldset>
+        </form>
+    </search>
+{% endblock search %}
+{% block content %}
+    <section class="profile">
+        {% block aside %}
+            <aside class="profile__aside">
+                <nav>
+                    <ul class="profile__aside-nav-list">
+                        <li class="profile__aside-nav-list-item exit">
+                            <a href="#">
+                                Выход
+                            </a>
+                        </li>
+                        <li class="profile__aside-nav-list-item">
+                            <a href="{% url 'user_data' %}">
+                                Контактные данные
+                            </a>
+                        </li>
+                        <li class="profile__aside-nav-list-item">
+                            <a href="{% url 'personal_account' %}">
+                                Мои объявления
+                            </a>
+                        </li>
+                        {% if user.check_user_permission_in_group %}
+                            <li class="profile__aside-nav-list-item priority">
+                                <a href="{% url 'add_store' %}">
+                                    Добавить магазин
+                                </a>
+                            </li>
+                            {% if user.store_set.all %}
+                                <li class="profile__aside-nav-list-item priority">
+                                    <a href="{% url 'my_store' %}">
+                                        Мои магазины
+                                    </a>
+                                </li>
+                            {% endif %}
+                        {% endif %}
+                        <li class="profile__aside-nav-list-item dialog-item">
+                            <a href="{% url 'dialogs' %}">
+                                Диалоги
+                            </a>
+                        </li>
+                        <li class="profile__aside-nav-list-item">
+                            <a href="{% url 'feedback' %}">
+                                Написать администратору
+                            </a>
+                        </li>
+                        {% if user.check_user_permission_in_group %}
+                            <li class="profile__aside-nav-list-item">
+                                <a href="{% url 'user_all_publications' %}">
+                                    Мои публикации
+                                </a>
+                            </li>
+                        {% endif %}
+                        <li class="profile__aside-nav-list-item">
+                            <a href="{% url 'favorites' %}">
+                                Избранное
+                            </a>
+                        </li>
+                    {% if user.check_user_permission_in_group %}
+                        <li class="profile__aside-nav-list-item">
+                            <a href="{% url 'bulk_import' %}">
+                                Массовый импорт объявлений
+                            </a>
+                        </li>
+                    {% endif %}
+                    </ul>
+                </nav>
+            </aside>
+        {% endblock aside %}
+        {% block mainInfo %}
+            <form method="POST" class="main__info" action="{% url 'delete_or_archive_ads' %}">
+                {% csrf_token %}
+                {% block navigation %}
+                    <nav class="main__info-nav">
+                        <ul class="main__info-list">
+                            <li>
+                                <a href="{% url 'personal_account' %}" class="advertisement__active">
+                                    Активные ({{ active_ads_quantity }})
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{% url 'inactive_adds' %}" class="advertisement__archive">
+                                    Архивные ({{ inactive_ads_quantity }})
+                                </a>
+                            </li>
+                        </ul>
+                        {% if page_obj.object_list %}
+                            <label class="main__info-advertisement-nav-select-all" for="selectAll">
+                                <input type="checkbox" name="" id="selectAll">
+                                <p>
+                                    Выделить все объявления
+                                </p>
+                            </label>
+                        {% endif %}
+                    </nav>
+                {% endblock navigation %}
+                {% if page_obj.object_list %}
+                    <ul class="main__info-advertisement-list">
+                        {% for advertisement in page_obj %}
+                            <li>
+                                <article class="main__info-advertisement-list-item">
+                                    <ul class="main__info-advertisement-list-item-achive">
+                                        <li>
+                                            <input type="checkbox" name="ads_checkbox" value="{{ advertisement.id }}">
+                                        </li>
+                                        {% if advertisement.vip %}
+                                        <li>
+                                            <a href="#">
+                                                <img src="{% static 'img/VIP.png' %}" alt="vip"
+                                                     title="VIP-объявление">
+                                            </a>
+                                        </li>
+                                        {% endif %}
+                                        {% if advertisement.highlight %}
+                                        <li>
+                                            <a href="#">
+                                                <img src="{% static 'img/highlight.png' %}" alt=""
+                                                     title="Объявление выделено">
+                                            </a>
+                                        </li>
+                                        {% endif %}
+                                        {% if advertisement.special_accommodation %}
+                                        <li>
+                                            <a href="#">
+                                                <img src="{% static 'img/special.png' %}" alt="" title="Спецразмещение">
+                                            </a>
+                                        </li>
+                                        {% endif %}
+{#                                        <li>#}
+{#                                            <a href="#">#}
+{#                                                <img src="{% static 'img/up.png' %}" alt="" title="Поднять в поиске">#}
+{#                                            </a>#}
+{#                                        </li>#}
+                                    </ul>
+                                    <div class="main__info-advertisement-list-item-about">
+                                        <p class="advertisement__status {% if advertisement.moderated %}moderated{% endif %}">
+                                            {% if advertisement.moderated %}
+                                                Прошло модерацию
+                                            {% elif advertisement.moderated is None %}
+                                                На модерации
+                                            {% else %}
+                                                Отклонено
+                                            {% endif %}
+                                        </p>
+                                            <p class="main__info-advertisement-list-item-about-date">
+                                                {% if advertisement.date_of_last_activation.date == date_today %}
+                                                    Сегодня
+                                                {% elif advertisement.date_of_last_activation.date == date_yesterday %}
+                                                    Вчера
+                                                {% else %}
+                                                    {{ advertisement.date_of_last_activation|date:"d b. Y" }}
+                                                {% endif %}
+                                            </p>
+                                            <p class="main__info-advertisement-list-item-about-time">
+                                                {{ advertisement.date_of_last_activation|date:"H:i" }}
+                                            </p>
+                                            {% if advertisement.get_days_till_expiration > 0 %}
+                                            <p class="main__info-advertisement-list-item-about-remained">
+                                                Осталось {{ advertisement.get_days_till_expiration }} дн.
+                                            </p>
+                                            {% else %}
+                                            <p class="main__info-advertisement-list-item-about-remained-deactivate">
+                                                Срок размещения истек
+                                            </p>
+                                                {% endif %}
+                                            <a href="{% url 'editing_an_ad' advertisement.id %}"
+                                               class="main__info-advertisement-list-item-about-edit">
+                                                Редактировать
+                                            </a>
+                                        <a role="link" aria-disabled="true" data-id="{{ advertisement.id }}"
+                                           class="main__info-advertisement-list-item-about-services">
+                                            Услуги
+                                        </a>
+                                    </div>
+                                    <a href="{% url 'advertisement_details' advertisement.slug %}"
+                                       class="main__info-advertisement-list-item-img">
+                                        <img src="
+                                                {% if advertisement.preview_image %}{{ advertisement.preview_image.url }}{% else %}{% static 'img/no_image.jpg' %}{% endif %}"
+                                             alt="">
+                                    </a>
+                                    <div class="main__info-advertisement-list-item-title-wrap">
+                                        <h3>
+                                            <a href="{% url 'advertisement_details' advertisement.slug %}">{{ advertisement.title }}</a>
+                                        </h3>
+                                        <p>
+                                            {% if advertisement.price %}
+                                                {{ advertisement.price|floatformat }} руб.
+                                            {% else %} Договорная
+                                            {% endif %}
+                                        </p>
+                                        <p>
+                                            {{ advertisement.category.title }}
+                                        </p>
+                                        <p>
+                                            {{ advertisement.region.area }}
+                                        </p>
+                                    </div>
+                                </article>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="main__info-not-found">
+                        Объявления не найдены
+                    </p>
+                {% endif %}
+                {% if page_obj.object_list %}
+                    {% block action %}
+                        <div class="main__info-action">
+                            <p>Отмеченные:</p>
+                            {#            <button name="delete_ads" class="submit__btn">Удалить</button>#}
+                            <button name="archive_ads" class="submit__btn">Поместить в архив</button>
+                        </div>
+                    {% endblock action %}
+                {% endif %}
+                {% block paginator %}
+                    <div class="paginator">
+                        <div class="paginator_wrapper">
+                            <nav class="list_pages">
+                                <ul>
+                                    {% if page_obj.has_previous %}
+                                        <li class="">
+                                            <a href="?page={{ page_obj.previous_page_number }}"><</a>
+                                        </li>
+                                    {% endif %}
+                                    {% if page_obj.has_other_pages %}
+                                        {% for page in page_obj.paginator.page_range %}
+                                            {% if page_obj.number == page %}
+                                                <li class="page_num page_num_selected">{{ page }}</li>
+                                            {% elif page >= page_obj.number|add:-5 and page <= page_obj.number|add:5 %}
+                                                <li class="page_num">
+                                                    <a href="?page={{ page }}">{{ page }}</a>
+                                                </li>
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% endif %}
+                                    {% if page_obj.has_next %}
+                                        <li class="">
+                                            <a href="?page={{ page_obj.next_page_number }}">></a>
+                                        </li>
+                                    {% endif %}
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+                {% endblock paginator %}
+            </form>
+        {% endblock mainInfo %}
+    </section>
+{% endblock content %}
+{% block js %}
+    <script src="{% static 'js/profile/selectAdvertisement.js' %}"></script>
+    <script src="{% static 'js/profile/errors.js' %}"></script>
+    <script src="{% static 'js/profile/modalPaid.js' %}"></script>
+    <script src="{% static "js/profile/sumService.js" %}"></script>
+    {% block js2 %}{% endblock js2 %}
+{% endblock js %}
