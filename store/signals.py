@@ -19,14 +19,18 @@ def notify_store_moderation_result(sender, instance, **kwargs):
     Функция проверяет, прошел ли магазин модерацию или нет и отправляет письмо пользователю с результатом.
     """
     if instance.moderated is True:
-        run_send_email_task_celery('Ваш магазин прошел модерацию',
+        run_send_email_task_celery('Ваш магазин успешно прошел модерацию',
                                    "asend_notify_moderation_result.html",
                                    instance.email,
+                                   obj="Магазин",
                                    activation_title=instance.title,
-                                   result=True)
+                                   result=True,
+                                   moderation_error_message=instance.moderation_error_message)
     elif instance.moderated is False:
         run_send_email_task_celery('Ваш магазин не прошел модерацию',
                                    "asend_notify_moderation_result.html",
                                    instance.email,
+                                   obj="Магазин",
                                    activation_title=instance.title,
-                                   result=False)
+                                   result=False,
+                                   moderation_error_message=instance.moderation_error_message)

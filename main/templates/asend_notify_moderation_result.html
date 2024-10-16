@@ -13,13 +13,24 @@
             </tr>
         </table>
         <div style="background: lightgray; padding: 10px; border-radius: 8px;">
+            <h2 style="flex-wrap: wrap; margin: 0 10px;">
+                {% if result  %}
+                        {{ obj }} "<b>{{ activation_title }}</b>" {% if obj == "Магазин" %}прошел{% elif obj == "Публикация" %}прошла{% else %}прошло{% endif %} модерацию.
+                    {% else %}
+                        <p>{{ obj }} "<b>{{ activation_title }}</b>" не прошло модерацию.</p>
+                    {% endif %}
+            </h2>
             <div style="background-color: #ffffff; padding: 10px; border-radius: 10px;">
                 <p style="flex-wrap: wrap; margin: 10px 0 10px 10px;">
                     {% if result  %}
-                        Объявление "<b>{{ activation_title }}</b>" прошло модерацию.
+                    {{ obj }} "<b>{{ activation_title }}</b>" {% if obj == "Магазин" %}прошел{% elif obj == "Публикация" %}прошла{% else %}прошло{% endif %} модерацию и уже {% if obj == "Магазин" %}опубликован{% elif obj == "Публикация" %}опубликована{% else %}опубликовано{% endif %} на сайте ДОМЕР.бел
                     {% else %}
-                        <p>Объявление "<b>{{ activation_title }}</b>" не прошло модерацию.</p>
-                        <p>{{ moderation_error_message }}</p>
+                    {{ obj }} "<b>{{ activation_title }}</b>" {% if obj == "Магазин" %}прошел{% elif obj == "Публикация" %}прошла{% else %}прошло{% endif %} модерацию.
+                    {% endif %}
+                </p>
+                <p style="flex-wrap: wrap; margin: 10px 0 10px 10px;">
+                    {% if moderation_error_message %}
+                    {{ moderation_error_message }}
                     {% endif %}
                 </p>
             </div>

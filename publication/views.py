@@ -134,9 +134,9 @@ def get_page_for_edit_publication(request, publication_slug):
         form_publication = PublicationForm(request.POST, request.FILES, instance=publication)
         if form_publication.is_valid():
             publication = form_publication.save(commit=False)
-            publication.moderated = False
+            publication.moderated = None
             publication.save()
-            messages.success(request, """Ваша публикация отправлен на модерацию.
+            messages.success(request, """Ваша публикация отправлена на модерацию.
                                          После модерации она появится в списке публикаций.""")
             run_send_email_task_celery('Изменена публикация',
                                        'asend_notification.html',
