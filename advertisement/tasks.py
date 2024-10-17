@@ -25,8 +25,10 @@ from related_data.models import Field
 from .models import PhotoAdvertisement, Advertisement, Store, UploadFile
 from .utils_for_bulk_import import save_many_ads_from_excel, save_many_ads_from_zip
 
+import logging
+
 #Настройка логгирования
-logger = getLogger('celery')
+logger = logging.getLogger('celery')
 
 
 def get_current_datetime(timezone_=TIME_ZONE):
