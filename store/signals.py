@@ -40,7 +40,7 @@ def notify_store_moderation_result(sender, instance, **kwargs):
 
 
 @receiver(post_save, sender=Store)
-def create_fild_for_search_adv(sender, instance, **kwargs):
+def fill_in_the_store_search_field(sender, instance, **kwargs):
     """
     Функция заполняет поле для полнотекстового поиска.
     """

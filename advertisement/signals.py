@@ -56,7 +56,7 @@ def notify_advertisement_moderation_result(sender, instance, **kwargs):
 
 
 @receiver(post_save, sender=Advertisement)
-def create_fild_for_search_adv(sender, instance, **kwargs):
+def fill_in_the_advertisement_search_field(sender, instance, **kwargs):
     """
     Функция заполняет поля для полнотекстового поиска.
     """

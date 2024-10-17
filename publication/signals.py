@@ -41,7 +41,7 @@ def notify_publication_moderation_result(sender, instance, **kwargs):
 
 
 @receiver(post_save, sender=Publication)
-def create_fild_for_search_adv(sender, instance, **kwargs):
+def fill_in_the_publication_search_field(sender, instance, **kwargs):
     """
     Функция заполняет поля для полнотекстового поиска.
     """
