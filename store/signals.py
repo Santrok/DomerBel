@@ -1,0 +1,49 @@
+from django.contrib.postgres.search import SearchVector
+from django.db.models.signals import pre_delete, post_save
+from django.dispatch import receiver
+
+from services.email.message import run_send_email_task_celery
+from store.models import Store
+
+
+@receiver(pre_delete, sender=Store)
+def publication_photo_delete(sender, instance, **kwargs):
+    """
+    Удаление файла перед удалением экземпляра магазина
+    """
+    instance.logo_image.delete(False)
+
+
+@receiver(post_save, sender=Store)
+def notify_store_moderation_result(sender, instance, **kwargs):
+    """
+    Функция проверяет, прошел ли магазин модерацию или нет и отправляет письмо пользователю с результатом.
+    """
+    if 'moderated' in instance.get_dirty_fields() and instance.moderated is True:
+        run_send_email_task_celery('Ваш магазин успешно прошел модерацию',
+                                   "asend_notify_moderation_result.html",
+                                   instance.email,
+                                   obj="Магазин",
+                                   activation_title=instance.title,
+                                   result=True,
+                                   moderation_error_message=instance.moderation_error_message)
+    elif 'moderated' in instance.get_dirty_fields() and instance.moderated is False:
+        run_send_email_task_celery('Ваш магазин не прошел модерацию',
+                                   "asend_notify_moderation_result.html",
+                                   instance.email,
+                                   obj="Магазин",
+                                   activation_title=instance.title,
+                                   result=False,
+                                   moderation_error_message=instance.moderation_error_message)
+    if instance.moderation_error_message:
+        sender.objects.filter(id=instance.id).update(moderation_error_message=None)
+
+
+@receiver(post_save, sender=Store)
+def fill_in_the_store_search_field(sender, instance, **kwargs):
+    """
+    Функция заполняет поле для полнотекстового поиска.
+    """
+    dirty_fields = instance.get_dirty_fields()
+    if not instance.search_vector or 'title' in dirty_fields or 'description' in dirty_fields in dirty_fields:
+        sender.objects.filter(id=instance.id).update(search_vector=SearchVector('title', 'description'))

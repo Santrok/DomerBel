@@ -1,3 +1,4 @@
+from dirtyfields import DirtyFieldsMixin
 from django.contrib import admin
 from django.contrib.auth import get_user_model
 from django.contrib.postgres.indexes import GinIndex
@@ -15,7 +16,7 @@ from utils.slug_generator import unique_slugify
 # Create your models here.
 
 
-class Publication(models.Model):
+class Publication(DirtyFieldsMixin, models.Model):
     """
     Модель публикации
     связи: с User(FK)
@@ -28,7 +29,7 @@ class Publication(models.Model):
     preview_image = models.ImageField("Фото", upload_to=upload_to)
     date_of_create = models.DateTimeField("Дата создания", auto_now_add=True)
     counter_views = models.IntegerField("Счетчик просмотров", default=0)
-    moderated = models.BooleanField("Прошло модерацию", default=False)
+    moderated = models.BooleanField("Прошло модерацию", blank=True, null=True)
     moderation_error_message = models.TextField("Текст причины отказа в модерации",
                                                 help_text="Отправиться пользователю на Email",
                                                 blank=True, null=True)
@@ -51,15 +52,11 @@ class Publication(models.Model):
 
     def save(self, *args, **kwargs):
         """
-        Сохраняет экземпляр модели Publication, конвертирует логотип в формат AVIF, формирует поле slug,
-        выполняет индексацию по полям 'title' и 'description' для полнотекстового поиска
+        Сохраняет экземпляр модели Publication, конвертирует логотип в формат AVIF, формирует поле slug
         """
         if self.preview_image and not self.preview_image.url.lower().endswith('avif'):
             convert_image_to_avif(photo=self.preview_image)  # Конвертация изображения в формат AVIF
         self.slug = unique_slugify(self, self.title)
-        super().save(*args, **kwargs)
-        self.search_vector = SearchVector('title', 'description', 'announcement')
-        self.search_title_vector = SearchVector('title')
         super(Publication, self).save(*args, **kwargs)
 
 

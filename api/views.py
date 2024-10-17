@@ -154,7 +154,8 @@ def save_complaint_and_send_complaint_to_administration_email(request):
                                    settings.EMAIL_HOST_USER,
                                    message=message,
                                    subject=subject,
-                                   reason=reason, )
+                                   reason=reason,
+                                   ads_url=advertisement.get_absolute_url())
 
         return Response({'success': 'Ваша жалоба на объявление отправлена администрации сайта'},
                         status=status.HTTP_201_CREATED)

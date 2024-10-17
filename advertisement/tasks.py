@@ -17,7 +17,7 @@ from config.celery_app import app
 from config.settings import RED_BEAT_REDIS_URL, TIME_ZONE
 from services.email.message import run_send_email_task_celery
 from related_data.models import Field
-from .models import PhotoAdvertisement, Advertisement, ErrorFile, Store
+from .models import PhotoAdvertisement, Advertisement, Store, UploadFile
 from .utils_for_bulk_import import save_many_ads_from_excel, save_many_ads_from_zip
 
 
@@ -324,16 +324,6 @@ def deactivate_store():
     deactivate_stores.update(is_active=False)
 
 
-@shared_task()
-def delete_everything_in_folder_beat():
-    """
-    Удаляет все файлы из папки для "files_for_bulk_import_of_ads"
-    Задача отрабатывает раз в сутки в 00.00
-    """
-    path = './media/files_for_bulk_import_of_ads'
-    shutil.rmtree(path)
-    os.mkdir(path)
-
 
 @shared_task()
 def save_many_ads_from_excel_task(uploud_file, id_, first_name, phone_number, email):
@@ -354,12 +344,14 @@ def save_many_ads_from_zip_task(uploud_zip, id_, first_name, phone_number, email
 
 
 @shared_task()
-def delete_error_file_beat():
+def delete_upload_file_beat():
     """
-    Удаляет все экземпляры модели ErrorFile раз в сутки.
+    Удаляет все экземпляры модели UoloadFile раз в сутки.
     """
-    files = ErrorFile.objects.all()
+    print(1)
+    files = UploadFile.objects.filter(status=True)
     files.delete()
+    print(2)
 
 
 def create_tasks_from_schedule(name, task, schedule_, args=None, kwargs=None):

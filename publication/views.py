@@ -1,5 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.db.models import F
+from django.http import Http404
 from django.shortcuts import render, get_object_or_404, redirect
 
 from config import settings
@@ -9,15 +11,12 @@ from services.email.message import run_send_email_task_celery
 from utils.template_paginator import variables_for_paginator
 
 
-# Create your views here.
-
-
 def get_publications_page(request):
     """
     Сборка страницы со всеми публикациями.
     Модели: Publication
     """
-    publications = Publication.objects.exclude(moderated=False).order_by('-date_of_create')
+    publications = Publication.objects.filter(moderated=True).order_by('-date_of_create')
 
     page_obj = variables_for_paginator(publications,
                                        request.GET.get('page'),
@@ -36,14 +35,16 @@ def get_publication_page_by_slug(request, slug):
     Сборка страницы с детальной информацией выбранной публикации.
     Модели: Publication
     """
-    Publication.objects.filter(slug=slug).update(counter_views=F('counter_views')+1)
-    publication = get_object_or_404(Publication, slug=slug, moderated=True)
-    context = {
-        'publication': publication,
-        'adaptive_navigation': f'{publication.title}'
-    }
-    return render(request, 'publication_by_slug.html', context)
-
+    publication = get_object_or_404(Publication, slug=slug)
+    if publication.moderated or publication.user == request.user or request.user.is_staff:
+        Publication.objects.filter(slug=slug).update(counter_views=F('counter_views') + 1)
+        context = {
+            'publication': publication,
+            'adaptive_navigation': f'{publication.title}'
+        }
+        return render(request, 'publication_by_slug.html', context)
+    else:
+        raise Http404
 
 def get_search_result_page_by_publication(request):
     """
@@ -90,8 +91,8 @@ def get_page_for_add_new_publication(request):
             publication = form_publication.save(commit=False)
             publication.user = request.user
             publication.save()
-            messages.success(request, f"""Публикация "{publication}" успешно создано
-                                                                и отправлена на модерацию.""")
+            messages.success(request, """Ваша публикация отправлен на модерацию.
+                                         После модерации она появится в списке публикаций.""")
             run_send_email_task_celery('Добавлена новая публикация',
                                        'asend_notification.html',
                                        settings.EMAIL_HOST_USER,
@@ -134,10 +135,10 @@ def get_page_for_edit_publication(request, publication_slug):
         form_publication = PublicationForm(request.POST, request.FILES, instance=publication)
         if form_publication.is_valid():
             publication = form_publication.save(commit=False)
-            publication.moderated = False
+            publication.moderated = None
             publication.save()
-            messages.success(request, f"""Публикация "{publication}" успешно изменена
-                                                    и отправлена на модерацию.""")
+            messages.success(request, """Ваша публикация отправлена на модерацию.
+                                         После модерации она появится в списке публикаций.""")
             run_send_email_task_celery('Изменена публикация',
                                        'asend_notification.html',
                                        settings.EMAIL_HOST_USER,
