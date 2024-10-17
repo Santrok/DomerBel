@@ -251,7 +251,6 @@ class AdvertisementAdmin(admin.ModelAdmin):
                    'vip',
                    'highlight_ad',
                    'special_accommodation',
-                   'raise_in_search',
                    )
     list_editable = ['moderated',
                      'is_active',
