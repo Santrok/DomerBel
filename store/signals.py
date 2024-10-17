@@ -1,13 +1,24 @@
+from django.contrib.auth.models import Group, Permission
 from django.contrib.postgres.search import SearchVector
-from django.db.models.signals import pre_delete, post_save
+from django.db.models.signals import pre_delete, post_save, post_migrate
 from django.dispatch import receiver
 
 from services.email.message import run_send_email_task_celery
 from store.models import Store
 
 
+@receiver(post_migrate)
+def add_permission_at_group(sender, **kwargs):
+    """
+    Добавляет разрешения в группу юр.лиц
+    """
+    group = Group.objects.get_or_create(name='Юридические лица')
+    per = Permission.objects.filter(codename__in=['edit_store', 'change_store', 'add_store', 'view_store'])
+    group[0].permissions.set(per)
+
+
 @receiver(pre_delete, sender=Store)
-def publication_photo_delete(sender, instance, **kwargs):
+def store_logo_file_delete(sender, instance, **kwargs):
     """
     Удаление файла перед удалением экземпляра магазина
     """

@@ -425,6 +425,9 @@ def processing_successful_payment_for_services(request):
                 accommodation["date_of_delete"] = datetime.now() + timedelta(days=180)
                 accommodation["search_boost_date"] = datetime.now()
                 accommodation["is_active"] = True
+            elif service.key_word == "raise_in_search":
+                accommodation[keys_date_of_deactivate.get(service.key_word)] = datetime.now() + timedelta(
+                    days=service.validity_period)
             else:
                 accommodation[service.key_word] = additional.get(service.key_word)
                 accommodation[keys_date_of_deactivate.get(service.key_word)] = datetime.now() + timedelta(
