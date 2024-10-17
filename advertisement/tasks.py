@@ -21,6 +21,11 @@ from related_data.models import Field
 from .models import PhotoAdvertisement, Advertisement, Store, UploadFile
 from .utils_for_bulk_import import save_many_ads_from_excel, save_many_ads_from_zip
 
+import logging
+
+#Настройка логгирования
+logger = logging.getLogger('celery')
+
 
 def get_current_datetime(timezone_=TIME_ZONE):
     """
@@ -161,8 +166,10 @@ def save_advertisement_task(user, data, additional_information, temporarily_savi
                         with open(photo, 'rb') as f:
                             additional_photo = PhotoAdvertisement(photo=File(f), advertisement=new_advertisement)
                             additional_photo.save()
+            logger.info(f'Обявление (id:{new_advertisement.id}) сохранно успешно')
 
     except Exception as e:
+        logger.error(f'Ошибка при сохранении объявления: {str(e)}',exc_info=True)
         run_send_email_task_celery("Ошибка при создании объявления",
                                    "asend_create_advertisement_error.html",
                                    data['email'],
@@ -211,8 +218,9 @@ def update_advertisement_task(user, advertisement_id, data, additional_informati
 
                 if temporarily_saving_photos:
                     add_new_photos(editing_advertisement, temporarily_saving_photos)
-
+            logger.info(f'Объявления{advertisement_id} успешно обнавлено')
     except Exception as e:
+        logger.error(f'Ошибка при обновлении объявления: {str(e)}',exc_info=True)
         print(f"Ошибка при обновлении объявления: {e}")
     else:
         run_send_email_task_celery('Объявление было изменено',
