@@ -139,7 +139,7 @@ def get_store_by_title(request, store_slug):
      state_sort_by_date) = setting_values_for_sorting_from_cookie_or_request_get(request.COOKIES, request.GET)
     region_filter, region_param, region_bread_crumbs = get_region_variables(request.GET.get('region'))
 
-    store = get_object_or_404(Store, slug=store_slug, is_active=True)
+    store = get_object_or_404(Store, slug=store_slug)
 
     if store.moderated or store.user == request.user or request.user.is_staff:
         advertisements = Advertisement.objects.filter(store=store,
