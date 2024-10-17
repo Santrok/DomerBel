@@ -8,6 +8,7 @@ from django.dispatch import receiver
 
 from services.email.message import run_send_email_task_celery
 from .models import Advertisement, PhotoAdvertisement, UploadFile, ErrorFile
+from .tasks import get_current_datetime
 
 
 @receiver(pre_delete, sender=Advertisement)
@@ -142,3 +143,13 @@ def error_file_delete(sender, instance, **kwargs):
     file_folder = os.path.dirname(instance.file)
     if not os.listdir(file_folder):
         os.rmdir(file_folder)
+
+
+@receiver(post_save, sender=Advertisement)
+def raise_in_search_advertisement(sender, instance, **kwargs):
+    """
+    Функция поднимает объявление в поиске
+    """
+    if "raise_in_search" in instance.get_dirty_fields() and instance.raise_in_search:
+        Advertisement.objects.filter(id=instance.id).update(raise_in_search=False,
+                                                            search_boost_date=get_current_datetime())
