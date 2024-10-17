@@ -1,6 +1,6 @@
 import random
 
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.db.models import Q, F
 from django.http import Http404
 from django.shortcuts import render, get_object_or_404
@@ -331,6 +331,7 @@ def get_page_search_result_by_advertisements(request):
 
 
 @login_required
+@permission_required("advertisement.view_uploadfile", raise_exception=True)
 def get_page_for_bulk_import_of_advertisement(request):
     """
     Сборка страницы массового импорта объявлений.

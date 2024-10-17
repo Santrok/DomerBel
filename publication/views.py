@@ -1,5 +1,5 @@
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.db.models import F
 from django.http import Http404
 from django.shortcuts import render, get_object_or_404, redirect
@@ -47,6 +47,7 @@ def get_publication_page_by_slug(request, slug):
     else:
         raise Http404
 
+
 def get_search_result_page_by_publication(request):
     """
     Сборка страницы с результатами поиска по публикациям.
@@ -79,6 +80,7 @@ def get_search_result_page_by_publication(request):
 
 
 @login_required
+@permission_required("publication.add_publication", raise_exception=True)
 def get_page_for_add_new_publication(request):
     """
     Сборка страницы с для создания новой публикации.
@@ -110,6 +112,7 @@ def get_page_for_add_new_publication(request):
 
 
 @login_required
+@permission_required("publication.delete_publication", raise_exception=True)
 def delete_publication(request):
     """
     Функция для удаления выбранных публикаций пользователя.
@@ -124,6 +127,7 @@ def delete_publication(request):
 
 
 @login_required
+@permission_required("publication.change_publication", raise_exception=True)
 def get_page_for_edit_publication(request, publication_slug):
     """
     Сборка страницы редактирования выбранной публикации пользователя.

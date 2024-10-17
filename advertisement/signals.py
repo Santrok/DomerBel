@@ -1,14 +1,26 @@
 import os
 
+from django.contrib.auth.models import Group, Permission
 from django.contrib.postgres.search import SearchVector
 from django.db import transaction
 from django.db.models import Min
-from django.db.models.signals import pre_delete, post_save
+from django.db.models.signals import pre_delete, post_save, post_migrate
 from django.dispatch import receiver
 
 from services.email.message import run_send_email_task_celery
 from .models import Advertisement, PhotoAdvertisement, UploadFile, ErrorFile
 from .tasks import get_current_datetime
+
+
+@receiver(post_migrate)
+def add_permission_at_group(sender, **kwargs):
+    """
+    Добавляет разрешения в группу юр.лиц
+    """
+    group = Group.objects.get_or_create(name='Юридические лица')
+    per = Permission.objects.filter(codename__in=['edit_uploadfile', 'change_uploadfile',
+                                                  'add_uploadfile', 'view_uploadfile'])
+    group[0].permissions.set(per)
 
 
 @receiver(pre_delete, sender=Advertisement)
