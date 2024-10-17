@@ -227,7 +227,7 @@ def update_advertisement_task(user, advertisement_id, data, additional_informati
         delete_files(temporarily_saving_photos)
 
 
-@shared_task(result_expires=100)
+@shared_task()
 def deactivate_advertisement():
     """ Функция деактивации объявлений по истечению времени публикации """
     current_datetime = get_current_datetime()
@@ -294,7 +294,7 @@ def list_shown_vip():
         update_vip_advertisements(all_ads_vip, 'shown_vip', 'shown_vip_count')
 
 
-@shared_task(result_expires=5)
+@shared_task()
 def list_shown_vip_category():
     """
     Ротация VIP объявлений по категориям.
