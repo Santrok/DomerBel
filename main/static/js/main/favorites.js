@@ -13,9 +13,11 @@ favoritesList.forEach(item => {
     }
     if(!event.currentTarget.classList.contains("advertisement__favorites-active")) {
       event.currentTarget.classList.add("advertisement__favorites-active")
+      event.currentTarget.setAttribute("title", "Удалить из избранного")
       requestFavorites(`${window.location.protocol}//${window.location.host}/api/v1/add_to_favorite/`, event?.currentTarget?.parentElement?.parentElement?.dataset?.id)
     }else {
       event.currentTarget.classList.remove("advertisement__favorites-active")
+      event.currentTarget.setAttribute("title", "Добавить в избранное")
       requestFavorites(`${window.location.protocol}//${window.location.host}/api/v1/delete_from_favorite/`, event?.currentTarget?.parentElement?.parentElement?.dataset?.id)
     }
   })
@@ -29,10 +31,14 @@ detailsFavoritesBtn?.addEventListener("click", (event) => {
   }
   if(!event?.currentTarget?.children[0]?.classList.contains("advertisement__favorites-active")) {
     event?.currentTarget?.children[0]?.classList.add("advertisement__favorites-active")
+  event?.currentTarget?.children[0]?.setAttribute("title", "Удалить из избранного")
+    event.currentTarget.children[1].innerText = "Удалить из избранного"
     requestFavorites(`${window.location.protocol}//${window.location.host}/api/v1/add_to_favorite/`, event?.currentTarget?.dataset?.id)
     
   }else {
     event?.currentTarget?.children[0]?.classList.remove("advertisement__favorites-active")
+    event?.currentTarget?.children[0]?.setAttribute("title", "Добавить в избранное")
+    event.currentTarget.children[1].innerText = "Добавить в избранное"
     requestFavorites(`${window.location.protocol}//${window.location.host}/api/v1/delete_from_favorite/`, event?.currentTarget?.dataset?.id)
   }
 })
