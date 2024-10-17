@@ -53,6 +53,7 @@ def get_site_map_page(request):
 
     context = {
         'nodes': category_list,
+        "adaptive_navigation": "Карта сайта"
     }
 
     return render(request, 'map.html', context)

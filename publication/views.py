@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import F
 from django.http import Http404
 from django.shortcuts import render, get_object_or_404, redirect
+from django.urls import reverse
 
 from config import settings
 from publication.forms import PublicationForm
@@ -98,7 +99,7 @@ def get_page_for_add_new_publication(request):
                                        settings.EMAIL_HOST_USER,
                                        subject="Добавлена публикация",
                                        message=f'Новая публикация требует модерации на сайте Домер.бел',
-                                       link=f"/admin/publication/publication/{publication.id}/change/",
+                                       link=f"{reverse('admin:index')}publication/publication/{publication.id}/change/",
                                        )
             return redirect('user_all_publications')
     context = {
@@ -144,7 +145,7 @@ def get_page_for_edit_publication(request, publication_slug):
                                        settings.EMAIL_HOST_USER,
                                        subject="Изменена публикация",
                                        message=f'Публикация {publication.id} требует модерации на сайте Домер.бел',
-                                       link=f"/admin/publication/publication/{publication.id}/change/"
+                                       link=f"{reverse('admin:index')}publication/publication/{publication.id}/change/"
                                        )
             return redirect('user_all_publications')
     else:

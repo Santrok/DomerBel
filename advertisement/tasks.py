@@ -6,6 +6,7 @@ import contextlib
 
 from celery import shared_task
 from celery.schedules import crontab
+from django.urls import reverse
 from redbeat import RedBeatSchedulerEntry
 from django.db import transaction
 from django.utils import timezone
@@ -164,14 +165,14 @@ def save_advertisement_task(user, data, additional_information, temporarily_savi
         run_send_email_task_celery("Ошибка при создании объявления",
                                    "asend_create_advertisement_error.html",
                                    data['email'],
-                                   activation_title=data['title'],)
+                                   activation_title=data['title'], )
     else:
         run_send_email_task_celery('Новое объявление',
                                    'asend_notification.html',
                                    settings.EMAIL_HOST_USER,
                                    subject="Добавлено новое объявление",
                                    message='Новое объявление требует модерации на сайте Домер.бел',
-                                   link=f"/admin/advertisement/advertisement/{new_advertisement.id}/change/"
+                                   link=f"{reverse('admin:index')}advertisement/advertisement/{new_advertisement.id}/change/"
                                    )
 
     if temporarily_saving_photos:
@@ -218,7 +219,7 @@ def update_advertisement_task(user, advertisement_id, data, additional_informati
                                    settings.EMAIL_HOST_USER,
                                    subject="Объявление изменено",
                                    message=f'Объявление id={advertisement_id} требует модерации на сайте Домер.бел',
-                                   link=f"/admin/advertisement/advertisement/{advertisement_id}/change/",
+                                   link=f"{reverse('admin:index')}advertisement/advertisement/{advertisement_id}/change/",
                                    )
 
     if temporarily_saving_photos:
@@ -321,7 +322,6 @@ def deactivate_store():
     current_datetime = get_current_datetime()
     deactivate_stores = Store.objects.filter(date_of_deactivate__lt=current_datetime, is_active=True)
     deactivate_stores.update(is_active=False)
-
 
 
 @shared_task()

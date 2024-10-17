@@ -110,7 +110,7 @@ class StoreAdmin(admin.ModelAdmin):
               ]
 
     prepopulated_fields = {"slug": ("title",)}
-    list_display = ('title', 'is_active', "moderated")
+    list_display = ('id', 'title', 'is_active', "moderated")
     list_display_links = ('title',)
     search_fields = ("id", 'title', 'user__email')
     list_filter = ['is_active']

@@ -124,18 +124,15 @@ def upload_file_delete(sender, instance, **kwargs):
     Удаление файлов и папок, перед удалением экземпляра загруженного файла
     с объявлениями для массового импорта.
     """
-    print(3)
     file_folder = os.path.dirname(instance.file.path) if instance.file else None
     instance.file.delete(False)
     if file_folder and os.path.exists(file_folder) and os.path.isdir(file_folder):
         if not os.listdir(file_folder):
             os.rmdir(file_folder)
-    print(4)
 
 
 @receiver(pre_delete, sender=ErrorFile)
 def error_file_delete(sender, instance, **kwargs):
-    print(5)
     """
     Удаление файлов и папок, перед удалением экземпляра файла с ошибками объявлений
      при массовом импорте для изменения.
@@ -145,4 +142,3 @@ def error_file_delete(sender, instance, **kwargs):
     file_folder = os.path.dirname(instance.file)
     if not os.listdir(file_folder):
         os.rmdir(file_folder)
-    print(6)
