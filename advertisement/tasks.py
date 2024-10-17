@@ -93,7 +93,8 @@ def delete_photos(advertisement, photos_to_delete):
         folder_path = os.path.dirname(file_path)
 
         # Удаляем файл превью и очищаем поле
-        os.remove(file_path)
+        if os.path.exists(file_path):
+            os.remove(file_path)
         advertisement.preview_image = None
         advertisement.save()
 
@@ -202,14 +203,14 @@ def update_advertisement_task(user, advertisement_id, data, additional_informati
             if not new_preview_photo_from_old_ones and not temporarily_saving_photos and not delete_photo:
                 editing_advertisement.save()
             else:
+                if delete_photo:
+                    delete_photos(editing_advertisement, delete_photo)
+
                 if new_preview_photo_from_old_ones:
                     swap_preview_images(editing_advertisement, new_preview_photo_from_old_ones)
 
                 if temporarily_saving_photos:
                     add_new_photos(editing_advertisement, temporarily_saving_photos)
-
-                if delete_photo:
-                    delete_photos(editing_advertisement, delete_photo)
 
     except Exception as e:
         print(f"Ошибка при обновлении объявления: {e}")
