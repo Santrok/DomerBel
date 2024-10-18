@@ -100,7 +100,7 @@ def delete_photos(advertisement, photos_to_delete):
     if advertisement.preview_image in photos_to_delete:
         file_path = advertisement.preview_image.path
         folder_path = os.path.dirname(file_path)
-        
+
         # Удаляем файл превью и очищаем поле
         if os.path.exists(file_path):
             os.remove(file_path)
@@ -427,15 +427,19 @@ def create_tasks_from_schedule(name, task, schedule_, args=None, kwargs=None):
     """
     Функция добавляет периодическую задачи в celery.
     """
-    entry = RedBeatSchedulerEntry(
-        name=name,
-        task=task,
-        schedule=schedule_,
-        args=args or [],
-        kwargs=kwargs or {},
-        app=app
-    )
-    entry.save()
+    try:
+        entry = RedBeatSchedulerEntry(
+            name=name,
+            task=task,
+            schedule=schedule_,
+            args=args or [],
+            kwargs=kwargs or {},
+            app=app
+        )
+        entry.save()
+        logger.info(f'Добавлено динамически задача: {name}, {schedule_}')
+    except Exception as e:
+        logger.error(f"Не удалось динамически добавить задачу: {str(e)}", exc_info=True)
 
 
 def delete_task(task_id):
@@ -480,13 +484,13 @@ def deactivation_of_paid_services(ads_id, name_for_delete, **fild_update):
     Функция отключает выбранную платную услугу и удаляет эту
     задачу из redbeat:schedule.
     """
-    Advertisement.objects.filter(id=ads_id).update(**fild_update)
     try:
+        Advertisement.objects.filter(id=ads_id).update(**fild_update)
         delete_task(name_for_delete)
         logger.info(f'Объявлениe (id: {ads_id}) обновлено с параметрами: {fild_update}. Задача {name_for_delete} успешно удалена')
     except Exception as e:
-        logger.error(f'Не удалось удлить задачу: {str(e)}')
-
+        logger.error(f"Не удалось отключить платную услугу для обявления (id: {ads_id}): {str(e)}",
+                     exc_info=True)
 
 @shared_task()
 def raise_or_deactivation_of_paid_services(ads_id, name_for_delete, **fild_update):
@@ -500,10 +504,11 @@ def raise_or_deactivation_of_paid_services(ads_id, name_for_delete, **fild_updat
         ads = Advertisement.objects.filter(id=ads_id)
         ads.update(search_boost_date=current_datetime)
         logger.info(f'Объявление (id: {ads_id}) обнoвлено с датой поднятия в поиске {current_datetime}')
-        if ads.first().date_of_deactivate_special_accommodation.date() == current_datetime.date():
-            deactivation_of_paid_services(ads_id, name_for_delete, **fild_update)
     except Exception as e:
-        logger.error(f'Не удалось поднять обявление (id: {ads_id} в поиске: {str(e)}', exc_info=True)
+        logger.error(f"Не удалось поднять обявление (ID: {ads_id} в поиске: {str(e)}",
+                     exc_info=True)
+    if ads.first().date_of_deactivate_special_accommodation.date() == current_datetime.date():
+        deactivation_of_paid_services(ads_id, name_for_delete, **fild_update)
 
 
 @shared_task()
@@ -530,15 +535,14 @@ def update_schedule():
                 schedule_ = crontab(hour=current_datetime.hour, minute=current_datetime.minute + 1)
             try:
                 create_tasks_from_schedule(name,
-                                           "advertisement.tasks.deactivation_of_paid_services",
-                                           schedule_,
-                                           [ads.id, f'redbeat:{name}'],
-                                           {'vip': False})
+                                       "advertisement.tasks.deactivation_of_paid_services",
+                                       schedule_,
+                                       [ads.id, f'redbeat:{name}'],
+                                       {'vip': False})
                 logger.info(f'Запланировано в объявлении (id: {ads.id}) отключить платные услуги. Имя задачи: {name}.')
             except Exception as e:
-                logger.error(f'Не удалось заплонировать отключить платные услуги в объявлении (id: {ads.id}): {str(e)}',
+                logger.error(f"Не удалось запланировать отключение платной услуги в обхявлении (id :{ads.id}: {str(e)}",
                              exc_info=True)
-
 
         if ads.highlight_ad and ads.date_of_deactivate_highlight_ad <= current_datetime:
             name = f'deactivate_advertisement_highlight{ads.id}'
@@ -555,7 +559,7 @@ def update_schedule():
                                            {'highlight_ad': False})
                 logger.info(f'Запланирована деактивация выделения объявления (id: {ads.id}). Имя задачи: {name}.')
             except Exception as e:
-                logger.error(f'Не удалось запланировать деактивацию объявления (id: {ads.id}): {str(e)}',
+                logger.error(f"Не удалось запланировать деактивацию объявления (id: {ads.id}): {str(e)}",
                              exc_info=True)
 
         if ads.date_of_deactivate_special_accommodation:
@@ -569,12 +573,11 @@ def update_schedule():
                 task = "advertisement.tasks.deactivation_of_paid_services"
             try:
                 create_tasks_from_schedule(name,
-                                           task,
-                                           schedule_,
-                                           [ads.id, f'redbeat:{name}'],
-                                           {'special_accommodation': False})
+                               task,
+                               schedule_,
+                               [ads.id, f'redbeat:{name}'],
+                               {'special_accommodation': False})
                 logger.info(f'Запланировано деактивация специального размещения объявления (id: {ads.id}). Имя задачи: {name}.')
             except Exception as e:
-                logger.error(f'Не удалось запланировать деактивацию для пециального размещения для объявления (id: {ads.id}): {str(e)}',
+                logger.error(f"Не удалось запланировать деактивацию специального размещения объяаления (id: {ads.id}): {str(e)}",
                              exc_info=True)
-
