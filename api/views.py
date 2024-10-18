@@ -561,6 +561,7 @@ def get_bulk_import_of_ads(request):
                                                           first_name=request.user.first_name,
                                                           phone_number=request.user.phone_number,
                                                           email=request.user.email)
+
                 return Response({'task_id': f'{ads.task_id}'})
             except:
                 # логируем ошибку

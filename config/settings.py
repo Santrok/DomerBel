@@ -334,49 +334,49 @@ FILE_UPLOAD_MAX_MEMORY_SIZE = 20 * 1024 * 1024
 DATA_UPLOAD_MAX_NUMBER_FILES = 30
 
 
-#Настройка логгирования проекта
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-
-    'formatters':{
-        'celery': {
-            'format': '{asctime} [{levelname}] Task: {task_name} Task_id: {task_id} Args: {args} Kwargs: {kwargs} Message: {message}',
-            'style': '{',
-        },
-    },
-
-    'handlers':{
-        'celery': {
-            'level': 'INFO',
-            'class': 'logging.handlers.TimeRotatingFileHandler',
-            'filename': os.path.join(BASE_DIR,'logs','celery.log'),
-            'when': 'midnight', # создается новый файл для логов в полночь
-            'backupCount': 100, # хронит логи за полседнии 100 дней
-            'formatter': 'celery',
-        }
-
-    },
-
-    'loggers':{
-        'celery':{
-            'level': 'INFO',
-            'handlers': ['celery'],
-        },
-        'django':{},
-        'advertisement':{},
-        'api':{},
-        'chat':{},
-        'custom_user':{},
-        'main':{},
-        'paid_service':{},
-        'personal_account':{},
-        'publication':{},
-        'related_data':{},
-        'store':{},
-    },
-
-}
+# #Настройка логгирования проекта
+# LOGGING = {
+#     'version': 1,
+#     'disable_existing_loggers': False,
+#
+#     'formatters':{
+#         'celery': {
+#             'format': '{asctime} [{levelname}] Task: {task_name} Task_id: {task_id} Args: {args} Kwargs: {kwargs} Message: {message}',
+#             'style': '{',
+#         },
+#     },
+#
+#     'handlers':{
+#         'celery': {
+#             'level': 'INFO',
+#             'class': 'logging.handlers.TimeRotatingFileHandler',
+#             'filename': os.path.join(BASE_DIR,'logs','celery.log'),
+#             'when': 'midnight', # создается новый файл для логов в полночь
+#             'backupCount': 100, # хронит логи за полседнии 100 дней
+#             'formatter': 'celery',
+#         }
+#
+#     },
+#
+#     'loggers':{
+#         'celery':{
+#             'level': 'INFO',
+#             'handlers': ['celery'],
+#         },
+#         'django':{},
+#         'advertisement':{},
+#         'api':{},
+#         'chat':{},
+#         'custom_user':{},
+#         'main':{},
+#         'paid_service':{},
+#         'personal_account':{},
+#         'publication':{},
+#         'related_data':{},
+#         'store':{},
+#     },
+#
+# }
 
 
 
