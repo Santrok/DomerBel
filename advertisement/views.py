@@ -337,7 +337,7 @@ def get_page_for_bulk_import_of_advertisement(request):
     Сборка страницы массового импорта объявлений.
     Модели: UploadFile
     """
-    files = UploadFile.objects.select_related('errorfile').filter(user=request.user).order_by('time_upload_file')
+    files = UploadFile.objects.select_related('errorfile').filter(user=request.user).order_by('-time_upload_file')
     url = env_keys.get('URL')
     context = {
         'files': files,

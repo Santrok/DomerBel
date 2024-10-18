@@ -544,16 +544,19 @@ def get_store_list_by_user(request):
 
 @api_view(['POST'])
 def get_bulk_import_of_ads(request):
+    """
+    Функция проверяет возможность открытия файлв и запускает задачу в celery по его обработки
+    """
     serializer = UploadFileSerializer(data=request.data)
     if serializer.is_valid():
         if serializer.validated_data.get("file").name.endswith('xlsx'):
-            '''Работа с электронной таблицей'''
+            #Работа с электронной таблицей
             try:
                 upload_file = serializer.validated_data.get("file")
                 book = openpyxl.open(upload_file, read_only=True)
                 save_file = UploadFile(file=upload_file, user=request.user)
                 save_file.save()
-                ads = save_many_ads_from_excel_task.delay(uploud_file=f'./media/{save_file.file.name}',
+                ads = save_many_ads_from_excel_task.delay(upload_file=f'./media/{save_file.file.name}',
                                                           id=request.user.id,
                                                           first_name=request.user.first_name,
                                                           phone_number=request.user.phone_number,
@@ -565,14 +568,14 @@ def get_bulk_import_of_ads(request):
                 return Response({'error': 'Невозможно прочитать файл.'})
 
         elif serializer.validated_data.get("file").name.endswith('zip'):
-            '''Работа с электронным архивом'''
+            #Работа с электронным архивом
             try:
                 upload_zip = serializer.validated_data.get("file")
                 with ZipFile(upload_zip, 'r') as zip:
                     files_from_zip = zip.namelist()
                 save_zip = UploadFile(file=upload_zip, user=request.user)
                 save_zip.save()
-                ads = save_many_ads_from_zip_task.delay(uploud_zip=f'./media/{save_zip.file.name}',
+                ads = save_many_ads_from_zip_task.delay(upload_zip=f'./media/{save_zip.file.name}',
                                                         id=request.user.id,
                                                         first_name=request.user.first_name,
                                                         phone_number=request.user.phone_number,
@@ -584,16 +587,16 @@ def get_bulk_import_of_ads(request):
                 return Response({'error': 'Невозможно прочитать файл.'})
     else:
         # логируем ошибку
-        logger.warning(f'user: {request.user}, action:bulk ads from file, error: incorrect file format')
+        # logger.warning(f'user: {request.user}, action:bulk ads from file, error: incorrect file format')
         return Response({'error': 'Ошибка при загрузке файла. Убедитесь, что загружаемый файл необходимого расширения'})
 
 
-@api_view(["GET"])
-def get_result_task(request, id_):
+@api_view(["GET","POST"])
+def get_result_task(request, id):
     """
     Возвращает прогресс выполнения задачи массового импорта объявлений и её результат
     """
-    task = app.AsyncResult(id=id_)
+    task = app.AsyncResult(id=id)
     if task.state == "SUCCESS":
         return JsonResponse({'state': task.state, 'result': task.result})
     else:

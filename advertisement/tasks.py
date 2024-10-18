@@ -326,20 +326,35 @@ def deactivate_store():
 
 
 @shared_task()
+<<<<<<< HEAD
 def save_many_ads_from_excel_task(uploud_file, id_, first_name, phone_number, email):
+=======
+def delete_everything_in_folder_beat():
+    """
+    Удаляет все файлы из папки для "files_for_bulk_import_of_ads"
+    Задача отрабатывает раз в сутки в 00.00
+    """
+    path = './media/files_for_bulk_import_of_ads'
+    shutil.rmtree(path)
+    os.mkdir(path)
+
+
+@shared_task()
+def save_many_ads_from_excel_task(upload_file, id, first_name, phone_number, email):
+>>>>>>> 5e5f81ab (corection name arguments in bulk import ads)
     """
     Сохраняет объявления из экселя.
     """
-    result = save_many_ads_from_excel(uploud_file, id_, first_name, phone_number, email)
+    result = save_many_ads_from_excel(upload_file, id, first_name, phone_number, email)
     return result
 
 
 @shared_task()
-def save_many_ads_from_zip_task(uploud_zip, id_, first_name, phone_number, email):
+def save_many_ads_from_zip_task(upload_zip, id, first_name, phone_number, email):
     """
     Сохраняет объявления из zip-архива.
     """
-    result = save_many_ads_from_zip(uploud_zip, id_, first_name, phone_number, email)
+    result = save_many_ads_from_zip(upload_zip, id, first_name, phone_number, email)
     return result
 
 
