@@ -1,4 +1,5 @@
 from django.contrib import messages
+from django.contrib.auth.models import Permission
 from django.shortcuts import render, redirect
 
 from advertisement.models import Advertisement
@@ -53,8 +54,10 @@ def get_site_map_page(request):
 
     context = {
         'nodes': category_list,
+        "adaptive_navigation": "Карта сайта"
     }
-
+    per = Permission.objects.get(codename='add_store')
+    print(per)
     return render(request, 'map.html', context)
 
 

@@ -332,3 +332,5 @@ CHANNEL_LAYERS = {
 # Настройка буфера памяти для загрузки файлов
 FILE_UPLOAD_MAX_MEMORY_SIZE = 20 * 1024 * 1024
 DATA_UPLOAD_MAX_NUMBER_FILES = 30
+
+

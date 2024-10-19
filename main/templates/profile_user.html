@@ -117,7 +117,7 @@
                                 Мои объявления
                             </a>
                         </li>
-                        {% if user.check_user_permission_in_group %}
+                        {% if user.entity %}
                             <li class="profile__aside-nav-list-item priority">
                                 <a href="{% url 'add_store' %}">
                                     Добавить магазин
@@ -141,7 +141,7 @@
                                 Написать администратору
                             </a>
                         </li>
-                        {% if user.check_user_permission_in_group %}
+                        {% if user.entity %}
                             <li class="profile__aside-nav-list-item">
                                 <a href="{% url 'user_all_publications' %}">
                                     Мои публикации
@@ -153,7 +153,7 @@
                                 Избранное
                             </a>
                         </li>
-                    {% if user.check_user_permission_in_group %}
+                    {% if user.entity %}
                         <li class="profile__aside-nav-list-item">
                             <a href="{% url 'bulk_import' %}">
                                 Массовый импорт объявлений
@@ -208,10 +208,10 @@
                                             </a>
                                         </li>
                                         {% endif %}
-                                        {% if advertisement.highlight %}
+                                        {% if advertisement.highlight_ad %}
                                         <li>
                                             <a href="#">
-                                                <img src="{% static 'img/highlight.png' %}" alt=""
+                                                <img src="{% static 'img/highlight.png' %}" alt="highlight"
                                                      title="Объявление выделено">
                                             </a>
                                         </li>
@@ -219,7 +219,7 @@
                                         {% if advertisement.special_accommodation %}
                                         <li>
                                             <a href="#">
-                                                <img src="{% static 'img/special.png' %}" alt="" title="Спецразмещение">
+                                                <img src="{% static 'img/special.png' %}" alt="special" title="Спецразмещение">
                                             </a>
                                         </li>
                                         {% endif %}
