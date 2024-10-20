@@ -6,6 +6,7 @@ import contextlib
 
 from celery import shared_task
 from celery.schedules import crontab
+from django.urls import reverse
 from redbeat import RedBeatSchedulerEntry
 from django.db import transaction
 from django.utils import timezone
@@ -17,7 +18,7 @@ from config.celery_app import app
 from config.settings import RED_BEAT_REDIS_URL, TIME_ZONE
 from services.email.message import run_send_email_task_celery
 from related_data.models import Field
-from .models import PhotoAdvertisement, Advertisement, ErrorFile, Store
+from .models import PhotoAdvertisement, Advertisement, Store, UploadFile
 from .utils_for_bulk_import import save_many_ads_from_excel, save_many_ads_from_zip
 
 
@@ -92,7 +93,8 @@ def delete_photos(advertisement, photos_to_delete):
         folder_path = os.path.dirname(file_path)
 
         # Удаляем файл превью и очищаем поле
-        os.remove(file_path)
+        if os.path.exists(file_path):
+            os.remove(file_path)
         advertisement.preview_image = None
         advertisement.save()
 
@@ -164,14 +166,14 @@ def save_advertisement_task(user, data, additional_information, temporarily_savi
         run_send_email_task_celery("Ошибка при создании объявления",
                                    "asend_create_advertisement_error.html",
                                    data['email'],
-                                   activation_title=data['title'],)
+                                   activation_title=data['title'], )
     else:
         run_send_email_task_celery('Новое объявление',
                                    'asend_notification.html',
                                    settings.EMAIL_HOST_USER,
                                    subject="Добавлено новое объявление",
                                    message='Новое объявление требует модерации на сайте Домер.бел',
-                                   link=f"/admin/advertisement/advertisement/{new_advertisement.id}/change/"
+                                   link=f"{reverse('admin:index')}advertisement/advertisement/{new_advertisement.id}/change/"
                                    )
 
     if temporarily_saving_photos:
@@ -201,14 +203,14 @@ def update_advertisement_task(user, advertisement_id, data, additional_informati
             if not new_preview_photo_from_old_ones and not temporarily_saving_photos and not delete_photo:
                 editing_advertisement.save()
             else:
+                if delete_photo:
+                    delete_photos(editing_advertisement, delete_photo)
+
                 if new_preview_photo_from_old_ones:
                     swap_preview_images(editing_advertisement, new_preview_photo_from_old_ones)
 
                 if temporarily_saving_photos:
                     add_new_photos(editing_advertisement, temporarily_saving_photos)
-
-                if delete_photo:
-                    delete_photos(editing_advertisement, delete_photo)
 
     except Exception as e:
         print(f"Ошибка при обновлении объявления: {e}")
@@ -218,14 +220,14 @@ def update_advertisement_task(user, advertisement_id, data, additional_informati
                                    settings.EMAIL_HOST_USER,
                                    subject="Объявление изменено",
                                    message=f'Объявление id={advertisement_id} требует модерации на сайте Домер.бел',
-                                   link=f"/admin/advertisement/advertisement/{advertisement_id}/change/",
+                                   link=f"{reverse('admin:index')}advertisement/advertisement/{advertisement_id}/change/",
                                    )
 
     if temporarily_saving_photos:
         delete_files(temporarily_saving_photos)
 
 
-@shared_task(result_expires=100)
+@shared_task()
 def deactivate_advertisement():
     """ Функция деактивации объявлений по истечению времени публикации """
     current_datetime = get_current_datetime()
@@ -292,7 +294,7 @@ def list_shown_vip():
         update_vip_advertisements(all_ads_vip, 'shown_vip', 'shown_vip_count')
 
 
-@shared_task(result_expires=5)
+@shared_task()
 def list_shown_vip_category():
     """
     Ротация VIP объявлений по категориям.
@@ -335,30 +337,32 @@ def delete_everything_in_folder_beat():
 
 
 @shared_task()
-def save_many_ads_from_excel_task(uploud_file, id_, first_name, phone_number, email):
+def save_many_ads_from_excel_task(upload_file, id, first_name, phone_number, email):
     """
     Сохраняет объявления из экселя.
     """
-    result = save_many_ads_from_excel(uploud_file, id_, first_name, phone_number, email)
+    result = save_many_ads_from_excel(upload_file, id, first_name, phone_number, email)
     return result
 
 
 @shared_task()
-def save_many_ads_from_zip_task(uploud_zip, id_, first_name, phone_number, email):
+def save_many_ads_from_zip_task(upload_zip, id, first_name, phone_number, email):
     """
     Сохраняет объявления из zip-архива.
     """
-    result = save_many_ads_from_zip(uploud_zip, id_, first_name, phone_number, email)
+    result = save_many_ads_from_zip(upload_zip, id, first_name, phone_number, email)
     return result
 
 
 @shared_task()
-def delete_error_file_beat():
+def delete_upload_file_beat():
     """
-    Удаляет все экземпляры модели ErrorFile раз в сутки.
+    Удаляет все экземпляры модели UoloadFile раз в сутки.
     """
-    files = ErrorFile.objects.all()
+    print(1)
+    files = UploadFile.objects.filter(status=True)
     files.delete()
+    print(2)
 
 
 def create_tasks_from_schedule(name, task, schedule_, args=None, kwargs=None):

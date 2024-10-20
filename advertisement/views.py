@@ -1,7 +1,8 @@
 import random
 
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.db.models import Q, F
+from django.http import Http404
 from django.shortcuts import render, get_object_or_404
 
 from config.settings import env_keys
@@ -234,21 +235,25 @@ def get_advertisement_details_page(request, slug):
     Формы: ComplaintForm.
     """
     main_advertisement = get_object_or_404(Advertisement.objects.prefetch_related("photoadvertisement_set"), slug=slug)
-    Advertisement.objects.filter(id=main_advertisement.id).update(counter_views=F("counter_views") + 1)
-    category_crumbs = main_advertisement.category.get_ancestors(ascending=False, include_self=True)
-    similar_advertisement = get_similar_advertisement(main_advertisement)
 
-    complaint_form = ComplaintForm()
-    context = {
-        "advertisement": main_advertisement,
-        "category_crumbs": category_crumbs,
-        "similar_advertisement": similar_advertisement,
-        "form": complaint_form,
-        "adaptive_navigation": f"{main_advertisement.title}.",
-    }
-    return render(request=request,
-                  template_name='advertisement_details.html',
-                  context=context)
+    if main_advertisement.moderated or main_advertisement.author == request.user or request.user.is_staff:
+        Advertisement.objects.filter(id=main_advertisement.id).update(counter_views=F("counter_views") + 1)
+        category_crumbs = main_advertisement.category.get_ancestors(ascending=False, include_self=True)
+        similar_advertisement = get_similar_advertisement(main_advertisement)
+
+        complaint_form = ComplaintForm()
+        context = {
+            "advertisement": main_advertisement,
+            "category_crumbs": category_crumbs,
+            "similar_advertisement": similar_advertisement,
+            "form": complaint_form,
+            "adaptive_navigation": f"{main_advertisement.title}.",
+        }
+        return render(request=request,
+                      template_name='advertisement_details.html',
+                      context=context)
+    else:
+        raise Http404
 
 
 def get_page_search_result_by_advertisements(request):
@@ -326,12 +331,13 @@ def get_page_search_result_by_advertisements(request):
 
 
 @login_required
+@permission_required("advertisement.view_uploadfile", raise_exception=True)
 def get_page_for_bulk_import_of_advertisement(request):
     """
     Сборка страницы массового импорта объявлений.
     Модели: UploadFile
     """
-    files = UploadFile.objects.select_related('errorfile').filter(user=request.user).order_by('time_upload_file')
+    files = UploadFile.objects.select_related('errorfile').filter(user=request.user).order_by('-time_upload_file')
     url = env_keys.get('URL')
     context = {
         'files': files,

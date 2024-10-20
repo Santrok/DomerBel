@@ -1,6 +1,9 @@
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
+from django.db.models import F
+from django.http import Http404
 from django.shortcuts import render, get_object_or_404, redirect
+from django.urls import reverse
 
 from config import settings
 from publication.forms import PublicationForm
@@ -9,15 +12,12 @@ from services.email.message import run_send_email_task_celery
 from utils.template_paginator import variables_for_paginator
 
 
-# Create your views here.
-
-
 def get_publications_page(request):
     """
     Сборка страницы со всеми публикациями.
     Модели: Publication
     """
-    publications = Publication.objects.exclude(moderated=False).order_by('-date_of_create')
+    publications = Publication.objects.filter(moderated=True).order_by('-date_of_create')
 
     page_obj = variables_for_paginator(publications,
                                        request.GET.get('page'),
@@ -36,13 +36,16 @@ def get_publication_page_by_slug(request, slug):
     Сборка страницы с детальной информацией выбранной публикации.
     Модели: Publication
     """
-    Publication.objects.filter(slug=slug).update(counter_views=F('counter_views')+1)
-    publication = get_object_or_404(Publication, slug=slug, moderated=True)
-    context = {
-        'publication': publication,
-        'adaptive_navigation': f'{publication.title}'
-    }
-    return render(request, 'publication_by_slug.html', context)
+    publication = get_object_or_404(Publication, slug=slug)
+    if publication.moderated or publication.user == request.user or request.user.is_staff:
+        Publication.objects.filter(slug=slug).update(counter_views=F('counter_views') + 1)
+        context = {
+            'publication': publication,
+            'adaptive_navigation': f'{publication.title}'
+        }
+        return render(request, 'publication_by_slug.html', context)
+    else:
+        raise Http404
 
 
 def get_search_result_page_by_publication(request):
@@ -77,6 +80,7 @@ def get_search_result_page_by_publication(request):
 
 
 @login_required
+@permission_required("publication.add_publication", raise_exception=True)
 def get_page_for_add_new_publication(request):
     """
     Сборка страницы с для создания новой публикации.
@@ -97,7 +101,7 @@ def get_page_for_add_new_publication(request):
                                        settings.EMAIL_HOST_USER,
                                        subject="Добавлена публикация",
                                        message=f'Новая публикация требует модерации на сайте Домер.бел',
-                                       link=f"/admin/publication/publication/{publication.id}/change/",
+                                       link=f"{reverse('admin:index')}publication/publication/{publication.id}/change/",
                                        )
             return redirect('user_all_publications')
     context = {
@@ -108,6 +112,7 @@ def get_page_for_add_new_publication(request):
 
 
 @login_required
+@permission_required("publication.delete_publication", raise_exception=True)
 def delete_publication(request):
     """
     Функция для удаления выбранных публикаций пользователя.
@@ -122,6 +127,7 @@ def delete_publication(request):
 
 
 @login_required
+@permission_required("publication.change_publication", raise_exception=True)
 def get_page_for_edit_publication(request, publication_slug):
     """
     Сборка страницы редактирования выбранной публикации пользователя.
@@ -143,7 +149,7 @@ def get_page_for_edit_publication(request, publication_slug):
                                        settings.EMAIL_HOST_USER,
                                        subject="Изменена публикация",
                                        message=f'Публикация {publication.id} требует модерации на сайте Домер.бел',
-                                       link=f"/admin/publication/publication/{publication.id}/change/"
+                                       link=f"{reverse('admin:index')}publication/publication/{publication.id}/change/"
                                        )
             return redirect('user_all_publications')
     else:

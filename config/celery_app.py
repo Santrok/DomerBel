@@ -33,8 +33,8 @@ app.conf.beat_schedule = {
         "task": "advertisement.tasks.delete_everything_in_folder_beat",
         "schedule": crontab(minute=15, hour=0),
     },
-    "delete_error_file": {
-        "task": "advertisement.tasks.delete_error_file_beat",
+    "delete_upload_file_beat": {
+        "task": "advertisement.tasks.delete_upload_file_beat",
         "schedule": crontab(minute=15, hour=0),
         # "schedule": timedelta(seconds=120)
     },

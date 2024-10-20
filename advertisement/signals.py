@@ -1,13 +1,26 @@
 import os
 
+from django.contrib.auth.models import Group, Permission
 from django.contrib.postgres.search import SearchVector
 from django.db import transaction
 from django.db.models import Min
-from django.db.models.signals import pre_delete, post_save
+from django.db.models.signals import pre_delete, post_save, post_migrate
 from django.dispatch import receiver
 
 from services.email.message import run_send_email_task_celery
-from .models import Advertisement, PhotoAdvertisement
+from .models import Advertisement, PhotoAdvertisement, UploadFile, ErrorFile
+from .tasks import get_current_datetime
+
+
+@receiver(post_migrate)
+def add_permission_at_group(sender, **kwargs):
+    """
+    Добавляет разрешения в группу юр.лиц
+    """
+    group = Group.objects.get_or_create(name='Юридические лица')
+    per = Permission.objects.filter(codename__in=['edit_uploadfile', 'change_uploadfile',
+                                                  'add_uploadfile', 'view_uploadfile'])
+    group[0].permissions.set(per)
 
 
 @receiver(pre_delete, sender=Advertisement)
@@ -51,10 +64,12 @@ def notify_advertisement_moderation_result(sender, instance, **kwargs):
                                    activation_title=instance.title,
                                    result=False,
                                    moderation_error_message=instance.moderation_error_message)
+    if instance.moderation_error_message:
+        sender.objects.filter(id=instance.id).update(moderation_error_message=None)
 
 
 @receiver(post_save, sender=Advertisement)
-def create_fild_for_search_adv(sender, instance, **kwargs):
+def fill_in_the_advertisement_search_field(sender, instance, **kwargs):
     """
     Функция заполняет поля для полнотекстового поиска.
     """
@@ -114,3 +129,39 @@ def reset_all_shown_vip_and_count(sender, instance, **kwargs):
 
         advertisement.update(shown_vip_count=shown_count,
                              shown_vip_category_count=shown_category_count, )
+
+
+@receiver(pre_delete, sender=UploadFile)
+def upload_file_delete(sender, instance, **kwargs):
+    """
+    Удаление файлов и папок, перед удалением экземпляра загруженного файла
+    с объявлениями для массового импорта.
+    """
+    file_folder = os.path.dirname(instance.file.path) if instance.file else None
+    instance.file.delete(False)
+    if file_folder and os.path.exists(file_folder) and os.path.isdir(file_folder):
+        if not os.listdir(file_folder):
+            os.rmdir(file_folder)
+
+
+@receiver(pre_delete, sender=ErrorFile)
+def error_file_delete(sender, instance, **kwargs):
+    """
+    Удаление файлов и папок, перед удалением экземпляра файла с ошибками объявлений
+     при массовом импорте для изменения.
+    """
+    if instance.file and os.path.isfile(instance.file):
+        os.remove(instance.file)
+    file_folder = os.path.dirname(instance.file)
+    if not os.listdir(file_folder):
+        os.rmdir(file_folder)
+
+
+@receiver(post_save, sender=Advertisement)
+def raise_in_search_advertisement(sender, instance, **kwargs):
+    """
+    Функция поднимает объявление в поиске
+    """
+    if "raise_in_search" in instance.get_dirty_fields() and instance.raise_in_search:
+        Advertisement.objects.filter(id=instance.id).update(raise_in_search=False,
+                                                            search_boost_date=get_current_datetime())
