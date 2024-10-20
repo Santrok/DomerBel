@@ -152,8 +152,10 @@
 .main__info-advertisement-list-item-achive a img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  object-position: center;
+  -o-object-fit: cover;
+     object-fit: cover;
+  -o-object-position: center;
+     object-position: center;
 }
 
 .advertisement__status {
@@ -233,8 +235,10 @@
   max-height: 140px;
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  object-position: center;
+  -o-object-fit: cover;
+     object-fit: cover;
+  -o-object-position: center;
+     object-position: center;
 }
 
 .main__info-advertisement-list-item-title-wrap {
@@ -393,6 +397,4 @@
   .ck-editor-container {
     max-width: none;
   }
-}
-
-/*# sourceMappingURL=profile.css.map */
+}/*# sourceMappingURL=profile.css.map */
