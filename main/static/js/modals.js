@@ -25,6 +25,10 @@ function closeModal(){
           if (i.tagName === 'FORM') {
               i.reset()
           }
+          if(i.classList.contains('paid__modal')) {
+            const totalPaidCount = Array.from(i.children).find(item => item.classList.contains('paid__form-total')).children[0]
+            totalPaidCount.innerText = "0 руб"
+          }
       }
       document.body.style.overflow = 'auto';
 }
