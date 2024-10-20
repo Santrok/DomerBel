@@ -208,7 +208,7 @@ def get_page_in_personal_account_with_inactive_advertisements(request):
 
 
 @login_required
-@permission_required("advertisement.view_store", raise_exception=True)
+@permission_required("store.view_store", raise_exception=True)
 def get_page_in_personal_account_with_user_stores(request):
     """
     Сборка страницы со всеми магазинами пользователя в ЛК.
@@ -223,6 +223,7 @@ def get_page_in_personal_account_with_user_stores(request):
 
 
 @login_required
+@permission_required("publication.view_publication", raise_exception=True)
 def get_page_in_personal_account_all_user_publications(request):
     """
     Сборка страницы со всеми публикациями пользователя в ЛК.

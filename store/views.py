@@ -1,7 +1,9 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.db.models import Q
+from django.http import Http404
 from django.shortcuts import render, get_object_or_404, redirect
+from django.urls import reverse
 
 from advertisement.models import Advertisement
 from advertisement.utils import setting_search_options, setting_values_for_sorting_from_cookie_or_request_get, \
@@ -30,7 +32,8 @@ def get_stores_page(request):
                                                     'category',
                                                     'store_counts',
                                                     cumulative=True,
-                                                    extra_filters={"is_active": True})
+                                                    extra_filters={"is_active": True,
+                                                                   "moderated": True})
 
     page_obj = variables_for_paginator(stores,
                                        request.GET.get('page'),
@@ -72,6 +75,7 @@ def get_store_search_page(request):
                                                     'store_counts',
                                                     cumulative=True,
                                                     extra_filters={"is_active": True,
+                                                                   "moderated": True,
                                                                    **search_parameters})
 
     page_obj = variables_for_paginator(stores,
@@ -102,6 +106,7 @@ def get_stores_by_category(request, category_slug):
                                                              'store_counts',
                                                              cumulative=True,
                                                              extra_filters={"is_active": True,
+                                                                            "moderated": True,
                                                                             **region_filter})
     stores = (Store.objects.filter(Q(category__in=categories_annotate) |
                                    Q(category__slug=category.slug),
@@ -134,46 +139,50 @@ def get_store_by_title(request, store_slug):
      state_sort_by_date) = setting_values_for_sorting_from_cookie_or_request_get(request.COOKIES, request.GET)
     region_filter, region_param, region_bread_crumbs = get_region_variables(request.GET.get('region'))
 
-    store = get_object_or_404(Store, slug=store_slug, is_active=True, moderated=True)
-    advertisements = Advertisement.objects.filter(store=store,
-                                                  is_active=True,
-                                                  moderated=True,
-                                                  **region_filter
-                                                  ).select_related('category',
-                                                                   'region').order_by(order_by)
-    categories_annotate = Category.objects.add_related_count(Category.objects.root_nodes(),
-                                                             Advertisement,
-                                                             'category',
-                                                             'advertisement_counts',
-                                                             cumulative=True,
-                                                             extra_filters={**region_filter,
-                                                                            "store": store,
-                                                                            "is_active": True,
-                                                                            "moderated": True
-                                                                            })
+    store = get_object_or_404(Store, slug=store_slug)
 
-    page_obj = variables_for_paginator(advertisements,
-                                       request.GET.get('page'),
-                                       sort_for_paginator)
+    if store.moderated or store.user == request.user or request.user.is_staff:
+        advertisements = Advertisement.objects.filter(store=store,
+                                                      is_active=True,
+                                                      moderated=True,
+                                                      **region_filter
+                                                      ).select_related('category',
+                                                                       'region').order_by(order_by)
+        categories_annotate = Category.objects.add_related_count(Category.objects.root_nodes(),
+                                                                 Advertisement,
+                                                                 'category',
+                                                                 'advertisement_counts',
+                                                                 cumulative=True,
+                                                                 extra_filters={**region_filter,
+                                                                                "store": store,
+                                                                                "is_active": True,
+                                                                                "moderated": True
+                                                                                })
 
-    context = {
-        'store': store,
-        "ads_found": advertisements.count(),
-        "category": categories_annotate,
-        "region_bread_crumbs": region_bread_crumbs,
-        "region_param": region_param,
-        "page_obj": page_obj,
-        'date': state_sort_by_date,
-        'adaptive_navigation': f'{store.title}. Беларусь'
+        page_obj = variables_for_paginator(advertisements,
+                                           request.GET.get('page'),
+                                           sort_for_paginator)
 
-    }
-    response = render(request, 'store_details.html', context)
-    response.set_cookie('sort', sort_for_paginator)
-    response.set_cookie('date', state_sort_by_date)
-    response.set_cookie('sorted_by', order_by)
-    response.set_cookie('user_auth', request.user.id)
+        context = {
+            'store': store,
+            "ads_found": advertisements.count(),
+            "category": categories_annotate,
+            "region_bread_crumbs": region_bread_crumbs,
+            "region_param": region_param,
+            "page_obj": page_obj,
+            'date': state_sort_by_date,
+            'adaptive_navigation': f'{store.title}. Беларусь'
 
-    return response
+        }
+        response = render(request, 'store_details.html', context)
+        response.set_cookie('sort', sort_for_paginator)
+        response.set_cookie('date', state_sort_by_date)
+        response.set_cookie('sorted_by', order_by)
+        response.set_cookie('user_auth', request.user.id)
+
+        return response
+    else:
+        raise Http404
 
 
 def get_store_by_title_and_category(request, store_slug, category_slug):
@@ -329,6 +338,7 @@ def get_page_for_add_new_store(request):
         if store_form.is_valid():
             store = store_form.save(commit=False)
             store.user = request.user
+            store.is_active = True
             store.save()
             messages.success(request, """Ваш магазин отправлен на модерацию.
                                          После модерации он появится в списке магазинов.""")
@@ -337,7 +347,7 @@ def get_page_for_add_new_store(request):
                                        settings.EMAIL_HOST_USER,
                                        subject="Добавлен магазин",
                                        message=f'Новый магазин требует модерации на сайте Домер.бел',
-                                       link=f"/admin/store/store/{store.id}/change/",
+                                       link=f"{reverse('admin:index')}store/store/{store.id}/change/",
                                        )
             return redirect('my_store')
         else:
@@ -381,7 +391,7 @@ def get_page_for_edit_store(request, store_id):
                                        settings.EMAIL_HOST_USER,
                                        subject="Изменен магазин",
                                        message=f'Магазин id={store.id} требует модерации на сайте Домер.бел',
-                                       link=f"/admin/store/store/{store.id}/change/"
+                                       link=f"{reverse('admin:index')}store/store/{store.id}/change/"
                                        )
             return redirect('my_store')
         else:

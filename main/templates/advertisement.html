@@ -125,7 +125,7 @@
             {% for card in page_obj %}
                 <li>
                     <article class="advertisement__list-item {% if card.highlight_ad %} active__item {% endif %}" {% if user.is_authenticated %}data-id="{{ card.id }}"{% endif %}>
-                        <a href="{% url 'advertisement_details' card.slug %}" class="advertisement__list-item-img">
+                        <a href="{% url 'advertisement_details' card.slug %}" class="advertisement__list-item-img" >
                             <img src="{% if card.preview_image %} {{ card.preview_image.url }} {% else %}{% static 'img/no_image.jpg' %}{% endif %}"
                                  alt="{{ card.category }}">
                         </a>
@@ -135,7 +135,7 @@
                                     {{ card.title }}
                                 </a>
                             </h3>
-                            <div class="advertisement__list-item-about-favorites{% if card.id in user.userfavorites.favorites %} advertisement__favorites-active{% endif %}"></div>
+                            <div class="advertisement__list-item-about-favorites{% if card.id in user.userfavorites.favorites %} advertisement__favorites-active{% endif %}" title="{% if card.id in user.userfavorites.favorites %}Удалить из избранного{% else %}Добавить в избранное{% endif %}"></div>
                             <p class="advertisement__list-item-price">
                                 {% if card.price %}
                                     {{ card.price|floatformat }} руб.
@@ -166,17 +166,17 @@
                             <ul class="advertisement__list-item-action">
                                 {% if card.special_accommodation %}
                                     <li class="advertisement__list-item-action-item">
-                                        <img src="{% static 'img/special.png' %}" alt="">
+                                        <img src="{% static 'img/special.png' %}" alt="" title="Спецразмещение">
                                     </li>
                                 {% endif %}
                                 {% if card.vip %}
                                     <li class="advertisement__list-item-action-item">
-                                        <img src="{% static 'img/VIP.png' %}" alt="">
+                                        <img src="{% static 'img/VIP.png' %}" alt="" title="VIP-объявление">>
                                     </li>
                                 {% endif %}
                                 {% if card.highlight_ad %}
                                     <li class="advertisement__list-item-action-item">
-                                        <img src="{% static 'img/highlight.png' %}" alt="">
+                                        <img src="{% static 'img/highlight.png' %}" alt="" title="Объявление выделено">
                                     </li>
                                 {% endif %}
                                 {% if card.raise_in_search %}

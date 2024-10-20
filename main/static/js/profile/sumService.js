@@ -3,8 +3,6 @@ const paidModalInputChecked = document.querySelectorAll(
 )
 const sum = document.querySelector(".paid__form-total span")
 
-console.log(paidModalInputChecked)
-
 paidModalInputChecked.forEach((item) => {
   item.addEventListener("input", (e) => {
     if (e.currentTarget.checked) {

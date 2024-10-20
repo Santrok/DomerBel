@@ -304,7 +304,7 @@ def write_file_with_error_ads(ads_with_error,email, value_author, upload_file):
     for row in range(0, len(ads_with_error) + 1):
         if row == 0:
             values = ads_with_error[0]
-            del values['подробная_информация']
+            values.pop('подробная_информация', None)
             colum = 0
             for title in values.keys():
                 sheet.write(row, colum, title)
@@ -317,7 +317,7 @@ def write_file_with_error_ads(ads_with_error,email, value_author, upload_file):
                 sheet.write(row, colum, values.get(title))
         else:
             values = ads_with_error[row - 1]
-            del values['подробная_информация']
+            values.pop('подробная_информация', None)
             for title in values.keys():
                 if title in field.keys():
                     colum = field.get(title)

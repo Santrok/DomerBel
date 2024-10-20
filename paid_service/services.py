@@ -38,7 +38,7 @@ def _create_payment_payload(data):
                     "card_notification_url": "https://your-card-notification-url.com",
                     "customer_fields": {
                         "visible": ["first_name", "last_name"],
-                        "read_only": ["email", "phone"],
+                        "read_only": ["email", "phone", "address", "city", "state", "zip", "phone", "country", "birth_date", "taxpayer_id"],
                     },
                     "credit_card_fields": {
                         "holder": "Rick Astley",

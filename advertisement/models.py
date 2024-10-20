@@ -210,7 +210,7 @@ class AdvertisementAdmin(admin.ModelAdmin):
     def get_html_photo(self, object):
         return mark_safe(f"<img src='{object.preview_image.url}' style='width=150px; height: 150px;'")
 
-    readonly_fields = ["date_of_create", "get_html_photo"]
+    readonly_fields = ["date_of_create", "get_html_photo", "search_boost_date"]
     fields = ["title",
               "region",
               "category",
@@ -243,7 +243,6 @@ class AdvertisementAdmin(admin.ModelAdmin):
                     'vip',
                     'highlight_ad',
                     'special_accommodation',
-                    'raise_in_search',
                     )
     list_display_links = ('title',)
     search_fields = ('title', 'author__email', 'id')
@@ -252,7 +251,6 @@ class AdvertisementAdmin(admin.ModelAdmin):
                    'vip',
                    'highlight_ad',
                    'special_accommodation',
-                   'raise_in_search',
                    )
     list_editable = ['moderated',
                      'is_active',
