@@ -15,6 +15,9 @@ cross.forEach(item => {
             i.classList.remove('modal__active') || i.classList.remove("modals__active-grid");
             if (i.tagName === 'FORM') {
                 i.reset()
+                document.querySelectorAll(".modals__signIn-error").forEach(item => item.remove())
+                document.querySelectorAll(".modals__fields-error").forEach(item => item.classList.remove("modals__fields-error"))
+                document.querySelectorAll(".paid__form-error").forEach(item => item.classList.remove("paid__form-error"))
             }
         }
     })
