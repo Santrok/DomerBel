@@ -435,7 +435,7 @@ def processing_successful_payment_for_services(request):
 
     Advertisement.objects.filter(id=additional.get('advertisement')).update(**accommodation)
 
-    return HttpResponseRedirect(redirect_to='http://127.0.0.1:8000/')
+    return HttpResponseRedirect(redirect_to=env_keys.get("URL"))
 
 
 @api_view(['GET'])

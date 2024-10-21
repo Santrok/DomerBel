@@ -3,7 +3,7 @@ import json
 from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
 
-from .models import UserMessage
+#from .models import UserMessage
 
 
 class ChatConsumer(AsyncWebsocketConsumer):
@@ -27,6 +27,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         """
         Отправка сообщения всем участникам комнаты
         """
+        from .models import UserMessage
         try:
             text_data_json = json.loads(text_data)
             message = text_data_json.get("message")

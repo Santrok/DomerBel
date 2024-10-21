@@ -16,7 +16,7 @@ SECRET_KEY = env_keys.get('DJANGO_TOKEN')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env_keys.get('DEBUG')
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'Домер.бел']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'Домер.бел', '217.197.117.47']
 
 # Application definition
 
@@ -138,7 +138,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = 'static/'
-# STATIC_ROOT = os.path.join(BASE_DIR, 'static')  # используется при деплое
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')  # используется при деплое
 
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 MEDIA_URL = "/media/"
@@ -161,7 +161,7 @@ INTERNAL_IPS = [
 ]
 
 # Настройки кэша
-# CACHES = {
+#CACHES = {
 #     'default': {
 #         'BACKEND': 'django_redis.cache.RedisCache',
 #         'LOCATION': 'redis://127.0.0.1:6379/1',
@@ -169,7 +169,7 @@ INTERNAL_IPS = [
 #             'CLIENT_CLASS': 'django_redis.client.DefaultClient',
 #         }
 #     }
-# }
+#}
 
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
@@ -323,9 +323,9 @@ CKEDITOR_5_CONFIGS = {
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": env_keys.get('CHANNEL_LAYERS_BACKEND'),
-        # "CONFIG": {
-        #     "hosts": [("127.0.0.1", 6379)],
-        # },
+         "CONFIG": {
+             "hosts": [("127.0.0.1", 6379)],
+         },
     }
 }
 
