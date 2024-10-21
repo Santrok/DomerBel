@@ -91,14 +91,11 @@ function registration() {
  * @param {Object} data - An object containing input field names as keys and error messages as values.
  */
 
-function generatingErrorSField(data, fieldForm) {
-  console.log(fieldForm,data);
-  
+function generatingErrorSField(data, fieldForm) {  
   for (let i in data) {
     const field = document.querySelector(`${fieldForm} input[name="${i}"]`) || 
     document.querySelector(`${fieldForm} textarea[name="${i}"]`) || 
     document.querySelector(`${fieldForm} select[name="${i}"]`)
-    console.log(field);
     
     if (
       field?.parentElement.parentElement.children.length > 1 &&

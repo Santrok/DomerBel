@@ -79,8 +79,6 @@
         align-items: center;
         gap: 10px;
         align-self: flex-end;
-    
-    
         & li {
             max-width: 18px;
             max-height: 18px;
@@ -119,12 +117,12 @@
 
     & .advertisement__list-item-img {
         display: block;
-        flex: 0 1 140px;
         & img {
+            background: #fff;
             max-height: 140px;
             width: 100%;
             height: 100%;
-            object-fit: cover;
+            object-fit: contain;
             object-position: center;
         }
     }
@@ -166,7 +164,20 @@
     }
 
     & .advertisement__list-item-action{
-        display: none;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 10px;
+        & li {
+            max-width: 18px;
+            max-height: 18px;
+            & img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                object-position: center;
+            }
+        }
     }
 
     & .advertisement__list-item-about {
