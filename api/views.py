@@ -402,13 +402,14 @@ def processing_successful_payment_for_services(request):
     Webhook обрабатывающий успешную оплату услуг
     Модели: Service, Advertisement
     """
-    store_id = env_keys.get('PAID_SERVICE_STORE_ID')
-    secret_key = env_keys.get('PAID_SERVICE_SECRET_KEY')
-
-    url = env_keys.get('PAID_SERVICE_URL')
-    token = request.query_params.get('token')
-    information = requests.get(f'{url}{token}', auth=HTTPBasicAuth(store_id, secret_key))
-    additional = information.json().get('checkout').get('order').get('additional_data')
+    # store_id = env_keys.get('PAID_SERVICE_STORE_ID')
+    # secret_key = env_keys.get('PAID_SERVICE_SECRET_KEY')
+    #
+    # url = env_keys.get('PAID_SERVICE_URL')
+    # token = request.query_params.get('token')
+    # information = requests.get(f'{url}{token}', auth=HTTPBasicAuth(store_id, secret_key))
+    # additional = information.json().get('checkout').get('order').get('additional_data')
+    additional = request.query_params.get('transaction').json().get('additional_data')
     services = Service.objects.all()
     keys_date_of_deactivate = {"vip": "date_of_deactivate_vip",
                                "highlight_ad": "date_of_deactivate_highlight_ad",
@@ -435,7 +436,8 @@ def processing_successful_payment_for_services(request):
 
     Advertisement.objects.filter(id=additional.get('advertisement')).update(**accommodation)
 
-    return HttpResponseRedirect(redirect_to='http://127.0.0.1:8000/')
+    # return HttpResponseRedirect(redirect_to='http://127.0.0.1:8000/')
+    return Response(status=status.HTTP_200_OK)
 
 
 @api_view(['GET'])
