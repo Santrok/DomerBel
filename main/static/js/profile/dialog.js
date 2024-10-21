@@ -16,12 +16,6 @@ const roomName = JSON.parse(document.getElementById("room-name").textContent)
 const chatSocket = new WebSocket(
     "ws://" + window.location.host + "/ws/chat/" + roomName + "/"
 )
-chatSocket.onopen = function (e) {
-    console.log("The connection was setup successfully !")
-}
-chatSocket.onclose = function (e) {
-    console.log("Something unexpected happened !")
-}
 document.getElementById("id_message_send_button").onclick = function (e) {
     sendMessage();
 };

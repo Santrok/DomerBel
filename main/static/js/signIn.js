@@ -6,19 +6,6 @@ const switchToLoginBtn = document.querySelector('.modals__signUp');
 const choiceChildren = document.querySelector('.modals__signIn-choice-wrap').children;
 const switchTitle = document.querySelector('.modals__signIn-logo-title-wrap').children[1];
 const inputFirstName = document.querySelector('.modals__signIn-fields input[name="first_name"]');
-const cross = document.querySelectorAll('.cross');
-
-cross.forEach(item => {
-    item.addEventListener('click', () => {
-        const activeList = [...document.querySelectorAll('.modal__active'), ...document.querySelectorAll('.modals__active-grid')];
-        for(let i of activeList) {
-            i.classList.remove('modal__active') || i.classList.remove("modals__active-grid");
-            if (i.tagName === 'FORM') {
-                i.reset()
-            }
-        }
-    })
-})
 
 signInBtn.addEventListener('click', () => {
     for(let i of modal.children) {

@@ -26,7 +26,6 @@ function sendPaid() {
         })
         .then((response) => response.json())
         .then((data) => {
-                console.log(data)
                 if (data.errors) {
                     const errors = new Error("errors")
                     errors.data = data
