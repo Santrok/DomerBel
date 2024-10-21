@@ -91,15 +91,15 @@ def delete_photos(advertisement, photos_to_delete):
     if advertisement.preview_image in photos_to_delete:
         file_path = advertisement.preview_image.path
         folder_path = os.path.dirname(file_path)
-
+        
         # Удаляем файл превью и очищаем поле
         if os.path.exists(file_path):
             os.remove(file_path)
         advertisement.preview_image = None
         advertisement.save()
 
-        # Если папка пуста, удаляем её
-        if not os.listdir(folder_path):
+        # Если папка есть и пуста, удаляем её
+        if os.path.exists(folder_path) and not os.listdir(folder_path):
             os.rmdir(folder_path)
 
 
