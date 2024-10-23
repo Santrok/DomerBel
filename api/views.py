@@ -380,8 +380,9 @@ def providing_a_payment_page(request):
         store_id = env_keys.get('PAID_SERVICE_STORE_ID')
         secret_key = env_keys.get('PAID_SERVICE_SECRET_KEY')
         url = env_keys.get('PAID_SERVICE_URL')
+        user_email = request.user.email
 
-        response = send_payment_request(url, store_id, secret_key, serializer)
+        response = send_payment_request(url, store_id, secret_key, serializer, user_email)
 
         if response is None:
             return Response({"errors": {"connect": "Ошибка связи с банком. Пожалуйста, попробуйте позже!"}},
