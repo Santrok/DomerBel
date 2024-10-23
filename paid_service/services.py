@@ -63,7 +63,7 @@ def _create_payment_payload(data, user_email):
                 "order": {
                     "currency": "BYN",
                     "amount": int(amount * 100),
-                    "description": f"Оплата услуг для объявления '{title_ad}': {', '.join(description)}. Для оплаты введите номер тестовой карты 4012000000001006, CVC - 111, дата срока действия не должна быть прошедшим.",
+                    "description": f"Оплата услуг для объявления '{title_ad}': {', '.join(description)}. (!Для оплаты введите номер тестовой карты 4012000000001006, CVC - 111, дата срока действия не должна быть прошедшим.!)",
                     "additional_data": additional_data
                 },
                 "customer": {
