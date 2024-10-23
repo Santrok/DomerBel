@@ -23,50 +23,54 @@ def _create_payment_payload(data, user_email):
     """
     amount, description, additional_data, title_ad = _calculate_payment_details(data)
     payload = {
-        "checkout": {
-            "test": True,
-            "transaction_type": "payment",
-            "attempts": 3,
-            "settings": {
-                "return_url": f"{env_keys.get('URL')}",
-                "success_url": f"{env_keys.get('URL')}",
-                "decline_url": f"{env_keys.get('URL')}",
-                "fail_url": f"{env_keys.get('URL')}",
-                "cancel_url": f"{env_keys.get('URL')}",
-                "notification_url": f"{env_keys.get('URL')}/api/v1/notification/",
-                "button_text": "Оплатить",
-                "button_next_text": "Вернуться в магазин",
-                "language": "ru",
-                "card_notification_url": "https://your-card-notification-url.com",
-                "customer_fields": {
-                    "visible": ["email", ],
-                    "read_only": ["first_name",
-                                  "last_name",
-                                  "phone",
-                                  "address",
-                                  "city",
-                                  "state",
-                                  "zip",
-                                  "phone",
-                                  "country",
-                                  "birth_date",
-                                  "taxpayer_id"],
+            "checkout": {
+                "test": True,  # удалить при деплое
+                "transaction_type": "payment",
+                "attempts": 3,
+                "settings": {
+                    "return_url": f"{env_keys.get('URL')}",
+                    "success_url": f"{env_keys.get('URL')}",
+                    "decline_url": f"{env_keys.get('URL')}",
+                    "fail_url": f"{env_keys.get('URL')}",
+                    "cancel_url": f"{env_keys.get('URL')}",
+                    "notification_url": f"{env_keys.get('URL')}/api/v1/notification/",
+                    "button_text": "Оплатить",
+                    "button_next_text": "Вернуться в магазин",
+                    "language": "ru",
+                    "card_notification_url": "https://your-card-notification-url.com",
+                    "customer_fields": {
+                        "visible": ["email",],
+                        "read_only": ["first_name",
+                                      "last_name",
+                                      "phone",
+                                      "address",
+                                      "city",
+                                      "state",
+                                      "zip",
+                                      "phone",
+                                      "country",
+                                      "birth_date",
+                                      "taxpayer_id"],
+                    },
+                    "credit_card_fields": {  # удалить при деплое
+                        "holder": "Test User",
+                        "read_only": ["holder"]
+                    }
                 },
-            },
-            "payment_method": {
-                "types": ["credit_card"]
-            },
-            "order": {
-                "currency": "BYN",
-                "amount": int(amount * 100),
-                "description": f"Оплата услуг для объявления '{title_ad}': {', '.join(description)}.",
-                "additional_data": additional_data
-            },
-            "customer": {
-                "email": user_email,
+                "payment_method": {
+                    "types": ["credit_card"]
+                },
+                "order": {
+                    "currency": "BYN",
+                    "amount": int(amount * 100),
+                    "description": f"Оплата услуг для объявления '{title_ad}': {', '.join(description)}. Для оплаты введите номер тестовой карты 4012000000001006, CVC - 111, дата срока действия не должна быть прошедшим.",
+                    "additional_data": additional_data
+                },
+                "customer": {
+                    "email": user_email,
+                }
             }
         }
-    }
     return payload
 
 
