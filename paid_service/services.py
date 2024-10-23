@@ -23,50 +23,50 @@ def _create_payment_payload(data, user_email):
     """
     amount, description, additional_data, title_ad = _calculate_payment_details(data)
     payload = {
-            "checkout": {
-                "test": True,
-                "transaction_type": "payment",
-                "attempts": 3,
-                "settings": {
-                    "return_url": f"{env_keys.get('URL')}",
-                    "success_url": f"{env_keys.get('URL')}",
-                    "decline_url": f"{env_keys.get('URL')}",
-                    "fail_url": f"{env_keys.get('URL')}",
-                    "cancel_url": f"{env_keys.get('URL')}",
-                    "notification_url": f"{env_keys.get('URL')}/api/v1/notification/",
-                    "button_text": "Оплатить",
-                    "button_next_text": "Вернуться в магазин",
-                    "language": "ru",
-                    "card_notification_url": "https://your-card-notification-url.com",
-                    "customer_fields": {
-                        "visible": ["email",],
-                        "read_only": ["first_name",
-                                      "last_name",
-                                      "phone",
-                                      "address",
-                                      "city",
-                                      "state",
-                                      "zip",
-                                      "phone",
-                                      "country",
-                                      "birth_date",
-                                      "taxpayer_id"],
-                    },
+        "checkout": {
+            "test": True,
+            "transaction_type": "payment",
+            "attempts": 3,
+            "settings": {
+                "return_url": f"{env_keys.get('URL')}",
+                "success_url": f"{env_keys.get('URL')}",
+                "decline_url": f"{env_keys.get('URL')}",
+                "fail_url": f"{env_keys.get('URL')}",
+                "cancel_url": f"{env_keys.get('URL')}",
+                "notification_url": f"{env_keys.get('URL')}/api/v1/notification/",
+                "button_text": "Оплатить",
+                "button_next_text": "Вернуться в магазин",
+                "language": "ru",
+                "card_notification_url": "https://your-card-notification-url.com",
+                "customer_fields": {
+                    "visible": ["email", ],
+                    "read_only": ["first_name",
+                                  "last_name",
+                                  "phone",
+                                  "address",
+                                  "city",
+                                  "state",
+                                  "zip",
+                                  "phone",
+                                  "country",
+                                  "birth_date",
+                                  "taxpayer_id"],
                 },
-                "payment_method": {
-                    "types": ["credit_card"]
-                },
-                "order": {
-                    "currency": "BYN",
-                    "amount": int(amount * 100),
-                    "description": f"Оплата услуг для объявления '{title_ad}': {', '.join(description)}.",
-                    "additional_data": additional_data
-                },
-                "customer": {
-                    "email": user_email,
-                }
+            },
+            "payment_method": {
+                "types": ["credit_card"]
+            },
+            "order": {
+                "currency": "BYN",
+                "amount": int(amount * 100),
+                "description": f"Оплата услуг для объявления '{title_ad}': {', '.join(description)}.",
+                "additional_data": additional_data
+            },
+            "customer": {
+                "email": user_email,
             }
         }
+    }
     return payload
 
 
@@ -76,8 +76,9 @@ def _calculate_payment_details(serializer):
     """
     amount = 0
     description = []
-    additional_data = {"advertisement": serializer.validated_data.get('advertisement').id}
     title_ad = serializer.validated_data.get('advertisement').title
+    additional_data = {"advertisement": serializer.validated_data.get('advertisement').id,
+                       "advertisement_title": title_ad}
 
     for service in serializer.validated_data.get('services'):
         amount += service.cost
