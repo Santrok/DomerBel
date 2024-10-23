@@ -24,7 +24,7 @@ def _create_payment_payload(data, user_email):
     amount, description, additional_data, title_ad = _calculate_payment_details(data)
     payload = {
             "checkout": {
-                "test": True,  # удалить при деплое
+                "test": {env_keys.get('PAID_SERVICE_TEST')},
                 "transaction_type": "payment",
                 "attempts": 3,
                 "settings": {
