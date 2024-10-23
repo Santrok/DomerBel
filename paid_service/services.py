@@ -1,6 +1,8 @@
 import requests
 from requests.auth import HTTPBasicAuth
 
+from config.settings import env_keys
+
 
 def send_payment_request(url, store_id, secret_key, data, token=''):
     """
@@ -26,12 +28,12 @@ def _create_payment_payload(data):
                 "transaction_type": "payment",
                 "attempts": 3,
                 "settings": {
-                    "return_url": "http://127.0.0.1:8000/api/v1/notification/",
-                    "success_url": "http://127.0.0.1:8000/api/v1/notification/",
-                    "decline_url": "http://127.0.0.1:8000/",
-                    "fail_url": "http://127.0.0.1:8000/",
-                    "cancel_url": "http://127.0.0.1:8000/",
-                    "notification_url": "http://127.0.0.1:8000/api/v1/notification/",
+                    "return_url": f"{env_keys.get('URL')}",
+                    "success_url": f"{env_keys.get('URL')}",
+                    "decline_url": f"{env_keys.get('URL')}",
+                    "fail_url": f"{env_keys.get('URL')}",
+                    "cancel_url": f"{env_keys.get('URL')}",
+                    "notification_url": f"{env_keys.get('URL')}/api/v1/notification/",
                     "button_text": "Оплатить",
                     "button_next_text": "Вернуться в магазин",
                     "language": "ru",
@@ -56,6 +58,8 @@ def _create_payment_payload(data):
                     "additional_data": additional_data
                 },
                 "customer": {
+                    "first_name": "good",
+                    "last_name": "bob",
                     "address": "Baker street 221b",
                     "country": "GB",
                     "city": "London",

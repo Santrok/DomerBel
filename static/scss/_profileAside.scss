@@ -1,0 +1,78 @@
+.profile__aside {
+  padding: 10px;
+  border-radius: 7px;
+  background: $userSearchBg;
+  flex: 0 0 192px;
+  border: 1px solid $gray;
+}
+
+.profile__aside-nav-list {
+  display: flex;
+  flex-direction: column;
+
+  & a {
+    @include fonts($asideLinksColor, 13px, 400);
+
+    &:hover {
+      color: $colorHover;
+    }
+  }
+}
+
+.exit {
+  & a {
+    color: $asideExitColor;
+
+    &:hover {
+      color: $asideExitColor;
+    }
+  }
+}
+
+.priority {
+  & a {
+    color: $colorHover;
+  }
+}
+
+.dialog-item {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  position: relative;
+}
+
+.unread__message-link-dialog-item {
+  display: flex;
+  padding: 2px 3px 0 0;
+  position: relative;
+}
+
+@media (max-width: 992px) {
+  .profile__aside {
+    flex: initial;
+    width: 100%;
+  }
+
+  .profile__aside-nav-list {
+    flex-direction: initial;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .unread__message-link-dialog-item {
+    display: none;
+  }
+  .unread__point {
+    padding: 2px 3px 0 0;
+    &::after {
+      content: "";
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background-color: #ff3b4c;
+      position: absolute;
+      top: 2px;
+      right: 0
+    }
+  }
+}

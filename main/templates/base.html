@@ -48,7 +48,9 @@
                 </div>
                 <fieldset class="modals__login-field">
                     <div class="modals__signIn-field">
-                        <input type="text" name="email" id="login_email" placeholder="Введите вашу почту">
+                        <div class="modals__signIn-field-wrap">
+                            <input type="text" name="email" id="login_email" placeholder="Введите вашу почту">
+                        </div>
                     </div>
                     <div class="modals__signIn-field">
                         <div class="modals__signIn-field-wrap">
@@ -519,6 +521,7 @@
     </div>
     {% block js %}
     {% endblock %}
+    <script src="{% static "js/modals.js" %}"></script>
     <script src="{% static 'js/main/search.js' %}"></script>
     <script src="{% static 'js/main/moreList.js' %}"></script>
     <script src="{% static 'js/autorization.js' %}"></script>

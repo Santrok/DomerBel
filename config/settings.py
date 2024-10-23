@@ -63,6 +63,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    
+    'config.my_middle.CustomAuthorizationMiddleware'
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -151,6 +153,25 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'custom_user.CustomUser'
 
 CORS_ALLOW_ALL_ORIGINS = True
+# CORS_ALLOWED_ORIGINS = [
+#     "https://*.bepaid.by",
+#     "217.197.117.47",
+#     "185.183.120.65",
+# ]
+CORS_ALLOW_HEADERS = (
+    "accept",
+    "authorization",
+    "content-type",
+    "content-length",
+    "user-agent",
+    "x-csrftoken",
+    "x-requested-with",
+    "x-api-version",
+    "content-signature",
+    "accept-encoding",
+    "begateway-request-id"
+)
+
 
 LOGIN_REDIRECT_URL = 'personal_account/personal_account/'
 LOGIN_URL = '/'
@@ -194,12 +215,12 @@ RECAPTCHA_PRIVATE_KEY = env_keys.get('RECAPTCHA_PRIVATE_KEY')
 DRF_RECAPTCHA_SECRET_KEY = env_keys.get('RECAPTCHA_PRIVATE_KEY')
 
 # Настройки CELERY
-CELERY_BROKER_URL = "redis://localhost:6379/0"
-CELERY_RESULT_BACKEND = "redis://localhost:6379/1"
+CELERY_BROKER_URL = env_keys.get('CELERY_BROKER_URL')
+CELERY_RESULT_BACKEND = env_keys.get('CELERY_RESULT_BACKEND')
 # Используем redbeat для планирования задач CELERY BEAT
-CELERY_REDBEAT_REDIS_URL = "redis://localhost:6379/2"
-RED_BEAT_REDIS_URL = "redis://localhost:6379/2"
-CELERY_BEAT_SCHEDULER = 'redbeat.RedBeatScheduler'
+CELERY_REDBEAT_REDIS_URL = env_keys.get('CELERY_REDBEAT_REDIS_URL')
+RED_BEAT_REDIS_URL = env_keys.get('RED_BEAT_REDIS_URL')
+CELERY_BEAT_SCHEDULER = "redbeat.RedBeatScheduler"
 
 # Настройки CKEditor
 customColorPalette = [
@@ -332,5 +353,4 @@ CHANNEL_LAYERS = {
 # Настройка буфера памяти для загрузки файлов
 FILE_UPLOAD_MAX_MEMORY_SIZE = 20 * 1024 * 1024
 DATA_UPLOAD_MAX_NUMBER_FILES = 30
-
 
