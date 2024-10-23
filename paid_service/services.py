@@ -24,7 +24,7 @@ def _create_payment_payload(data, user_email):
     amount, description, additional_data, title_ad = _calculate_payment_details(data)
     payload = {
             "checkout": {
-                "test": True,
+                "test": True,  # удалить при деплое
                 "transaction_type": "payment",
                 "attempts": 3,
                 "settings": {
@@ -52,6 +52,10 @@ def _create_payment_payload(data, user_email):
                                       "birth_date",
                                       "taxpayer_id"],
                     },
+                    "credit_card_fields": {  # удалить при деплое
+                        "holder": "Test User",
+                        "read_only": ["holder"]
+                    }
                 },
                 "payment_method": {
                     "types": ["credit_card"]
@@ -59,7 +63,7 @@ def _create_payment_payload(data, user_email):
                 "order": {
                     "currency": "BYN",
                     "amount": int(amount * 100),
-                    "description": f"Оплата услуг для объявления '{title_ad}': {', '.join(description)}.",
+                    "description": f"Оплата услуг для объявления '{title_ad}': {', '.join(description)}. Для оплаты введите номер тестовой карты 4012000000001006, CVC - 111, дата срока действия не должна быть прошедшим.",
                     "additional_data": additional_data
                 },
                 "customer": {
