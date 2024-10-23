@@ -67,6 +67,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    
+    'paid_service.middleware.CustomAuthorizationMiddleware',
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -155,6 +157,25 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'custom_user.CustomUser'
 
 CORS_ALLOW_ALL_ORIGINS = True
+# CORS_ALLOWED_ORIGINS = [
+#     "https://*.bepaid.by",
+#     "217.197.117.47",
+#     "185.183.120.65",
+# ]
+CORS_ALLOW_HEADERS = (
+    "accept",
+    "authorization",
+    "content-type",
+    "content-length",
+    "user-agent",
+    "x-csrftoken",
+    "x-requested-with",
+    "x-api-version",
+    "content-signature",
+    "accept-encoding",
+    "begateway-request-id"
+)
+
 
 LOGIN_REDIRECT_URL = 'personal_account/personal_account/'
 LOGIN_URL = '/'
