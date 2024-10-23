@@ -24,7 +24,7 @@ def _create_payment_payload(data, user_email):
     amount, description, additional_data, title_ad = _calculate_payment_details(data)
     payload = {
             "checkout": {
-                "test": True,  # удалить при деплое
+                "test": {env_keys.get('PAID_SERVICE_TEST')},
                 "transaction_type": "payment",
                 "attempts": 3,
                 "settings": {
@@ -80,8 +80,9 @@ def _calculate_payment_details(serializer):
     """
     amount = 0
     description = []
-    additional_data = {"advertisement": serializer.validated_data.get('advertisement').id}
     title_ad = serializer.validated_data.get('advertisement').title
+    additional_data = {"advertisement": serializer.validated_data.get('advertisement').id,
+                       "advertisement_title": title_ad}
 
     for service in serializer.validated_data.get('services'):
         amount += service.cost
