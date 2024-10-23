@@ -28,8 +28,8 @@ def _create_payment_payload(data):
                 "transaction_type": "payment",
                 "attempts": 3,
                 "settings": {
-                    "return_url": f"{env_keys.get('URL')}/api/v1/notification/",
-                    "success_url": f"{env_keys.get('URL')}/api/v1/notification/",
+                    "return_url": f"{env_keys.get('URL')}",
+                    "success_url": f"{env_keys.get('URL')}",
                     "decline_url": f"{env_keys.get('URL')}",
                     "fail_url": f"{env_keys.get('URL')}",
                     "cancel_url": f"{env_keys.get('URL')}",
@@ -58,6 +58,8 @@ def _create_payment_payload(data):
                     "additional_data": additional_data
                 },
                 "customer": {
+                    "first_name": "good",
+                    "last_name": "bob",
                     "address": "Baker street 221b",
                     "country": "GB",
                     "city": "London",

@@ -258,7 +258,7 @@ def registration_user(request):
             else:
                 return Response({'success': 'Вы успешно зарегистрированы'}, status=status.HTTP_201_CREATED)
         except Exception as e:
-            raise serializers.ValidationError({"error": """Произошла ошибка при регистрации. 
+            raise serializers.ValidationError({"error": """Произошла ошибка при регистрации.
                                                             Пожалуйста, попробуйте позже"""
                                                })
 
@@ -402,45 +402,38 @@ def processing_successful_payment_for_services(request):
     Webhook обрабатывающий успешную оплату услуг
     Модели: Service, Advertisement
     """
-    # store_id = env_keys.get('PAID_SERVICE_STORE_ID')
-    # secret_key = env_keys.get('PAID_SERVICE_SECRET_KEY')
-    #
-    # url = env_keys.get('PAID_SERVICE_URL')
-    # token = request.query_params.get('token')
-    # information = requests.get(f'{url}{token}', auth=HTTPBasicAuth(store_id, secret_key))
-    # additional = information.json().get('checkout').get('order').get('additional_data')
-    additional = request.query_params.get('transaction').json().get('additional_data')
-    services = Service.objects.all()
-    keys_date_of_deactivate = {"vip": "date_of_deactivate_vip",
-                               "highlight_ad": "date_of_deactivate_highlight_ad",
-                               "special_accommodation": "date_of_deactivate_special_accommodation",
-                               "raise_in_search": "search_boost_date",
-                               "date_of_last_activation": "date_of_last_activation"}
-    accommodation = {}
-    for service in services:
-        if additional.get(service.key_word):
-            if service.key_word == "date_of_last_activation":
-                accommodation[keys_date_of_deactivate.get(service.key_word)] = datetime.now() + timedelta(
-                    days=service.validity_period)
-                accommodation["date_of_deactivate"] = datetime.now() + timedelta(days=60)
-                accommodation["date_of_delete"] = datetime.now() + timedelta(days=180)
-                accommodation["search_boost_date"] = datetime.now()
-                accommodation["is_active"] = True
-            elif service.key_word == "raise_in_search":
-                accommodation[keys_date_of_deactivate.get(service.key_word)] = datetime.now() + timedelta(
-                    days=service.validity_period)
-            else:
-                accommodation[service.key_word] = additional.get(service.key_word)
-                accommodation[keys_date_of_deactivate.get(service.key_word)] = datetime.now() + timedelta(
-                    days=service.validity_period)
+    if request.data.get('transaction'):
+        additional = request.data.get('transaction').get('additional_data')
+        services = Service.objects.all()
+        keys_date_of_deactivate = {"vip": "date_of_deactivate_vip",
+                                    "highlight_ad": "date_of_deactivate_highlight_ad",
+                                    "special_accommodation": "date_of_deactivate_special_accommodation",
+                                    "raise_in_search": "search_boost_date",
+                                    "date_of_last_activation": "date_of_last_activation"}
+        accommodation = {}
+        for service in services:
+            if additional.get(service.key_word):
+                if service.key_word == "date_of_last_activation":
+                    accommodation[keys_date_of_deactivate.get(service.key_word)] = datetime.now() + timedelta(
+                        days=service.validity_period)
+                    accommodation["date_of_deactivate"] = datetime.now() + timedelta(days=60)
+                    accommodation["date_of_delete"] = datetime.now() + timedelta(days=180)
+                    accommodation["search_boost_date"] = datetime.now()
+                    accommodation["is_active"] = True
+                elif service.key_word == "raise_in_search":
+                    accommodation[keys_date_of_deactivate.get(service.key_word)] = datetime.now() + timedelta(
+                        days=service.validity_period)
+                else:
+                    accommodation[service.key_word] = additional.get(service.key_word)
+                    accommodation[keys_date_of_deactivate.get(service.key_word)] = datetime.now() + timedelta(
+                        days=service.validity_period)
 
-    Advertisement.objects.filter(id=additional.get('advertisement')).update(**accommodation)
+        Advertisement.objects.filter(id=additional.get('advertisement')).update(**accommodation)
 
-    # return HttpResponseRedirect(redirect_to='http://127.0.0.1:8000/')
     return Response(status=status.HTTP_200_OK)
 
 
-@api_view(['GET'])
+@api_view(['GET', 'POST'])
 def get_region_list(request):
     """
     Возвращает список экземпляров модели Region.

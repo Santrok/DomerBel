@@ -1,0 +1,81 @@
+.header__up {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 2px solid $headerTopBorder;
+  margin-bottom: 5px;
+  gap: 20px 10px;
+  flex-wrap: wrap;
+}
+
+.header__up-nav-list {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  flex-wrap: wrap;
+  justify-content: space-between;
+
+  & a {
+    @include fonts($mainColor, 14px, 400);
+    &:hover {
+      color: $colorHover;
+    }
+  }
+}
+
+.header__up-user {
+  @include fonts($mainColor, 14px, 400);
+  cursor: pointer;
+  &:hover {
+    color: $colorHover;
+  }
+}
+
+.header__up-admin {
+  @include fonts($mainColor, 14px, 400);
+  cursor: pointer;
+  &:hover {
+    color: $colorHover;
+  }
+}
+
+.header__up-user-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.header__up-user-action {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+
+  & a {
+    @include fonts($mainColor, 14px, 400);
+    &:hover {
+      color: $colorHover;
+    }
+  }
+  & p {
+    &:last-child {
+      cursor: pointer;
+      &:hover {
+        color: $colorHover;
+      }
+    }
+    @include fonts($mainColor, 14px, 400);
+  }
+}
+
+@media (max-width: 992px) {
+  .header__up-nav {
+    flex: 0 1 500px;
+  }
+  .header__up-user-wrap {
+    flex: initial;
+  }
+  .header__up-user-action {
+    align-self: flex-end;
+  }
+}
