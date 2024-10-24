@@ -361,6 +361,16 @@ def deactivate_store():
         logger.error(f"Деактиваия магазинов по истечению времени выполнено неудачно: {str(e)}", exc_info=True)
 
 
+@shared_task()
+def delete_everything_in_folder_beat():
+    """
+    Удаляет все файлы из папки для "files_for_bulk_import_of_ads"
+    Задача отрабатывает раз в сутки в 00.00
+    """
+    path = './media/files_for_bulk_import_of_ads'
+    shutil.rmtree(path)
+    os.mkdir(path)
+
 
 @shared_task()
 def save_many_ads_from_excel_task(upload_file, id, first_name, phone_number, email):

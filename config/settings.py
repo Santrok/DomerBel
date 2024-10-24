@@ -1,5 +1,7 @@
 from pathlib import Path
 import os
+
+from django.conf.global_settings import ADMINS
 from dotenv import dotenv_values
 
 import logging.config
@@ -336,6 +338,7 @@ FILE_UPLOAD_MAX_MEMORY_SIZE = 20 * 1024 * 1024
 DATA_UPLOAD_MAX_NUMBER_FILES = 30
 
 
+
 #Настройка логгирования проекта
 LOGGING = {
     'version': 1,
@@ -351,7 +354,7 @@ LOGGING = {
             'class': 'logging.StreamHandler',
         },
         'django': {
-            'level': 'INFO',
+            'level': 'WARNING',
             'class': 'logging.handlers.TimedRotatingFileHandler',
              'filename': os.path.join('logs', 'django.log'),
             'formatter': 'django',
