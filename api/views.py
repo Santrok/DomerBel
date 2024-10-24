@@ -402,8 +402,8 @@ def processing_successful_payment_for_services(request):
     Webhook обрабатывающий успешную оплату услуг
     Модели: Service, Advertisement
     """
+    transaction_data = request.data.get('transaction')
     try:
-        transaction_data = request.data.get('transaction')
         if transaction_data:
             with transaction.atomic():
                 additional = transaction_data.get('additional_data')
@@ -455,9 +455,9 @@ def processing_successful_payment_for_services(request):
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
     except:
-        email = request.data.get("transaction").get("customer").get("email")
-        advertisement_id = request.data.get("transaction").get('additional_data').get("advertisement")
-        advertisement_title = request.data.get("transaction").get('additional_data').get("advertisement_title")
+        email = transaction_data.get("customer").get("email")
+        advertisement_id = transaction_data.get('additional_data').get("advertisement")
+        advertisement_title = transaction_data.get('additional_data').get("advertisement_title")
         run_send_email_task_celery('Оплата услуг на сайте Домер.бел',
                                    'asend_service.html',
                                    email,
