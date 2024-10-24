@@ -257,7 +257,7 @@ def registration_user(request):
             else:
                 return Response({'success': 'Вы успешно зарегистрированы'}, status=status.HTTP_201_CREATED)
         except Exception as e:
-            raise serializers.ValidationError({"error": """Произошла ошибка при регистрации. 
+            raise serializers.ValidationError({"error": """Произошла ошибка при регистрации.
                                                             Пожалуйста, попробуйте позже"""
                                                })
 

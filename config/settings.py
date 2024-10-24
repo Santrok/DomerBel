@@ -67,7 +67,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-
+  
     'paid_service.middleware.CustomAuthorizationMiddleware',
 ]
 
@@ -194,7 +194,7 @@ INTERNAL_IPS = [
 #             'CLIENT_CLASS': 'django_redis.client.DefaultClient',
 #         }
 #     }
-# }
+#}
 
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
@@ -391,7 +391,5 @@ LOGGING = {
 }
 
 logging.config.dictConfig(LOGGING)
-
-
 
 
