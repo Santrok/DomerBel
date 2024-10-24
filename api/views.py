@@ -428,7 +428,7 @@ def processing_successful_payment_for_services(request):
                         elif service.key_word == "raise_in_search":
                             accommodation[keys_date_of_deactivate.get(service.key_word)] = datetime.now() + timedelta(
                                 days=service.validity_period)
-                        elif service.key == "special_accommodation":
+                        elif service.key_word == "special_accommodation":
                             accommodation[service.key_word] = additional.get(service.key_word)
                             accommodation[keys_date_of_deactivate.get(service.key_word)] = datetime.now() + timedelta(
                                 days=service.validity_period)
