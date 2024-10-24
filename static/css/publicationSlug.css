@@ -33,10 +33,8 @@
   border-radius: 5px;
   width: 100%;
   height: 100%;
-  -o-object-fit: cover;
-     object-fit: cover;
-  -o-object-position: center;
-     object-position: center;
+  object-fit: cover;
+  object-position: center;
 }
 
 .publication_text {
@@ -73,4 +71,6 @@
   font-style: normal;
   color: black;
   font-size: 14px;
-}/*# sourceMappingURL=publicationSlug.css.map */
+}
+
+/*# sourceMappingURL=publicationSlug.css.map */
