@@ -37,12 +37,15 @@ function getResult(id) {
             }, 3000)
         })
       } else if (data.state == "SUCCESS") {
-        console.log(data);
-        console.log(data.result.file);
-        const url = data.result.file.slice(1, data.result.file.length + 1)
-        answerProcessing.innerHTML = `
-                <p class="info__text">При обработке вашего файла некоторые объявления не были сохранены. Чтобы посмотреть объявления с ошибками, скачайте файл
-                <a href="${window.location.protocol}//${window.location.host}${url}">по ссылке</a>.</p>`
+        if (data.result != true) {
+            const url = data.result.file.slice(1, data.result.file.length + 1)
+            answerProcessing.innerHTML = `
+                    <p class="info__text">При обработке вашего файла некоторые объявления не были сохранены. Чтобы посмотреть объявления с ошибками, скачайте файл
+                    <a href="${window.location.protocol}//${window.location.host}${url}">по ссылке</a>.</p>`
+        } else {
+            answerProcessing.innerHTML = `
+                    <p class="info__text">Все объявления были успешно сохранены.</p>`
+        }
       }
     })
 }
