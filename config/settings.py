@@ -1,6 +1,10 @@
 from pathlib import Path
 import os
+
+from django.conf.global_settings import ADMINS
 from dotenv import dotenv_values
+
+import logging.config
 
 env_keys = dotenv_values()
 
@@ -63,7 +67,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    
+  
     'paid_service.middleware.CustomAuthorizationMiddleware',
 ]
 
@@ -353,4 +357,39 @@ CHANNEL_LAYERS = {
 # Настройка буфера памяти для загрузки файлов
 FILE_UPLOAD_MAX_MEMORY_SIZE = 20 * 1024 * 1024
 DATA_UPLOAD_MAX_NUMBER_FILES = 30
+
+
+
+#Настройка логгирования проекта
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'django':{
+            'format': '{asctime} [{levelname}] Message: {message}',
+            'style': '{',
+        }
+    },
+    'handlers': {
+         'console': {
+            'class': 'logging.StreamHandler',
+        },
+        'django': {
+            'level': 'WARNING',
+            'class': 'logging.handlers.TimedRotatingFileHandler',
+             'filename': os.path.join('logs', 'django.log'),
+            'formatter': 'django',
+        },
+    },
+    'loggers': {
+        'django': {
+            'level': 'INFO',
+            'handlers': ['console','django'],
+            'propagate': True,
+        }
+    }
+}
+
+logging.config.dictConfig(LOGGING)
+
 

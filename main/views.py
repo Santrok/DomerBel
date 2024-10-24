@@ -10,8 +10,6 @@ from related_data.models import Category
 from services.email.message import run_send_email_task_celery
 
 
-# Create your views here.
-
 def get_main_page(request):
     """
     Сборка главной базовой страницы с последними поданными объявлениями.
@@ -39,6 +37,7 @@ def get_main_page(request):
         "vip_advertisement": vip_advertisement,
         "adaptive_navigation": "Общебелорусская доска объявлений"
     }
+
     return render(request, 'main.html', context)
 
 
