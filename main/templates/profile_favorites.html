@@ -41,9 +41,9 @@
                         {{ card.region }}
                     </li>
                     <li>
-                        {% if card.date_of_last_activation.date == date_today %}
+                        {% if card.date_of_last_activation|date:"d b. Y" == date_today|date:"d b. Y" %}
                             Сегодня
-                        {% elif card.date_of_last_activation.date == date_yesterday %}
+                        {% elif card.date_of_last_activation|date:"d b. Y" == date_yesterday|date:"d b. Y" %}
                             Вчера
                         {% else %}
                             {{ card.date_of_last_activation|date:"d b. Y H:i" }}

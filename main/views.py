@@ -17,7 +17,6 @@ def get_main_page(request):
     Сборка главной базовой страницы с последними поданными объявлениями.
     Модели: Advertisement
     """
-
     advertisement_queryset = Advertisement.objects.filter(is_active=True,
                                                           moderated=True).select_related(
         'category', 'region').order_by("-search_boost_date")[:10].defer(

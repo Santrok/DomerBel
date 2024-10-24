@@ -231,9 +231,8 @@ def update_advertisement_task(user, advertisement_id, data, additional_informati
 def deactivate_advertisement():
     """ Функция деактивации объявлений по истечению времени публикации """
     current_datetime = get_current_datetime()
-    # deactivate_advertisements = Advertisement.objects.filter(date_of_deactivate__lt=current_datetime, is_active=True)
-    # deactivate_advertisements.update(is_active=False)
-    print('deactivate_advertisement')
+    deactivate_advertisements = Advertisement.objects.filter(date_of_deactivate__lt=current_datetime, is_active=True)
+    deactivate_advertisements.update(is_active=False)
 
 
 @shared_task()

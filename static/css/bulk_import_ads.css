@@ -1,0 +1,66 @@
+.upload__file {
+    display: flex;
+    flex-direction: column;
+    padding: 20px 0;
+    gap: 20px;
+}
+
+.info__text {
+    font-family: "Trebuchet MS", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    color: black;
+    font-size: 16px;
+    line-height: 20px;
+    & a {
+        font-size: 16px;
+    }
+}
+
+.form__loading {
+    display: flex;
+    margin: 0 auto;
+    flex-direction: column;
+    gap: 10px;
+
+    & input {
+        display: flex;
+        align-items: center;
+        width: 100%;
+        max-width: 320px;
+        border: 1px solid #d4d4d4;
+        padding: 5px;
+        border-radius: 8px;
+        font-family: "Trebuchet MS", sans-serif;
+        font-weight: 400;
+        font-style: normal;
+        color: black;
+        font-size: 14px;
+    }
+
+    & label {
+        display: none;
+    }
+
+}
+
+.table_with_files{
+    table-layout: fixed;
+    width: 100%;
+    & td,th {
+        padding: 5px 10px;
+        text-align: center;
+    }
+}
+
+thead th:nth-child(1) {
+  width: 30%;
+}
+
+thead th:nth-child(2) {
+  width: 30%;
+}
+
+thead th:nth-child(3) {
+  width: 40%;
+}
