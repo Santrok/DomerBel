@@ -402,8 +402,8 @@ def processing_successful_payment_for_services(request):
     Webhook обрабатывающий успешную оплату услуг
     Модели: Service, Advertisement
     """
+    transaction_data = request.data.get('transaction')
     try:
-        transaction_data = request.data.get('transaction')
         if transaction_data:
             with transaction.atomic():
                 additional = transaction_data.get('additional_data')
@@ -428,7 +428,7 @@ def processing_successful_payment_for_services(request):
                         elif service.key_word == "raise_in_search":
                             accommodation[keys_date_of_deactivate.get(service.key_word)] = datetime.now() + timedelta(
                                 days=service.validity_period)
-                        elif service.key == "special_accommodation":
+                        elif service.key_word == "special_accommodation":
                             accommodation[service.key_word] = additional.get(service.key_word)
                             accommodation[keys_date_of_deactivate.get(service.key_word)] = datetime.now() + timedelta(
                                 days=service.validity_period)
@@ -455,9 +455,9 @@ def processing_successful_payment_for_services(request):
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
     except:
-        email = request.data.get("transaction").get("customer").get("email")
-        advertisement_id = request.data.get("transaction").get('additional_data').get("advertisement")
-        advertisement_title = request.data.get("transaction").get('additional_data').get("advertisement_title")
+        email = transaction_data.get("customer").get("email")
+        advertisement_id = transaction_data.get('additional_data').get("advertisement")
+        advertisement_title = transaction_data.get('additional_data').get("advertisement_title")
         run_send_email_task_celery('Оплата услуг на сайте Домер.бел',
                                    'asend_service.html',
                                    email,
@@ -603,6 +603,7 @@ def get_bulk_import_of_ads(request):
                                                           first_name=request.user.first_name,
                                                           phone_number=request.user.phone_number,
                                                           email=request.user.email)
+
                 return Response({'task_id': f'{ads.task_id}'})
             except:
                 # логируем ошибку

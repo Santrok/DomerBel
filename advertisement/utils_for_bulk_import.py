@@ -4,6 +4,7 @@ from zipfile import ZipFile
 import os
 import xlsxwriter
 from django.contrib.auth import get_user_model
+from django.db.models import Q
 
 from advertisement.models import Advertisement, PhotoAdvertisement, UploadFile, ErrorFile
 from related_data.models import Category, Region, Spisok, ElementTwo
@@ -95,7 +96,7 @@ def check_additional_information(ads, result_category_check):
             if (field_from_ads not in ['артикул', 'заголовок', 'категория', 'регион', 'описание'] and
                     not field_from_ads.startswith('фото')):
                 value_field_from_ads = ads.get(field_from_ads)
-                field_from_db = fields.filter(title__iexact=field_from_ads)
+                field_from_db = fields.filter(Q(title__iexact=field_from_ads) | Q(title_ad__iexact=field_from_ads))
                 if field_from_db:
                     for field in field_from_db:
                         if field.error: # в блоке if проверяются обязательные поля
@@ -106,7 +107,10 @@ def check_additional_information(ads, result_category_check):
                                 elements_for_compare = elements_from_db.filter(title__iexact=value_field_from_ads)
                                 if elements_for_compare: # в случае, если значение поля состоит из одного элемента
                                     for element in elements_for_compare:
-                                        data[field.title] = element.title
+                                        if field.title:
+                                            data[field.title] = element.title
+                                        else:
+                                            data[field.title_ad] = element.title
                                 else:
                                     first_elem_for_find = ads.get(field.title.lower()).split(' ',1)[0]
                                     element_one = elements_from_db.filter(title__istartswith = first_elem_for_find)
@@ -121,15 +125,24 @@ def check_additional_information(ads, result_category_check):
                                                 value_option_for_field[key]=value
                                         full_element = value_option_for_field.get(value_field_from_ads.lower())
                                         if full_element:
-                                            data[field.title] = full_element
+                                            if field.title:
+                                                data[field.title] = full_element
+                                            else:
+                                                data[field.title_ad] = full_element
                                         else:
                                             error_field.append(f'Некорректное значение "{value_field_from_ads}"')
                                     else:
                                         error_field.append(f'Некорректное значение "{value_field_from_ads}"')
                             else: # в блоке else записываются обязательные поля без установленного значения
-                                data[field.title] = value_field_from_ads
+                                if field.title:
+                                    data[field.title] = value_field_from_ads
+                                else:
+                                    data[field.title_ad] = value_field_from_ads
                         else: # в блоке else записываются необязательные поля
-                            data[field.title] = value_field_from_ads
+                            if field.title:
+                                data[field.title] = value_field_from_ads
+                            else:
+                                data[field.title_ad] = value_field_from_ads
                 else:
                     error_field.append(f'Некорректное полe "{field_from_ads}"')
         if error_field:
@@ -190,7 +203,7 @@ def processing_ads_from_excel_for_saving(upload_file,value_author):
                     if error not in status_ads:
                         status_ads.append(error)
             else:
-                ads['подробная_информация'] =  result_additional_information_check
+                ads['подробная_информация'] = result_additional_information_check
             result_description_check = check_description(ads)
             if result_description_check != True:
                 status_ads.append(result_description_check)
