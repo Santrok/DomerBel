@@ -240,9 +240,9 @@
                                             {% endif %}
                                         </p>
                                             <p class="main__info-advertisement-list-item-about-date">
-                                                {% if advertisement.date_of_last_activation.date == date_today %}
+                                                {% if advertisement.date_of_last_activation|date:"d b. Y" == date_today|date:"d b. Y" %}
                                                     Сегодня
-                                                {% elif advertisement.date_of_last_activation.date == date_yesterday %}
+                                                {% elif advertisement.date_of_last_activation|date:"d b. Y" == date_yesterday|date:"d b. Y" %}
                                                     Вчера
                                                 {% else %}
                                                     {{ advertisement.date_of_last_activation|date:"d b. Y" }}

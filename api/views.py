@@ -2,12 +2,11 @@ from datetime import datetime, timedelta
 from zipfile import ZipFile
 
 import openpyxl
-import requests
 from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.db import transaction
-from django.http import HttpResponseRedirect, JsonResponse
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
-from requests.auth import HTTPBasicAuth
+from django.urls import reverse
 from rest_framework import status, serializers
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -380,8 +379,9 @@ def providing_a_payment_page(request):
         store_id = env_keys.get('PAID_SERVICE_STORE_ID')
         secret_key = env_keys.get('PAID_SERVICE_SECRET_KEY')
         url = env_keys.get('PAID_SERVICE_URL')
+        user_email = request.user.email
 
-        response = send_payment_request(url, store_id, secret_key, serializer)
+        response = send_payment_request(url, store_id, secret_key, serializer, user_email)
 
         if response is None:
             return Response({"errors": {"connect": "Ошибка связи с банком. Пожалуйста, попробуйте позже!"}},
@@ -402,38 +402,85 @@ def processing_successful_payment_for_services(request):
     Webhook обрабатывающий успешную оплату услуг
     Модели: Service, Advertisement
     """
-    if request.data.get('transaction'):
-        additional = request.data.get('transaction').get('additional_data')
-        services = Service.objects.all()
-        keys_date_of_deactivate = {"vip": "date_of_deactivate_vip",
-                                    "highlight_ad": "date_of_deactivate_highlight_ad",
-                                    "special_accommodation": "date_of_deactivate_special_accommodation",
-                                    "raise_in_search": "search_boost_date",
-                                    "date_of_last_activation": "date_of_last_activation"}
-        accommodation = {}
-        for service in services:
-            if additional.get(service.key_word):
-                if service.key_word == "date_of_last_activation":
-                    accommodation[keys_date_of_deactivate.get(service.key_word)] = datetime.now() + timedelta(
-                        days=service.validity_period)
-                    accommodation["date_of_deactivate"] = datetime.now() + timedelta(days=60)
-                    accommodation["date_of_delete"] = datetime.now() + timedelta(days=180)
-                    accommodation["search_boost_date"] = datetime.now()
-                    accommodation["is_active"] = True
-                elif service.key_word == "raise_in_search":
-                    accommodation[keys_date_of_deactivate.get(service.key_word)] = datetime.now() + timedelta(
-                        days=service.validity_period)
-                else:
-                    accommodation[service.key_word] = additional.get(service.key_word)
-                    accommodation[keys_date_of_deactivate.get(service.key_word)] = datetime.now() + timedelta(
-                        days=service.validity_period)
+    try:
+        transaction_data = request.data.get('transaction')
+        if transaction_data:
+            with transaction.atomic():
+                additional = transaction_data.get('additional_data')
+                services = Service.objects.all()
+                keys_date_of_deactivate = {"vip": "date_of_deactivate_vip",
+                                           "highlight_ad": "date_of_deactivate_highlight_ad",
+                                           "special_accommodation": "date_of_deactivate_special_accommodation",
+                                           "raise_in_search": "search_boost_date",
+                                           "date_of_last_activation": "date_of_last_activation"}
+                accommodation = {}
+                paid_services = []
+                for service in services:
+                    if additional.get(service.key_word):
+                        paid_services.append(service.service_name)
+                        if service.key_word == "date_of_last_activation":
+                            accommodation[keys_date_of_deactivate.get(service.key_word)] = datetime.now() + timedelta(
+                                days=service.validity_period)
+                            accommodation["date_of_deactivate"] = datetime.now() + timedelta(days=60)
+                            accommodation["date_of_delete"] = datetime.now() + timedelta(days=180)
+                            accommodation["search_boost_date"] = datetime.now()
+                            accommodation["is_active"] = True
+                        elif service.key_word == "raise_in_search":
+                            accommodation[keys_date_of_deactivate.get(service.key_word)] = datetime.now() + timedelta(
+                                days=service.validity_period)
+                        elif service.key == "special_accommodation":
+                            accommodation[service.key_word] = additional.get(service.key_word)
+                            accommodation[keys_date_of_deactivate.get(service.key_word)] = datetime.now() + timedelta(
+                                days=service.validity_period)
+                            accommodation["search_boost_date"] = datetime.now()
+                        else:
+                            accommodation[service.key_word] = additional.get(service.key_word)
+                            accommodation[keys_date_of_deactivate.get(service.key_word)] = datetime.now() + timedelta(
+                                days=service.validity_period)
 
-        Advertisement.objects.filter(id=additional.get('advertisement')).update(**accommodation)
+                Advertisement.objects.filter(id=additional.get('advertisement')).update(**accommodation)
 
-    return Response(status=status.HTTP_200_OK)
+                advertisement_title = request.data.get("transaction").get('additional_data').get("advertisement_title")
+
+                run_send_email_task_celery('Оплата услуг на сайте Домер.бел',
+                                           'asend_service.html',
+                                           request.data.get("transaction").get("customer").get("email"),
+                                           subject="Оплата услуг.",
+                                           paid_services=paid_services,
+                                           text=f"""Вы успешно оплатили на следующие услуги для объявления 
+                                           "{advertisement_title}":"""
+                                           )
+
+                return Response(status=status.HTTP_200_OK)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+    except:
+        email = request.data.get("transaction").get("customer").get("email")
+        advertisement_id = request.data.get("transaction").get('additional_data').get("advertisement")
+        advertisement_title = request.data.get("transaction").get('additional_data').get("advertisement_title")
+        run_send_email_task_celery('Оплата услуг на сайте Домер.бел',
+                                   'asend_service.html',
+                                   email,
+                                   subject="Что-то пошло не так во время оплаты услуг.",
+                                   text=f"""Если вы получили это сообщение, это значит что оплата прошла успешно, 
+                                   но произошла ошибка во время обработки вашего объявления 
+                                   "{advertisement_title}". 
+                                   Если с вами не связались для решения этой проблемы, пожалуйста, свяжитесь с
+                                   администрацией сайта через форму обратной связи или по номеру указанному на сайте."""
+                                   )
+        run_send_email_task_celery('Произошла ошибка во время оплаты услуг',
+                                   'asend_notification.html',
+                                   settings.EMAIL_HOST_USER,
+                                   subject="Что-то пошло не так во время оплаты услуг",
+                                   message=f"""У пользователя {email} возникла ошибка во время оплаты услуг
+                                   для объявления "{advertisement_title}. Вероятно, оплата прошла, но услуги не 
+                                   применились, свяжитесь с пользователем для решения этой проблемы.""",
+                                   link=f"{reverse('admin:index')}advertisement/advertisement/{advertisement_id}/change/"
+                                   )
+        return Response(status=status.HTTP_200_OK)
 
 
-@api_view(['GET', 'POST'])
+@api_view(['GET'])
 def get_region_list(request):
     """
     Возвращает список экземпляров модели Region.
@@ -545,7 +592,7 @@ def get_bulk_import_of_ads(request):
     serializer = UploadFileSerializer(data=request.data)
     if serializer.is_valid():
         if serializer.validated_data.get("file").name.endswith('xlsx'):
-            #Работа с электронной таблицей
+            # Работа с электронной таблицей
             try:
                 upload_file = serializer.validated_data.get("file")
                 book = openpyxl.open(upload_file, read_only=True)
@@ -563,7 +610,7 @@ def get_bulk_import_of_ads(request):
                 return Response({'error': 'Невозможно прочитать файл.'})
 
         elif serializer.validated_data.get("file").name.endswith('zip'):
-            #Работа с электронным архивом
+            # Работа с электронным архивом
             try:
                 upload_zip = serializer.validated_data.get("file")
                 with ZipFile(upload_zip, 'r') as zip:
@@ -586,7 +633,7 @@ def get_bulk_import_of_ads(request):
         return Response({'error': 'Ошибка при загрузке файла. Убедитесь, что загружаемый файл необходимого расширения'})
 
 
-@api_view(["GET","POST"])
+@api_view(["GET", "POST"])
 def get_result_task(request, id):
     """
     Возвращает прогресс выполнения задачи массового импорта объявлений и её результат

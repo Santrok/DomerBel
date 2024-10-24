@@ -14,6 +14,7 @@
     <meta name="darkreader-lock" />
     <link rel="stylesheet" href="{% static 'css/null.css' %}">
     <link rel="stylesheet" href="{% static 'css/base-min.css' %}">
+    <link type="image/x-icon" href="{% static "img/favicon.jpg" %}" rel="shortcut icon">
     {% block css %}
     {% endblock %}
     <title>{{ adaptive_navigation }}</title>
@@ -488,7 +489,7 @@
                                 Наименование:
                             </p>
                             <p>
-                                ООО «Маркшейдерские и геодезические услуги»
+                                {{ about_organization.name_organization }}
                             </p>
                         </li>
                         <li>
@@ -496,19 +497,19 @@
                                 Юридический адрес:
                             </p>
                             <p>
-                                г. Минск, ул. Макаенка, 12Е, к.298, индекс: 220014
+                                {{ about_organization.legal_address }}
                             </p> 
                         </li>
                         <li>
-                            <a href="tel:+375290000000">+375293018156,</a>
-                            <a href="mailto:example@example.com"> ivan-buguk1@rambler.ru</a>
+                            <a href="tel:{{ about_organization.phone_num }}">{{ about_organization.phone_num }}</a>
+                            <a href="mailto:{{ about_organization.email }}">{{ about_organization.email }}</a>
                         </li>
                         <li>
                             <p>
-                                УНП: 193710778
+                                УНП: {{ about_organization.unp }}
                             </p>
                             <p>
-                                Номер свидетельства о государственной регистрации №193710778 от 19.09.2023 г.
+                                {{ about_organization.additional_info }}
                             </p>
                         </li>
                     </ul>
