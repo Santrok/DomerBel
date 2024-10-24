@@ -8,6 +8,7 @@ import contextlib
 
 from celery import shared_task
 from celery.schedules import crontab
+from charset_normalizer.md import getLogger
 from django.urls import reverse
 from redbeat import RedBeatSchedulerEntry
 from django.db import transaction
@@ -24,10 +25,8 @@ from related_data.models import Field
 from .models import PhotoAdvertisement, Advertisement, Store, UploadFile
 from .utils_for_bulk_import import save_many_ads_from_excel, save_many_ads_from_zip
 
-import logging
-
 #Настройка логгирования
-# logger = logging.getLogger('celery')
+logger = getLogger('celery')
 
 
 def get_current_datetime(timezone_=TIME_ZONE):
@@ -160,20 +159,25 @@ def save_advertisement_task(user, data, additional_information, temporarily_savi
             else:
                 preview_img = temporarily_saving_photos.get('preview_img')
                 other_images = temporarily_saving_photos.get('other_img', [])
-                with open(preview_img, 'rb') as f:
-                    new_advertisement.preview_image = File(f)
-                    new_advertisement.save()
+                try:
+                    with open(preview_img, 'rb') as f:
+                        new_advertisement.preview_image = File(f)
+                        new_advertisement.save()
+                except Exception as e:
+                    logger.error(f'Ошибка при сохранении в объяелвении фото: {str(e)}', exc_info=True)
 
                 if other_images:
                     for photo in other_images:
-                        with open(photo, 'rb') as f:
-                            additional_photo = PhotoAdvertisement(photo=File(f), advertisement=new_advertisement)
-                            additional_photo.save()
-
-            # logger.info(f'Объявление (id:{new_advertisement.id}) успешно сохрано.')
+                        try:
+                            with open(photo, 'rb') as f:
+                                additional_photo = PhotoAdvertisement(photo=File(f), advertisement=new_advertisement)
+                                additional_photo.save()
+                        except Exception as e:
+                            logger.error(f'Ошибка при сохранении в объяелвении фото: {str(e)}', exc_info=True)
+            logger.info(f'Объявление (id:{new_advertisement.id}) успешно сохрано.')
 
     except Exception as e:
-        # logger.error(f'Ошибка при сохранении объявления: {str(e)}', exc_info=True)
+        logger.error(f'Ошибка при сохранении объявления: {str(e)}', exc_info=True)
         run_send_email_task_celery("Ошибка при создании объявления",
                                    "asend_create_advertisement_error.html",
                                    data['email'],
@@ -222,10 +226,9 @@ def update_advertisement_task(user, advertisement_id, data, additional_informati
 
                 if temporarily_saving_photos:
                     add_new_photos(editing_advertisement, temporarily_saving_photos)
-            # logger.info(f'Объявления {advertisement_id} успешно обновлено')
+            logger.info(f'Объявления {advertisement_id} успешно обновлено')
     except Exception as e:
-        pass
-        # logger.error(f'Ошибка при обновлении объявления: {str(e)}', exc_info=True)
+        logger.error(f'Ошибка при обновлении объявления (id: {advertisement_id}): {str(e)}', exc_info=True)
     else:
         run_send_email_task_celery('Объявление было изменено',
                                    'asend_notification.html',
@@ -243,19 +246,27 @@ def update_advertisement_task(user, advertisement_id, data, additional_informati
 def deactivate_advertisement():
     """ Функция деактивации объявлений по истечению времени публикации """
     current_datetime = get_current_datetime()
-    deactivate_advertisements = Advertisement.objects.filter(date_of_deactivate__lt=current_datetime, is_active=True)
-    deactivate_advertisements.update(is_active=False)
-    # logger.info(f'Текущее время: {current_datetime}, деактивировано {deactivate_advertisements.count()} объявлений')
+    try:
+        deactivate_advertisements = Advertisement.objects.filter(date_of_deactivate__lt=current_datetime, is_active=True)
+        deactivate_advertisements.update(is_active=False)
+        logger.info(f'Деактивировано {deactivate_advertisements.count()} объявлений')
+    except Exception as e:
+        logger.error(f'Не удалось деактивировать {deactivate_advertisements.count()} объявлений : {str(e)}',
+                     exc_info=True)
+
 
 @shared_task()
 def delete_advertisement():
     """ Функция удаления объявлений по истечению времени """
     # Получаем текущую дату и время с информацией о часовом поясе
     current_datetime = get_current_datetime()
-    delete_advertisements = Advertisement.objects.filter(date_of_delete__lt=current_datetime, is_active=False)
-    count = delete_advertisements.count()
-    delete_advertisements.delete()
-    # logger.info(f'Текущее время: {current_datetime}, успешно удалено {count} объявлений')
+    try:
+        delete_advertisements = Advertisement.objects.filter(date_of_delete__lt=current_datetime, is_active=False)
+        count = delete_advertisements.count()
+        delete_advertisements.delete()
+        logger.info(f'Успешно удалено {count} объявлений')
+    except Exception as e:
+        logger.error(f'Не удалось удалисть объявления: {str(e)}')
 
 
 
@@ -303,11 +314,13 @@ def list_shown_vip():
     with transaction.atomic():
         all_ads_vip = Advertisement.objects.filter(moderated=True, is_active=True, vip=True)
         if not all_ads_vip.exists():
-            # logger.info('Нет объявлений для ротации')
+            logger.info('Нет объявлений для ротации')
             return
-
-        update_vip_advertisements(all_ads_vip, 'shown_vip', 'shown_vip_count')
-        # logger.info(f'Ротацию прошли {all_ads_vip.count()} объявлений')
+        try:
+            update_vip_advertisements(all_ads_vip, 'shown_vip', 'shown_vip_count')
+            logger.info(f'Ротацию прошли {all_ads_vip.count()} объявлений')
+        except Exception as e:
+            logger.error(f'Ротация VIP объявлений не прошла: {str(e)}', exc_info=True)
 
 @shared_task()
 def list_shown_vip_category():
@@ -319,15 +332,18 @@ def list_shown_vip_category():
                                                   is_active=True,
                                                   vip=True).values_list('category', flat=True).distinct('category')
         if not categories.exists():
-            # logger.info('Нет VIP-объявлений')
+            logger.info('Нет VIP-объявлений')
             return
 
         for category in categories:
-            ads_by_category = Advertisement.objects.filter(category=category, moderated=True, is_active=True, vip=True)
-            update_vip_advertisements(ads_by_category,
-                                      'shown_vip_category',
-                                      'shown_vip_category_count')
-            # logger.info(f'Успешно выполнена ротация для VIP-объявлений категоририи: {category}')
+            try:
+                ads_by_category = Advertisement.objects.filter(category=category, moderated=True, is_active=True, vip=True)
+                update_vip_advertisements(ads_by_category,
+                                          'shown_vip_category',
+                                          'shown_vip_category_count')
+                logger.info(f'Успешно выполнена ротация для VIP-объявлений категоририи: {category}')
+            except Exception as e:
+                logger.error(f'Ротация по категории {category} выполнена неудачно: {str(e)}', exc_info=True)
 
 
 @shared_task()
@@ -337,20 +353,13 @@ def deactivate_store():
     """
     # Получаем текущую дату и время с информацией о часовом поясе
     current_datetime = get_current_datetime()
-    deactivate_stores = Store.objects.filter(date_of_deactivate__lt=current_datetime, is_active=True)
-    deactivate_stores.update(is_active=False)
-    # logger.info(f'Текущее время {current_datetime}, деактивировано {deactivate_stores.count()}')
+    try:
+        deactivate_stores = Store.objects.filter(date_of_deactivate__lt=current_datetime, is_active=True)
+        deactivate_stores.update(is_active=False)
+        logger.info(f'Текущее время {current_datetime}, деактивировано {deactivate_stores.count()}')
+    except Exception as e:
+        logger.error(f"Деактиваия магазинов по истечению времени выполнено неудачно: {str(e)}", exc_info=True)
 
-
-@shared_task()
-def delete_everything_in_folder_beat():
-    """
-    Удаляет все файлы из папки для "files_for_bulk_import_of_ads"
-    Задача отрабатывает раз в сутки в 00.00
-    """
-    path = './media/files_for_bulk_import_of_ads'
-    shutil.rmtree(path)
-    os.mkdir(path)
 
 
 @shared_task()
@@ -358,14 +367,16 @@ def save_many_ads_from_excel_task(upload_file, id, first_name, phone_number, ema
     """
     Сохраняет объявления из экселя.
     """
-    result = save_many_ads_from_excel(upload_file, id, first_name, phone_number, email)
-    if result is True:
-        pass
-        # logger.info(f'Пользователем {email} загружен файл {upload_file}. Все объявления сохранены успешно')
-    else:
-        pass
-        # logger.info(f'Пользователем {email} загружен файл {upload_file}. Сформирован файл с ошибками: {result.get("file")}')
-    return result
+    try:
+        result = save_many_ads_from_excel(upload_file, id, first_name, phone_number, email)
+        if result is True:
+            logger.info(f'Пользователем {email} загружен файл {upload_file}. Все объявления сохранены успешно')
+        else:
+            logger.info(f'Пользователем {email} загружен файл {upload_file}. Сформирован файл с ошибками: {result.get("file")}')
+        return result
+    except Exception as e:
+        logger.error(f'Неудалось обраборать файл {upload_file} для массовго импорта объявлений от польователя {email}: {str(e)}',
+                     exc_info=True)
 
 
 @shared_task()
@@ -373,14 +384,17 @@ def save_many_ads_from_zip_task(upload_zip, id, first_name, phone_number, email)
     """
     Сохраняет объявления из zip-архива.
     """
-    result = save_many_ads_from_zip(upload_zip, id, first_name, phone_number, email)
-    if result is True:
-        pass
-        # logger.info(f'Пользователем {email} загружен файл {upload_zip}. Все объявления сохранены успешно')
-    else:
-        pass
-        # logger.info(f'Пользователем {email} загружен файл {upload_zip}. Сформирован файл с ошибками: {result.get("file")}')
-    return result
+    try:
+        result = save_many_ads_from_zip(upload_zip, id, first_name, phone_number, email)
+        if result is True:
+            logger.info(f'Пользователем {email} загружен файл {upload_zip}. Все объявления сохранены успешно')
+        else:
+            logger.info(f'Пользователем {email} загружен файл {upload_zip}. Сформирован файл с ошибками: {result.get("file")}')
+        return result
+    except Exception as e:
+        logger.error(
+            f'Неудалось обраборать файл {upload_zip} для массовго импорта объявлений от польователя {email}: {str(e)}',
+            exc_info=True)
 
 
 @shared_task()
@@ -390,8 +404,11 @@ def delete_upload_file_beat():
     """
     files = UploadFile.objects.filter(status=True)
     count = files.count()
-    files.delete()
-    # logger.info(f'Удалено {count} загруженных файлов для массового импорта объявлений')
+    try:
+        files.delete()
+        logger.info(f'Удалено {count} загруженных файлов для массового импорта объявлений')
+    except Exception as e:
+        logger.warning(f'Не удалось удалить несколько файлов: {str(e)}', exc_info=True)
 
 
 def create_tasks_from_schedule(name, task, schedule_, args=None, kwargs=None):
@@ -407,7 +424,6 @@ def create_tasks_from_schedule(name, task, schedule_, args=None, kwargs=None):
         app=app
     )
     entry.save()
-    # logger.info(f'Добавлено динамически задача: {name}, {schedule_}')
 
 
 def delete_task(task_id):
@@ -419,13 +435,11 @@ def delete_task(task_id):
         if entry:
             try:
                 entry.delete()  # Пробуем удалить
-                # logger.info(f"Задача {task_id} успешно удалена.")
+                logger.info(f"Задача {task_id} успешно удалена.")
             except Exception as e:
-                pass
-                # logger.error(f"Ошибка при удалении задачи: {str(e)}", exc_info=True)
+                logger.error(f"Ошибка при удалении задачи: {str(e)}", exc_info=True)
     except KeyError:
-        pass
-        # logger.error(f"Задача {task_id} не найдена.", exc_info=True)
+        logger.error(f"Задача {task_id} не найдена.", exc_info=True)
 
 
 def get_list_tasks():
@@ -444,7 +458,6 @@ def get_list_tasks():
         task_name = task.decode('utf-8')
         if task_name.startswith('redbeat:') and '::' not in task_name:
             list_tasks.append(task_name)
-            print(task_name)
 
     return list_tasks
 
@@ -456,8 +469,11 @@ def deactivation_of_paid_services(ads_id, name_for_delete, **fild_update):
     задачу из redbeat:schedule.
     """
     Advertisement.objects.filter(id=ads_id).update(**fild_update)
-    delete_task(name_for_delete)
-    # logger.info(f'Объявлениe (id: {ads_id}) обновлено с параметрами: {fild_update}. Задача {name_for_delete} успешно удалена')
+    try:
+        delete_task(name_for_delete)
+        logger.info(f'Объявлениe (id: {ads_id}) обновлено с параметрами: {fild_update}. Задача {name_for_delete} успешно удалена')
+    except Exception as e:
+        logger.error(f'Не удалось удлить задачу: {str(e)}')
 
 
 @shared_task()
@@ -468,11 +484,14 @@ def raise_or_deactivation_of_paid_services(ads_id, name_for_delete, **fild_updat
     эту задачу из redbeat:schedule.
     """
     current_datetime = get_current_datetime()
-    ads = Advertisement.objects.filter(id=ads_id)
-    ads.update(search_boost_date=current_datetime)
-    # logger.info(f'Объявление (id: {ads_id}) обнoвлено с датой поднятия в поиске {current_datetime}')
-    if ads.first().date_of_deactivate_special_accommodation.date() == current_datetime.date():
-        deactivation_of_paid_services(ads_id, name_for_delete, **fild_update)
+    try:
+        ads = Advertisement.objects.filter(id=ads_id)
+        ads.update(search_boost_date=current_datetime)
+        logger.info(f'Объявление (id: {ads_id}) обнoвлено с датой поднятия в поиске {current_datetime}')
+        if ads.first().date_of_deactivate_special_accommodation.date() == current_datetime.date():
+            deactivation_of_paid_services(ads_id, name_for_delete, **fild_update)
+    except Exception as e:
+        logger.error(f'Не удалось поднять обявление (id: {ads_id} в поиске: {str(e)}', exc_info=True)
 
 
 @shared_task()
@@ -487,9 +506,7 @@ def update_schedule():
         Q(special_accommodation=True))
 
     if not advertisements_for_deactivate:
-
-        # logger.info(f'Текущее время: {current_datetime}. Объявлений для деактивации не найдено.')
-
+        logger.info(f'Текущее время: {current_datetime}. Объявлений для деактивации не найдено.')
         return
 
     for ads in advertisements_for_deactivate:
@@ -499,14 +516,17 @@ def update_schedule():
 
             if ads.date_of_deactivate_vip < current_datetime:
                 schedule_ = crontab(hour=current_datetime.hour, minute=current_datetime.minute + 1)
+            try:
+                create_tasks_from_schedule(name,
+                                           "advertisement.tasks.deactivation_of_paid_services",
+                                           schedule_,
+                                           [ads.id, f'redbeat:{name}'],
+                                           {'vip': False})
+                logger.info(f'Запланировано в объявлении (id: {ads.id}) отключить платные услуги. Имя задачи: {name}.')
+            except Exception as e:
+                logger.error(f'Не удалось заплонировать отключить платные услуги в объявлении (id: {ads.id}): {str(e)}',
+                             exc_info=True)
 
-            # logger.info(f'Запланировано в объявлении (id: {ads.id}) отключить платные услуги. Имя задачи: {name}.')
-
-            create_tasks_from_schedule(name,
-                                       "advertisement.tasks.deactivation_of_paid_services",
-                                       schedule_,
-                                       [ads.id, f'redbeat:{name}'],
-                                       {'vip': False})
 
         if ads.highlight_ad and ads.date_of_deactivate_highlight_ad <= current_datetime:
             name = f'deactivate_advertisement_highlight{ads.id}'
@@ -515,13 +535,16 @@ def update_schedule():
 
             if ads.date_of_deactivate_highlight_ad < current_datetime:
                 schedule_ = crontab(hour=current_datetime.hour, minute=current_datetime.minute + 1)
-
-            # logger.info(f'Запланирована деактивация выделения объявления (id: {ads.id}). Имя задачи: {name}.')
-            create_tasks_from_schedule(name,
-                                       "advertisement.tasks.deactivation_of_paid_services",
-                                       schedule_,
-                                       [ads.id, f'redbeat:{name}'],
-                                       {'highlight_ad': False})
+            try:
+                create_tasks_from_schedule(name,
+                                           "advertisement.tasks.deactivation_of_paid_services",
+                                           schedule_,
+                                           [ads.id, f'redbeat:{name}'],
+                                           {'highlight_ad': False})
+                logger.info(f'Запланирована деактивация выделения объявления (id: {ads.id}). Имя задачи: {name}.')
+            except Exception as e:
+                logger.error(f'Не удалось запланировать деактивацию объявления (id: {ads.id}): {str(e)}',
+                             exc_info=True)
 
         if ads.date_of_deactivate_special_accommodation:
             name = f'raise_or_deactivate_advertisement_special_accommodation_{ads.id}'
@@ -532,11 +555,14 @@ def update_schedule():
             if ads.date_of_deactivate_special_accommodation < current_datetime:
                 schedule_ = crontab(hour=current_datetime.hour, minute=current_datetime.minute + 1)
                 task = "advertisement.tasks.deactivation_of_paid_services"
+            try:
+                create_tasks_from_schedule(name,
+                                           task,
+                                           schedule_,
+                                           [ads.id, f'redbeat:{name}'],
+                                           {'special_accommodation': False})
+                logger.info(f'Запланировано деактивация специального размещения объявления (id: {ads.id}). Имя задачи: {name}.')
+            except Exception as e:
+                logger.error(f'Не удалось запланировать деактивацию для пециального размещения для объявления (id: {ads.id}): {str(e)}',
+                             exc_info=True)
 
-            # logger.info(f'Запланировано деактивация специального размещения обявления (id: {ads.id}). Имя задачи: {name}.')
-
-            create_tasks_from_schedule(name,
-                                       task,
-                                       schedule_,
-                                       [ads.id, f'redbeat:{name}'],
-                                       {'special_accommodation': False})
