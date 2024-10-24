@@ -326,9 +326,6 @@ def deactivate_store():
 
 
 @shared_task()
-<<<<<<< HEAD
-def save_many_ads_from_excel_task(uploud_file, id_, first_name, phone_number, email):
-=======
 def delete_everything_in_folder_beat():
     """
     Удаляет все файлы из папки для "files_for_bulk_import_of_ads"
@@ -341,7 +338,6 @@ def delete_everything_in_folder_beat():
 
 @shared_task()
 def save_many_ads_from_excel_task(upload_file, id, first_name, phone_number, email):
->>>>>>> 5e5f81ab (corection name arguments in bulk import ads)
     """
     Сохраняет объявления из экселя.
     """
