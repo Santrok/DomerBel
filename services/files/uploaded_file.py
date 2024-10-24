@@ -14,7 +14,7 @@ def upload_to(instance, filename):
     name = str(instance.pk or '') + filename
     filename = md5(name.encode('utf8')).hexdigest() + ext
     if instance.__class__.__name__ == 'PhotoAdvertisement':
-        basedir = 'Advertisement'
+        basedir = 'advertisement'
     else:
-        basedir = instance.__class__.__name__
+        basedir = instance.__class__.__name__.lower()
     return os.path.join(basedir, save_folder, filename)
