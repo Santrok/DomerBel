@@ -120,35 +120,30 @@ def get_advertisement_by_category(request, category_slug):
         'counter_views',
         'phone_num')
 
-    # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    vip_filters = {
+        'vip': True,
+        'shown_vip_category': True,
+        'is_active': True,
+        'moderated': True
+    }
+
     if categories:
-        vip_advertisements_in_category = Advertisement.objects.filter(category__in=categories,
-                                                                      vip=True,
-                                                                      shown_vip_category=True,
-                                                                      is_active=True,
-                                                                      moderated=True).distinct('category')
+        vip_advertisements_in_category = Advertisement.objects.filter(
+            category__in=categories,
+            **vip_filters
+        ).distinct('category')
+
         # Получаем список уникальных категорий из найденных VIP-объявлений
         vip_categories = vip_advertisements_in_category.values_list('category', flat=True)
+
         # Если есть VIP-объявления в категориях, выбираем случайную категорию
         if vip_categories.exists():
             random_category = random.choice(vip_categories)  # Выбираем случайную категорию
-            vip_advertisement = advertisements.filter(category=random_category,
-                                                      vip=True,
-                                                      shown_vip_category=True,
-                                                      is_active=True,
-                                                      moderated=True)
+            vip_advertisement = advertisements.filter(category=random_category, **vip_filters)
         else:
-            vip_advertisement = advertisements.filter(vip=True,
-                                                      shown_vip_category=True,
-                                                      is_active=True,
-                                                      moderated=True)
-
+            vip_advertisement = advertisements.filter(**vip_filters)
     else:
-        vip_advertisement = advertisements.filter(vip=True,
-                                                  shown_vip_category=True,
-                                                  is_active=True,
-                                                  moderated=True)
-    # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        vip_advertisement = advertisements.filter(**vip_filters)
 
     page_obj = variables_for_paginator(advertisements,
                                        request.GET.get('page'),
