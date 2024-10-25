@@ -131,14 +131,11 @@ def get_advertisement_by_category(request, category_slug):
         vip_advertisements_in_category = Advertisement.objects.filter(
             category__in=categories,
             **vip_filters
-        ).distinct('category')
-
-        # Получаем список уникальных категорий из найденных VIP-объявлений
-        vip_categories = vip_advertisements_in_category.values_list('category', flat=True)
+        )
 
         # Если есть VIP-объявления в категориях, выбираем случайную категорию
-        if vip_categories.exists():
-            random_category = random.choice(vip_categories)  # Выбираем случайную категорию
+        if vip_advertisements_in_category.exists():
+            random_category = random.choice(vip_advertisements_in_category.values_list('category', flat=True))  # Выбираем случайную категорию
             vip_advertisement = advertisements.filter(category=random_category, **vip_filters)
         else:
             vip_advertisement = advertisements.filter(**vip_filters)
