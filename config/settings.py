@@ -1,7 +1,6 @@
 from pathlib import Path
 import os
 
-from django.conf.global_settings import ADMINS
 from dotenv import dotenv_values
 
 import logging.config
@@ -186,7 +185,7 @@ INTERNAL_IPS = [
 ]
 
 # Настройки кэша
-#CACHES = {
+# CACHES = {
 #     'default': {
 #         'BACKEND': 'django_redis.cache.RedisCache',
 #         'LOCATION': 'redis://127.0.0.1:6379/1',
@@ -345,52 +344,67 @@ CKEDITOR_5_CONFIGS = {
 }
 
 # Настройки Channels
-CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": env_keys.get('CHANNEL_LAYERS_BACKEND'),
-         "CONFIG": {
-             "hosts": [("127.0.0.1", 6379)],
-         },
-    }
-}
+# CHANNEL_LAYERS = {
+#     "default": {
+#         "BACKEND": env_keys.get('CHANNEL_LAYERS_BACKEND'),
+#          "CONFIG": {
+#              "hosts": [("127.0.0.1", 6379)],
+#          },
+#     }
+# }
 
 # Настройка буфера памяти для загрузки файлов
 FILE_UPLOAD_MAX_MEMORY_SIZE = 20 * 1024 * 1024
 DATA_UPLOAD_MAX_NUMBER_FILES = 30
 
 
+ADMINS = [
+    (env_keys.get("ADMIN_NAME_1"), env_keys.get("ADMIN_EMAIL_1")),
+    (env_keys.get("ADMIN_NAME_2"), env_keys.get("ADMIN_EMAIL_2")),
+    (env_keys.get("ADMIN_NAME_3"), env_keys.get("ADMIN_EMAIL_3")),
+]
 
 #Настройка логгирования проекта
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+
     'formatters': {
         'django':{
             'format': '{asctime} [{levelname}] Message: {message}',
             'style': '{',
-        }
+        },
     },
     'handlers': {
-         'console': {
+        'console': {
             'class': 'logging.StreamHandler',
         },
         'django': {
             'level': 'WARNING',
             'class': 'logging.handlers.TimedRotatingFileHandler',
-             'filename': os.path.join('logs', 'django.log'),
+             'filename': os.path.join('logs','django','django.log'),
             'formatter': 'django',
+            'when': 'midnight',
+            'backupCount': 100,
         },
+        'mail_admins': {
+            'level': 'ERROR',
+            'class': 'django.utils.log.AdminEmailHandler',
+            'include_html': True,
+        }
     },
     'loggers': {
+        'django.request': {
+            'handlers': ['mail_admins'],
+            'level': 'ERROR',
+            'propagate': True,
+        },
         'django': {
             'level': 'INFO',
             'handlers': ['console','django'],
-            'propagate': True,
-        }
+        },
     }
 }
-
-logging.config.dictConfig(LOGGING)
 
 
 
