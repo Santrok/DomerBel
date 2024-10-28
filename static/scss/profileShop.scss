@@ -1,0 +1,150 @@
+@import "./variables";
+@import "./mixins";
+
+.main__wrapper {
+  flex: 1 1 auto;
+}
+
+.main__shop-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.main__shop-list-item {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 15px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid $gray;
+}
+
+.main__shop-list-item-text {
+  & h3 {
+    @include fonts($defaultColor, 18px, 600);
+    margin-bottom: 15px;
+  }
+}
+
+.main__shop-list-item-img {
+  flex: 0 0 200px;
+
+  & img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
+}
+
+.main__shop-list-item-edit {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 10px;
+
+  & a {
+    @include fonts($mainColor, 14px, 400);
+
+    &:hover {
+      color: $colorHover;
+    }
+  }
+}
+
+.main__shop-list-item-registration {
+  @include fonts($defaultColor, 16px, 400);
+  margin-bottom: 10px;
+
+  & span {
+    color: blue;
+    font-weight: 600;
+  }
+}
+
+.main__shop-list-item-active {
+  @include fonts($defaultColor, 16px, 400);
+  margin-bottom: 10px;
+
+  & span {
+    color: blue;
+    font-weight: 600;
+
+    & span {
+      color: green;
+    }
+  }
+}
+
+.main__shop-list-item-shop-link {
+  @include fonts($mainColor, 14px, 400);
+  margin-bottom: 15px;
+  display: inline-block;
+
+  &:hover {
+    color: $colorHover;
+  }
+}
+
+.main__shop-list-item-about {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+
+  & h4 {
+    @include fonts($defaultColor, 14px, 600);
+    flex: 0 0 100px;
+  }
+
+  & p {
+    @include fonts($defaultColor, 14px, 400);
+    word-break: break-word;
+  }
+
+  & li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+
+    & a {
+      @include fonts($mainColor, 14px, 400);
+
+      &:hover {
+        color: $colorHover;
+      }
+    }
+  }
+}
+
+.store__status {
+  @include fonts($colorHover, 14px, 400);
+  margin-bottom: 15px;
+}
+
+.store__active {
+  @include fonts($asideExitColor, 14px, 400);
+  margin-bottom: 15px;
+}
+
+.main__shop-list-item-title {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+
+.store__status-btn {
+  @include fonts($mainColor, 14px, 400);
+  display: inline-block;
+  box-shadow: none;
+  background-color: transparent;
+  background: none;
+  border: none;
+  cursor: pointer;
+  &:hover {
+    color: $colorHover;
+  }
+  &:focus {
+    border: none !important;
+  }
+}

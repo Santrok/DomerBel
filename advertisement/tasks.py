@@ -99,7 +99,7 @@ def delete_photos(advertisement, photos_to_delete):
     if advertisement.preview_image in photos_to_delete:
         file_path = advertisement.preview_image.path
         folder_path = os.path.dirname(file_path)
-
+        
         # Удаляем файл превью и очищаем поле
         if os.path.exists(file_path):
             os.remove(file_path)

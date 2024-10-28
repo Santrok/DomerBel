@@ -5,7 +5,7 @@ from django.shortcuts import render, redirect
 from advertisement.models import Advertisement
 from config import settings
 from main.forms import FeedbackForm
-from main.models import Help
+from main.models import Help, PaidInformation
 from related_data.models import Category
 from services.email.message import run_send_email_task_celery
 
@@ -55,7 +55,6 @@ def get_site_map_page(request):
         "adaptive_navigation": "Карта сайта"
     }
     per = Permission.objects.get(codename='add_store')
-    print(per)
     return render(request, 'map.html', context)
 
 
@@ -94,6 +93,7 @@ def get_feedback_page_and_send_feedback_to_administration_email(request):
     feedback_form = FeedbackForm()
     context = {
         "feedback_form": feedback_form,
+        "adaptive_navigation": "Обратная связь"
     }
     return render(request, 'feedback.html', context)
 
@@ -106,6 +106,7 @@ def get_help_page(request):
 
     context = {
         "help": Help.objects.first(),
+        "adaptive_navigation": "Помощь"
     }
     return render(request, "help_page.html", context)
 
@@ -115,3 +116,15 @@ def get_page_not_found(request):
     Возвращает кастомную страницу ошибки 404
     """
     return render(request, '404.html', status=404)
+
+
+def get_paid_page(request):
+    """
+    Сборка страницы с информацией об оплате.
+    """
+
+    context = {
+        "paid": PaidInformation.objects.first(),
+        "adaptive_navigation": "Оплата"
+    }
+    return render(request, "paid.html", context)

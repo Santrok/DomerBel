@@ -71,3 +71,23 @@ class BadWordsAdmin(admin.ModelAdmin):
     """
     pass
 
+
+class PaidInformation(models.Model):
+    """
+    Модель для хранения информации о правилах пользования ресурсом
+    """
+    information = CKEditor5Field('Текст', config_name='extends')
+
+    class Meta:
+        verbose_name = "Текст страницы оплата"
+        verbose_name_plural = "Текст страницы оплата"
+
+    def __str__(self):
+        return f'Текст страницы оплата'
+
+
+class PaidInformationAdmin(admin.ModelAdmin):
+    """
+    Класс управления отображения в админ панели сущности: PaidInformation
+    """
+    pass

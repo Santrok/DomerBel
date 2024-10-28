@@ -1,6 +1,7 @@
 from pathlib import Path
 import os
 
+from django.conf.global_settings import ADMINS
 from dotenv import dotenv_values
 
 import logging.config
@@ -185,7 +186,7 @@ INTERNAL_IPS = [
 ]
 
 # Настройки кэша
-# CACHES = {
+#CACHES = {
 #     'default': {
 #         'BACKEND': 'django_redis.cache.RedisCache',
 #         'LOCATION': 'redis://127.0.0.1:6379/1',
@@ -193,7 +194,7 @@ INTERNAL_IPS = [
 #             'CLIENT_CLASS': 'django_redis.client.DefaultClient',
 #         }
 #     }
-# }
+#}
 
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
@@ -344,14 +345,14 @@ CKEDITOR_5_CONFIGS = {
 }
 
 # Настройки Channels
-# CHANNEL_LAYERS = {
-#     "default": {
-#         "BACKEND": env_keys.get('CHANNEL_LAYERS_BACKEND'),
-#          "CONFIG": {
-#              "hosts": [("127.0.0.1", 6379)],
-#          },
-#     }
-# }
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": env_keys.get('CHANNEL_LAYERS_BACKEND'),
+         "CONFIG": {
+             "hosts": [("127.0.0.1", 6379)],
+         },
+    }
+}
 
 # Настройка буфера памяти для загрузки файлов
 FILE_UPLOAD_MAX_MEMORY_SIZE = 20 * 1024 * 1024
@@ -368,7 +369,6 @@ ADMINS = [
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
-
     'formatters': {
         'django':{
             'format': '{asctime} [{levelname}] Message: {message}',
@@ -382,7 +382,7 @@ LOGGING = {
         'django': {
             'level': 'WARNING',
             'class': 'logging.handlers.TimedRotatingFileHandler',
-             'filename': os.path.join('logs','django','django.log'),
+             'filename': os.path.join(BASE_DIR, 'logs','django','django.log'),
             'formatter': 'django',
             'when': 'midnight',
             'backupCount': 100,
@@ -402,9 +402,15 @@ LOGGING = {
         'django': {
             'level': 'INFO',
             'handlers': ['console','django'],
-        },
+            'propagate': True,
+        }
     }
 }
+
+# Создание директории для логов, если она не существует
+log_dir = os.path.join(BASE_DIR, 'logs')
+if not os.path.exists(log_dir):
+    os.makedirs(log_dir)
 
 
 

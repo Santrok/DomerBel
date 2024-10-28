@@ -1,0 +1,80 @@
+.paid__modal {
+  position: relative;
+  width: 100%;
+  max-width: 450px;
+  display: none;
+  flex-direction: column;
+  gap: 10px;
+  background: #ffff;
+  padding: 40px;
+  border-radius: 8px;
+
+
+  & input {
+    width: initial;
+  }
+
+  & button {
+    margin-top: 10px;
+  }
+
+}
+
+.remove__modal-btn {
+  display: flex;
+  gap: 10px;
+}
+
+.paid__form {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 2px;
+  & label {
+    display: flex;
+    gap: 10px; 
+    align-items: center;
+    justify-content: space-between;
+    & span {
+      @include fonts($defaultColor, 16px, 400);
+      white-space: pre-line;
+    }
+}
+}
+
+.paid__form-title {
+  display: flex;
+  flex-direction: column;
+  min-width: 200px;
+}
+
+.paid__form-title-label {
+  @include fonts($defaultColor, 16px, 400);
+  white-space: pre-line;
+}
+
+.paid__form-title-period {
+  @include fonts(#6e6d6d, 13px, 400);
+  white-space: pre-line;
+}
+
+.paid__form-cost {
+  @include fonts($defaultColor, 16px, 400);
+  white-space: nowrap;
+  flex: 0 1 100px;
+  text-align: end
+}
+
+.paid__form-total {
+  @include fonts($defaultColor, 16px, 400);
+  align-self: flex-end;
+}
+
+.paid__form-error {
+  border: 1px solid red;
+  border-radius: 8px;
+}
+
+.error__text {
+@include fonts(red, 14px, 400);
+}

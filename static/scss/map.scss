@@ -1,0 +1,36 @@
+@import "./variables";
+@import "./mixins";
+
+
+.map {
+  padding-top: 20px;
+  border-top: 1px solid $gray;
+}
+
+.map__list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  & li {
+    padding-left: 20px;
+    position: relative;
+    &::before {
+      position: absolute;
+      top: 0;
+      left: 0;
+      content: "";
+      display: block;
+      width: 15px;
+      height: 15px;
+      background: url(../img/folder.gif) no-repeat center/cover;
+    }
+  }
+}
+
+.map__list-children {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 10px;
+}

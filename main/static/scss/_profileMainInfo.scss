@@ -47,6 +47,7 @@
   display: flex;
   gap: 5px;
   flex-direction: column;
+  flex: 0 0 20px;
 
   & li {
     display: flex;
@@ -185,6 +186,7 @@
     position: absolute;
     bottom: 0;
     right: 0;
+    flex: 0 0 20px;
   }
   .main__info-advertisement-list {
     row-gap: 20px;

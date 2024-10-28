@@ -626,6 +626,10 @@
   border-radius: 8px;
 }
 
+.paid__form-instruction-link {
+  align-self: center;
+}
+
 .error__text {
   font-family: "Trebuchet MS", sans-serif;
   font-weight: 400;

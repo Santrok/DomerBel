@@ -257,7 +257,7 @@ def registration_user(request):
             else:
                 return Response({'success': 'Вы успешно зарегистрированы'}, status=status.HTTP_201_CREATED)
         except Exception as e:
-            raise serializers.ValidationError({"error": """Произошла ошибка при регистрации. 
+            raise serializers.ValidationError({"error": """Произошла ошибка при регистрации.
                                                             Пожалуйста, попробуйте позже"""
                                                })
 
@@ -447,7 +447,7 @@ def processing_successful_payment_for_services(request):
                                            request.data.get("transaction").get("customer").get("email"),
                                            subject="Оплата услуг.",
                                            paid_services=paid_services,
-                                           text=f"""Вы успешно оплатили на следующие услуги для объявления 
+                                           text=f"""Вы успешно оплатили следующие услуги для объявления 
                                            "{advertisement_title}":"""
                                            )
 

@@ -55,6 +55,7 @@
     </fieldset>
     <p class="paid__form-total">Сумма: <span>0 руб</span></p>
         <button class="submit__btn" type="button" id="paid_button">Оплатить</button>
+        <a href="{% url 'paid_page' %}" class="paid__form-instruction-link" style="align-self: center;" >Информация о способах оплаты</a>
     </form>
 {% endblock modals %}
 {% block search %}
@@ -137,7 +138,7 @@
                             </a>
                         </li>
                         <li class="profile__aside-nav-list-item">
-                            <a href="{% url 'feedback' %}">
+                            <a href="{% url 'send_to_administration_email' %}">
                                 Написать администратору
                             </a>
                         </li>
