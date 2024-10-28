@@ -138,7 +138,7 @@ class UserFavorites(models.Model):
     Модели: User(O2O)
     """
     user = models.OneToOneField(get_user_model(), verbose_name="Пользователь", on_delete=models.CASCADE)
-    favorites = ArrayField(models.IntegerField(), verbose_name="Список избранного", default=list)
+    favorites = ArrayField(models.IntegerField(), verbose_name="Список избранного", default=list, blank=True)
 
     class Meta:
         verbose_name = "Избранное пользователя"
