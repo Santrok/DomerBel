@@ -4,7 +4,8 @@ from personal_account.views import (get_page_in_personal_account_with_active_adv
                                     get_page_in_personal_account_with_inactive_advertisements,
                                     get_page_in_personal_account_with_search_result_by_user_advertisement,
                                     delete_or_archive_selected_ads, get_page_in_personal_account_with_user_stores,
-                                    get_user_favorites_page, get_page_in_personal_account_all_user_publications)
+                                    get_user_favorites_page, get_page_in_personal_account_all_user_publications,
+                                    get_page_send_to_administration_email)
 
 urlpatterns = [
     path('', get_page_in_personal_account_with_active_advertisements, name='personal_account'),
@@ -16,4 +17,5 @@ urlpatterns = [
     path('my_stores/', get_page_in_personal_account_with_user_stores, name='my_store'),
     path('my_publications/', get_page_in_personal_account_all_user_publications, name='user_all_publications'),
     path('favorites/', get_user_favorites_page, name='favorites'),
+    path('send_to_administration_email/', get_page_send_to_administration_email, name='send_to_administration_email'),
 ]
