@@ -361,6 +361,7 @@ DATA_UPLOAD_MAX_NUMBER_FILES = 30
 
 
 #Настройка логгирования проекта
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -377,7 +378,7 @@ LOGGING = {
         'django': {
             'level': 'WARNING',
             'class': 'logging.handlers.TimedRotatingFileHandler',
-             'filename': os.path.join('logs', 'django.log'),
+            'filename': os.path.join(BASE_DIR, 'logs', 'django.log'),
             'formatter': 'django',
         },
     },
@@ -389,6 +390,11 @@ LOGGING = {
         }
     }
 }
+
+# Создание директории для логов, если она не существует
+log_dir = os.path.join(BASE_DIR, 'logs')
+if not os.path.exists(log_dir):
+    os.makedirs(log_dir)
 
 logging.config.dictConfig(LOGGING)
 

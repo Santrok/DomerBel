@@ -6,10 +6,13 @@ from django.shortcuts import render, redirect
 
 from advertisement.models import Advertisement
 from advertisement.utils import make_clear_query, setting_search_options, get_result_for_filter_advertisement_query
+from config import settings
+from main.forms import FeedbackForm
 from paid_service.forms import PaidForm
 from publication.models import Publication
 from related_data.models import Category, Region
 from related_data.utils import create_variables_for_filter_and_bread_crumbs, forming_fields_for_annotation_and_search
+from services.email.message import run_send_email_task_celery
 from store.models import Store
 from utils.template_paginator import variables_for_paginator
 
@@ -251,3 +254,43 @@ def get_user_favorites_page(request):
         "adaptive_navigation": "Избранное"
     }
     return render(request, "profile_favorites.html", context)
+
+
+@login_required
+def get_page_send_to_administration_email(request):
+    """
+    Сборка страницы "Написать администратору".
+    Отправка письма администрации сайта
+    """
+    if request.method == "POST":
+        new_feedback_form = FeedbackForm(request.POST)
+
+        if new_feedback_form.is_valid():
+            subject = new_feedback_form.cleaned_data.get("subject")
+            sender = new_feedback_form.cleaned_data.get("email")
+            message = new_feedback_form.cleaned_data.get("message")
+
+            run_send_email_task_celery("Обратная связь",
+                                       "asend_feedbeck.html",
+                                       settings.EMAIL_HOST_USER,
+                                       message=message,
+                                       subject=subject,
+                                       sender=sender,
+                                       )
+
+            messages.success(request, f"Ваше письмо отправлено администрации сайта ")
+            return redirect("personal_account")
+
+        feedback_form = FeedbackForm(request.POST)
+        feedback_form.errors.update(new_feedback_form.errors)
+        context = {
+            "feedback_form": feedback_form,
+        }
+        return render(request, 'profile_send_admin.html', context)
+
+    feedback_form = FeedbackForm()
+    context = {
+        "feedback_form": feedback_form,
+        "adaptive_navigation": "Написать администрации"
+    }
+    return render(request, 'profile_send_admin.html', context)
