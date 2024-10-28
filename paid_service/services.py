@@ -9,8 +9,10 @@ def send_payment_request(url, store_id, secret_key, data, user_email, token=''):
     Отправляет запрос на оплату и обрабатывает возможные ошибки.
     """
     payload = _create_payment_payload(data, user_email)
+    print(payload)
     try:
         response = requests.post(f"{url}{token}", auth=HTTPBasicAuth(store_id, secret_key), json=payload)
+        print(response)
         response.raise_for_status()  # Вызывает исключение для статусов 4xx и 5xx
         return response
     except requests.exceptions.RequestException:
@@ -63,7 +65,7 @@ def _create_payment_payload(data, user_email):
                 "order": {
                     "currency": "BYN",
                     "amount": int(amount * 100),
-                    "description": f"Оплата услуг для объявления '{title_ad}': {', '.join(description)}. (!Для оплаты введите номер тестовой карты 4012000000001006, CVC - 111, дата срока действия не должна быть прошедшим.!)",
+                    "description": f"Оплата услуг для объявления '{title_ad}': {', '.join(description)}. (Номер тестовой карты 4012000000001006, CVC - 111)",
                     "additional_data": additional_data
                 },
                 "customer": {

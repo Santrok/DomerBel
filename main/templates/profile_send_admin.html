@@ -1,10 +1,14 @@
-{% extends 'base.html' %} 
+{% extends "profile_user.html" %}
 {% load static %}
-{% block css %} 
+{% block css2 %}
 <link rel="stylesheet" href="{% static 'css/feedback-min.css' %}">
-{% endblock css %} 
-{% block content %}
-<form method="POST" class="feedback">
+{% endblock css2 %}
+{% block title %}
+{% endblock title %}
+{% block search %}
+{% endblock search %}
+  {% block mainInfo %}
+  <form class="main__info feedback" method="POST">
   {% csrf_token %}
  {% if feedback_form.non_field_errors %}
     <div class="form-error">{{ feedback_form.non_field_errors }}</div>
@@ -27,6 +31,7 @@
     {% endfor %}
 <button class="submit__btn">Отправить</button>
 </form>
-{% endblock %} 
-{% block js %}
-{% endblock js %}
+  {% endblock mainInfo %}
+{% block js2 %}
+<script src="{% static 'js/profile/storeLogo.js' %}"></script>
+{% endblock js2 %}
