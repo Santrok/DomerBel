@@ -75,6 +75,10 @@
   border-radius: 8px;
 }
 
+.paid__form-instruction-link {
+  align-self: center;
+}
+
 .error__text {
 @include fonts(red, 14px, 400);
 }
