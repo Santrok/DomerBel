@@ -402,7 +402,6 @@ LOGGING = {
         'django': {
             'level': 'INFO',
             'handlers': ['console','django'],
-            'propagate': True,
         }
     }
 }
@@ -411,7 +410,11 @@ LOGGING = {
 log_dir = os.path.join(BASE_DIR, 'logs')
 if not os.path.exists(log_dir):
     os.makedirs(log_dir)
-
+subdirs = ['django', 'celery']
+for subdir in subdirs:
+    path = os.path.join(log_dir, subdir)
+    if not os.path.exists(path):
+        os.makedirs(path)
 
 
 
