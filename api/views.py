@@ -1,3 +1,4 @@
+import logging
 from datetime import datetime, timedelta
 from zipfile import ZipFile
 
@@ -30,6 +31,9 @@ from .serializers import (AdvertisementSerializer, ComplaintSerializer, UserMess
 from .utils import validate_additional_information, save_temp_photos, get_chat_object
 from advertisement.tasks import save_advertisement_task, update_advertisement_task, save_many_ads_from_excel_task, \
     save_many_ads_from_zip_task
+
+#настройка логов
+logger = logging.getLogger('api')
 
 
 @api_view(['POST'])
@@ -257,6 +261,7 @@ def registration_user(request):
             else:
                 return Response({'success': 'Вы успешно зарегистрированы'}, status=status.HTTP_201_CREATED)
         except Exception as e:
+            logger.warning(f'Ошибка при регистрации нового пользователя: {str(e)}', exc_info=True)
             raise serializers.ValidationError({"error": """Произошла ошибка при регистрации.
                                                             Пожалуйста, попробуйте позже"""
                                                })
@@ -454,7 +459,8 @@ def processing_successful_payment_for_services(request):
                 return Response(status=status.HTTP_200_OK)
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
-    except:
+    except Exception as e:
+        logger.warning(f'Ошибка при оплате: {str(e)}', exc_info= True)
         email = transaction_data.get("customer").get("email")
         advertisement_id = transaction_data.get('additional_data').get("advertisement")
         advertisement_title = transaction_data.get('additional_data').get("advertisement_title")
@@ -606,8 +612,6 @@ def get_bulk_import_of_ads(request):
 
                 return Response({'task_id': f'{ads.task_id}'})
             except:
-                # логируем ошибку
-                # logger.warning(f'user: {request.user}, action:bulk ads from file, error: incorrect file format')
                 return Response({'error': 'Невозможно прочитать файл.'})
 
         elif serializer.validated_data.get("file").name.endswith('zip'):
@@ -625,12 +629,7 @@ def get_bulk_import_of_ads(request):
                                                         email=request.user.email)
                 return Response({'task_id': f'{ads.task_id}'})
             except:
-                # логируем ошибку
-                # logger.warning(f'user: {request.user}, action:bulk ads from file, error: unable to open file')
                 return Response({'error': 'Невозможно прочитать файл.'})
-    else:
-        # логируем ошибку
-        # logger.warning(f'user: {request.user}, action:bulk ads from file, error: incorrect file format')
         return Response({'error': 'Ошибка при загрузке файла. Убедитесь, что загружаемый файл необходимого расширения'})
 
 

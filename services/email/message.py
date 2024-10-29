@@ -1,8 +1,11 @@
+import logging
 from django.template.loader import render_to_string
 
 from config.settings import env_keys
 from services.email.tasks import send_email_task
 
+# настройка логов
+logger = logging.getLogger('services')
 
 def run_send_email_task_celery(title, html, recipient, **kwargs):
     """
@@ -10,8 +13,8 @@ def run_send_email_task_celery(title, html, recipient, **kwargs):
     """
     try:
         content = _build_content_to_message(html, **kwargs)
-    except:
-        pass # Логирование
+    except Exception as e:
+        logger.warning(f'Ошибка при отправки email: {str(e)}', exc_info=True)
     else:
         send_email_task.delay(chat_title=title,
                               recipient=recipient,
