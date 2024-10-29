@@ -344,7 +344,7 @@
                             {% for category_child in category_list %}
                                 {% if category_child.parent_id == category.id %}
                                     <li>
-                                        <a href="{% url 'advertisement_by_category' category.slug %}">
+                                        <a href="{% url 'advertisement_by_category' category_child.slug %}">
                                             {{ category_child }}
                                         </a>
                                     </li>

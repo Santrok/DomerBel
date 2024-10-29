@@ -22,11 +22,11 @@
         <ul class="instruction__list instruction__text">
             <li>
                 XLSX-файла:
-                <a class="example__file" href="{{ url }}/media/example/example.xlsx">Скачать пример XLSX- файла </a>
+                <a class="example__file" href="{{ url }}/static/example_for_bulk_import_of_ads/example.xlsx">Скачать пример XLSX- файла </a>
             </li>
             <li>
                 ZIP-архив:
-                <a class="example__file" href="{{ url }}/media/example/example.zip">Скачать пример ZIP- архива</a>
+                <a class="example__file" href="{{ url }}/static/example_for_bulk_import_of_ads/example.zip">Скачать пример ZIP- архива</a>
             </li>
         </ul>
         <h2 class="instruction__title instruction__text">Требование к полям для объявлений:</h2>
@@ -88,8 +88,8 @@
             <li>Шаг 1: заполните XLSX- файл в соответствии с требованиями указанными выше</li>
             <li>Шаг 2: Создайте ZIP-архив, который будет содержать XLSX-файл и все изображения, которые вы указали в
                 XLSX-файле.
-                <img class="example__screen" src="{{ url }}/media/example/screen_2.png"
-                     alt="{{ url }}/media/example/screen_2.png">
+                <img class="example__screen" src="{% static 'example_for_bulk_import_of_ads/example_zip.jpg' %}"
+                     alt="{% static 'example_for_bulk_import_of_ads/example_zip.jpg' %}">
             </li>
             <li>Шаг 3: Файл готов к загрузки.</li>
         </ul>
