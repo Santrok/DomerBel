@@ -1,22 +1,26 @@
 import requests
+import logging
 from requests.auth import HTTPBasicAuth
 
 from config.settings import env_keys
 
+# настройка логов
+logger = logging.getLogger('paid_service')
 
 def send_payment_request(url, store_id, secret_key, data, user_email, token=''):
     """
     Отправляет запрос на оплату и обрабатывает возможные ошибки.
     """
-    payload = _create_payment_payload(data, user_email)
-    print(payload)
     try:
+        payload = _create_payment_payload(data, user_email)
         response = requests.post(f"{url}{token}", auth=HTTPBasicAuth(store_id, secret_key), json=payload)
-        print(response)
         response.raise_for_status()  # Вызывает исключение для статусов 4xx и 5xx
         return response
-    except requests.exceptions.RequestException:
+    except requests.exceptions.RequestException as e:
+        logger.warning(f'Ошибка при выполнении запроса: {str(e)}', exc_info=True)
         return None
+    except Exception as e:
+        logger.warning(f'Неизвестная ошибка при выполнении запроса: {str(e)}', exc_info=True)
 
 
 def _create_payment_payload(data, user_email):

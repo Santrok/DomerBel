@@ -10,6 +10,11 @@ from services.email.message import run_send_email_task_celery
 from store.models import Store
 from .models import UserFavorites
 
+import logging
+
+
+#настрока логирования
+logger = logging.getLogger('custom_user')
 
 @receiver(post_save, sender=get_user_model())
 def add_user_in_permission_group(sender, instance, **kwargs):
@@ -22,8 +27,8 @@ def add_user_in_permission_group(sender, instance, **kwargs):
             transaction.on_commit(lambda: instance.groups.add(group[0]))
         else:
             transaction.on_commit(lambda: instance.groups.remove(group[0]))
-    except Exception:
-        pass
+    except Exception as e:
+        logger.warning(f'Ошибка при с правами доступными только юр. лицам: {str(e)}', exc_info=True)
 
 
 @receiver(post_save, sender=get_user_model())

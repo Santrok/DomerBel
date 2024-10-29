@@ -1,4 +1,5 @@
 import os
+import logging
 
 from django.core.files.storage import FileSystemStorage
 from rest_framework import status
@@ -7,6 +8,8 @@ from rest_framework.response import Response
 from .serializers import AdditionalInformationSerializer
 from related_data.models import Field
 
+#настройка логов
+logger = logging.getLogger('api')
 
 def validate_additional_information(keys_to_delete, additional_information):
     """
@@ -73,5 +76,5 @@ def get_chat_object(chat_object, model, author_field, user):
     except model.DoesNotExist:
         return None, Response({'error': 'Объект чата не найден'},
                               status=status.HTTP_400_BAD_REQUEST)
-    # except Exception as e:
-    # logger.error(f"Ошибка при получении объекта чата при создании нового диалога: {str(e)}")
+    except Exception as e:
+        logger.warning(f"Ошибка при получении объекта чата при создании нового диалога: {str(e)}", exc_info=True)

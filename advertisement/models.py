@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta, timezone
+import logging
 
 import PIL
 from dirtyfields import DirtyFieldsMixin
@@ -19,8 +20,8 @@ from store.models import Store
 from utils.slug_generator import unique_slugify
 from utils.validators import validate_words, validate_phone
 
-
-# Create your models here.
+#настрока логирования
+logger = logging.getLogger('advertisement')
 
 
 class PhotoAdvertisement(models.Model):
@@ -179,8 +180,8 @@ class Advertisement(DirtyFieldsMixin, models.Model):
                 self.preview_image = None
             except PIL.UnidentifiedImageError:
                 self.preview_image = None
-            except:
-                print('Логи')
+            except Exception as e:
+                logger.warning(f'Ошибка при сохранении объявления: {str(e)}', exc_info=True)
 
         super().save(*args, **kwargs)
 

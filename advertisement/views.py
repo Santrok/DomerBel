@@ -1,4 +1,5 @@
 import random
+import logging
 
 from django.contrib.auth.decorators import login_required, permission_required
 from django.db.models import Q, F
@@ -16,6 +17,9 @@ from .utils import (setting_values_for_sorting_from_cookie_or_request_get, get_a
                     get_similar_advertisement, make_clear_query, setting_search_options,
                     get_result_for_filter_advertisement_query)
 
+
+#настрока логирования
+logger = logging.getLogger('advertisement')
 
 def get_advertisement_page(request):
     """
@@ -293,8 +297,7 @@ def get_page_search_result_by_advertisements(request):
         if request.GET.get('category'):
             categories = categories_annotate.filter(parent_id=request.GET.get('category'))
     except Exception as e:
-        # Логирование
-        print(f"Error fetching categories: {e}")
+        logger.warning(f'Ошибка при получении категорий: {str(e)}',exc_info=True)
     advertisements = get_result_for_filter_advertisement_query(search_parameters,
                                                                field_annotate,
                                                                search_lookup,
