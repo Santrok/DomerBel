@@ -67,7 +67,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-  
+
     'paid_service.middleware.CustomAuthorizationMiddleware',
 ]
 
@@ -359,9 +359,13 @@ FILE_UPLOAD_MAX_MEMORY_SIZE = 20 * 1024 * 1024
 DATA_UPLOAD_MAX_NUMBER_FILES = 30
 
 
+ADMINS = [
+    (env_keys.get("ADMIN_NAME_1"), env_keys.get("ADMIN_EMAIL_1")),
+    (env_keys.get("ADMIN_NAME_2"), env_keys.get("ADMIN_EMAIL_2")),
+    (env_keys.get("ADMIN_NAME_3"), env_keys.get("ADMIN_EMAIL_3")),
+]
 
 #Настройка логгирования проекта
-
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -369,24 +373,35 @@ LOGGING = {
         'django':{
             'format': '{asctime} [{levelname}] Message: {message}',
             'style': '{',
-        }
+        },
     },
     'handlers': {
-         'console': {
+        'console': {
             'class': 'logging.StreamHandler',
         },
         'django': {
             'level': 'WARNING',
             'class': 'logging.handlers.TimedRotatingFileHandler',
-            'filename': os.path.join(BASE_DIR, 'logs', 'django.log'),
+             'filename': os.path.join(BASE_DIR, 'logs','django','django.log'),
             'formatter': 'django',
+            'when': 'midnight',
+            'backupCount': 100,
         },
+        'mail_admins': {
+            'level': 'ERROR',
+            'class': 'django.utils.log.AdminEmailHandler',
+            'include_html': True,
+        }
     },
     'loggers': {
+        'django.request': {
+            'handlers': ['mail_admins'],
+            'level': 'ERROR',
+            'propagate': True,
+        },
         'django': {
             'level': 'INFO',
             'handlers': ['console','django'],
-            'propagate': True,
         }
     }
 }
@@ -395,7 +410,11 @@ LOGGING = {
 log_dir = os.path.join(BASE_DIR, 'logs')
 if not os.path.exists(log_dir):
     os.makedirs(log_dir)
+subdirs = ['django', 'celery']
+for subdir in subdirs:
+    path = os.path.join(log_dir, subdir)
+    if not os.path.exists(path):
+        os.makedirs(path)
 
-logging.config.dictConfig(LOGGING)
 
 
