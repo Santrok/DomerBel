@@ -44,21 +44,18 @@ def check_price(ads):
     # переписать
     """Функция проверяет цену в объявлении,
         при наличии ошибки в цене отдает ошибку"""
-    if "цена" in ads:
-        price = str(ads.get("цена"))
-        check_type_number = price.count('.')
-        if check_type_number == 1:
-            whole_part, fractional_part = price.split('.')
-            if len(price)<= 10 and  whole_part.isdigit() and fractional_part.isdigit() and len(fractional_part) <=2:
-                return True
-            else:
+    type_of_payment = ['цена', 'арендная плата', 'зарплата', 'минимальная зарплата']
+    for paymant in type_of_payment:
+        if paymant in ads:
+            price = str(ads.get(paymant))
+            try:
+                price_num = float(price)
+                if price_num <= 99999999.99:
+                    return True
+                else:
+                    return "В объявлении некорректно указана цена"
+            except:
                 return "В объявлении некорректно указана цена"
-        elif check_type_number == 0 and price.isdigit() and len(price)<= 10:
-            return True
-        else:
-            return "В объявлении некорректно указана цена"
-    else:
-        return True
 
 
 def check_category(ads):
@@ -101,7 +98,6 @@ def check_additional_information(ads, result_category_check):
                     for field in field_from_db:
                         if field.error: # в блоке if проверяются обязательные поля
                             if field.spisok_id: # в блоке if проверяются обязательные поля c установленными значениями
-                                # a = Element.objects.filter(spisok_id=field.spisok_id).filter(title__iexact=value_field_from_ads)
                                 spisok = Spisok.objects.prefetch_related('element_set').get(id=field.spisok_id)
                                 elements_from_db = spisok.element_set.all()
                                 elements_for_compare = elements_from_db.filter(title__iexact=value_field_from_ads)
@@ -153,7 +149,6 @@ def check_additional_information(ads, result_category_check):
     return data
 
 
-
 def check_description(ads):
     """Функция проверяет описание объявления,
         при наличии ошибки в категории отдает ошибку"""
@@ -165,7 +160,6 @@ def check_description(ads):
             return "В описании запрещено использовать ненормативную лексику"
     else:
         return "Описание является обязательным полем для объявления"
-
 
 
 def processing_ads_from_excel_for_saving(upload_file,value_author):
@@ -217,7 +211,6 @@ def processing_ads_from_excel_for_saving(upload_file,value_author):
     return ads_for_save
 
 
-
 def save_processed_ads_from_excel(ads_for_save,value_author,first_name,phone_number,email):
     """Функция сохраняет уже обработанные объявления из excel.
         Возвращает словарь со списком сохраненных объявления и объявлений с ошибками """
@@ -257,13 +250,12 @@ def update_photo(ads,file_name,upload_zip,email):
             image_from_zip = zip.extract(file_name,path)
         new_location_image = upload_to(ads,image_from_zip)
         folder = new_location_image.split('/')[1]
-        if not folder in os.listdir('./media/Advertisement/'):
-            os.mkdir(f'./media/Advertisement/{folder}')
+        if not folder in os.listdir('./media/advertisement/'):
+            os.mkdir(f'./media/advertisement/{folder}')
         os.replace(f'./{image_from_zip}', f'./media/{new_location_image}')
         return f'{new_location_image}'
     except:
         return f"Невозможно извлечь фото {file_name}"
-
 
 
 def adding_photo_to_saved_ads(saved_ads,upload_zip, email):
@@ -277,11 +269,6 @@ def adding_photo_to_saved_ads(saved_ads,upload_zip, email):
             ads.preview_image = preview_image
             ads.save(update_fields=["preview_image"])
             photo_ads = []
-            photo_save = PhotoAdvertisement(
-                photo=preview_image,
-                advertisement=ads)
-            photo_save.save()
-            photo_ads.append(photo_save)
             for key in photos.keys():
                 if key.startswith('фото') and key != 'фото1':
                     photo = update_photo(ads, photos.get(key), upload_zip, email)
@@ -303,7 +290,6 @@ def adding_photo_to_saved_ads(saved_ads,upload_zip, email):
             photos["ошибки"] = f"Невозможно извлечь фото {photos.get('фото1')}"
             ads_with_error.append(photos)
     return ads_with_error
-
 
 
 def write_file_with_error_ads(ads_with_error,email, value_author, upload_file):
@@ -349,7 +335,6 @@ def write_file_with_error_ads(ads_with_error,email, value_author, upload_file):
     return file_error
 
 
-
 def save_many_ads_from_excel(upload_file,id,first_name,phone_number,email):
     '''Функция сохраняет объявления из ecxel-файла пользователя. Возвращает или True, в случае, если
         все правильно, или ссылку на файл с ошибками'''
@@ -364,7 +349,6 @@ def save_many_ads_from_excel(upload_file,id,first_name,phone_number,email):
         file = upload_file.replace('./media/', '')
         UploadFile.objects.filter(file=file).update(status=True)
         return True
-
 
 
 def save_many_ads_from_zip(upload_zip,id,first_name,phone_number,email):

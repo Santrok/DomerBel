@@ -20,13 +20,13 @@ app.conf.result_expires = 1800
 @setup_logging.connect
 def config_loggers(*args, **kwargs) -> None:
     logger_celery = logging.getLogger('celery')
-    logger_celery.setLevel(logging.INFO)
+    logger_celery.setLevel(logging.DEBUG)
     formatter = logging.Formatter(
         fmt= '{asctime} - [{levelname}] - module: {module} - [{process:d}]-[{thread:d}]: {message}',
         style='{',
     )
     handler = handlers.TimedRotatingFileHandler(
-        filename = os.path.join(BASE_DIR,'logs','celery.log'),
+        filename = os.path.join(BASE_DIR,'logs','celery','celery.log'),
         when='midnight',
         backupCount=100,
         encoding='utf-8',
