@@ -352,6 +352,7 @@ def add_to_favorite(request):
         user_favorites = get_object_or_404(UserFavorites, user=request.user)
         if not serializer.validated_data.get('id') in user_favorites.favorites:
             user_favorites.favorites.append(serializer.validated_data.get('id'))
+            user_favorites.notes_for_favorites[serializer.validated_data.get('id')] = ""
             user_favorites.save()
         return Response({'success': 'Объявление успешно добавлено в избранное'}, status=status.HTTP_201_CREATED)
 
@@ -368,6 +369,7 @@ def delete_from_favorite(request):
         user_favorites = get_object_or_404(UserFavorites, user=request.user)
         if serializer.validated_data.get('id') in user_favorites.favorites:
             user_favorites.favorites.remove(serializer.validated_data.get('id'))
+            user_favorites.notes_for_favorites.pop(str(serializer.validated_data.get('id')), None)
             user_favorites.save()
         return Response({'success': 'Объявление успешно удалено из избранного'}, status=status.HTTP_201_CREATED)
 
