@@ -1,8 +1,11 @@
 import json
+import logging
 
 from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
 
+# натсройка логов
+logger = logging.getLogger('chat')
 
 class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
@@ -50,8 +53,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 }
             )
         except Exception as e:
-            #  логирование
-            print(f"Error processing message: {str(e)}")
+            logger.warning(f'Сообщение об ошибке обработки: {str(e)}', exc_info=True)
 
     async def chat_message(self, event):
         """

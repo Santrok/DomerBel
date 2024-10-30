@@ -1,3 +1,4 @@
+import logging
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.db.models import Q
@@ -18,7 +19,8 @@ from .forms import StoreForm
 from .models import Store
 
 
-# Create your views here.
+# настройки логов
+logger = logging.getLogger('store')
 
 
 def get_stores_page(request):
@@ -292,8 +294,7 @@ def get_page_search_result_for_advertisements_in_the_store(request, store_slug):
         if request.GET.get('category'):
             categories = categories_annotate.filter(parent_id=request.GET.get('category'))
     except Exception as e:
-        # Логирование
-        print(f"Error fetching categories: {e}")
+        logger.warning(f'Ошибка при получении категорий: {str(e)}', exc_info=True)
 
     advertisements = get_result_for_filter_advertisement_query(search_parameters,
                                                                field_annotate,
@@ -421,7 +422,7 @@ def get_page_for_delete_store(request, store_id):
             store.delete()
             messages.success(request, f"Магазин {store} успешно удален!")
         except Exception as e:
-            # logger.error(f"Ошибка при удалении магазина: {str(e)}")
+            logger.error(f"Ошибка при удалении магазина: {str(e)}", exc_info=True)
             messages.error(request, f"Ошибка при удалении магазина, пожалуйста попробуйте позже")
         return redirect('my_store')
 

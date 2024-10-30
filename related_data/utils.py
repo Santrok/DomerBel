@@ -1,8 +1,11 @@
+import logging
 from django.http import Http404
 from django.shortcuts import get_object_or_404
 
 from .models import Region, Field
 
+#настройка логов
+logger = logging.getLogger('related_data')
 
 def get_region_variables(region_request):
     """
@@ -60,8 +63,9 @@ def _make_field_for_search_by_additional_information(copy_of_request_get):
     field_for_annotate = {}
     try:
         fields = Field.objects.filter(id__in=copy_of_request_get.keys())
-    except:
-        Http404
+    except Exception as e:
+        logger.warning(f'Ошибка при формирование полей для поиска: {str(e)}', exc_info=True)
+        return Http404
     else:
         for field in fields:
             field_value = copy_of_request_get.get(str(field.id), [])
