@@ -20,7 +20,7 @@ app.conf.result_expires = 1800
 @setup_logging.connect
 def config_loggers(*args, **kwargs) -> None:
     logger_celery = logging.getLogger('celery')
-    logger_celery.setLevel(logging.DEBUG)
+    logger_celery.setLevel(logging.ERROR)
     formatter = logging.Formatter(
         fmt= '{asctime} - [{levelname}] - module: {module} - [{process:d}]-[{thread:d}]: {message}',
         style='{',

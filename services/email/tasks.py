@@ -1,10 +1,13 @@
 import smtplib
+import logging
 
 from celery import shared_task
 from django.core.mail import EmailMultiAlternatives
 from email.mime.image import MIMEImage
 from pathlib import Path
 
+# настройка логов
+logger = logging.getLogger('celery')
 
 @shared_task()
 def send_email_task(chat_title, recipient, text_content, html_content):
@@ -26,5 +29,5 @@ def send_email_task(chat_title, recipient, text_content, html_content):
 
         msg.attach_alternative(html_content, "text/html")
         msg.send()
-    except smtplib.SMTPException:
-        pass
+    except smtplib.SMTPException as e:
+        logger.error(f'Ошибка с взаимодействием с SMTP-сервером: {str(e)}', exc_info=True)

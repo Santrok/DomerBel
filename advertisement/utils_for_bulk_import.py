@@ -5,10 +5,10 @@ import os
 import xlsxwriter
 from django.contrib.auth import get_user_model
 from django.db.models import Q
+from datetime import date
 
 from advertisement.models import Advertisement, PhotoAdvertisement, UploadFile, ErrorFile
 from related_data.models import Category, Region, Spisok, ElementTwo
-from services.files.uploaded_file import upload_to
 from utils.validators import validate_words
 
 
@@ -241,19 +241,17 @@ def save_processed_ads_from_excel(ads_for_save,value_author,first_name,phone_num
     return {'saved_ads': saved_ads, 'ads_with_error': ads_with_error}
 
 
-def update_photo(ads,file_name,upload_zip,email):
-    """Функция для извлечения фото из электронного архива,
-    и функцию upload_to для сохранения фото объявлений в папку"""
+def update_photo(file_name,upload_zip,email):
+    """Функция для извлечения фото из электронного архива"""
     try:
         path = os.path.join('./media/files_for_bulk_import_of_ads', email)
         with ZipFile(upload_zip,'r') as zip:
             image_from_zip = zip.extract(file_name,path)
-        new_location_image = upload_to(ads,image_from_zip)
-        folder = new_location_image.split('/')[1]
+        today = date.today().isoformat()
+        folder = today
         if not folder in os.listdir('./media/advertisement/'):
             os.mkdir(f'./media/advertisement/{folder}')
-        os.replace(f'./{image_from_zip}', f'./media/{new_location_image}')
-        return f'{new_location_image}'
+        return os.path.relpath(image_from_zip, start= 'DomerBel2')
     except:
         return f"Невозможно извлечь фото {file_name}"
 
@@ -264,14 +262,14 @@ def adding_photo_to_saved_ads(saved_ads,upload_zip, email):
     for advertisement in saved_ads:
         ads = advertisement.get('saved_ads')
         photos = advertisement.get('ads_with_photo')
-        preview_image = update_photo(ads, photos.get('фото1'), upload_zip, email)
+        preview_image = update_photo(photos.get('фото1'), upload_zip, email)
         if preview_image != f"Невозможно извлечь фото {photos.get('фото1')}":
             ads.preview_image = preview_image
             ads.save(update_fields=["preview_image"])
             photo_ads = []
             for key in photos.keys():
                 if key.startswith('фото') and key != 'фото1':
-                    photo = update_photo(ads, photos.get(key), upload_zip, email)
+                    photo = update_photo(photos.get(key), upload_zip, email)
                     if photo != f"Невозможно извлечь фото {photos.get(key)}" and len(photo_ads) <= 30:
                         photo_save = PhotoAdvertisement(
                             photo=photo,
@@ -290,6 +288,15 @@ def adding_photo_to_saved_ads(saved_ads,upload_zip, email):
             photos["ошибки"] = f"Невозможно извлечь фото {photos.get('фото1')}"
             ads_with_error.append(photos)
     return ads_with_error
+
+
+def delete_img_in_email_folder(email):
+    """Функция для удаления картинок изъятых из электронного архива"""
+    directory = os.path.join('./media/files_for_bulk_import_of_ads', email)
+    for filename in os.listdir(directory):
+        if not filename.endswith('.zip') and not filename.endswith('.xlsx'):
+            file_path = os.path.join(directory, filename)
+            os.remove(file_path)
 
 
 def write_file_with_error_ads(ads_with_error,email, value_author, upload_file):
@@ -367,6 +374,7 @@ def save_many_ads_from_zip(upload_zip,id,first_name,phone_number,email):
     if result_adding_photo:
         for ads in result_adding_photo:
             ads_with_error.append(ads)
+    delete_img_in_email_folder(email)
     if ads_with_error:
         file_with_ads_error = write_file_with_error_ads(ads_with_error,email,value_author,upload_zip)
         return {'file': file_with_ads_error.file}
