@@ -2,6 +2,7 @@ from datetime import datetime
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
+from django.db.models import F, Value, Case, When
 from django.shortcuts import render, redirect
 
 from advertisement.models import Advertisement
@@ -246,9 +247,19 @@ def get_user_favorites_page(request):
     Сборка страницы 'Избранное'пользователя в ЛК.
     Модели: Advertisement.
     """
-    favorites_list = Advertisement.objects.filter(id__in=request.user.userfavorites.favorites,
-                                                  is_active=True,
-                                                  moderated=True)
+    favorites_list = Advertisement.objects.filter(
+        id__in=request.user.userfavorites.favorites,
+        is_active=True,
+        moderated=True
+    ).annotate(
+        note=Case(
+            *[When(id=ad_id, then=Value(note)) for ad_id, note in
+              request.user.userfavorites.notes_for_favorites.items()],
+            default=Value("")  # Значение по умолчанию, если заметка не найдена
+        )
+    )
+    for i in favorites_list:
+        print(i.note)
     context = {
         "favorites_list": favorites_list,
         "adaptive_navigation": "Избранное"
