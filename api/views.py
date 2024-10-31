@@ -352,6 +352,7 @@ def add_to_favorite(request):
         user_favorites = get_object_or_404(UserFavorites, user=request.user)
         if not serializer.validated_data.get('id') in user_favorites.favorites:
             user_favorites.favorites.append(serializer.validated_data.get('id'))
+            user_favorites.notes_for_favorites[serializer.validated_data.get('id')] = ""
             user_favorites.save()
         return Response({'success': 'Объявление успешно добавлено в избранное'}, status=status.HTTP_201_CREATED)
 
@@ -368,6 +369,7 @@ def delete_from_favorite(request):
         user_favorites = get_object_or_404(UserFavorites, user=request.user)
         if serializer.validated_data.get('id') in user_favorites.favorites:
             user_favorites.favorites.remove(serializer.validated_data.get('id'))
+            user_favorites.notes_for_favorites.pop(str(serializer.validated_data.get('id')), None)
             user_favorites.save()
         return Response({'success': 'Объявление успешно удалено из избранного'}, status=status.HTTP_201_CREATED)
 
@@ -643,3 +645,26 @@ def get_result_task(request, id):
         return JsonResponse({'state': task.state, 'result': task.result})
     else:
         return JsonResponse({'state': task.state})
+
+
+@api_view(["POST"])
+def add_new_notes_for_favorites(request):
+    """
+    Добавляет заметку для объявления в избранном
+    """
+    try:
+        user_favorites = get_object_or_404(UserFavorites, user=request.user.id)
+
+        if not request.data:
+            return Response({'error': 'Нет данных для обновления'}, status=status.HTTP_400_BAD_REQUEST)
+
+        key, value = list(request.data.items())[0]
+
+        with transaction.atomic():
+            user_favorites.notes_for_favorites[key] = value
+            user_favorites.save()
+
+        return Response({'message': 'Заметка успешно добавлена'}, status=status.HTTP_200_OK)
+
+    except Exception as e:
+        return Response({'error': f'Ошибка сохранения: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
