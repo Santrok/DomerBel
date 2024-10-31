@@ -6,7 +6,7 @@ from .views import (save_advertisement, update_advertisement, registration_user,
                     delete_from_favorite, providing_a_payment_page, processing_successful_payment_for_services,
                     get_region_list, get_category_list, get_subcategory_list, get_field_list, get_elementtwo_list,
                     get_store_list_by_user, get_list_of_cities, get_element_list, get_result_task,
-                    get_bulk_import_of_ads)
+                    get_bulk_import_of_ads, add_new_notes_for_favorites)
 
 urlpatterns = [
     path('save_advertisement/', save_advertisement),
@@ -32,4 +32,5 @@ urlpatterns = [
     path('get_store_for_advertisement/', get_store_list_by_user),
     path('get_bulk_import_of_ads/', get_bulk_import_of_ads),
     path('get_result_task/<str:id>', get_result_task),
+    path('add_new_notes_for_favorites/', add_new_notes_for_favorites)
 ]

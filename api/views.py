@@ -645,3 +645,26 @@ def get_result_task(request, id):
         return JsonResponse({'state': task.state, 'result': task.result})
     else:
         return JsonResponse({'state': task.state})
+
+
+@api_view(["POST"])
+def add_new_notes_for_favorites(request):
+    """
+    Добавляет заметку для объявления в избранном
+    """
+    try:
+        user_favorites = get_object_or_404(UserFavorites, user=request.user.id)
+
+        if not request.data:
+            return Response({'error': 'Нет данных для обновления'}, status=status.HTTP_400_BAD_REQUEST)
+
+        key, value = list(request.data.items())[0]
+
+        with transaction.atomic():
+            user_favorites.notes_for_favorites[key] = value
+            user_favorites.save()
+
+        return Response({'message': 'Заметка успешно добавлена'}, status=status.HTTP_200_OK)
+
+    except Exception as e:
+        return Response({'error': f'Ошибка сохранения: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
