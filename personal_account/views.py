@@ -258,8 +258,6 @@ def get_user_favorites_page(request):
             default=Value("")  # Значение по умолчанию, если заметка не найдена
         )
     )
-    for i in favorites_list:
-        print(i.note)
     context = {
         "favorites_list": favorites_list,
         "adaptive_navigation": "Избранное"
