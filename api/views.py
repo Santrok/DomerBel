@@ -27,7 +27,8 @@ from store.models import Store
 from .serializers import (AdvertisementSerializer, ComplaintSerializer, UserMessageSerializer, UserRegisterSerializer,
                           UserLoginSerializer, PasswordResetSerializer, FavoriteSerializer, PaidSerializer,
                           RegionSerializer, CategorySerializer, CategoryFieldsSerializer, FieldSerialier,
-                          ElementTwoSerializer, StoreSerializer, ElementSerializer, UploadFileSerializer)
+                          ElementTwoSerializer, StoreSerializer, ElementSerializer, UploadFileSerializer,
+                          FavoriteNoteSerializer)
 from .utils import validate_additional_information, save_temp_photos, get_chat_object
 from advertisement.tasks import save_advertisement_task, update_advertisement_task, save_many_ads_from_excel_task, \
     save_many_ads_from_zip_task
@@ -652,19 +653,21 @@ def add_new_notes_for_favorites(request):
     """
     Добавляет заметку для объявления в избранном
     """
-    try:
-        user_favorites = get_object_or_404(UserFavorites, user=request.user.id)
+    serializer = FavoriteNoteSerializer(data=request.data, context={"request": request})
+    if serializer.is_valid():
+        try:
+            user_favorites = get_object_or_404(UserFavorites, user=request.user.id)
 
-        if not request.data:
-            return Response({'error': 'Нет данных для обновления'}, status=status.HTTP_400_BAD_REQUEST)
+            advertisement = serializer.validated_data.get("advertisement").id
+            note = serializer.validated_data.get("note")
 
-        key, value = list(request.data.items())[0]
+            with transaction.atomic():
+                user_favorites.notes_for_favorites[advertisement] = note
+                user_favorites.save()
 
-        with transaction.atomic():
-            user_favorites.notes_for_favorites[key] = value
-            user_favorites.save()
+            return Response({'success': 'Заметка успешно добавлена'}, status=status.HTTP_200_OK)
 
-        return Response({'message': 'Заметка успешно добавлена'}, status=status.HTTP_200_OK)
-
-    except Exception as e:
-        return Response({'error': f'Ошибка сохранения: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        except Exception as e:
+            return Response({'errors': f'Ошибка сохранения: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    else:
+        raise serializers.ValidationError({"errors": serializer.errors})

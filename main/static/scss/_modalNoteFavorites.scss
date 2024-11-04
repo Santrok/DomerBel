@@ -1,0 +1,51 @@
+.note__modal {
+  position: relative;
+  width: 100%;
+  max-width: 450px;
+  display: none;
+  flex-direction: column;
+  gap: 20px;
+  background: #ffff;
+  padding: 40px;
+  border-radius: 8px;
+
+  & button {
+    margin-top: 10px;
+  }
+
+  & p {
+    @include fonts($defaultColor, 16px, 400);
+    white-space: pre-line;
+    text-align: center;
+
+    & span {
+      color: red;
+    }
+  }
+
+  &::placeholder {
+    @include fonts(rgb(110, 109, 109), 14px, 400);
+  }
+
+  & textarea {
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid black;
+    max-width: 370px;
+    max-height: 200px;
+    width: 100%;
+    resize: none;
+    &:focus {
+      border: 1px solid #3779eb;
+    }
+
+    &::placeholder {
+      @include fonts(rgb(110, 109, 109), 14px, 400);
+    }
+  }
+}
+
+.note__modal-btn {
+  display: flex;
+  gap: 10px;
+}

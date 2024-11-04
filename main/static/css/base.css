@@ -638,6 +638,64 @@
   font-size: 14px;
 }
 
+.note__modal {
+  position: relative;
+  width: 100%;
+  max-width: 450px;
+  display: none;
+  flex-direction: column;
+  gap: 20px;
+  background: white;
+  padding: 40px;
+  border-radius: 8px;
+}
+.note__modal button {
+  margin-top: 10px;
+}
+.note__modal p {
+  font-family: "Trebuchet MS", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  color: black;
+  font-size: 16px;
+  white-space: pre-line;
+  text-align: center;
+}
+.note__modal p span {
+  color: red;
+}
+.note__modal::placeholder {
+  font-family: "Trebuchet MS", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  color: rgb(110, 109, 109);
+  font-size: 14px;
+}
+.note__modal textarea {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid black;
+  max-width: 370px;
+  max-height: 200px;
+  width: 100%;
+  resize: none;
+}
+.note__modal textarea:focus {
+  border: 1px solid #3779eb;
+}
+.note__modal textarea::placeholder {
+  font-family: "Trebuchet MS", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  color: rgb(110, 109, 109);
+  font-size: 14px;
+}
+
+.note__modal-btn {
+  display: flex;
+  gap: 10px;
+}
+
 .modals__active-grid {
   display: grid;
   transition: 0.5s ease;

@@ -109,7 +109,7 @@ class FavoriteSerializer(serializers.Serializer):
 
 
 class PaidSerializer(serializers.Serializer):
-    advertisement = serializers.IntegerField()
+    advertisement = serializers.IntegerField(error_messages={'invalid': 'Объявление не найдено'})
     services = serializers.ListField(child=serializers.IntegerField(),
                                      error_messages={'required': 'Выберите хотя бы одну услугу'})
 
@@ -187,3 +187,17 @@ class StoreSerializer(serializers.ModelSerializer):
 
 class UploadFileSerializer(serializers.Serializer):
     file = serializers.FileField(validators=[FileExtensionValidator(allowed_extensions=['xlsx', 'zip'])])
+
+
+class FavoriteNoteSerializer(serializers.Serializer):
+    advertisement = serializers.IntegerField(error_messages={'invalid': 'Объявление не найдено'})
+    note = serializers.CharField(required=False)
+
+    def validate_advertisement(self, advertisement):
+        try:
+            advertisement = Advertisement.objects.get(id=advertisement, is_active=True, moderated=True)
+            return advertisement
+        except Advertisement.DoesNotExist:
+            raise serializers.ValidationError("Объявление не найдено")
+        except Exception as e:
+            raise serializers.ValidationError(str(e))
