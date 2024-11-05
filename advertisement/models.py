@@ -5,6 +5,7 @@ import PIL
 from dirtyfields import DirtyFieldsMixin
 from django.contrib import admin
 from django.contrib.auth import get_user_model
+from django.contrib.sitemaps import Sitemap
 from django.contrib.postgres.fields import ArrayField
 from django.contrib.postgres.indexes import GinIndex, OpClass, BrinIndex
 from django.contrib.postgres.search import SearchVectorField
@@ -259,9 +260,6 @@ class AdvertisementAdmin(admin.ModelAdmin):
     ordering = ['-date_of_last_activation']
     list_per_page = 50
     inlines = [PhotoAdvertisementInlines]
-
-
-from django.contrib.sitemaps import Sitemap
 
 
 class AdvertisementSitemap(Sitemap):
