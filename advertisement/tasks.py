@@ -317,10 +317,8 @@ def list_shown_vip():
         with transaction.atomic():
             all_ads_vip = Advertisement.objects.filter(moderated=True, is_active=True, vip=True)
             if not all_ads_vip.exists():
-                logger.info('Нет объявлений для ротации')
                 return
             update_vip_advertisements(all_ads_vip, 'shown_vip', 'shown_vip_count')
-            logger.info(f'Ротацию прошли {all_ads_vip.count()} объявлений')
     except Exception as e:
         logger.error(f"Ротация объявлений прошла неудачно: {str(e)}", exc_info=True)
 
@@ -334,7 +332,6 @@ def list_shown_vip_category():
                                                   is_active=True,
                                                   vip=True).values_list('category', flat=True).distinct('category')
         if not categories.exists():
-            logger.info('Нет VIP-объявлений')
             return
 
         for category in categories:
@@ -343,7 +340,6 @@ def list_shown_vip_category():
                 update_vip_advertisements(ads_by_category,
                                           'shown_vip_category',
                                           'shown_vip_category_count')
-                logger.info(f'Успешно выполнена ротация для VIP-объявлений категоририи: {category}')
             except Exception as e:
                 logger.error(f"Неудачно выполненна ротация для VIP-объявлениий категории {category}: {str(e)}",
                              exc_info=True)
