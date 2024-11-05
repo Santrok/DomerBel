@@ -261,6 +261,18 @@ class AdvertisementAdmin(admin.ModelAdmin):
     inlines = [PhotoAdvertisementInlines]
 
 
+from django.contrib.sitemaps import Sitemap
+
+
+class AdvertisementSitemap(Sitemap):
+
+    def items(self):
+        return Advertisement.objects.filter(is_active=True, moderated=True)
+
+    def lastmod(self, obj):
+        return obj.date_of_last_activation
+
+
 class UploadFile(models.Model):
     """
     Модель для сохранения файла для массового импорта объявлений,
