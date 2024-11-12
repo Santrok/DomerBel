@@ -569,6 +569,9 @@ def get_category_list(request):
     Возвращает список экземпляров модели Category по родительскому id.
     Модели: Category.
     Сериализаторы: CategorySerializer
+
+    Структура
+    {"id": "Id категории"}
     """
     categories = Category.objects.filter(parent_id=request.query_params.get('id'))
     serializer = CategorySerializer(categories, many=True)
@@ -582,6 +585,9 @@ def get_subcategory_list(request):
     и дополнительно данные из модели Field.
     Модели: Category.
     Сериализаторы: CategoryFieldsSerializer
+
+    Структура
+    {"id": "Id категории"}
     """
     categories = Category.objects.filter(parent_id=request.query_params.get('id')).prefetch_related(
         'field_set__spisok__element_set__elementtwo_set')
@@ -596,6 +602,9 @@ def get_field_list(request):
     и дополнительно данные из модели Spisok и Element.
     Модели: Field.
     Сериализаторы: FieldSerialier
+
+    Структура
+    {"id": "Id категории"}
     """
     fieldlist = Field.objects.filter(category_id=request.query_params.get('id')).select_related(
         'spisok').prefetch_related('spisok__element_set__elementtwo_set').order_by('id')
@@ -609,6 +618,9 @@ def get_element_list(request):
     Возвращает список экземпляров модели Element по id экземпляра модели Field
     Модели: Element.
     Сериализаторы: ElementSerializer
+
+    Структура
+    {"id": "Id поля"}
     """
     elements = Element.objects.filter(spisok_id__field=request.query_params.get('id'))
     serializer = ElementSerializer(elements, many=True)
@@ -622,6 +634,9 @@ def get_elementtwo_list(request):
     по id экземпляра модели Element
     Модели: ElementTwo.
     Сериализаторы: ElementTwoSerializer
+
+    Структура
+    {"id": "Id элемента"}
     """
     if request.query_params.get('slug') == 'undefined':
         return Response()
@@ -637,6 +652,9 @@ def get_store_list_by_user(request):
     Возвращает список магазинов пользователя.
     Модели: Store.
     Сериализаторы: StoreSerializer
+
+    Структура
+    Нужна аутентификация
     """
     stores = Store.objects.filter(user=request.user.id)
     serializer = StoreSerializer(stores, many=True)
