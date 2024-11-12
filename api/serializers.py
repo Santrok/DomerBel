@@ -24,6 +24,7 @@ class ComplaintSerializer(serializers.ModelSerializer):
     class Meta:
         model = Complaint
         fields = ['reason', 'text', 'user', 'advertisement', 'recaptcha']
+        extra_kwargs = {'reason': {"error_messages": {"does_not_exist": "Причина не найдена"}}}
 
     def create(self, validated_data):
         validated_data.pop('recaptcha')
@@ -111,7 +112,8 @@ class FavoriteSerializer(serializers.Serializer):
 class PaidSerializer(serializers.Serializer):
     advertisement = serializers.IntegerField(error_messages={'invalid': 'Объявление не найдено'})
     services = serializers.ListField(child=serializers.IntegerField(),
-                                     error_messages={'required': 'Выберите хотя бы одну услугу'})
+                                     error_messages={"required": "Выберите хотя бы одну представленную услугу",
+                                                     "does_not_exist": "Причина не найдена"})
 
     def validate_advertisement(self, advertisement):
         try:
@@ -126,7 +128,7 @@ class PaidSerializer(serializers.Serializer):
         if services:
             return services
         else:
-            raise serializers.ValidationError("Выберите хотя бы одну услугу")
+            raise serializers.ValidationError("Выберите хотя бы одну представленную услугу")
 
 
 class RegionSerializer(serializers.ModelSerializer):
@@ -186,7 +188,9 @@ class StoreSerializer(serializers.ModelSerializer):
 
 
 class UploadFileSerializer(serializers.Serializer):
-    file = serializers.FileField(validators=[FileExtensionValidator(allowed_extensions=['xlsx', 'zip'])])
+    file = serializers.FileField(validators=[FileExtensionValidator(allowed_extensions=['xlsx', 'zip'])],
+                                 required=True, error_messages={"required": "Пожалуйста, выберите файл",
+                                                                "invalid": "Загруженный файл не является корректным"})
 
 
 class FavoriteNoteSerializer(serializers.Serializer):
