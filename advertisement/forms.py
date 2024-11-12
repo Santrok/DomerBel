@@ -5,7 +5,7 @@ from advertisement.models import ReasonOfComplaint
 
 
 class UploadFileForm(forms.Form):
-    file = forms.FileField(validators=[FileExtensionValidator(allowed_extensions=['xlsx', 'zip'])])
+    file = forms.FileField(validators=[FileExtensionValidator(allowed_extensions=['xlsx', 'zip'])], required=True)
 
 
 class ComplaintForm(forms.Form):

@@ -20,6 +20,7 @@
   display: flex;
   align-items: center;
   position: relative;
+  gap: 20px;
 }
 .chat__list-item:hover {
   color: black;
