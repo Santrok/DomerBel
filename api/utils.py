@@ -77,4 +77,5 @@ def get_chat_object(chat_object, model, author_field, user):
         return None, Response({'error': 'Объект чата не найден'},
                               status=status.HTTP_400_BAD_REQUEST)
     except Exception as e:
+        print(e)
         logger.warning(f"Ошибка при получении объекта чата при создании нового диалога: {str(e)}", exc_info=True)

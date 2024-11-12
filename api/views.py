@@ -4,6 +4,7 @@ from zipfile import ZipFile
 
 import openpyxl
 from django.contrib.auth import authenticate, login, logout, get_user_model
+from django.contrib.auth.models import AnonymousUser
 from django.db import transaction
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
@@ -141,6 +142,13 @@ def save_complaint_and_send_complaint_to_administration_email(request):
     Создает экземпляр модели Complaint
     и отправляет жалобу администрации сайта.
     Сериализаторы: ComplaintSerializer
+
+    Структура
+    {"reason": "Реклама",
+    "text": "Текст жалобы",
+    "user": "admin@super.com",
+    "advertisement": "5395",
+    "recaptcha": "Токен - 6LfeYyUqAAAAAAJuXObWVbDMFfwSP78phvRduVqA"}
     """
     serializer = ComplaintSerializer(data=request.data, context={"request": request})
     if serializer.is_valid():
@@ -164,7 +172,7 @@ def save_complaint_and_send_complaint_to_administration_email(request):
         return Response({'success': 'Ваша жалоба на объявление отправлена администрации сайта'},
                         status=status.HTTP_201_CREATED)
     else:
-        return Response({"errors": serializer.errors})
+        return Response({"errors": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['POST'])
@@ -174,11 +182,20 @@ def create_new_chat_and_create_new_message(request):
     если его нет - создает новый чат, создает новое сообщение в чате.
     Модели: Chat, UserMessage.
     Сериализаторы: UserMessageSerializer.
+
+    Структура
+    Нужна аутентификация
+    {"chat_object": "Id объявления или магазина",
+    "advertisement (or store): Id объявления или магазина",
+    "text_message": "Текст сообщения"}
     """
     serializer = UserMessageSerializer(data=request.data, context={"request": request})
 
     if not serializer.is_valid():
         return Response({"errors": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+
+    if type(request.user) is AnonymousUser:
+        return Response({'error': 'Вы не авторизованы'}, status=status.HTTP_401_UNAUTHORIZED)
 
     chat_object = {}
     chat_type = None
@@ -231,6 +248,9 @@ def status_unread_message_user(request):
     """
     Возвращает информацию о том, есть ли у пользователя непрочитанные сообщения.
     Модели: Chat, UserMessage
+
+    Структура
+    Нужна аутентификация
     """
     chats = Chat.objects.filter(members__in=[request.user.id])
     unread_chat = UserMessage.objects.filter(chat__in=chats, is_read=False).exclude(author=request.user).exists()
@@ -242,6 +262,15 @@ def registration_user(request):
     """
     Функция для регистрации нового пользователя.
     Сериализаторы: UserRegisterSerializer
+
+    Структура
+    {"email": "johan@johan.com",
+    "first_name": "Имя или название юр лица",
+    "phone_number": "+375447985665",
+    "password": "1Qwerty6",
+    "password2": "1Qwerty6",
+    "recaptcha": "Токен - 6LfeYyUqAAAAAAJuXObWVbDMFfwSP78phvRduVqA"}
+    "entity": False
     """
     registration_serializer = UserRegisterSerializer(data=request.data, context={"request": request})
 
@@ -275,6 +304,10 @@ def login_user(request):
     """
     Функция для аутентификации и авторизации пользователя.
     Сериализаторы: UserLoginSerializer
+
+    Структура
+    {"email": "johan@johan.com",
+    "password": "1Qwerty6"}
     """
     login_serializer = UserLoginSerializer(data=request.data, context={"request": request})
 
@@ -309,6 +342,10 @@ def password_reset(request):
     Функция для сброса пароля пользователя через Email.
     Модели: User.
     Сериализаторы: PasswordResetSerializer
+
+    Структура
+    {"email": "johan@johan.com",
+    "recaptcha": "Токен - 6LfeYyUqAAAAAAJuXObWVbDMFfwSP78phvRduVqA"}
     """
     password_reset_serializer = PasswordResetSerializer(data=request.data, context={"request": request})
 
@@ -347,6 +384,9 @@ def add_to_favorite(request):
     Функция для добавления id объявления в избранное пользователя.
     Модели: UserFavorites.
     Сериализаторы: FavoriteSerializer
+
+    Структура
+    {"id": "Id объявления"}
     """
     serializer = FavoriteSerializer(data=request.data)
     if serializer.is_valid(raise_exception=True):
@@ -364,6 +404,9 @@ def delete_from_favorite(request):
     Функция для удаления id объявления в избранное пользователя.
     Модели: UserFavorites.
     Сериализаторы: FavoriteSerializer
+
+    Структура
+    {"id": "Id объявления"}
     """
     serializer = FavoriteSerializer(data=request.data)
     if serializer.is_valid(raise_exception=True):
@@ -381,6 +424,10 @@ def providing_a_payment_page(request):
     Формирует запрос в эквайринг на предоставление страницы оплаты,
     в случае успеха перенаправляет пользователя на страницу оплаты.
     Сериализаторы: PaidSerializer
+
+    Структура
+    {"advertisement": "Id объявления",
+    "services": "Id услуги"}
     """
     serializer = PaidSerializer(data=request.data, context={"request": request})
     if serializer.is_valid():
@@ -404,7 +451,7 @@ def providing_a_payment_page(request):
         raise serializers.ValidationError({"errors": serializer.errors})
 
 
-@api_view(['GET', 'POST'])
+@api_view(['POST'])
 def processing_successful_payment_for_services(request):
     """
     Webhook обрабатывающий успешную оплату услуг
@@ -501,12 +548,15 @@ def get_region_list(request):
     return Response(serializer.data)
 
 
-@api_view(["GET", "POST"])
+@api_view(["GET"])
 def get_list_of_cities(request, id):
     """
     Возвращает список дочерних экземпляров модели Region.
     Модели: Region.
     Сериализаторы: RegionSerializer
+
+    Структура
+    {"id": "Id региона (области в т.ч. Минск)"}
     """
     cities = Region.objects.filter(parent_id=id)
     serializer = RegionSerializer(cities, many=True)
@@ -596,7 +646,7 @@ def get_store_list_by_user(request):
 @api_view(['POST'])
 def get_bulk_import_of_ads(request):
     """
-    Функция проверяет возможность открытия файлв и запускает задачу в celery по его обработки
+    Функция проверяет возможность открытия файла и запускает задачу в celery по его обработки
     """
     serializer = UploadFileSerializer(data=request.data)
     if serializer.is_valid():
@@ -615,7 +665,7 @@ def get_bulk_import_of_ads(request):
 
                 return Response({'task_id': f'{ads.task_id}'})
             except:
-                return Response({'error': 'Невозможно прочитать файл.'})
+                return Response({'error': 'Невозможно прочитать файл.'}, status=status.HTTP_400_BAD_REQUEST)
 
         elif serializer.validated_data.get("file").name.endswith('zip'):
             # Работа с электронным архивом
@@ -632,14 +682,19 @@ def get_bulk_import_of_ads(request):
                                                         email=request.user.email)
                 return Response({'task_id': f'{ads.task_id}'})
             except:
-                return Response({'error': 'Невозможно прочитать файл.'})
+                return Response({'error': 'Невозможно прочитать файл.'}, status=status.HTTP_400_BAD_REQUEST)
         return Response({'error': 'Ошибка при загрузке файла. Убедитесь, что загружаемый файл необходимого расширения'})
+    else:
+        return Response({"error": serializer.errors.get("file")}, status=status.HTTP_400_BAD_REQUEST)
 
 
-@api_view(["GET", "POST"])
+@api_view(["GET"])
 def get_result_task(request, id):
     """
     Возвращает прогресс выполнения задачи массового импорта объявлений и её результат
+
+    Структура
+    {"id": "Id задачи, который получен при загрузке файли с объявлениями"}
     """
     task = app.AsyncResult(id=id)
     if task.state == "SUCCESS":
@@ -651,7 +706,12 @@ def get_result_task(request, id):
 @api_view(["POST"])
 def add_new_notes_for_favorites(request):
     """
-    Добавляет заметку для объявления в избранном
+    Добавляет заметку для объявления в избранном.
+
+    Объявление должно быть добавлено в избранное.
+    Структура
+    {"advertisement": "Id объявления",
+    "note" : "Привет"}
     """
     serializer = FavoriteNoteSerializer(data=request.data, context={"request": request})
     if serializer.is_valid():
