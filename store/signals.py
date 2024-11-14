@@ -56,5 +56,5 @@ def fill_in_the_store_search_field(sender, instance, **kwargs):
     Функция заполняет поле для полнотекстового поиска.
     """
     dirty_fields = instance.get_dirty_fields()
-    if not instance.search_vector or 'title' in dirty_fields or 'description' in dirty_fields in dirty_fields:
+    if not instance.search_vector or 'title' in dirty_fields or 'description' in dirty_fields:
         sender.objects.filter(id=instance.id).update(search_vector=SearchVector('title', 'description'))
