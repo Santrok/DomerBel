@@ -67,9 +67,9 @@
                                     {{ card.title }}
                                 </a>
                             </h3>
+                            <div class="advertisement__list-item-about-favorites{% if card.id in user.userfavorites.favorites %} advertisement__favorites-active{% endif %}"></div>
                             <div class="advertisement__list-item-about-main">
                                 <div class="advertisement__list-item-about-main-info">
-                                    <div class="advertisement__list-item-about-favorites{% if card.id in user.userfavorites.favorites %} advertisement__favorites-active{% endif %}"></div>
                                     <p class="advertisement__list-item-price">
                                         {% if card.price %}
                                             {{ card.price|floatformat }} руб.
@@ -97,12 +97,11 @@
                                         </li>
                                     </ul>
                                 </div>
-{#                                <textarea name="" id="" placeholder="Написать заметку..." class="advertisement__list-item-notes" style="color: black; max-width: 320px; width: 100%; resize: none; padding: 5px;">{% if card.note %}{{ card.note }}{% endif %}</textarea>#}
-<div class="advertisement__list-item-notes-wrap">
-    <p class="advertisement__list-item-notes-title">Заметки</p>                                
-    <p class="advertisement__list-item-notes">{% if card.note %}{{ card.note }}{% else %}Написать заметку...{% endif %}</p>
-</div>
-
+                                <div class="advertisement__list-item-notes-wrap">
+                                    <p class="advertisement__list-item-notes-title">Заметки</p>
+                                    <p class="advertisement__list-item-notes">
+                                        {% if card.note %}{{ card.note }}{% else %}Написать заметку...{% endif %}</p>
+                                </div>
                             </div>
                             {% if card.vip or card.special_accommodation or card.highlight_ad or card.raise_in_search %}
                                 <ul class="advertisement__list-item-action">
