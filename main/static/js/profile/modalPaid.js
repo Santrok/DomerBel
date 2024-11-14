@@ -12,7 +12,7 @@ serviceBtn.forEach(item => item.addEventListener("click", () => {
 )
 
 const paidBtn = document.getElementById('paid_button')
-paidBtn.addEventListener('click', sendPaid)
+paidBtn?.addEventListener('click', sendPaid)
 
 function sendPaid() {
     const data = new FormData(document.getElementById("paid_form"))

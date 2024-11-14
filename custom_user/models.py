@@ -77,7 +77,8 @@ class CustomUserManager(BaseUserManager):
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
     """Модель пользователя"""
-    email = models.EmailField(_('email address'), unique=True)
+    email = models.EmailField(_('email address'), unique=True, error_messages={"unique": "Пользователь с таким адресом "
+                                                                            "электронной почты уже существует."})
     entity = models.BooleanField('Юридическое лицо', default=False)
     first_name = models.CharField('Контактное лицо', max_length=255)
     last_name = models.CharField(_("last name"), max_length=150, blank=True)

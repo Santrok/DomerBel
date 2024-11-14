@@ -24,6 +24,7 @@ class ComplaintSerializer(serializers.ModelSerializer):
     class Meta:
         model = Complaint
         fields = ['reason', 'text', 'user', 'advertisement', 'recaptcha']
+        extra_kwargs = {'reason': {"error_messages": {"does_not_exist": "Причина не найдена"}}}
 
     def create(self, validated_data):
         validated_data.pop('recaptcha')
@@ -61,7 +62,7 @@ class UserMessageSerializer(serializers.Serializer):
 class UserRegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(required=True, validators=[validate_password])
     password2 = serializers.CharField(required=True, validators=[validate_password], write_only=True)
-    phone_number = serializers.CharField(validators=[validate_phone])
+    phone_number = serializers.CharField(required=True, validators=[validate_phone])
     recaptcha = ReCaptchaV2Field(write_only=True)
 
     class Meta:
@@ -82,7 +83,7 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         if get_user_model().objects.filter(email=email).exists():
             raise serializers.ValidationError({"email": ["Пользователь с таким Email уже существует"]})
         if password != password2:
-            raise serializers.ValidationError({"password": ["Введенные пароли не совпадают"], "password2":[""]})
+            raise serializers.ValidationError({"password": ["Введенные пароли не совпадают"], "password2": [""]})
         return data
 
 
@@ -109,9 +110,10 @@ class FavoriteSerializer(serializers.Serializer):
 
 
 class PaidSerializer(serializers.Serializer):
-    advertisement = serializers.IntegerField()
+    advertisement = serializers.IntegerField(error_messages={'invalid': 'Объявление не найдено'})
     services = serializers.ListField(child=serializers.IntegerField(),
-                                     error_messages={'required': 'Выберите хотя бы одну услугу'})
+                                     error_messages={"required": "Выберите хотя бы одну представленную услугу",
+                                                     "does_not_exist": "Причина не найдена"})
 
     def validate_advertisement(self, advertisement):
         try:
@@ -126,7 +128,7 @@ class PaidSerializer(serializers.Serializer):
         if services:
             return services
         else:
-            raise serializers.ValidationError("Выберите хотя бы одну услугу")
+            raise serializers.ValidationError("Выберите хотя бы одну представленную услугу")
 
 
 class RegionSerializer(serializers.ModelSerializer):
@@ -186,4 +188,20 @@ class StoreSerializer(serializers.ModelSerializer):
 
 
 class UploadFileSerializer(serializers.Serializer):
-    file = serializers.FileField(validators=[FileExtensionValidator(allowed_extensions=['xlsx', 'zip'])])
+    file = serializers.FileField(validators=[FileExtensionValidator(allowed_extensions=['xlsx', 'zip'])],
+                                 required=True, error_messages={"required": "Пожалуйста, выберите файл",
+                                                                "invalid": "Загруженный файл не является корректным"})
+
+
+class FavoriteNoteSerializer(serializers.Serializer):
+    advertisement = serializers.IntegerField(error_messages={'invalid': 'Объявление не найдено'})
+    note = serializers.CharField(required=False)
+
+    def validate_advertisement(self, advertisement):
+        try:
+            advertisement = Advertisement.objects.get(id=advertisement, is_active=True, moderated=True)
+            return advertisement
+        except Advertisement.DoesNotExist:
+            raise serializers.ValidationError("Объявление не найдено")
+        except Exception as e:
+            raise serializers.ValidationError(str(e))
