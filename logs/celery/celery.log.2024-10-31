@@ -1,0 +1,8 @@
+2024-11-04 20:36:41,916 - [INFO] - module: tasks - [457272]-[140421541482496]: Ротацию прошли 1 объявлений
+2024-11-04 20:36:41,920 - [INFO] - module: trace - [457272]-[140421541482496]: Task advertisement.tasks.list_shown_vip[59bfe2be-81b3-47cb-8d48-baffe56495bf] succeeded in 0.29832899989560246s: None
+2024-11-04 20:37:41,805 - [INFO] - module: tasks - [457272]-[140421541482496]: Успешно выполнена ротация для VIP-объявлений категоририи: 97
+2024-11-04 20:37:41,811 - [INFO] - module: trace - [457272]-[140421541482496]: Task advertisement.tasks.list_shown_vip_category[323d8490-39fc-46cd-9d14-84ebe5ac1928] succeeded in 0.14623495913110673s: None
+2024-11-04 20:38:42,022 - [INFO] - module: tasks - [457272]-[140421541482496]: Ротацию прошли 1 объявлений
+2024-11-04 20:38:42,025 - [INFO] - module: trace - [457272]-[140421541482496]: Task advertisement.tasks.list_shown_vip[8f7e2cd0-cdb9-4eeb-b78e-0e982c57effd] succeeded in 0.27047454309649765s: None
+2024-11-04 20:39:42,095 - [INFO] - module: tasks - [457272]-[140421541482496]: Ротацию прошли 1 объявлений
+2024-11-04 20:39:42,098 - [INFO] - module: trace - [457272]-[140421541482496]: Task advertisement.tasks.list_shown_vip[af52a00d-6247-42e7-9f8f-b9dfd1e61296] succeeded in 0.26806022482924163s: None

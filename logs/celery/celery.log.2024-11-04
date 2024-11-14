@@ -1,0 +1,29 @@
+2024-11-05 00:01:00,160 - [INFO] - module: tasks - [457462]-[140692524097536]: Добавлено динамически задача: raise_or_deactivate_advertisement_special_accommodation_37095, <crontab: 15 10 * * * (m/h/dM/MY/d)>
+2024-11-05 00:01:00,162 - [INFO] - module: tasks - [457462]-[140692524097536]: Запланировано деактивация специального размещения объявления (id: 37095). Имя задачи: raise_or_deactivate_advertisement_special_accommodation_37095.
+2024-11-05 00:01:00,163 - [INFO] - module: tasks - [457462]-[140692524097536]: Добавлено динамически задача: deactivate_advertisement_vip_36916, <crontab: 1 0 * * * (m/h/dM/MY/d)>
+2024-11-05 00:01:00,163 - [INFO] - module: tasks - [457462]-[140692524097536]: Запланировано в объявлении (id: 36916) отключить платные услуги. Имя задачи: deactivate_advertisement_vip_36916.
+2024-11-05 00:01:00,165 - [INFO] - module: tasks - [457462]-[140692524097536]: Добавлено динамически задача: deactivate_advertisement_vip_36915, <crontab: 1 0 * * * (m/h/dM/MY/d)>
+2024-11-05 00:01:00,165 - [INFO] - module: tasks - [457462]-[140692524097536]: Запланировано в объявлении (id: 36915) отключить платные услуги. Имя задачи: deactivate_advertisement_vip_36915.
+2024-11-05 00:01:00,166 - [INFO] - module: tasks - [457462]-[140692524097536]: Добавлено динамически задача: deactivate_advertisement_vip_36912, <crontab: 1 0 * * * (m/h/dM/MY/d)>
+2024-11-05 00:01:00,166 - [INFO] - module: tasks - [457462]-[140692524097536]: Запланировано в объявлении (id: 36912) отключить платные услуги. Имя задачи: deactivate_advertisement_vip_36912.
+2024-11-05 00:01:00,168 - [INFO] - module: tasks - [457462]-[140692524097536]: Добавлено динамически задача: deactivate_advertisement_highlight36912, <crontab: 1 0 * * * (m/h/dM/MY/d)>
+2024-11-05 00:01:00,168 - [INFO] - module: tasks - [457462]-[140692524097536]: Запланирована деактивация выделения объявления (id: 36912). Имя задачи: deactivate_advertisement_highlight36912.
+2024-11-05 00:01:00,169 - [INFO] - module: tasks - [457462]-[140692524097536]: Добавлено динамически задача: deactivate_advertisement_vip_36917, <crontab: 1 0 * * * (m/h/dM/MY/d)>
+2024-11-05 00:01:00,169 - [INFO] - module: tasks - [457462]-[140692524097536]: Запланировано в объявлении (id: 36917) отключить платные услуги. Имя задачи: deactivate_advertisement_vip_36917.
+2024-11-05 00:01:00,171 - [INFO] - module: tasks - [457462]-[140692524097536]: Добавлено динамически задача: deactivate_advertisement_vip_36913, <crontab: 1 0 * * * (m/h/dM/MY/d)>
+2024-11-05 00:01:00,171 - [INFO] - module: tasks - [457462]-[140692524097536]: Запланировано в объявлении (id: 36913) отключить платные услуги. Имя задачи: deactivate_advertisement_vip_36913.
+2024-11-05 00:01:00,172 - [INFO] - module: tasks - [457462]-[140692524097536]: Добавлено динамически задача: deactivate_advertisement_vip_36914, <crontab: 1 0 * * * (m/h/dM/MY/d)>
+2024-11-05 00:01:00,172 - [INFO] - module: tasks - [457462]-[140692524097536]: Запланировано в объявлении (id: 36914) отключить платные услуги. Имя задачи: deactivate_advertisement_vip_36914.
+2024-11-05 00:01:00,174 - [INFO] - module: tasks - [457462]-[140692524097536]: Добавлено динамически задача: deactivate_advertisement_highlight36914, <crontab: 1 0 * * * (m/h/dM/MY/d)>
+2024-11-05 00:01:00,174 - [INFO] - module: tasks - [457462]-[140692524097536]: Запланирована деактивация выделения объявления (id: 36914). Имя задачи: deactivate_advertisement_highlight36914.
+2024-11-05 00:01:00,175 - [INFO] - module: tasks - [457462]-[140692524097536]: Добавлено динамически задача: deactivate_advertisement_vip_36918, <crontab: 1 0 * * * (m/h/dM/MY/d)>
+2024-11-05 00:01:00,176 - [INFO] - module: tasks - [457462]-[140692524097536]: Запланировано в объявлении (id: 36918) отключить платные услуги. Имя задачи: deactivate_advertisement_vip_36918.
+2024-11-05 00:01:00,184 - [ERROR] - module: trace - [457462]-[140692524097536]: Task advertisement.tasks.update_schedule[7904a2bb-daa7-43ff-8bde-fec5059a44a9] raised unexpected: TypeError("'<=' not supported between instances of 'NoneType' and 'datetime.datetime'")
+Traceback (most recent call last):
+  File "/boot/esttadmin/domerbel/venv/lib/python3.10/site-packages/celery/app/trace.py", line 453, in trace_task
+    R = retval = fun(*args, **kwargs)
+  File "/boot/esttadmin/domerbel/venv/lib/python3.10/site-packages/celery/app/trace.py", line 736, in __protected_call__
+    return self.run(*args, **kwargs)
+  File "/boot/esttadmin/domerbel/advertisement/tasks.py", line 537, in update_schedule
+    if ads.highlight_ad and ads.date_of_deactivate_highlight_ad <= current_datetime:
+TypeError: '<=' not supported between instances of 'NoneType' and 'datetime.datetime'

@@ -1,0 +1,9 @@
+2024-11-06 00:01:00,093 - [INFO] - module: tasks - [457462]-[140692524097536]: Задача redbeat:deactivate_advertisement_vip_36912 успешно удалена.
+2024-11-06 00:01:00,095 - [INFO] - module: tasks - [457462]-[140692524097536]: Объявлениe (id: 36912) обновлено с параметрами: {'vip': False}. Задача redbeat:deactivate_advertisement_vip_36912 успешно удалена
+2024-11-06 00:01:00,099 - [INFO] - module: trace - [457462]-[140692524097536]: Task advertisement.tasks.deactivation_of_paid_services[9427a16c-9a67-4f2e-99af-d01cc5493109] succeeded in 0.0559350810945034s: None
+2024-11-06 00:01:00,129 - [INFO] - module: tasks - [457462]-[140692524097536]: Задача redbeat:deactivate_advertisement_vip_36914 успешно удалена.
+2024-11-06 00:01:00,129 - [INFO] - module: tasks - [457462]-[140692524097536]: Объявлениe (id: 36914) обновлено с параметрами: {'vip': False}. Задача redbeat:deactivate_advertisement_vip_36914 успешно удалена
+2024-11-06 00:01:00,130 - [INFO] - module: trace - [457462]-[140692524097536]: Task advertisement.tasks.deactivation_of_paid_services[7d81ff17-7339-4abb-a710-1bb49d22c13d] succeeded in 0.02252560295164585s: None
+2024-11-06 00:01:00,162 - [INFO] - module: tasks - [457462]-[140692524097536]: Задача redbeat:deactivate_advertisement_vip_36917 успешно удалена.
+2024-11-06 00:01:00,163 - [INFO] - module: tasks - [457462]-[140692524097536]: Объявлениe (id: 36917) обновлено с параметрами: {'vip': False}. Задача redbeat:deactivate_advertisement_vip_36917 успешно удалена
+2024-11-06 00:01:00,164 - [INFO] - module: trace - [457462]-[140692524097536]: Task advertisement.tasks.deactivation_of_paid_services[33ffc657-a0f8-4c28-bf91-68dee884b61d] succeeded in 0.03134472412057221s: None

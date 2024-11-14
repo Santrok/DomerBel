@@ -1,0 +1,2 @@
+2024-10-30 00:01:00,202 - [INFO] - module: tasks - [308815]-[139661466243072]: Успешно удалено 0 объявлений
+2024-10-30 00:01:00,208 - [INFO] - module: trace - [308815]-[139661466243072]: Task advertisement.tasks.delete_advertisement[2e9390e8-58d7-4890-84a4-a6fba1646781] succeeded in 0.1530688110506162s: None

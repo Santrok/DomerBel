@@ -1,0 +1,7 @@
+2024-11-10 00:01:00,165 - [INFO] - module: tasks - [457462]-[140692524097536]: Добавлено динамически задача: raise_or_deactivate_advertisement_special_accommodation_36965, <crontab: 25 10 * * * (m/h/dM/MY/d)>
+2024-11-10 00:01:00,167 - [INFO] - module: tasks - [457462]-[140692524097536]: Запланировано деактивация специального размещения объявления (id: 36965). Имя задачи: raise_or_deactivate_advertisement_special_accommodation_36965.
+2024-11-10 00:01:00,167 - [INFO] - module: tasks - [457462]-[140692524097536]: Добавлено динамически задача: raise_or_deactivate_advertisement_special_accommodation_36949, <crontab: 18 10 * * * (m/h/dM/MY/d)>
+2024-11-10 00:01:00,168 - [INFO] - module: tasks - [457462]-[140692524097536]: Запланировано деактивация специального размещения объявления (id: 36949). Имя задачи: raise_or_deactivate_advertisement_special_accommodation_36949.
+2024-11-10 00:01:00,169 - [INFO] - module: tasks - [457462]-[140692524097536]: Добавлено динамически задача: raise_or_deactivate_advertisement_special_accommodation_36950, <crontab: 17 10 * * * (m/h/dM/MY/d)>
+2024-11-10 00:01:00,169 - [INFO] - module: tasks - [457462]-[140692524097536]: Запланировано деактивация специального размещения объявления (id: 36950). Имя задачи: raise_or_deactivate_advertisement_special_accommodation_36950.
+2024-11-10 00:01:00,171 - [INFO] - module: trace - [457462]-[140692524097536]: Task advertisement.tasks.update_schedule[f4eed682-f4ff-46ee-8321-5f256981ad8e] succeeded in 0.10133509081788361s: None

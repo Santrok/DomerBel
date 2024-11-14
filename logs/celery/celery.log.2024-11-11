@@ -1,0 +1,5 @@
+2024-11-12 00:01:00,113 - [INFO] - module: tasks - [457450]-[140692524097536]: Задача redbeat:deactivate_advertisement_highlight36950 успешно удалена.
+2024-11-12 00:01:00,115 - [INFO] - module: tasks - [457450]-[140692524097536]: Объявлениe (id: 36950) обновлено с параметрами: {'highlight_ad': False}. Задача redbeat:deactivate_advertisement_highlight36950 успешно удалена
+2024-11-12 00:01:00,119 - [INFO] - module: trace - [457450]-[140692524097536]: Task advertisement.tasks.deactivation_of_paid_services[ae0fb296-d73f-48ca-b83c-7c409d7ec876] succeeded in 0.05267274589277804s: None
+2024-11-12 00:01:00,239 - [INFO] - module: tasks - [457450]-[140692524097536]: Успешно удалено 0 объявлений
+2024-11-12 00:01:00,240 - [INFO] - module: trace - [457450]-[140692524097536]: Task advertisement.tasks.delete_advertisement[d62bafcc-21de-4278-9dc8-25317577b640] succeeded in 0.11257977690547705s: None
