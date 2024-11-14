@@ -88,7 +88,8 @@ class UserRegisterSerializer(serializers.ModelSerializer):
 
 
 class UserLoginSerializer(serializers.Serializer):
-    email = serializers.EmailField(write_only=True, error_messages={'blank': 'Обязательное поле'})
+    email = serializers.EmailField(write_only=True, error_messages={'blank': 'Обязательное поле',
+                                                                    "invalid": "Неверный формат электронной почты"})
     password = serializers.CharField(write_only=True, error_messages={'blank': 'Обязательное поле'})
 
     def validate(self, data):
@@ -106,7 +107,7 @@ class PasswordResetSerializer(serializers.Serializer):
 
 
 class FavoriteSerializer(serializers.Serializer):
-    id = serializers.IntegerField()
+    id = serializers.IntegerField(min_value=1)
 
 
 class PaidSerializer(serializers.Serializer):

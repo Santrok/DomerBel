@@ -154,10 +154,12 @@ def delete_or_archive_selected_ads(request):
             ads_updated_count = Advertisement.objects.filter(author=request.user, id__in=selected_ads, moderated=True,
                                                              date_of_deactivate__date__gte=datetime.now()).update(
                 is_active=True)
-            if ads_updated_count == len(selected_ads):
+            if not selected_ads:
+                messages.error(request, "Вы не выбрали они одного объявления!")
+            elif ads_updated_count == len(selected_ads):
                 messages.success(request, "Выбранные объявления восстановлены!")
             else:
-                messages.success(request, "Не все объявления удалось восстановить!")
+                messages.error(request, "Не все объявления удалось восстановить!")
             return redirect('inactive_adds')
         return redirect('personal_account')
     return redirect('personal_account')

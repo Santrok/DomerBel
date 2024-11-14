@@ -186,7 +186,7 @@ def create_new_chat_and_create_new_message(request):
     Структура
     Нужна аутентификация
     {"chat_object": "Id объявления или магазина",
-    "advertisement (or store): Id объявления или магазина",
+    "advertisement (or store)": "Id объявления или магазина",
     "text_message": "Текст сообщения"}
     """
     serializer = UserMessageSerializer(data=request.data, context={"request": request})
@@ -295,7 +295,6 @@ def registration_user(request):
             raise serializers.ValidationError({"error": """Произошла ошибка при регистрации.
                                                             Пожалуйста, попробуйте позже"""
                                                })
-    print(registration_serializer.errors)
     raise serializers.ValidationError({"errors": registration_serializer.errors})
 
 
@@ -386,8 +385,12 @@ def add_to_favorite(request):
     Сериализаторы: FavoriteSerializer
 
     Структура
+    Нужна аутентификация
     {"id": "Id объявления"}
     """
+    if type(request.user) is AnonymousUser:
+        return Response({'error': 'Вы не авторизованы'}, status=status.HTTP_401_UNAUTHORIZED)
+
     serializer = FavoriteSerializer(data=request.data)
     if serializer.is_valid(raise_exception=True):
         user_favorites = get_object_or_404(UserFavorites, user=request.user)
@@ -408,6 +411,9 @@ def delete_from_favorite(request):
     Структура
     {"id": "Id объявления"}
     """
+    if type(request.user) is AnonymousUser:
+        return Response({'error': 'Вы не авторизованы'}, status=status.HTTP_401_UNAUTHORIZED)
+
     serializer = FavoriteSerializer(data=request.data)
     if serializer.is_valid(raise_exception=True):
         user_favorites = get_object_or_404(UserFavorites, user=request.user)
@@ -429,6 +435,9 @@ def providing_a_payment_page(request):
     {"advertisement": "Id объявления",
     "services": "Id услуги"}
     """
+    if type(request.user) is AnonymousUser:
+        return Response({'errors': 'Вы не авторизованы'}, status=status.HTTP_401_UNAUTHORIZED)
+
     serializer = PaidSerializer(data=request.data, context={"request": request})
     if serializer.is_valid():
         store_id = env_keys.get('PAID_SERVICE_STORE_ID')
@@ -656,6 +665,9 @@ def get_store_list_by_user(request):
     Структура
     Нужна аутентификация
     """
+    if type(request.user) is AnonymousUser:
+        return Response({'error': 'Вы не авторизованы'}, status=status.HTTP_401_UNAUTHORIZED)
+
     stores = Store.objects.filter(user=request.user.id)
     serializer = StoreSerializer(stores, many=True)
     return Response(serializer.data)
@@ -666,6 +678,9 @@ def get_bulk_import_of_ads(request):
     """
     Функция проверяет возможность открытия файла и запускает задачу в celery по его обработки
     """
+    if type(request.user) is AnonymousUser:
+        return Response({'error': 'Вы не авторизованы'}, status=status.HTTP_401_UNAUTHORIZED)
+
     serializer = UploadFileSerializer(data=request.data)
     if serializer.is_valid():
         if serializer.validated_data.get("file").name.endswith('xlsx'):
@@ -731,6 +746,9 @@ def add_new_notes_for_favorites(request):
     {"advertisement": "Id объявления",
     "note" : "Привет"}
     """
+    if type(request.user) is AnonymousUser:
+        return Response({'error': 'Вы не авторизованы'}, status=status.HTTP_401_UNAUTHORIZED)
+
     serializer = FavoriteNoteSerializer(data=request.data, context={"request": request})
     if serializer.is_valid():
         try:
