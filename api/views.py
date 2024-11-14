@@ -295,7 +295,7 @@ def registration_user(request):
             raise serializers.ValidationError({"error": """Произошла ошибка при регистрации.
                                                             Пожалуйста, попробуйте позже"""
                                                })
-
+    print(registration_serializer.errors)
     raise serializers.ValidationError({"errors": registration_serializer.errors})
 
 
