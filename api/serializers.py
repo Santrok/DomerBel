@@ -62,7 +62,7 @@ class UserMessageSerializer(serializers.Serializer):
 class UserRegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(required=True, validators=[validate_password])
     password2 = serializers.CharField(required=True, validators=[validate_password], write_only=True)
-    phone_number = serializers.CharField(validators=[validate_phone])
+    phone_number = serializers.CharField(required=True, validators=[validate_phone])
     recaptcha = ReCaptchaV2Field(write_only=True)
 
     class Meta:
@@ -83,7 +83,7 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         if get_user_model().objects.filter(email=email).exists():
             raise serializers.ValidationError({"email": ["Пользователь с таким Email уже существует"]})
         if password != password2:
-            raise serializers.ValidationError({"password": ["Введенные пароли не совпадают"], "password2":[""]})
+            raise serializers.ValidationError({"password": ["Введенные пароли не совпадают"], "password2": [""]})
         return data
 
 
