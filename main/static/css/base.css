@@ -1209,7 +1209,7 @@ a:hover {
   left: 0;
   height: 0;
   background: #3077a0;
-  border-radius: 8px;
+  border-radius: 7px;
 }
 .submit__btn:hover {
   transition: 0.3s ease;
@@ -1247,7 +1247,7 @@ a:hover {
   left: 0;
   height: 0;
   background: red;
-  border-radius: 8px;
+  border-radius: 7px;
 }
 .remove__btn:hover {
   transition: 0.3s ease;

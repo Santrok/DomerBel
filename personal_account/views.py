@@ -146,8 +146,11 @@ def delete_or_archive_selected_ads(request):
         # Переводит выбранные объявления из активных в архивные
         if 'archive_ads' in request.POST:
             selected_ads = request.POST.getlist('ads_checkbox')
-            Advertisement.objects.filter(author=request.user, id__in=selected_ads).update(is_active=False)
-            messages.success(request, "Выбранные объявления перемещены в Архивные!")
+            if not selected_ads:
+                messages.error(request, "Вы не выбрали они одного объявления!")
+            else:
+                Advertisement.objects.filter(author=request.user, id__in=selected_ads).update(is_active=False)
+                messages.success(request, "Выбранные объявления перемещены в Архивные!")
             return redirect('personal_account')
         if 'restore_ads' in request.POST:
             selected_ads = request.POST.getlist('ads_checkbox')

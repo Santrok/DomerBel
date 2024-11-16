@@ -1,3 +1,5 @@
+import re
+
 from django.contrib.auth import get_user_model
 from django.core.validators import FileExtensionValidator
 from drf_recaptcha.fields import ReCaptchaV2Field
@@ -60,6 +62,8 @@ class UserMessageSerializer(serializers.Serializer):
 
 
 class UserRegisterSerializer(serializers.ModelSerializer):
+    email = serializers.EmailField(write_only=True, error_messages={"blank": "Обязательное поле",
+                                                                    "invalid": "Неверный формат электронной почты"})
     password = serializers.CharField(required=True, validators=[validate_password])
     password2 = serializers.CharField(required=True, validators=[validate_password], write_only=True)
     phone_number = serializers.CharField(required=True, validators=[validate_phone])
@@ -88,11 +92,13 @@ class UserRegisterSerializer(serializers.ModelSerializer):
 
 
 class UserLoginSerializer(serializers.Serializer):
-    email = serializers.EmailField(write_only=True, error_messages={'blank': 'Обязательное поле',
-                                                                    "invalid": "Неверный формат электронной почты"})
+    email = serializers.CharField(write_only=True, error_messages={"blank": "Обязательное поле"})
     password = serializers.CharField(write_only=True, error_messages={'blank': 'Обязательное поле'})
 
     def validate(self, data):
+        if data.get("email") and data.get("password"):
+            if not re.match(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', data.get("email")):
+                raise serializers.ValidationError({"email": "Неправильно введен Email или Пароль", "password": ""})
         data['email'] = data.get('email').lower()
         return data
 

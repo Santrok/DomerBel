@@ -320,7 +320,7 @@ def login_user(request):
         return Response(status=status.HTTP_205_RESET_CONTENT)
 
     raise serializers.ValidationError({"errors": {
-        "email": "Пользователь не найден. Проверьте правильность введенных данных.", "password": ''}})
+        "email": "Неправильно введен Email или Пароль", "password": ''}})
 
 
 @api_view(["POST"])
