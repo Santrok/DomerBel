@@ -1,0 +1,93 @@
+2024-11-14 18:06:56,157 [ERROR] Message: Internal Server Error: /stores/store_edit/307/
+Traceback (most recent call last):
+  File "/boot/esttadmin/domerbel/venv/lib/python3.10/site-packages/asgiref/sync.py", line 518, in thread_handler
+    raise exc_info[1]
+  File "/boot/esttadmin/domerbel/venv/lib/python3.10/site-packages/django/core/handlers/exception.py", line 42, in inner
+    response = await get_response(request)
+  File "/boot/esttadmin/domerbel/venv/lib/python3.10/site-packages/django/core/handlers/base.py", line 253, in _get_response_async
+    response = await wrapped_callback(
+  File "/boot/esttadmin/domerbel/venv/lib/python3.10/site-packages/asgiref/sync.py", line 468, in __call__
+    ret = await asyncio.shield(exec_coro)
+  File "/boot/esttadmin/domerbel/venv/lib/python3.10/site-packages/asgiref/current_thread_executor.py", line 40, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "/boot/esttadmin/domerbel/venv/lib/python3.10/site-packages/asgiref/sync.py", line 522, in thread_handler
+    return func(*args, **kwargs)
+  File "/boot/esttadmin/domerbel/venv/lib/python3.10/site-packages/django/contrib/auth/decorators.py", line 60, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "/boot/esttadmin/domerbel/venv/lib/python3.10/site-packages/django/contrib/auth/decorators.py", line 60, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "/boot/esttadmin/domerbel/store/views.py", line 387, in get_page_for_edit_store
+    edit_store.save()
+  File "/boot/esttadmin/domerbel/store/models.py", line 69, in save
+    super(Store, self).save(*args, **kwargs)
+  File "/boot/esttadmin/domerbel/venv/lib/python3.10/site-packages/django/db/models/base.py", line 891, in save
+    self.save_base(
+  File "/boot/esttadmin/domerbel/venv/lib/python3.10/site-packages/django/db/models/base.py", line 1012, in save_base
+    post_save.send(
+  File "/boot/esttadmin/domerbel/venv/lib/python3.10/site-packages/django/dispatch/dispatcher.py", line 189, in send
+    response = receiver(signal=self, sender=sender, **named)
+  File "/boot/esttadmin/domerbel/store/signals.py", line 59, in fill_in_the_store_search_field
+    if not instance.search_vector or 'title' in dirty_fields or 'description' in dirty_fields in dirty_fields:
+TypeError: unhashable type: 'dict'
+2024-11-14 18:07:36,341 [ERROR] Message: Internal Server Error: /stores/store_edit/307/
+Traceback (most recent call last):
+  File "/boot/esttadmin/domerbel/venv/lib/python3.10/site-packages/asgiref/sync.py", line 518, in thread_handler
+    raise exc_info[1]
+  File "/boot/esttadmin/domerbel/venv/lib/python3.10/site-packages/django/core/handlers/exception.py", line 42, in inner
+    response = await get_response(request)
+  File "/boot/esttadmin/domerbel/venv/lib/python3.10/site-packages/django/core/handlers/base.py", line 253, in _get_response_async
+    response = await wrapped_callback(
+  File "/boot/esttadmin/domerbel/venv/lib/python3.10/site-packages/asgiref/sync.py", line 468, in __call__
+    ret = await asyncio.shield(exec_coro)
+  File "/boot/esttadmin/domerbel/venv/lib/python3.10/site-packages/asgiref/current_thread_executor.py", line 40, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "/boot/esttadmin/domerbel/venv/lib/python3.10/site-packages/asgiref/sync.py", line 522, in thread_handler
+    return func(*args, **kwargs)
+  File "/boot/esttadmin/domerbel/venv/lib/python3.10/site-packages/django/contrib/auth/decorators.py", line 60, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "/boot/esttadmin/domerbel/venv/lib/python3.10/site-packages/django/contrib/auth/decorators.py", line 60, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "/boot/esttadmin/domerbel/store/views.py", line 387, in get_page_for_edit_store
+    edit_store.save()
+  File "/boot/esttadmin/domerbel/store/models.py", line 69, in save
+    super(Store, self).save(*args, **kwargs)
+  File "/boot/esttadmin/domerbel/venv/lib/python3.10/site-packages/django/db/models/base.py", line 891, in save
+    self.save_base(
+  File "/boot/esttadmin/domerbel/venv/lib/python3.10/site-packages/django/db/models/base.py", line 1012, in save_base
+    post_save.send(
+  File "/boot/esttadmin/domerbel/venv/lib/python3.10/site-packages/django/dispatch/dispatcher.py", line 189, in send
+    response = receiver(signal=self, sender=sender, **named)
+  File "/boot/esttadmin/domerbel/store/signals.py", line 59, in fill_in_the_store_search_field
+    if not instance.search_vector or 'title' in dirty_fields or 'description' in dirty_fields in dirty_fields:
+TypeError: unhashable type: 'dict'
+2024-11-14 18:08:10,195 [ERROR] Message: Internal Server Error: /stores/store_edit/307/
+Traceback (most recent call last):
+  File "/boot/esttadmin/domerbel/venv/lib/python3.10/site-packages/asgiref/sync.py", line 518, in thread_handler
+    raise exc_info[1]
+  File "/boot/esttadmin/domerbel/venv/lib/python3.10/site-packages/django/core/handlers/exception.py", line 42, in inner
+    response = await get_response(request)
+  File "/boot/esttadmin/domerbel/venv/lib/python3.10/site-packages/django/core/handlers/base.py", line 253, in _get_response_async
+    response = await wrapped_callback(
+  File "/boot/esttadmin/domerbel/venv/lib/python3.10/site-packages/asgiref/sync.py", line 468, in __call__
+    ret = await asyncio.shield(exec_coro)
+  File "/boot/esttadmin/domerbel/venv/lib/python3.10/site-packages/asgiref/current_thread_executor.py", line 40, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "/boot/esttadmin/domerbel/venv/lib/python3.10/site-packages/asgiref/sync.py", line 522, in thread_handler
+    return func(*args, **kwargs)
+  File "/boot/esttadmin/domerbel/venv/lib/python3.10/site-packages/django/contrib/auth/decorators.py", line 60, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "/boot/esttadmin/domerbel/venv/lib/python3.10/site-packages/django/contrib/auth/decorators.py", line 60, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "/boot/esttadmin/domerbel/store/views.py", line 387, in get_page_for_edit_store
+    edit_store.save()
+  File "/boot/esttadmin/domerbel/store/models.py", line 69, in save
+    super(Store, self).save(*args, **kwargs)
+  File "/boot/esttadmin/domerbel/venv/lib/python3.10/site-packages/django/db/models/base.py", line 891, in save
+    self.save_base(
+  File "/boot/esttadmin/domerbel/venv/lib/python3.10/site-packages/django/db/models/base.py", line 1012, in save_base
+    post_save.send(
+  File "/boot/esttadmin/domerbel/venv/lib/python3.10/site-packages/django/dispatch/dispatcher.py", line 189, in send
+    response = receiver(signal=self, sender=sender, **named)
+  File "/boot/esttadmin/domerbel/store/signals.py", line 59, in fill_in_the_store_search_field
+    if not instance.search_vector or 'title' in dirty_fields or 'description' in dirty_fields in dirty_fields:
+TypeError: unhashable type: 'dict'
