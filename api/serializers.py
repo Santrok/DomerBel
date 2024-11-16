@@ -60,6 +60,8 @@ class UserMessageSerializer(serializers.Serializer):
 
 
 class UserRegisterSerializer(serializers.ModelSerializer):
+    email = serializers.EmailField(write_only=True, error_messages={"blank": "Обязательное поле",
+                                                                    "invalid": "Неверный формат электронной почты"})
     password = serializers.CharField(required=True, validators=[validate_password])
     password2 = serializers.CharField(required=True, validators=[validate_password], write_only=True)
     phone_number = serializers.CharField(required=True, validators=[validate_phone])
@@ -88,8 +90,8 @@ class UserRegisterSerializer(serializers.ModelSerializer):
 
 
 class UserLoginSerializer(serializers.Serializer):
-    email = serializers.EmailField(write_only=True, error_messages={'blank': 'Обязательное поле',
-                                                                    "invalid": "Неверный формат электронной почты"})
+    email = serializers.EmailField(write_only=True, error_messages={"blank": "Обязательное поле",
+                                                                    "invalid": "Неправильно введен Email или Пароль"})
     password = serializers.CharField(write_only=True, error_messages={'blank': 'Обязательное поле'})
 
     def validate(self, data):
