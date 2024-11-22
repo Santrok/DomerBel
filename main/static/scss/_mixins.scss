@@ -1,7 +1,7 @@
 @mixin fonts($color,$size,$weight) {
-    font-family: 'Trebuchet MS', sans-serif;
-    font-weight: $weight;
-    font-style: normal;
-    color: $color;
-    font-size: $size;
+  font-family: 'Trebuchet MS', sans-serif;
+  font-weight: $weight;
+  font-style: normal;
+  color: $color;
+  font-size: $size;
 }

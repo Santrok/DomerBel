@@ -9,10 +9,13 @@
   height: 100svh;
   background: rgb(0, 0, 0, 0.5);
   z-index: 10;
-  padding: 0 15px;
+  overflow: auto;
+  padding: 15px;
 
   & form {
     position: relative;
+    height: min-content;
+    margin: auto 0;
   }
 
   & input {
