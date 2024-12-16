@@ -20,7 +20,7 @@ SECRET_KEY = env_keys.get('DJANGO_TOKEN')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env_keys.get('DEBUG')
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'Домер.бел', '217.197.117.47']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'домер.бел', 'www.домер.бел', '45.87.219.62','xn--d1acuhm.xn--90ais', 'www.xn--d1acuhm.xn--90ais']
 
 # Application definition
 
@@ -157,12 +157,15 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'custom_user.CustomUser'
 
-CORS_ALLOW_ALL_ORIGINS = True
-# CORS_ALLOWED_ORIGINS = [
-#     "https://*.bepaid.by",
-#     "217.197.117.47",
-#     "185.183.120.65",
-# ]
+CSRF_TRUSTED_ORIGINS = ['https://xn--d1acuhm.xn--90ais']
+
+# CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOWED_ORIGINS = [
+    'https://xn--d1acuhm.xn--90ais',
+    "https://*.bepaid.by",
+    "185.183.120.65",
+]
+
 CORS_ALLOW_HEADERS = (
     "accept",
     "authorization",
