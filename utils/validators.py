@@ -10,8 +10,9 @@ def validate_phone(phone_number):
     """
     Валидация белорусского номера телефона
     """
-    if not re.match(r'^(\+375|80)(29|25|44|33)(\d{3})(\d{2})(\d{2})$', phone_number):
-        raise ValidationError('Введите корректный белорусский номер мобильного телефона в формате +375XXXXXXXXX.')
+
+    if not re.match(r'^(?:\+7|8)?[ -]?\(?\d{3}\)?[ -]?\d{3}[ -]?\d{2}[ -]?\d{2}$|^(?:\+375|80)[ -]?\(?\d{2}\)?[ -]?\d{3}[ -]?\d{2}[ -]?\d{2}$', phone_number):
+        raise ValidationError('Введите корректный номер мобильного телефона РБ и РФ.')
 
 
 def validate_words(text):
