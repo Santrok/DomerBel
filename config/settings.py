@@ -530,6 +530,3 @@ for subdir in subdirs:
     path = os.path.join(log_dir, subdir)
     if not os.path.exists(path):
         os.makedirs(path)
-
-
-
