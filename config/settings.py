@@ -18,9 +18,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = env_keys.get('DJANGO_TOKEN')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env_keys.get('DEBUG')
+# DEBUG = env_keys.get('DEBUG')
+DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'домер.бел', 'www.домер.бел', '45.87.219.62','xn--d1acuhm.xn--90ais', 'www.xn--d1acuhm.xn--90ais']
+# ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'домер.бел', 'www.домер.бел', '45.87.219.62','xn--d1acuhm.xn--90ais', 'www.xn--d1acuhm.xn--90ais']
+ALLOWED_HOSTS = []
 
 # Application definition
 
@@ -157,14 +159,14 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'custom_user.CustomUser'
 
-CSRF_TRUSTED_ORIGINS = ['https://xn--d1acuhm.xn--90ais']
+# CSRF_TRUSTED_ORIGINS = ['https://xn--d1acuhm.xn--90ais']
 
-# CORS_ALLOW_ALL_ORIGINS = True
-CORS_ALLOWED_ORIGINS = [
-    'https://xn--d1acuhm.xn--90ais',
-    "https://*.bepaid.by",
-    "185.183.120.65",
-]
+CORS_ALLOW_ALL_ORIGINS = True
+# CORS_ALLOWED_ORIGINS = [
+#     'https://xn--d1acuhm.xn--90ais',
+#     "https://*.bepaid.by",
+#     "185.183.120.65",
+# ]
 
 CORS_ALLOW_HEADERS = (
     "accept",
@@ -369,167 +371,167 @@ ADMINS = [
     (env_keys.get("ADMIN_NAME_3"), env_keys.get("ADMIN_EMAIL_3")),
 ]
 
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'formatters': {
-        'django':{
-            'format': '{asctime} [{levelname}] Message: {message}',
-            'style': '{',
-        },
-        'verbose': {
-            'format': '{asctime} [{levelname}] {module} {message}',
-            'style': '{',
-        },
-    },
-    'handlers': {
-        'console': {
-            'class': 'logging.StreamHandler',
-        },
-        'django': {
-            'level': 'WARNING',
-            'class': 'logging.handlers.TimedRotatingFileHandler',
-             'filename': os.path.join(BASE_DIR, 'logs','django','django.log'),
-            'formatter': 'django',
-            'when': 'midnight',
-            'backupCount': 100,
-        },
-        'mail_admins': {
-            'level': 'ERROR',
-            'class': 'django.utils.log.AdminEmailHandler',
-            'include_html': True,
-        },
-        'advertisement': {
-            'level': 'WARNING',
-            'class': 'logging.handlers.TimedRotatingFileHandler',
-            'filename': os.path.join(BASE_DIR, 'logs','advertisement','advertisement.log'),
-            'when': 'midnight',
-            'backupCount': 100,
-            'formatter': 'verbose',
-        },
-        'api':{
-            'level': 'WARNING',
-            'class': 'logging.handlers.TimedRotatingFileHandler',
-            'filename': os.path.join(BASE_DIR, 'logs','api','api.log'),
-            'when': 'midnight',
-            'backupCount': 100,
-            'formatter': 'verbose',
-        },
-        'chat': {
-            'level': 'WARNING',
-            'class': 'logging.handlers.TimedRotatingFileHandler',
-            'filename': os.path.join(BASE_DIR, 'logs', 'chat', 'chat.log'),
-            'when': 'midnight',
-            'backupCount': 100,
-            'formatter': 'verbose',
-        },
-        'custom_user': {
-            'level': 'WARNING',
-            'class': 'logging.handlers.TimedRotatingFileHandler',
-            'filename': os.path.join(BASE_DIR, 'logs', 'custom_user', 'custom_user.log'),
-            'when': 'midnight',
-            'backupCount': 100,
-            'formatter': 'verbose',
-        },
-        'paid_service':{
-            'level': 'WARNING',
-            'class': 'logging.handlers.TimedRotatingFileHandler',
-            'filename': os.path.join(BASE_DIR, 'logs', 'paid_service', 'paid_service.log'),
-            'when': 'midnight',
-            'backupCount': 100,
-            'formatter': 'verbose',
-        },
-        'related_data':{
-            'level': 'WARNING',
-            'class': 'logging.handlers.TimedRotatingFileHandler',
-            'filename': os.path.join(BASE_DIR, 'logs', 'related_data', 'related_data.log'),
-            'when': 'midnight',
-            'backupCount': 100,
-            'formatter': 'verbose',
-        },
-        'services': {
-            'level': 'WARNING',
-            'class': 'logging.handlers.TimedRotatingFileHandler',
-            'filename': os.path.join(BASE_DIR, 'logs', 'services', 'services.log'),
-            'when': 'midnight',
-            'backupCount': 100,
-            'formatter': 'verbose',
-        },
-        'store': {
-            'level': 'INFO',
-            'class': 'logging.handlers.TimedRotatingFileHandler',
-            'filename': os.path.join(BASE_DIR, 'logs', 'store', 'store.log'),
-            'when': 'midnight',
-            'backupCount': 100,
-            'formatter': 'verbose',
-        },
-    },
-    'loggers': {
-        'django.request': {
-            'handlers': ['mail_admins'],
-            'level': 'ERROR',
-            'propagate': True,
-        },
-        'django': {
-            'level': 'INFO',
-            'handlers': ['console','django'],
-        },
-        'advertisement': {
-            'level': 'INFO',
-            'handlers': ['console', 'advertisement'],
-        },
-        'api': {
-            'level': 'INFO',
-            'handlers': ['console', 'custom_user'],
-        },
-        'chat': {
-            'level': 'INFO',
-            'handlers': ['console', 'chat'],
-        },
-        'custom_user': {
-            'level': 'INFO',
-            'handlers': ['console', 'custom_user'],
-        },
-        'paid_service':{
-            'level': 'INFO',
-            'handlers': ['console', 'paid_service'],
-        },
-        'related_data':{
-            'level': 'INFO',
-            'handlers': ['console', 'related_data'],
-        },
-        'services': {
-            'level': 'WARNING',
-            'handlers': ['services'],
-        },
-        'store': {
-            'level': 'INFO',
-            'handlers': ['console', 'store'],
-        },
-    }
-}
+# LOGGING = {
+#     'version': 1,
+#     'disable_existing_loggers': False,
+#     'formatters': {
+#         'django':{
+#             'format': '{asctime} [{levelname}] Message: {message}',
+#             'style': '{',
+#         },
+#         'verbose': {
+#             'format': '{asctime} [{levelname}] {module} {message}',
+#             'style': '{',
+#         },
+#     },
+#     'handlers': {
+#         'console': {
+#             'class': 'logging.StreamHandler',
+#         },
+#         'django': {
+#             'level': 'WARNING',
+#             'class': 'logging.handlers.TimedRotatingFileHandler',
+#              'filename': os.path.join(BASE_DIR, 'logs','django','django.log'),
+#             'formatter': 'django',
+#             'when': 'midnight',
+#             'backupCount': 100,
+#         },
+#         'mail_admins': {
+#             'level': 'ERROR',
+#             'class': 'django.utils.log.AdminEmailHandler',
+#             'include_html': True,
+#         },
+#         'advertisement': {
+#             'level': 'WARNING',
+#             'class': 'logging.handlers.TimedRotatingFileHandler',
+#             'filename': os.path.join(BASE_DIR, 'logs','advertisement','advertisement.log'),
+#             'when': 'midnight',
+#             'backupCount': 100,
+#             'formatter': 'verbose',
+#         },
+#         'api':{
+#             'level': 'WARNING',
+#             'class': 'logging.handlers.TimedRotatingFileHandler',
+#             'filename': os.path.join(BASE_DIR, 'logs','api','api.log'),
+#             'when': 'midnight',
+#             'backupCount': 100,
+#             'formatter': 'verbose',
+#         },
+#         'chat': {
+#             'level': 'WARNING',
+#             'class': 'logging.handlers.TimedRotatingFileHandler',
+#             'filename': os.path.join(BASE_DIR, 'logs', 'chat', 'chat.log'),
+#             'when': 'midnight',
+#             'backupCount': 100,
+#             'formatter': 'verbose',
+#         },
+#         'custom_user': {
+#             'level': 'WARNING',
+#             'class': 'logging.handlers.TimedRotatingFileHandler',
+#             'filename': os.path.join(BASE_DIR, 'logs', 'custom_user', 'custom_user.log'),
+#             'when': 'midnight',
+#             'backupCount': 100,
+#             'formatter': 'verbose',
+#         },
+#         'paid_service':{
+#             'level': 'WARNING',
+#             'class': 'logging.handlers.TimedRotatingFileHandler',
+#             'filename': os.path.join(BASE_DIR, 'logs', 'paid_service', 'paid_service.log'),
+#             'when': 'midnight',
+#             'backupCount': 100,
+#             'formatter': 'verbose',
+#         },
+#         'related_data':{
+#             'level': 'WARNING',
+#             'class': 'logging.handlers.TimedRotatingFileHandler',
+#             'filename': os.path.join(BASE_DIR, 'logs', 'related_data', 'related_data.log'),
+#             'when': 'midnight',
+#             'backupCount': 100,
+#             'formatter': 'verbose',
+#         },
+#         'services': {
+#             'level': 'WARNING',
+#             'class': 'logging.handlers.TimedRotatingFileHandler',
+#             'filename': os.path.join(BASE_DIR, 'logs', 'services', 'services.log'),
+#             'when': 'midnight',
+#             'backupCount': 100,
+#             'formatter': 'verbose',
+#         },
+#         'store': {
+#             'level': 'INFO',
+#             'class': 'logging.handlers.TimedRotatingFileHandler',
+#             'filename': os.path.join(BASE_DIR, 'logs', 'store', 'store.log'),
+#             'when': 'midnight',
+#             'backupCount': 100,
+#             'formatter': 'verbose',
+#         },
+#     },
+#     'loggers': {
+#         'django.request': {
+#             'handlers': ['mail_admins'],
+#             'level': 'ERROR',
+#             'propagate': True,
+#         },
+#         'django': {
+#             'level': 'INFO',
+#             'handlers': ['console','django'],
+#         },
+#         'advertisement': {
+#             'level': 'INFO',
+#             'handlers': ['console', 'advertisement'],
+#         },
+#         'api': {
+#             'level': 'INFO',
+#             'handlers': ['console', 'custom_user'],
+#         },
+#         'chat': {
+#             'level': 'INFO',
+#             'handlers': ['console', 'chat'],
+#         },
+#         'custom_user': {
+#             'level': 'INFO',
+#             'handlers': ['console', 'custom_user'],
+#         },
+#         'paid_service':{
+#             'level': 'INFO',
+#             'handlers': ['console', 'paid_service'],
+#         },
+#         'related_data':{
+#             'level': 'INFO',
+#             'handlers': ['console', 'related_data'],
+#         },
+#         'services': {
+#             'level': 'WARNING',
+#             'handlers': ['services'],
+#         },
+#         'store': {
+#             'level': 'INFO',
+#             'handlers': ['console', 'store'],
+#         },
+#     }
+# }
 
 # Создание директории для логов, если она не существует
-log_dir = os.path.join(BASE_DIR, 'logs')
-if not os.path.exists(log_dir):
-    os.makedirs(log_dir)
+# log_dir = os.path.join(BASE_DIR, 'logs')
+# if not os.path.exists(log_dir):
+#     os.makedirs(log_dir)
 
-subdirs = ['django',
-           'celery',
-           'advertisement',
-           'custom_user',
-           'api',
-           'chat',
-           'paid_service',
-           'related_data',
-           'services',
-           'store',
-           ]
+# subdirs = ['django',
+#            'celery',
+#            'advertisement',
+#            'custom_user',
+#            'api',
+#            'chat',
+#            'paid_service',
+#            'related_data',
+#            'services',
+#            'store',
+#            ]
 
-for subdir in subdirs:
-    path = os.path.join(log_dir, subdir)
-    if not os.path.exists(path):
-        os.makedirs(path)
+# for subdir in subdirs:
+#     path = os.path.join(log_dir, subdir)
+#     if not os.path.exists(path):
+#         os.makedirs(path)
 
 
 

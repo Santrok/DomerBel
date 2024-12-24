@@ -113,21 +113,6 @@ function showCategory(event) {
 
                 `
                     event.target.parentElement.parentElement.append(category)
-                    // event.target.addEventListener('change', () => {
-                    //     informationList.innerHTML = '';
-                    //     if (document.querySelector('.category_level_1')) {
-                    //         document.querySelector('.category_level_1').remove()
-                    //     }
-                    //     if (document.querySelector('.category_level_2')) {
-                    //         document.querySelector('.category_level_2').remove()
-                    //     }
-                    //     if (document.querySelector('.category_level_3')) {
-                    //         document.querySelector('.category_level_3').remove()
-                    //     }
-                    //     statusCategory1 = ''
-                    //     statusCategory2 = ''
-                    //     statusCategory3 = ''
-                    // })
                 })
         }
     }
@@ -480,64 +465,92 @@ let inputElementArray = []
 let mainImg = document.querySelector(".main_img")
     ? document.querySelector(".main_img")
     : ""
+let totalSize = 0
+const maxSize = 20971520
+const maxFiles = 30
+const dt = new DataTransfer(); // Для обновления FileList
 
 function handleFiles() {
-    const dt = new DataTransfer()
-    const fileList = this.files
+    const fileList = this.files; // Получаем загруженные файлы
+    let newSize = totalSize; // Текущий общий размер
+  
+    // Проверка превышения количества файлов
+    if (inputElementArray.length + fileList.length > maxFiles) {
+      alert(`Вы можете загрузить не более ${maxFiles} файлов.`);
+      return;
+    }
+  
     for (let i = 0; i < fileList.length; i++) {
-        const file = fileList[i]
-        if (!file.type.startsWith("image/")) {
-            continue
-        }
-        const img = document.createElement("img")
-        img.classList.add("img_preview")
-        if (i === 0 && !document.querySelector(".main_img")) {
-            img.classList.add("main_img")
-            mainImg = img
-        }
-        img.file = file
-        img.setAttribute("name", fileList[i].name)
-        img.setAttribute("data-id", i)
-        const div = document.createElement("div")
-        div.classList.add("photo_img")
-        const div2 = document.createElement("div")
-        div2.classList.add("delete_img")
-        div2.setAttribute("data-name", fileList[i].name)
-        div.append(div2)
-        div.append(img)
-        preview.append(div)
-
-        const reader = new FileReader()
-        reader.onload = (function (aImg) {
-            return function (event) {
-                aImg.src = event.target.result
-            }
-        })(img)
-        reader.readAsDataURL(file)
+      const file = fileList[i];
+  
+      // Проверка типа файла (только изображения)
+      if (!file.type.startsWith("image/")) {
+        continue;
+      }
+  
+      // Проверка общего размера
+      newSize += file.size;
+      if (newSize > maxSize) {
+        alert(
+          `Файл "${file.name}" превышает допустимый общий размер (${maxSize / (1024 * 1024)} МБ). Он не будет добавлен.`
+        );
+        newSize -= file.size;
+        console.log(dt.files);
+        
+        continue;
+      }
+  
+      // Добавление файла в DataTransfer
+      dt.items.add(file);
+  
+      // Создание превью изображения
+      const img = document.createElement("img");
+      img.classList.add("img_preview");
+      if (!mainImg && i === 0) {
+        img.classList.add("main_img");
+        mainImg = img;
+      }
+      img.file = file;
+      img.setAttribute("name", file.name);
+      img.setAttribute("data-id", inputElementArray.length + i);
+  
+      const div = document.createElement("div");
+      div.classList.add("photo_img");
+  
+      const div2 = document.createElement("div");
+      div2.classList.add("delete_img");
+      div2.setAttribute("data-name", file.name);
+      div.append(div2);
+      div.append(img);
+      preview.append(div);
+  
+      const reader = new FileReader();
+      reader.onload = (function (aImg) {
+        return function (event) {
+          aImg.src = event.target.result;
+        };
+      })(img);
+      reader.readAsDataURL(file);
     }
-    if (inputElementArray.length === 0) {
-        inputElementArray = Array.from(inputElement.files)
-    } else {
-        for (let i of Array.from(inputElement.files)) {
-            inputElementArray.push(i)
-        }
-        let z = []
-        for (let i of inputElementArray) {
-            dt.items.add(i)
-        }
-        z = dt.files
-        inputElement.files = z
-    }
+  
+    // Обновляем inputElementArray и устанавливаем новый FileList
+    inputElementArray = Array.from(dt.files);    
+    inputElement.files = dt.files;
+  
+    // Обновляем общий размер файлов
+    totalSize = newSize;
 }
 
 let deletedImages = []
 
 function removeImg(event) {
+    console.log(event);
+    
     if (document.querySelector(".photo_file_error")) {
         document.querySelector(".photo_file_error").remove()
         document.querySelector(".photo_file").classList.remove("input_error")
     }
-    const dt = new DataTransfer()
+    const dataTransfer = new DataTransfer()
     let z = []
 
     let target = event.target
@@ -566,9 +579,9 @@ function removeImg(event) {
             (file) => file.name !== target.dataset.name
         )
         for (let i of inputElementArray) {
-            dt.items.add(i)
+            dataTransfer.items.add(i)
         }
-        z = dt.files
+        z = dataTransfer.files
         inputElement.files = z
     }
     if (target.classList.contains("img_preview")) {

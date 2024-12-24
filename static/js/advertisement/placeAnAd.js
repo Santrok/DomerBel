@@ -113,21 +113,6 @@ function showCategory(event) {
 
                 `
                     event.target.parentElement.parentElement.append(category)
-                    // event.target.addEventListener('change', () => {
-                    //     informationList.innerHTML = '';
-                    //     if (document.querySelector('.category_level_1')) {
-                    //         document.querySelector('.category_level_1').remove()
-                    //     }
-                    //     if (document.querySelector('.category_level_2')) {
-                    //         document.querySelector('.category_level_2').remove()
-                    //     }
-                    //     if (document.querySelector('.category_level_3')) {
-                    //         document.querySelector('.category_level_3').remove()
-                    //     }
-                    //     statusCategory1 = ''
-                    //     statusCategory2 = ''
-                    //     statusCategory3 = ''
-                    // })
                 })
         }
     }
@@ -480,12 +465,23 @@ let inputElementArray = []
 let mainImg = document.querySelector(".main_img")
     ? document.querySelector(".main_img")
     : ""
+let sumSize = 0
 
 function handleFiles() {
     const dt = new DataTransfer()
     const fileList = this.files
+    console.log(fileList);
+
+        // 20971520
+
+    
     for (let i = 0; i < fileList.length; i++) {
         const file = fileList[i]
+        sumSize += file.size
+        if(sumSize >= 20971520){
+            console.log(22222);
+            return
+        }
         if (!file.type.startsWith("image/")) {
             continue
         }
@@ -515,6 +511,10 @@ function handleFiles() {
         })(img)
         reader.readAsDataURL(file)
     }
+    console.log(sumSize);
+
+    console.log(inputElement.files);
+    
     if (inputElementArray.length === 0) {
         inputElementArray = Array.from(inputElement.files)
     } else {
@@ -533,6 +533,8 @@ function handleFiles() {
 let deletedImages = []
 
 function removeImg(event) {
+    console.log(event);
+    
     if (document.querySelector(".photo_file_error")) {
         document.querySelector(".photo_file_error").remove()
         document.querySelector(".photo_file").classList.remove("input_error")
