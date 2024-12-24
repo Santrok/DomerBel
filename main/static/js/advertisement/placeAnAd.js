@@ -477,6 +477,7 @@ function handleFiles() {
     // Проверка превышения количества файлов
     if (inputElementArray.length + fileList.length > maxFiles) {
       alert(`Вы можете загрузить не более ${maxFiles} файлов.`);
+      return;
     }
   
     for (let i = 0; i < fileList.length; i++) {
@@ -495,7 +496,6 @@ function handleFiles() {
         );
         newSize -= file.size;
         console.log(dt.files);
-        
         continue;
       }
   
@@ -534,8 +534,7 @@ function handleFiles() {
   
     // Обновляем inputElementArray и устанавливаем новый FileList
     inputElementArray = Array.from(dt.files);    
-    inputElement.files = dt.files;
-  
+    inputElement.files = dt.files;  
     // Обновляем общий размер файлов
     totalSize = newSize;
 }
@@ -543,13 +542,13 @@ function handleFiles() {
 let deletedImages = []
 
 function removeImg(event) {
-    console.log(event);
+    console.log(event.currentTarget);
     
+    const dataTarnsfer = new DataTransfer()
     if (document.querySelector(".photo_file_error")) {
         document.querySelector(".photo_file_error").remove()
         document.querySelector(".photo_file").classList.remove("input_error")
     }
-    const dataTransfer = new DataTransfer()
     let z = []
 
     let target = event.target
@@ -577,11 +576,15 @@ function removeImg(event) {
         inputElementArray = inputElementArray.filter(
             (file) => file.name !== target.dataset.name
         )
-        for (let i of inputElementArray) {
-            dataTransfer.items.add(i)
-        }
-        z = dataTransfer.files
-        inputElement.files = z
+        for(let i of Array.from(dt.files)) {
+            if (i.name === target.dataset.name) {
+                totalSize -= i.size
+                dt.items.remove(i)
+            }
+        }        
+        inputElement.files = dt.files
+        console.log(inputElement.files);
+        
     }
     if (target.classList.contains("img_preview")) {
         if (mainImg) {
