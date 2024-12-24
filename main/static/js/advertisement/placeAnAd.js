@@ -477,7 +477,6 @@ function handleFiles() {
     // Проверка превышения количества файлов
     if (inputElementArray.length + fileList.length > maxFiles) {
       alert(`Вы можете загрузить не более ${maxFiles} файлов.`);
-      return;
     }
   
     for (let i = 0; i < fileList.length; i++) {
