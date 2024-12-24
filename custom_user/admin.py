@@ -15,7 +15,7 @@ class CustomUserAdmin(UserAdmin):
     form = CustomUserChangeForm
     model = get_user_model()
     list_display = ("email", "is_active", "entity")
-    list_filter = ("is_active", "entity")
+    list_filter = ("is_active", "entity", "date_joined")
     list_editable = ("is_active", "entity")
     fieldsets = (
         (None, {"fields": ("email", "password", "first_name", "phone_number", "entity")}),

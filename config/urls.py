@@ -35,7 +35,7 @@ urlpatterns = [
     path("__debug__/", include("debug_toolbar.urls")),
     path("ckeditor5/", include('django_ckeditor_5.urls')),
 
-    path('admin/', admin.site.urls),
+    path('johans/', admin.site.urls),
     path('', include('main.urls')),
     path('advertisement/', include('advertisement.urls')),
     path('personal_account/', include('personal_account.urls')),

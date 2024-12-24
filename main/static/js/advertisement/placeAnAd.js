@@ -58,7 +58,7 @@ function showCity(event) {
                 .then((response) => response.json())
                 .then((data) => {
                     if (document.querySelector(".city")) {
-                        document.getElementById("select_city").innerHTML = ` 
+                        document.getElementById("select_city").innerHTML = `
                     <option value="">---------</option>
                     ${data.map(
                             (elem) =>
@@ -232,7 +232,7 @@ function show_additional_information(event) {
                     i.title !== "Зарплата" &&
                     i.title !== "Минимальная зарплата"
                 ) {
-                    informationList.innerHTML += ` 
+                    informationList.innerHTML += `
 <div class="additional_information_item-${i.id}">
 <div class="additional_information_item item_input">
 <div class="information_label label_fields">
@@ -245,7 +245,7 @@ ${i.title ? i.title : i.title_ad}
                     }" type="text" name="${i.id}">
         </div>
 </div>
-</div> 
+</div>
 </div>
 `
                 } else if (i.min_val_interval_date !== 0) {
@@ -324,7 +324,7 @@ ${i.title ? i.title : i.title_ad}
                     i.title === "Зарплата" ||
                     i.title === "Минимальная зарплата"
                 ) {
-                    informationList.innerHTML += ` 
+                    informationList.innerHTML += `
 <div class="additional_information_item-price">
 <div class="additional_information_item item_input">
 <div class="information_label label_fields">
@@ -340,7 +340,7 @@ ${i.title ? i.title : i.title_ad}, руб
                     }" type="hidden" name="${i.title}">
         </div>
 </div>
-</div> 
+</div>
 </div>
 `
                 } else {
@@ -608,10 +608,10 @@ function pathSend (data) {
 const addAdvForm = document.getElementById("add_adver")
 const addAdvButton = document.querySelector(".add_adv")
 addAdvButton.addEventListener("click", saveAdvertisement)
-const blockModals = document.querySelector(".modals")
+// const blockModals = document.querySelector(".modals")
 
 function saveAdvertisement() {
-    blockModals.classList.add("modal__active")
+    // blockModals.classList.add("modal__active")
     if (document.querySelector(".price-hidden")) {
         document.querySelector(".price-hidden").value =
             document.querySelector(".price").value
@@ -648,7 +648,7 @@ function saveAdvertisement() {
     pathSend(data)
         .then((response) => response.json())
         .then((data) => {
-            blockModals.classList.remove("modal__active")
+            // blockModals.classList.remove("modal__active")
             if (data.error || data.error_additional) {
                 const error = new Error("error")
                 error.data = data

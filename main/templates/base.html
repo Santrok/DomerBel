@@ -23,6 +23,26 @@
     <title>{{ adaptive_navigation }}</title>
 </head>
 <body>
+    <!-- Yandex.RTB -->
+    <script>window.yaContextCb=window.yaContextCb || []</script>
+    <script src="https://yandex.ru/ads/system/context.js" async></script>
+    <!-- /Yandex.RTB -->
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript" >
+   (function(m,e,t,r,i,k,a){m[i]=m[i] || function(){(m[i].a=m[i].a || []).push(arguments)};
+   m[i].l=1*new Date();
+   for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+   k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+   (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+
+   ym(34455750, "init", {
+        clickmap:true,
+        trackLinks:true,
+        accurateTrackBounce:true
+   });
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/34455750" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
 <div class="wrapper">
     <div aria-modal="true" class="modals">
         <form aria-modal="true" class="modals__login" id="login_form" enctype="multipart/form-data">
@@ -449,6 +469,17 @@
                 </div>
             </div>
         </header>
+        <!-- Yandex.RTB R-A-13301120-1 -->
+            <div id="yandex_rtb_R-A-13301120-1"></div>
+            <script>
+            window.yaContextCb.push(() => {
+                Ya.Context.AdvManager.render({
+                    "blockId": "R-A-13301120-1",
+                    "renderTo": "yandex_rtb_R-A-13301120-1"
+                })
+            })
+            </script>
+        <!-- /Yandex.RTB R-A-13301120-1 -->
         <main>
             {% block search %}
                 <search class="main__search">
@@ -547,7 +578,7 @@
                     </li>
                 </ul>
             </nav>
-            <div class="footer__info">
+            <div class="footer__info" style="position:relative;">
                 <ul class="footer__info-organization-list">
                     <li>
                         <p>
@@ -578,6 +609,13 @@
                         </p>
                     </li>
                 </ul>
+                <!-- Yandex.Metrika informer -->
+                    {% if user.is_superuser %}
+                        <a href="https://metrika.yandex.by/stat/?id=34455750&amp;from=informer"
+                        target="_blank" style="position:absolute; bottom:10px; left:0; transform:translateY(10px);" rel="nofollow"><img src="https://informer.yandex.ru/informer/34455750/3_1_FFFFFFFF_EFEFEFFF_0_pageviews"
+                        style="width:88px; height:31px; border:0;" alt="Яндекс.Метрика" title="Яндекс.Метрика: данные за сегодня (просмотры, визиты и уникальные посетители)" class="ym-advanced-informer" data-cid="34455750" data-lang="ru" /></a>
+                    {% endif %}
+                <!-- /Yandex.Metrika informer -->
                 <div class="footer__payment-info">
                     <img src="{% static "img/payment.png" %}" alt="">
                 </div>

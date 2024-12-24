@@ -90,6 +90,7 @@ class Element(models.Model):
     class Meta:
         verbose_name = 'Элемент для списка'
         verbose_name_plural = 'Элементы для списка'
+        ordering = ['title']
 
     def __str__(self):
         return self.title
@@ -225,4 +226,3 @@ class CategoryAdmin(DraggableMPTTAdmin):
         """
         qs = super().get_queryset(request)
         return qs.filter(level__lte=self.max_level_indent)
-
