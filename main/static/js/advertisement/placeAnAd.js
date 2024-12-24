@@ -544,12 +544,10 @@ let deletedImages = []
 function removeImg(event) {
     console.log(event.currentTarget);
     
-    const dataTarnsfer = new DataTransfer()
     if (document.querySelector(".photo_file_error")) {
         document.querySelector(".photo_file_error").remove()
         document.querySelector(".photo_file").classList.remove("input_error")
     }
-    let z = []
 
     let target = event.target
     if (target.classList.contains("delete_img")) {
@@ -576,14 +574,16 @@ function removeImg(event) {
         inputElementArray = inputElementArray.filter(
             (file) => file.name !== target.dataset.name
         )
+        console.log(target.dataset.name, 'target');
         for(let i of Array.from(dt.files)) {
+            console.log(i.name === target.dataset.name);
+            
             if (i.name === target.dataset.name) {
                 totalSize -= i.size
-                dt.items.remove(i)
+                dt.items.remove(Array.from(dt.files).indexOf(i))
             }
-        }        
+        }             
         inputElement.files = dt.files
-        console.log(inputElement.files);
         
     }
     if (target.classList.contains("img_preview")) {
