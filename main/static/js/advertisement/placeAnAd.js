@@ -623,10 +623,8 @@ function pathSend (data) {
 const addAdvForm = document.getElementById("add_adver")
 const addAdvButton = document.querySelector(".add_adv")
 addAdvButton.addEventListener("click", saveAdvertisement)
-const blockModals = document.querySelector(".modals")
 
 function saveAdvertisement() {
-    blockModals.classList.add("modal__active")
     if (document.querySelector(".price-hidden")) {
         document.querySelector(".price-hidden").value =
             document.querySelector(".price").value
@@ -663,7 +661,6 @@ function saveAdvertisement() {
     pathSend(data)
         .then((response) => response.json())
         .then((data) => {
-            blockModals.classList.remove("modal__active")
             if (data.error || data.error_additional) {
                 const error = new Error("error")
                 error.data = data
