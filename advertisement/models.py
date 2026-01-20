@@ -210,7 +210,7 @@ class AdvertisementAdmin(admin.ModelAdmin):
 
     @admin.display(description='')
     def get_html_photo(self, object):
-        return mark_safe(f"<img src='{object.preview_image.url}' style='width=150px; height: 150px;'")
+        return mark_safe(f"<img src='{object.preview_image.url}' style='width=150px; height: 150px;'>")
 
     readonly_fields = ["date_of_create", "get_html_photo", "search_boost_date"]
     fields = ["title",
